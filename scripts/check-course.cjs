@@ -4,7 +4,7 @@ const assert=require('node:assert/strict'),fs=require('node:fs'),path=require('n
 const {pathToFileURL,fileURLToPath}=require('node:url');
 const args=process.argv.slice(2),arg=(name,fallback)=>args.includes(name)?args[args.indexOf(name)+1]:fallback;
 const root=path.resolve(arg('--site',path.join(__dirname,'..'))),shots=arg('--screenshots',null);
-const home=pathToFileURL(path.join(root,'index.html')).href;
+const home=pathToFileURL(path.join(root,'总入口.html')).href;
 const url=file=>pathToFileURL(path.join(root,file.split('#')[0])).href+(file.includes('#')?'#'+file.split('#')[1]:'');
 (async()=>{
  const browser=await chromium.launch({headless:true,channel:process.env.COURSE_BROWSER||undefined});
@@ -18,6 +18,7 @@ const url=file=>pathToFileURL(path.join(root,file.split('#')[0])).href+(file.inc
   async function shot(name){if(shots){fs.mkdirSync(shots,{recursive:true});await page.screenshot({path:path.join(shots,name+'.png'),fullPage:true});}}
   async function localLinks(){for(const href of await page.locator('a[href]').evaluateAll(es=>es.map(e=>e.href))){if(!href.startsWith('file:'))continue;assert(fs.existsSync(fileURLToPath(href.split('#')[0])),href);}}
   async function labelBounds(){assert(await page.locator('.model-label').evaluateAll(es=>{const s=document.getElementById('stage').getBoundingClientRect();return es.every(e=>{const r=e.getBoundingClientRect();return r.left>=s.left-1&&r.right<=s.right+1&&r.top>=s.top-1&&r.bottom<=s.bottom+1;});}),'Model label outside stage');}
+  await page.goto(pathToFileURL(path.join(root,'index.html')).href+'#chapter-8');await page.waitForFunction(()=>window.CourseHome);assert.equal(page.url(),home+'#chapter-8');
   await start();const data=await page.evaluate(()=>window.COURSE);
   assert.equal(data.chapters.length,8);assert.equal(data.chapters.flatMap(c=>c.tasks).length,27);
   assert.equal(await page.locator('.chapter-entry-link').count(),8);assert.equal(await page.locator('.model-label').count(),8);await localLinks();await labelBounds();await shot('课程总入口');

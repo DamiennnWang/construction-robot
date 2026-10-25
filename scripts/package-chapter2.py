@@ -35,6 +35,7 @@ def localize(html, entrance=False):
         html = html.replace(source, 'lessons/'+target)
     html = html.replace('第二章_动力与工作机构/index.html', 'index.html')
     html = html.replace('href="../index.html#chapter-2"', 'href="index.html"' if entrance else 'href="../index.html"')
+    html = html.replace('href="../总入口.html#chapter-2"', 'href="index.html"' if entrance else 'href="../index.html"')
     html = html.replace('index.html#chapter-2', 'index.html')
     html = html.replace('课程总览', '章节总览')
     html = html.replace('href="../第三章_机器人结构与运动/index.html"', 'href="index.html"')

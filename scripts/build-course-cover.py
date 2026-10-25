@@ -34,7 +34,9 @@ for n,(folder,title,description) in enumerate(spec,1):
     kind='任务导读' if guides==len(rows) else '课堂与导读' if guides else '交互课堂'
     chapters.append({'id':n,'title':title,'nav':title,'description':description,'entry':entry,'kind':kind,'tasks':rows})
 data={'scope':'full','chapters':chapters}
-(root/'index.html').write_text((root/'course-cover/index.template.html').read_text(encoding='utf-8'),encoding='utf-8')
+html=(root/'course-cover/index.template.html').read_text(encoding='utf-8')
+(root/'总入口.html').write_text(html,encoding='utf-8')
+(root/'index.html').write_text((root/'course-cover/index.redirect.html').read_text(encoding='utf-8'),encoding='utf-8')
 (root/'course-cover/data.js').write_text('window.COURSE = '+json.dumps(data,ensure_ascii=False,indent=2)+';\n',encoding='utf-8')
-print('Built full course entrance: 8 chapter entrances / 27 tasks')
+print('Built 总入口.html: 8 chapter entrances / 27 tasks; index.html redirects to the latest entrance')
 if args.package:subprocess.run([sys.executable,str(root/'scripts/package-course.py'),'--output',str(args.output)],check=True,cwd=root)

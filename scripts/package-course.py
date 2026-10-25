@@ -25,7 +25,7 @@ class Links(HTMLParser):
             m=re.search(r'url\s*=\s*(.+)',values.get('content',''),re.I)
             if m:self.refs.append(('a','href',m.group(1).strip().strip('\"\'')))
 
-seeds=['index.html','公共资源/vendor/THREE-LICENSE.txt']
+seeds=['index.html','总入口.html','公共资源/vendor/THREE-LICENSE.txt']
 lessons=set()
 for c in data['chapters']:
     seeds.append(c['entry'])
@@ -71,10 +71,10 @@ while pending:
 # All entry and lesson files keep their original bytes. No chapter-local paths are flattened.
 for name in lessons:assert (site/name).read_bytes()==(root/name).read_bytes(),name
 (site/'.nojekyll').touch()
-(site/'使用说明.txt').write_text('智能建筑机械与机器人 · 第一章至第八章课程整合版\n\n解压 ZIP 后，双击根目录 index.html 打开课程总入口。\n点击八张章节卡片或三维展品标签，可直接进入对应章节。\n顶部提供学习路线和27项任务搜索，也可以按章节筛选任务。\n\n第一章、第八章和任务5-3为阅读导读；其余任务为已有交互课堂。\n各章节入口、任务页面和原有学习功能保留。\n学习记录由各页面与当前浏览器分别保存，不自动跨任务合并。\n页面可离线打开，外部参考资料链接需要联网。\n部分“教学方案”链接为随包保留的 Markdown 文本，其开发源码与历史检查资料仍保留在完整仓库。\n\n请保持所有文件夹的相对位置。上传静态网站时上传 site 内全部内容，入口为根目录 index.html。\n无需另行解压八个章节包。本包已包含八章入口、当前任务页及运行所需资源。\n',encoding='utf-8')
-manifest={'title':'智能建筑机械与机器人 · 课程总入口','entry':'index.html','chapters':len(data['chapters']),'tasks':sum(len(c['tasks']) for c in data['chapters']),'lesson_pages':len(lessons),'source_lesson_bytes_preserved':True,'files':[{'path':p.relative_to(site).as_posix(),'bytes':p.stat().st_size,'sha256':sha256(p.read_bytes()).hexdigest()} for p in sorted(site.rglob('*')) if p.is_file() and p.name!='manifest.json']}
+(site/'使用说明.txt').write_text('智能建筑机械与机器人 · 第一章至第八章课程整合版\n\n解压 ZIP 后，双击根目录 总入口.html 打开课程总入口；index.html 会自动转到最新版总入口。\n点击八张章节卡片或三维展品标签，可直接进入对应章节。\n顶部提供学习路线和27项任务搜索，也可以按章节筛选任务。\n\n第一章、第八章和任务5-3为阅读导读；其余任务为已有交互课堂。\n各章节入口、任务页面和原有学习功能保留。\n学习记录由各页面与当前浏览器分别保存，不自动跨任务合并。\n页面可离线打开，外部参考资料链接需要联网。\n部分“教学方案”链接为随包保留的 Markdown 文本，其开发源码与历史检查资料仍保留在完整仓库。\n\n请保持所有文件夹的相对位置。上传静态网站时上传 site 内全部内容，入口为根目录 index.html。\n无需另行解压八个章节包。本包已包含八章入口、当前任务页及运行所需资源。\n',encoding='utf-8')
+manifest={'title':'总入口｜智能建筑机械与机器人','entry':'总入口.html','hosting_entry':'index.html','chapters':len(data['chapters']),'tasks':sum(len(c['tasks']) for c in data['chapters']),'lesson_pages':len(lessons),'source_lesson_bytes_preserved':True,'files':[{'path':p.relative_to(site).as_posix(),'bytes':p.stat().st_size,'sha256':sha256(p.read_bytes()).hexdigest()} for p in sorted(site.rglob('*')) if p.is_file() and p.name!='manifest.json']}
 (site/'manifest.json').write_text(json.dumps(manifest,ensure_ascii=False,indent=2)+'\n',encoding='utf-8')
-archive=dest/'智能建筑机械与机器人_第一至八章_课程整合版.zip'
+archive=dest/'总入口_完整课程包.zip'
 with zipfile.ZipFile(archive,'w',zipfile.ZIP_DEFLATED,compresslevel=9) as z:
     for p in sorted(site.rglob('*')):
         if p.is_file():z.write(p,p.relative_to(site).as_posix())

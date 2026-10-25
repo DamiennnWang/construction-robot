@@ -3,6 +3,11 @@
   const $=id=>document.getElementById(id),data=window.COURSE;
   const esc=s=>String(s).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
   const chapter=n=>data.chapters.find(c=>c.id===n),links=t=>t.entries||[];
+  const back=$('course-back');
+  function syncBack(){back.disabled=history.length<2;back.title=back.disabled?'没有可返回的上一页':'返回上一页';}
+  back.onclick=()=>history.back();
+  for(const event of ['pageshow','popstate','hashchange'])addEventListener(event,syncBack);
+  syncBack();
   $('chapter-grid').innerHTML=data.chapters.map(c=>`<article class="chapter-card" id="chapter-${c.id}"><a class="chapter-entry-link" data-chapter="${c.id}" href="${esc(c.entry)}" aria-label="进入第${c.id}章 ${esc(c.title)}"><div class="chapter-top"><span>CHAPTER 0${c.id}</span><small>${esc(c.kind)}</small></div><h3>${esc(c.title)}</h3><p>${esc(c.description)}</p><div class="chapter-bottom"><span>${c.tasks.length} 项任务</span><b>进入章节 ↗</b></div></a><button class="task-shortcut" data-tasks="${c.id}" aria-label="查看第${c.id}章任务">任务目录</button></article>`).join('');
   $('start-course').href=chapter(1).entry;
   $('chapter-filter').insertAdjacentHTML('beforeend',data.chapters.map(c=>`<option value="${c.id}">第${c.id}章 · ${esc(c.title)}</option>`).join(''));

@@ -20,6 +20,7 @@ def localize(text,entrance=False):
         text=text.replace(source,'lessons/'+target)
     text=text.replace('第六章_装饰装修施工/index.html','index.html')
     text=text.replace('href="../index.html#chapter-6"','href="index.html"' if entrance else 'href="../index.html"')
+    text=text.replace('href="../总入口.html#chapter-6"','href="index.html"' if entrance else 'href="../index.html"')
     text=text.replace('课程总览','章节总览')
     text=text.replace('href="../第五章_主体结构施工/index.html"','href="index.html"')
     text=text.replace('上一章 · 主体结构施工协同','返回本章总览')

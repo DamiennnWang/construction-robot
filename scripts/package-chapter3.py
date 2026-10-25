@@ -36,6 +36,7 @@ def package_html(source, target, cover=False):
     html = html.replace('href="reducers.html"', 'href="3-3-reducers.html"')
     html = html.replace('href="conversion.html"', 'href="3-3-conversion.html"')
     html = re.sub(r'href="(?:\.\./)*README\.md"', 'href="../README.txt"', html)
+    html = html.replace('href="../总入口.html#chapter-3"', 'href="index.html"' if cover else 'href="../index.html"')
     if cover:
         html = html.replace("../lessons/", "lessons/")
     (site / target).write_text(html, encoding="utf-8")
