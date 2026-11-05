@@ -51,18 +51,18 @@
       roughness: rough,
     });
   const palette = {
-    steel: mat("#889b9e", 0.65, 0.3),
-    dark: mat("#405654", 0.4, 0.4),
-    pale: mat("#d0d9d3", 0.32, 0.45),
-    green: mat("#278673", 0.5, 0.35),
-    greenDark: mat("#315d50", 0.4, 0.4),
-    base: mat("#d7dfd7", 0.28, 0.5),
+    steel: mat("#879eb4", 0.65, 0.3),
+    dark: mat("#254560", 0.4, 0.4),
+    pale: mat("#dce5ee", 0.32, 0.45),
+    green: mat("#397fb4", 0.5, 0.35),
+    greenDark: mat("#264f72", 0.4, 0.4),
+    base: mat("#e3eaf2", 0.28, 0.5),
     black: mat("#2d3936", 0.1, 0.65),
     brass: mat("#c3a15f", 0.65, 0.3),
     chrome: mat("#d6e3e1", 0.9, 0.19),
     oil: mat("#e3b858", 0.1, 0.3),
     air: mat("#7cb5d1", 0.1, 0.5),
-    white: mat("#f3f6ef", 0.05, 0.7),
+    white: mat("#f4f8fd", 0.05, 0.7),
   };
   const lightColors = Object.fromEntries(
     Object.entries(palette).map(([k, m]) => [k, "#" + m.color.getHexString()]),
@@ -85,19 +85,19 @@
           steel: "#9cabb3",
           dark: "#405e65",
           pale: "#9db1b8",
-          green: "#319b85",
-          greenDark: "#306b60",
+          green: "#4a94cf",
+          greenDark: "#3d648b",
           base: "#354b57",
         }
       : lightColors;
     for (const [k, c] of Object.entries(colors)) palette[k].color.set(c);
     if (renderer && stage.ground) {
-      scene.background.set(dark ? "#101b25" : "#f3f6f0");
-      stage.ground.material.color.set(dark ? "#111e29" : "#f3f6f0");
-      stage.grid.material.color.set(dark ? "#678492" : "#ffffff");
-      stage.grid.material.opacity = dark ? 0.23 : 0.5;
-      stage.hemi.color.set(dark ? "#d6e7ff" : "#fcfff8");
-      stage.hemi.groundColor.set(dark ? "#2c414e" : "#a4b6ad");
+      scene.background.set(dark ? "#14263c" : "#ffffff");
+      stage.ground.material.color.set(dark ? "#111e29" : "#ffffff");
+      stage.grid.material.color.set(dark ? "#678492" : "#b9d5f3");
+      stage.grid.material.opacity = dark ? 0.23 : 0.14;
+      stage.hemi.color.set(dark ? "#d6e7ff" : "#f7fbff");
+      stage.hemi.groundColor.set(dark ? "#2c414e" : "#b8cde3");
       stage.hemi.intensity = dark ? 2.8 : 2.5;
       stage.key.intensity = dark ? 3.8 : 3.4;
       stage.fill.intensity = dark ? 2 : 1.5;
@@ -254,7 +254,7 @@
     scene.background = new THREE.Color("#f3f6f0");
     camera = new THREE.OrthographicCamera(-8, 8, 5, -5, 0.1, 100);
     try {
-      renderer = new THREE.WebGLRenderer({
+      renderer = window.createChapterRenderer({
         canvas,
         antialias: true,
         alpha: false,
@@ -295,7 +295,7 @@
     ground.position.y = -0.13;
     ground.receiveShadow = true;
     ground.castShadow = false;
-    const grid = new THREE.GridHelper(40, 80, "#dce4dc", "#e8ede5");
+    const grid = new THREE.GridHelper(40, 80, "#d8e7f8", "#e7f0fc");
     grid.position.y = -0.12;
     grid.material.transparent = true;
     grid.material.opacity = 0.5;
@@ -1612,6 +1612,16 @@
   }
   function refreshText() {
     const p = params[mode];
+    const observation = {
+      gear: ["齿轮怎样传递转动", "先找主动轮和从动轮，比较转向与转速。", ["改变齿数组合，观察大齿轮是否转得更慢。", "交换输入轴，再比较两根轴的运动。"]],
+      belt: ["传动带怎样带动两端", "沿着传动带，找到输入带轮和输出带轮。", ["改变两轮直径，比较转速变化。", "暂停后单步，看传动带与轮缘怎样一起运动。"]],
+      chain: ["链条怎样传递动力", "看滚子链与链轮齿槽的啮合。", ["改变链轮齿数组合，比较两轮转速。", "点选图中编号，近看链轮、轴和支承。"]],
+      hyd: ["油液怎样推动活塞", "先找到油箱、泵、换向阀和液压缸。", ["调节流量，观察活塞速度和位移。", "切换伸出与回缩，对比两腔进油和回油。"]],
+      air: ["压缩空气怎样推动活塞", "沿供气管找到方向阀和气缸。", ["切换伸出与回缩，观察进气侧与排气侧。", "增加负载，观察压力建立和活塞起动过程。"]],
+    }[mode === "gear" ? p.kind : mode];
+    $("#watchTitle").textContent = observation[0];
+    $("#watchHint").textContent = observation[1];
+    $("#watchSteps").innerHTML = observation[2].map((step) => `<li>${step}</li>`).join("");
     $("#eyebrow").textContent = icons[mode];
     $("#modeCode").textContent =
       mode === "gear"
@@ -1646,7 +1656,7 @@
             ? "开式带传动同向旋转。此处采用无打滑模型，带速与两轮节线速度相同。"
             : "链轮与滚子啮合，同向旋转。节线近似展示平均速比，忽略多边形速度波动。";
       $("#legend").innerHTML =
-        '<span><i style="background:#278673"></i>主动轮</span><span><i style="background:#899b9e"></i>从动轮</span><span><i style="background:#c4a15a"></i>接触 / 运动标记</span>';
+        '<span><i style="background:#397fb4"></i>主动轮</span><span><i style="background:#879eb4"></i>从动轮</span><span><i style="background:#c4a15a"></i>接触 / 运动标记</span>';
       setMetrics([
         ["输入轴转速", "rpm", `${p.input || 1} 号轴 · 动力输入`],
         [
@@ -1684,7 +1694,7 @@
         ? "伸出作用于整个活塞面积，缩回作用于环形面积；同一流量下，缩回更快、可用推力更小。"
         : "空气可以被压缩。阀口流量随压差变化，负载越大，起动所需压力越高。";
       $("#legend").innerHTML =
-        `<span><i style="background:${hyd ? "#dcad51" : "#70accd"}"></i>${hyd ? "油液" : "压缩空气"}</span><span><i style="background:#b2c4c0"></i>${hyd ? "回油腔 / 回油管" : "排气侧"}</span><span><i style="background:#758e83"></i>双作用缸</span>`;
+        `<span><i style="background:${hyd ? "#dcad51" : "#70accd"}"></i>${hyd ? "油液" : "压缩空气"}</span><span><i style="background:#b8cadc"></i>${hyd ? "回油腔 / 回油管" : "排气侧"}</span><span><i style="background:#397fb4"></i>双作用缸</span>`;
       setMetrics([
         ["活塞位移", "mm", "有效行程 200 mm"],
         [
@@ -2266,4 +2276,9 @@
       updateReadout();
     },
   };
+  document.addEventListener('course:pause', () => {
+    playing = false;
+    if (inspection) inspection.autoRotate = false;
+    updateReadout();
+  });
 })();

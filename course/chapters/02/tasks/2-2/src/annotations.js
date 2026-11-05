@@ -1,4 +1,4 @@
-/* Persistent screen-space component names, anchored to actual 3D part positions. */
+/* Text labels sit beside the original component anchors, with short leaders. */
 window.ComponentNames = class ComponentNames {
   constructor({
     wrap,
@@ -22,12 +22,15 @@ window.ComponentNames = class ComponentNames {
     });
     this.layer = document.querySelector("#componentLabels");
     this.svg = document.querySelector("#componentLeaders");
+    this.index = document.querySelector("#componentIndex");
+    this.showAll = document.querySelector("#allComponentLabels");
     this.items = [];
     this.size = "";
     this.selected = null;
   }
   reset() {
     this.layer.replaceChildren();
+    this.index.replaceChildren();
     this.svg.replaceChildren();
     this.items = [];
     this.size = "";
@@ -148,7 +151,10 @@ window.ComponentNames = class ComponentNames {
       add("tie-rods", "缸体拉杆", "left", v(-1, Y + R + 0.16, R + 0.16));
     }
     const ns = "http://www.w3.org/2000/svg";
-    this.items.forEach((item, i) => {
+    const main = new Set(mode === "gear"
+      ? ["driver", "driven", "input-shaft", "output-shaft", "motor", kind === "gear" ? "bearing" : "flexible"]
+      : ["barrel", "piston", "rod", "valve", ...(mode === "hyd" ? ["tank", "pump"] : ["receiver", "regulator"])]);
+    this.items.forEach(item => {
       const el = document.createElement("button");
       el.type = "button";
       el.className = "component-label";
@@ -157,21 +163,21 @@ window.ComponentNames = class ComponentNames {
       el.setAttribute("aria-pressed", "false");
       el.title = "点击放大查看" + item.name;
       el.addEventListener("click", () => this.onSelect?.(item));
-      const index = document.createElement("span");
-      index.className = "component-index";
-      index.textContent = String(i + 1).padStart(2, "0");
-      const name = document.createElement("span");
-      name.className = "component-name";
-      name.textContent = item.name;
-      el.append(index, name);
+      el.textContent = item.name;
+      const entry = document.createElement("button");
+      entry.type = "button";
+      entry.textContent = item.name;
+      entry.setAttribute("aria-pressed", "false");
+      entry.addEventListener("click", () => this.onSelect?.(item));
+      this.index.append(entry);
       this.layer.append(el);
       const path = document.createElementNS(ns, "path");
       path.classList.add("component-leader");
       const pin = document.createElementNS(ns, "circle");
-      pin.setAttribute("r", "2.4");
+      pin.setAttribute("r", "1.8");
       pin.classList.add("component-pin");
       this.svg.append(path, pin);
-      Object.assign(item, { el, path, pin });
+      Object.assign(item, { el, entry, path, pin, primary: main.has(item.key) });
     });
   }
   select(key) {
@@ -179,119 +185,43 @@ window.ComponentNames = class ComponentNames {
     for (const item of this.items) {
       const active = item.key === key;
       item.el.classList.toggle("selected", active);
+      item.entry.setAttribute("aria-pressed", String(active));
       item.el.setAttribute("aria-pressed", String(active));
       item.path.classList.toggle("selected", active);
       item.pin.classList.toggle("selected", active);
     }
   }
   update() {
-    const w = this.wrap.clientWidth,
-      h = this.wrap.clientHeight;
-    if (this.layer.hidden || !w || !h || !this.items.length) return;
-    const compact = w < 600,
-      tight = h < 300,
-      size =
-        w +
-        "x" +
-        h +
-        (document.body.classList.contains("component-closeup") ? "-focus" : "");
-    if (size !== this.size) {
-      this.size = size;
-      this.svg.setAttribute("viewBox", `0 0 ${w} ${h}`);
-      const heading = document.querySelector(".scene-heading"),
-        rect = heading.getBoundingClientRect(),
-        origin = this.wrap.getBoundingClientRect();
-      this.top = Math.min(
-        h * 0.37,
-        Math.max(
-          tight ? 28 : compact ? 54 : 92,
-          rect.bottom - origin.top + (tight ? 5 : compact ? 9 : 14),
-        ),
-      );
-      this.bottom = h - (tight ? 12 : compact ? 22 : 44);
-      const rows = Math.max(
-          ...["left", "right"].map(
-            (side) => this.items.filter((item) => item.side === side).length,
-          ),
-        ),
-        labelH = Math.max(
-          16,
-          Math.min(
-            compact ? 21 : 29,
-            Math.floor((this.bottom - this.top) / rows),
-          ),
-        );
-      this.items.forEach((item) => {
-        item.el.style.height = labelH + "px";
-        item.el.style.fontSize = (labelH < 20 ? 9 : compact ? 10 : 12) + "px";
-        item.width = item.el.offsetWidth;
-        item.height = item.el.offsetHeight;
-      });
-    }
-    const gap = compact ? 2 : 6,
-      margin = compact ? 7 : 17;
+    const width = this.wrap.clientWidth, height = this.wrap.clientHeight;
+    if (this.layer.hidden || !width || !height) return;
+    this.svg.setAttribute('viewBox', `0 0 ${width} ${height}`);
+    const positions = [];
     for (const item of this.items) {
-      const p = (this.getAnchor?.(item.key) || item.anchor()).project(
-        this.camera,
-      );
-      item.ax = (p.x * 0.5 + 0.5) * w;
-      item.ay = (-p.y * 0.5 + 0.5) * h;
-      item.outside =
-        item.ax < 0 ||
-        item.ax > w ||
-        item.ay < 0 ||
-        item.ay > h ||
-        p.z < -1 ||
-        p.z > 1;
-    }
-    for (const side of ["left", "right"]) {
-      const list = this.items
-          .filter((item) => item.side === side)
-          .sort((a, b) => a.ay - b.ay),
-        sum = list.reduce((n, item) => n + item.height, 0),
-        actualGap = Math.max(
-          0,
-          Math.min(
-            gap,
-            (this.bottom - this.top - sum) / Math.max(1, list.length - 1),
-          ),
-        );
-      let cursor = this.top;
-      for (const item of list) {
-        item.y = Math.max(
-          cursor,
-          Math.min(this.bottom - item.height, item.ay - item.height / 2),
-        );
-        cursor = item.y + item.height + actualGap;
+      const point = (this.getAnchor?.(item.key) || item.anchor()).project(this.camera);
+      const ax = (point.x + 1) * width / 2, ay = (1 - point.y) * height / 2;
+      const hidden = (!item.primary && !this.showAll.checked) || point.z < -1 || point.z > 1 || ax < 0 || ax > width || ay < 0 || ay > height || (item.inside && !this.isCutaway());
+      item.el.hidden = item.path.hidden = item.pin.hidden = hidden;
+      item.path.style.display = item.pin.style.display = hidden ? 'none' : '';
+      if (hidden) continue;
+      const w = item.el.offsetWidth, h = item.el.offsetHeight;
+      let best;
+      const side = item.side === 'left' ? -1 : 1;
+      for (const direction of [side, -side]) {
+        for (const dy of [0, -38, 38, -76, 76, -114, 114]) {
+          const x = Math.max(8, Math.min(width - w - 8, ax + (direction > 0 ? 22 : -w - 22)));
+          const y = Math.max(8, Math.min(height - h - 8, ay - h / 2 + dy));
+          const edge = direction > 0 ? x : x + w;
+          const overlaps = positions.filter(p => x < p.x + p.w + 8 && x + w + 8 > p.x && y < p.y + p.h + 8 && y + h + 8 > p.y).length;
+          const score = overlaps * 10000 + Math.hypot(edge - ax, y + h / 2 - ay) + (direction === side ? 0 : 12);
+          if (!best || score < best.score) best = {x, y, edge, score};
+        }
       }
-      let end = this.bottom;
-      for (let i = list.length - 1; i >= 0; i--) {
-        const item = list[i];
-        item.y = Math.min(item.y, end - item.height);
-        end = item.y - actualGap;
-      }
-      for (const item of list) {
-        const x = side === "left" ? margin : w - margin - item.width,
-          y = item.y,
-          sy = y + item.height / 2,
-          sx = side === "left" ? x + item.width : x,
-          ex = side === "left" ? sx + 12 : sx - 12,
-          ax = Math.max(4, Math.min(w - 4, item.ax)),
-          ay = Math.max(4, Math.min(h - 4, item.ay));
-        item.el.style.transform = `translate(${x.toFixed(1)}px,${y.toFixed(1)}px)`;
-        item.el.classList.toggle("outside", item.outside);
-        item.el.classList.toggle("inside", item.inside && !this.isCutaway());
-        item.path.setAttribute(
-          "d",
-          `M${sx.toFixed(1)},${sy.toFixed(1)} H${ex.toFixed(1)} L${ax.toFixed(1)},${ay.toFixed(1)}`,
-        );
-        item.path.classList.toggle(
-          "concealed",
-          item.outside || (item.inside && !this.isCutaway()),
-        );
-        item.pin.setAttribute("cx", ax.toFixed(1));
-        item.pin.setAttribute("cy", ay.toFixed(1));
-      }
+      const {x, y, edge} = best;
+      positions.push({x, y, w, h});
+      item.el.style.transform = `translate(${x}px,${y}px)`;
+      item.path.setAttribute("d", `M${edge},${y + h / 2} L${ax},${ay}`);
+      item.pin.setAttribute("cx", ax);
+      item.pin.setAttribute("cy", ay);
     }
   }
 };

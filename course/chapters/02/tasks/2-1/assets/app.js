@@ -622,8 +622,8 @@
         count: 0,
         yaw: 1.05,
         elev: 0.5,
-        zoom: 1.35,
-        zoomGoal: 1.35,
+        zoom: 1.18,
+        zoomGoal: 1.18,
         target: [-2, 0, -13],
         targetGoal: [-2, 0, -13],
         selectedComponent: "all",
@@ -1157,6 +1157,7 @@
     render();
     drawMotor();
   }
+  document.addEventListener('course:pause', () => setPause(true));
   $("emToggle").onclick = () => {
     state.showEM = !state.showEM;
     pressed("emToggle", state.showEM);
@@ -2467,7 +2468,7 @@
   }
   function focusMainPart(key) {
     const views = {
-      all: { part: "all", p: [-2, 0, -13], zoom: 1.35, name: parts.all[0] },
+      all: { part: "all", p: [-2, 0, -13], zoom: 1.18, name: parts.all[0] },
       north: { part: "magnet", p: [0, -52, 0], zoom: 2.35, name: "永磁定子 N" },
       south: { part: "magnet", p: [0, 52, 0], zoom: 2.35, name: "永磁定子 S" },
       magnet: { part: "magnet", p: [0, 0, 0], zoom: 2.0, name: parts.magnet[0] },

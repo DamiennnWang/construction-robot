@@ -5,7 +5,7 @@ const root = path.resolve(__dirname, "..");
 const read = (name) => fs.readFileSync(path.join(root, name), "utf8");
 const integrate = require("../../../../../../shared/动力与工作机构/integrate.cjs");
 const template = read("src/index.template.html");
-const styles = ["src/style.css", "src/enhancements.css", "src/learning.css"];
+const styles = ["src/style.css", "src/enhancements.css", "src/learning.css", "src/classroom.css"];
 // These classic scripts intentionally run in order: rendering library, model,
 // labels, framing, component explanations, tasks, and finally application setup.
 const scripts = [

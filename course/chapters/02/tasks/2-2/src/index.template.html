@@ -92,9 +92,19 @@
       </section>
       <aside class="control-panel">
         <div class="panel-heading">
-          <span>实验控制</span><small>PARAMETERS</small>
+          <span>观察与实验</span>
         </div>
+        <section class="observation-guide" aria-label="本实验的观察与操作">
+          <h2 id="watchTitle"></h2>
+          <p id="watchHint"></p>
+          <ol id="watchSteps"></ol>
+        </section>
         <div class="panel-scroll">
+          <details class="component-index-panel">
+            <summary>部件索引 · 点选近看</summary>
+            <label class="all-labels"><input id="allComponentLabels" type="checkbox">显示全部标注</label>
+            <div id="componentIndex" class="component-index-list"></div>
+          </details>
           <div class="section-label">
             装置设置 <span id="modeCode">01 / TRANSMISSION</span>
           </div>

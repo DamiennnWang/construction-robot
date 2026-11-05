@@ -1,14 +1,16 @@
 (() => {
   'use strict';
   const $ = id => document.getElementById(id);
-  const tasks = [
-    {id:'2-1',name:'动力装置的基本原理',tag:'POWER SOURCE',note:'从电磁转矩到燃烧做功，认识两种动力来源。',links:[['直流电机','../tasks/2-1/index.html'],['柴油机','../tasks/2-1/diesel.html']]},
-    {id:'2-2',name:'动力的传递与变换',tag:'TRANSMISSION',note:'比较机械、液压与气压传动，追踪输入和输出。',links:[['动力传动实验室','../tasks/2-2/index.html']]},
-    {id:'2-3',name:'工作机构与施工动作',tag:'MECHANISM & ACTION',note:'让动力变成动臂、升降、振动与夹持动作。',links:[['工作机构','../tasks/2-3/index.html'],['四杆扩展','../tasks/2-3/fourbar.html']]}
-  ];
+  const copy = {
+    '2-1': {tag:'POWER SOURCE',note:'看电机和柴油机怎样让轴转起来。',label:'认识动力装置'},
+    '2-2': {tag:'TRANSMISSION',note:'比较机械、液压与气压传动，追踪输入和输出。',label:'动力传动实验室'},
+    '2-3': {tag:'MECHANISM & ACTION',note:'让动力变成动臂、升降、振动与夹持动作。'},
+  };
+  const tasks = window.ChapterTasks.map(task=>({id:task.id,name:task.title,...copy[task.id],
+    links:(task.demos||[{title:copy[task.id].label,file:task.demo}]).map(({title,file})=>[title,courseHref(file)])}));
   const exhibits = [
-    {id:'motor',task:'2-1',title:'电流与磁场，让转子动起来。',description:'剖切电机，反接电源，对照电流、磁场和转矩；再观察内置电机如何带动机器人关节。',link:tasks[0].links[0]},
-    {id:'diesel',task:'2-1',title:'四个冲程，接续输出动力。',description:'拆解柴油机，切换单缸、四缸与六缸，沿着进气、压缩、做功、排气观察活塞与曲轴。',link:tasks[0].links[1]},
+    {id:'motor',task:'2-1',title:'电流与磁场，让转子动起来。',description:'播放动作，分辨固定磁铁、转子和输出轴，了解机器人关节的动力从哪里来。',link:tasks[0].links[0]},
+    {id:'diesel',task:'2-1',title:'四个冲程，接续输出动力。',description:'对比单缸和四缸，观察活塞怎样通过连杆带动曲轴。',link:tasks[0].links[1]},
     {id:'transmission',task:'2-2',title:'输入改变，输出怎样响应？',description:'切换齿轮、带与链传动，交换输入轴；再比较液压与气压推动，验证速度、力与运动方向。',link:tasks[1].links[0]},
     {id:'mechanisms',task:'2-3',title:'把动力，变成施工需要的动作。',description:'操纵液压缸与动臂，改变丝杠导程、相对转速与偏心条件，观察轨迹、升降和振动。',link:tasks[2].links[0]},
     {id:'fourbar',task:'2-3',title:'四根杆件，约束出一条轨迹。',description:'拖动曲柄，调整杆长与装配分支，追踪连杆点的轨迹，对照传动角、受力和夹爪动作。',link:tasks[2].links[1]}

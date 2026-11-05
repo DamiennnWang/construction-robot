@@ -56,14 +56,8 @@
       "status": "已有演示",
       "demo": "course/chapters/02/tasks/2-1/index.html",
       "demos": [
-        {
-          "title": "直流电机",
-          "file": "course/chapters/02/tasks/2-1/index.html"
-        },
-        {
-          "title": "柴油机",
-          "file": "course/chapters/02/tasks/2-1/diesel.html"
-        }
+        { "title": "直流电机", "file": "course/chapters/02/tasks/2-1/index.html" },
+        { "title": "柴油机", "file": "course/chapters/02/tasks/2-1/diesel.html" }
       ],
       "kind": "交互课堂"
     },
