@@ -27,23 +27,16 @@
   /* 示教器放在三维区底栏，像真的示教器一样分三块：
    * 左：六个轴，每个都有滑轨和 −/+ 点动；
    * 右：参照系（关节 / 基坐标 / 工具坐标，决定左边六格各控制什么），再右是点动方式、速度、停止。 */
-  /* 三维区底栏：三个工位一样——左边六个关节卡片排一行，右边速度和停止 */
-  function strip(c, withAxes) {
-    const box = c.h('div', 'c3-strip-row');
-    const left = c.h('div', 'c3-strip-axes');
-    if (withAxes) { const tour = EL.tour; if (tour) tour.textContent = '▷ 六轴巡回演示'; left.append(...[EL.axisCards, tour].filter(Boolean)); }
-    const right = c.h('div', 'c3-pd-side'); right.append(...[EL.speed, EL.stop].filter(Boolean));
-    box.append(left, right);
-    c.stripAdopt(box);
-  }
-
   let q0 = null;
   const turned = (s, i, deg) => q0 && Math.abs(s.q[i] - q0[i]) >= deg;
 
   const STATIONS = [
     {
-      id: 'axes', name: '认识六轴', lead: '一次只转一个关节，看哪些部分跟着动。在右边选参照系、点动关节；下方是六个关节。',
+      id: 'axes', name: '认识六轴', lead: '一次只转一个关节，看哪些部分跟着动。先选参照系，再拖滑轨或按 −/+ 点动。',
       build(c) {
+        const g = c.section('六个关节');
+        c.adopt(EL.axisCards, g);
+        const tour = c.adopt(EL.tour, g); if (tour) tour.textContent = '▷ 六轴巡回演示';
         c.challenges([
           {id: 'tour', icon: '▶', title: '看一遍六轴巡回演示', hint: '六个关节依次转', check: () => flags.tour,
             result: 'J1 带整臂转，J2、J3 摆动大臂小臂，J4—J6 在腕部调整工具朝向。'},
@@ -116,8 +109,9 @@
       const g2 = c.section('点动：拖滑轨或按 −/+');
       const pad = c.h('div', 'c3-pendant c3-in-panel'); g2.append(pad);
       c.adopt([EL.jogMode, EL.rows], pad);
+      const foot = c.h('div', 'c3-jog-foot'); pad.append(foot);
+      c.adopt([EL.speed, EL.stop], foot);
       c.body.prepend(g, g2);
-      strip(c, true);
       const notice = EL.notice?.textContent.trim() || '';
       lastNotice = notice;
       c.lab.onState(() => {
