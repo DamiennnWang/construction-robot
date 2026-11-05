@@ -132,6 +132,9 @@
       const picker = $('#typePicker');
       if (picker) picker.hidden = c.station.id === 'constraints';
       if (EL.rigs) EL.rigs.hidden = c.station.id !== 'constraints';
+      // 障碍物只属于“路径与障碍”：离开时关掉显示，不带到其他工位
+      const obstacles = $('#obstacleToggle');
+      if (c.station.id !== 'paths' && obstacles?.classList.contains('active')) obstacles.click();
     },
   });
 })();

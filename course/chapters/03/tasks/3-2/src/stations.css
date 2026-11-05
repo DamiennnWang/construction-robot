@@ -1,6 +1,6 @@
 /* 3-2：示教器排在三维区底栏 —— 左：参照系；中：六个轴（滑轨 + 点动）；右：点动方式、速度、停止 */
-.c3-pendant { display:grid; grid-template-columns:auto minmax(0,1fr) auto; gap:10px; width:100%; min-width:0; align-items:stretch; }
-.c3-pd-frames { display:flex; flex-direction:column; gap:5px; padding-right:10px; border-right:1px solid var(--hair); }
+.c3-pendant { display:grid; grid-template-columns:minmax(0,1fr) auto auto; gap:10px; width:100%; min-width:0; align-items:stretch; }
+.c3-pd-frames { display:flex; flex-direction:column; gap:5px; padding-left:10px; border-left:1px solid var(--hair); }
 .c3-pd-title { font-size:12px; font-weight:700; color:var(--accent-2); display:flex; align-items:center; gap:6px; }
 .c3-pd-title::before { content:""; width:4px; height:12px; border-radius:2px; background:var(--course-accent); }
 .c3-pendant .frame-tabs { display:flex; flex-direction:column; gap:3px; padding:3px; margin:0 !important; border-radius:10px; background:var(--surface-2); border:1px solid var(--hair); }
@@ -50,3 +50,6 @@
 }
 .c3-pd-side #stepLabel { display:none; }
 .c3-pd-side .jog-setting .segmented { flex:1; }
+.c3-pendant .jog-rows { grid-template-rows:none !important; grid-auto-rows:auto !important; height:auto !important; min-height:0 !important; max-height:none !important; flex:none !important; overflow:visible !important; }
+.c3-pendant { align-items:start; }
+.c3-pd-frames, .c3-pd-side { align-self:stretch; }

@@ -26,13 +26,13 @@
   $('#play')?.addEventListener('click', () => { flags.played = true; });
 
   /* 示教器放在三维区底栏，像真的示教器一样分三块：
-   * 左：参照系（关节 / 基坐标 / 工具坐标）——它决定右边六行各控制什么；
-   * 中：六个轴，每个都有滑轨和 −/+ 点动；右：点动方式、速度、停止。 */
+   * 左：六个轴，每个都有滑轨和 −/+ 点动；
+   * 右：参照系（关节 / 基坐标 / 工具坐标，决定左边六格各控制什么），再右是点动方式、速度、停止。 */
   function pendant(c) {
     const box = c.h('div', 'c3-pendant');
     const left = c.h('div', 'c3-pd-frames'); left.append(c.h('span', 'c3-pd-title', '参照系'), EL.frames);
     const right = c.h('div', 'c3-pd-side'); right.append(...[EL.jogMode, EL.speed, EL.stop].filter(Boolean));
-    box.append(left, EL.rows, right);
+    box.append(EL.rows, left, right);
     c.stripAdopt(box);
   }
 
@@ -41,7 +41,7 @@
 
   const STATIONS = [
     {
-      id: 'axes', name: '认识六轴', lead: '一次只转一个关节，看哪些部分跟着动。下方是示教器：先选参照系，再拖滑轨或按 −/+。',
+      id: 'axes', name: '认识六轴', lead: '一次只转一个关节，看哪些部分跟着动。下方是示教器：右边选参照系，左边拖滑轨或按 −/+。',
       build(c) {
         const g = c.section('六个关节');
         c.adopt(EL.axisCards, g);
@@ -68,7 +68,7 @@
             result: '基坐标固定在底座上，+Z 永远竖直向上。'},
           {id: 'tool', icon: '↗', title: '沿工具 +Z 走一次', hint: '按“沿工具 +Z 走 40 mm”', check: () => flags.tool,
             result: '工具坐标跟着工具走，工具斜着，+Z 就斜着。'},
-          {id: 'toolFrame', icon: '🧭', title: '用工具坐标点动', hint: '示教器左边选“工具坐标”', check: s => s.frame === 'tool' && s.moved,
+          {id: 'toolFrame', icon: '🧭', title: '用工具坐标点动', hint: '示教器右边选“工具坐标”', check: s => s.frame === 'tool' && s.moved,
             result: '对准工件时用工具坐标更顺手：前后左右都按工具自己的方向。'},
           {id: 'rotate', icon: '🔄', title: '工具点不动，只改朝向', hint: '试“保持 TCP 改朝向”', check: () => flags.rotate,
             result: '六个关节一起配合，可以只改工具朝向，而工作点停在原处。'},
