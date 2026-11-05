@@ -1,0 +1,779 @@
+<!doctype html>
+<html lang="zh-CN">
+<head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><meta name="theme-color" content="#f7fafc"><title>室内喷涂工坊 · 智能建造</title><style>:root{font-family:"Segoe UI","Microsoft YaHei","PingFang SC",sans-serif;font-synthesis:none;color-scheme:light;--bg:#f5f8fb;--surface:#fff;--ink:#18334e;--muted:#7b8d9e;--line:#e3ebf1;--soft:#f0f5f9;--blue:#3175c9;--blue-soft:#eaf2fd;--mint:#229b8b;--mint-soft:#edf8f4;--orange:#da9b58;--shadow:0 10px 28px #2f57780d;--hud:#fffffff0;--scene:#eaf3f9}
+*{box-sizing:border-box}body{margin:0;background:var(--bg);color:var(--ink);overflow:hidden}body[data-theme=dark]{color-scheme:dark;--bg:#112235;--surface:#172c40;--ink:#e0edf8;--muted:#94adbf;--line:#2c4358;--soft:#20374c;--blue:#78b6f6;--blue-soft:#223e5e;--mint:#72d1bd;--mint-soft:#1b3c3d;--orange:#e5b580;--shadow:0 10px 28px #0002;--hud:#172c40ed;--scene:#173246}button,input,select{font:inherit}button,select{color:inherit;border:1px solid var(--line);background:var(--surface);border-radius:7px}button{cursor:pointer;transition:background .18s,border-color .18s,box-shadow .18s;white-space:nowrap}button:hover:not(:disabled){border-color:#9fbdd6;background:var(--soft)}button:disabled{cursor:default;opacity:.45}button:focus-visible,input:focus-visible,select:focus-visible,a:focus-visible,#scene:focus-visible{outline:2px solid var(--blue);outline-offset:3px}a{color:var(--blue)}[hidden]{display:none!important}input[type=checkbox]{accent-color:var(--blue)}
+.app{height:100dvh;width:100%;display:grid;grid-template-rows:62px minmax(0,1fr) 24px}.topbar{display:flex;align-items:center;padding:0 25px;gap:28px;border-bottom:1px solid var(--line);background:var(--surface);z-index:3}.brand{display:flex;align-items:center;gap:11px;color:var(--ink);font-weight:700;font-size:15px;text-decoration:none;letter-spacing:1.2px}.brand small{display:block;margin-top:3px;font-size:7px;letter-spacing:2px;color:var(--muted);font-weight:500}.brand-mark{display:grid;grid-template-columns:repeat(2,8px);gap:4px;border:1.5px solid var(--blue);border-radius:9px;width:36px;height:36px;padding:7px;color:var(--blue)}.brand-mark i{border:1.3px solid;border-radius:3px}.project-heading{border-left:1px solid var(--line);padding-left:26px;display:flex;align-items:center;gap:13px}.project-heading>span{font-size:10px;color:var(--muted)}h1{font-size:17px;letter-spacing:1px;font-weight:650;margin:0}.session-tag{margin-left:auto;display:flex;gap:7px;align-items:center;font-size:10px;color:var(--mint)}.session-tag i,.app-footer i{display:inline-block;width:5px;height:5px;background:var(--mint);border-radius:50%}.header-actions{display:flex;gap:7px;align-items:center}.header-actions button{height:31px;font-size:11px;padding:0 11px}.header-actions .quiet{background:transparent;border-color:transparent}.header-actions .icon-button{width:31px;padding:0;font-size:17px;background:var(--soft)}
+.workspace{min-height:0;display:grid;grid-template-columns:minmax(0,1fr) 328px}.world{min-width:0;min-height:0;display:grid;grid-template-rows:minmax(0,1fr) 105px 62px}.scene-shell{min-height:0;position:relative;overflow:hidden;background:linear-gradient(155deg,#f4f9ff 0%,#eaf3f8 60%,#e3eef3 100%)}body[data-theme=dark] .scene-shell{background:linear-gradient(145deg,#203b50,#173044)}#scene{position:absolute;inset:0;outline-offset:-4px!important;touch-action:none}#scene canvas{display:block;width:100%;height:100%}.scene-top{position:absolute;top:18px;left:22px;right:20px;display:flex;align-items:center;justify-content:space-between;gap:12px;pointer-events:none}.stage-badge{display:flex;align-items:center;gap:9px;font-size:10px;color:var(--muted);white-space:nowrap}.stage-badge>i{width:5px;height:5px;background:var(--blue);border-radius:50%}.stage-badge #stageLabel{color:var(--ink);font-weight:650;letter-spacing:.5px}.stage-divider{height:9px;width:1px;background:#a8bdce}.view-switch{display:flex;gap:2px;padding:3px;background:var(--hud);border:1px solid var(--line);border-radius:9px;pointer-events:auto;box-shadow:var(--shadow)}.view-switch button{padding:5px 10px;border:0;background:transparent;color:var(--muted);font-size:10px;border-radius:5px}.view-switch button.active,.view-switch button[aria-pressed=true]{color:var(--blue);background:var(--blue-soft);font-weight:650}.mission-card{position:absolute;top:77px;left:22px;width:246px;background:var(--hud);border:1px solid #fff8;border-radius:12px;box-shadow:var(--shadow);padding:16px 17px;pointer-events:none}.mission-eyebrow{display:flex;align-items:center;gap:7px;font-size:9px;letter-spacing:1px;color:var(--blue);font-weight:650}.mission-eyebrow>span:last-child{margin-left:auto;color:var(--muted);letter-spacing:0;font-weight:400}.wall-dot{width:6px;height:6px;background:var(--mint);border-radius:2px}.mission-card h2{font-size:15px;line-height:1.55;font-weight:650;margin:11px 0 6px}.mission-card p{font-size:10px;line-height:1.8;color:var(--muted);margin:0;max-width:210px}.mission-foot{margin-top:13px;border-top:1px solid var(--line);padding-top:10px;display:flex;align-items:center;gap:7px;color:var(--muted);font-size:8px;white-space:nowrap}.small-window{display:block;width:11px;height:11px;border:1px solid #86b4ca;border-radius:1px;background:linear-gradient(90deg,transparent 45%,#86b4ca 45%,#86b4ca 55%,transparent 55%),linear-gradient(0deg,transparent 45%,#86b4ca 45%,#86b4ca 55%,transparent 55%)}.scene-left-tools{position:absolute;left:22px;bottom:46px;display:flex;gap:7px}.hud-toggle{display:flex;align-items:center;gap:5px;padding:7px 9px;background:var(--hud);box-shadow:var(--shadow);border:1px solid var(--line);border-radius:7px;font-size:9px;cursor:pointer}.hud-toggle input{width:11px;height:11px;margin:0}.scene-live{position:absolute;right:21px;bottom:49px;display:flex;align-items:center;gap:7px;padding:7px 10px;background:var(--hud);border-radius:7px;border:1px solid var(--line);font-size:9px;box-shadow:var(--shadow);pointer-events:none}.live-dot{width:5px;height:5px;border-radius:50%;background:var(--mint)}.live-separator{height:9px;width:1px;background:var(--line)}#liveSpeed{font-variant-numeric:tabular-nums;color:var(--muted);margin-left:3px}.orbit-hint{position:absolute;left:23px;right:22px;bottom:17px;display:flex;align-items:center;gap:6px;color:#7893a7;font-size:8px;pointer-events:none}.orbit-hint svg{width:13px;height:13px;fill:none;stroke:currentColor;stroke-width:1.1}.orbit-hint #tcp{margin-left:auto;font-variant-numeric:tabular-nums;letter-spacing:.4px}.toast{position:absolute;left:50%;bottom:98px;transform:translateX(-50%);max-width:min(90%,560px);padding:11px 17px;background:#17344ef0;color:#fff;box-shadow:0 5px 20px #0e2b5030;border-radius:10px;font-size:11px;line-height:1.7;pointer-events:none;text-align:center;z-index:9}.toast:empty{display:none}
+.control-deck{display:grid;grid-template-columns:1.05fr 1fr;align-items:center;background:var(--surface);border-top:1px solid var(--line);padding:17px 24px;gap:26px;min-width:0}.readouts{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:12px}.readout+.readout{border-left:1px solid var(--line);padding-left:20px}.readout>span{display:flex;align-items:center;gap:6px;font-size:10px;color:var(--muted);white-space:nowrap}.readout i{width:5px;height:5px;border-radius:50%}.mint-dot{background:var(--mint)}.orange-dot{background:var(--orange)}.blue-dot{background:var(--blue)}.readout strong{display:block;margin-top:7px;font-family:"Segoe UI",sans-serif;font-size:28px;line-height:1;font-weight:450;font-variant-numeric:tabular-nums;letter-spacing:-.8px}.readout small{font-size:10px;letter-spacing:0;font-weight:400;color:var(--muted);margin-left:5px}.playback{padding-left:24px;border-left:1px solid var(--line);min-width:0}.progress-heading{display:flex;justify-content:space-between;font-size:9px;color:var(--muted)}#progressText{font-variant-numeric:tabular-nums;color:var(--blue);font-weight:650}input[type=range]{width:100%;height:16px;margin:6px 0 1px;padding:0;background:transparent;accent-color:var(--blue);cursor:pointer}#progress{height:6px;margin:9px 0 8px;appearance:none;border-radius:5px;background:var(--soft);cursor:default;opacity:1}#progress::-webkit-slider-thumb{appearance:none;width:7px;height:7px;background:var(--mint);border-radius:100%}#progress::-moz-range-thumb{height:7px;width:7px;border:0;background:var(--mint)}#progress::-moz-range-progress{background:var(--mint)}.playback-bottom{display:flex;justify-content:space-between;align-items:center;gap:8px}.playback-bottom>span{font-size:8px;color:var(--muted);white-space:nowrap}.playback-bottom>div{display:flex;align-items:center;gap:7px}#rate{padding:3px 5px;font-size:9px;border-color:transparent;background:var(--soft);height:25px}#play{font-size:9px;height:25px;padding:3px 10px}.project-steps{display:grid;grid-template-columns:repeat(5,minmax(0,1fr));border-top:1px solid var(--line);background:var(--surface);padding:0 15px;gap:2px}.project-steps button{position:relative;display:flex;align-items:center;justify-content:center;gap:8px;font-size:11px;background:transparent;border:0;border-radius:0;color:var(--muted)}.project-steps button:disabled{opacity:.5}.project-steps button.active{color:var(--blue);font-weight:650}.project-steps button.active:after{content:"";position:absolute;bottom:0;left:18%;right:18%;height:3px;background:var(--blue);border-radius:2px 2px 0 0}.project-steps button.done{color:var(--mint)}.step-number{font-size:10px;font-variant-numeric:tabular-nums;letter-spacing:.6px;color:inherit;border:1px solid var(--line);border-radius:6px;padding:4px 5px;min-width:25px}.active .step-number{background:var(--blue-soft);border-color:#b7d1ef}.done .step-number{background:var(--mint-soft);border-color:#b5ded4}.project-steps i{position:absolute;right:-3px;font-style:normal;font-weight:400;font-size:17px;color:#bdccd8}
+.work-panel{min-height:0;min-width:0;display:flex;flex-direction:column;background:var(--surface);border-left:1px solid var(--line);padding:23px 22px 0;box-shadow:-8px 0 24px #36536b04;z-index:2}.panel-header{display:flex;align-items:center;justify-content:space-between}.eyebrow{display:block;font-size:8px;letter-spacing:1.5px;color:var(--muted);font-weight:500}.panel-header h2{font-size:18px;font-weight:650;line-height:1.45;margin:7px 0 0;letter-spacing:.2px}.panel-emblem{display:flex;align-items:center;justify-content:center;width:31px;height:31px;border:1px solid #d5e9f0;border-radius:9px;background:linear-gradient(135deg,#f1f8ff,#e4f4f0);color:var(--blue);font-size:18px}body[data-theme=dark] .panel-emblem{background:var(--blue-soft);border-color:var(--line)}.panel-intro{margin:11px 0 19px;font-size:10px;line-height:1.85;color:var(--muted)}.panel-scroll{min-height:0;overflow-y:auto;overscroll-behavior:contain;scrollbar-width:thin;scrollbar-color:#bfd0df transparent;margin-right:-9px;padding-right:9px;padding-bottom:12px;flex:1}.parameter{margin-bottom:16px}.parameter>label{display:flex;align-items:center;justify-content:space-between;font-size:11px;font-weight:550}.parameter output{font-weight:500;color:var(--blue);font-size:11px;font-variant-numeric:tabular-nums;background:var(--blue-soft);border-radius:5px;padding:4px 7px}.range-bounds{display:flex;justify-content:space-between;font-size:8px;color:#97a8b7;font-variant-numeric:tabular-nums}.guard-field{border-top:1px solid var(--line);padding-top:14px;margin-top:3px}.guard-field label{display:block;font-size:11px;margin-bottom:8px;font-weight:550}.guard-field select{width:100%;height:35px;font-size:11px;padding:0 9px;background:var(--soft);border-color:transparent}.switches{padding-top:3px}.switch-row{display:flex;align-items:center;justify-content:space-between;gap:10px;padding:12px 0;border-bottom:1px solid var(--line);cursor:pointer}.switch-row>span{font-size:11px}.switch-row small{display:block;font-size:8px;color:var(--muted);margin-top:5px}.switch-row input{appearance:none;position:relative;width:29px;height:17px;border-radius:12px;border:0;background:#cfdae4;flex-shrink:0;margin:0;cursor:pointer}.switch-row input:after{content:"";position:absolute;left:2px;top:2px;width:13px;height:13px;border-radius:50%;background:#fff;box-shadow:0 1px 2px #17344e25;transition:transform .15s}.switch-row input:checked{background:var(--blue)}.switch-row input:checked:after{transform:translateX(12px)}.switch-row input:disabled{opacity:.5;cursor:default}.color-field{display:flex;align-items:center;justify-content:space-between;padding:15px 0 12px;font-size:11px}.color-swatches{display:flex;gap:7px}.color-swatches button{width:27px;height:27px;border-radius:50%;border:1px solid transparent;background:transparent;padding:3px}.color-swatches button span{display:block;width:19px;height:19px;border-radius:50%;background:var(--swatch);box-shadow:inset 0 -2px 3px #0001}.color-swatches button.active{border-color:var(--swatch)}.color-swatches button.active span:after{content:"✓";color:#fff;font-size:11px;line-height:19px;display:block}.plan-note{background:var(--mint-soft);border:1px solid #a3cfbd40;border-radius:9px;padding:10px 11px;color:var(--mint);font-size:9px;line-height:1.8}.plan-note.warning,.plan-note.bad{background:#fff5e9;border-color:#efcfaa66;color:#aa794a}body[data-theme=dark] .plan-note.warning,body[data-theme=dark] .plan-note.bad{background:#41332b;color:#e6b37f}.panel-action{flex-shrink:0;padding:15px 0 12px;border-top:1px solid var(--line);background:var(--surface)}.wide{width:100%}.primary{height:44px;border-radius:9px;background:#276fba;color:#fff;border-color:#276fba;font-weight:550;font-size:12px;box-shadow:0 4px 12px #3175c926;padding:0 14px;display:flex;align-items:center;justify-content:center;gap:14px}.primary:hover:not(:disabled){background:#1e61a5;border-color:#1e61a5}.primary span{font-size:17px;font-weight:400}.primary:disabled{opacity:.45}.panel-action>p{margin:9px 0 0;color:var(--muted);font-size:8px;line-height:1.6;text-align:center;min-height:13px}.secondary{height:35px;font-size:10px;background:var(--soft);border:1px solid var(--line)}.stage-panel{padding-top:13px;border-top:1px solid var(--line);margin-top:15px}.section-heading{margin:0 0 12px}.stage-panel h3{font-size:15px;font-weight:650;margin:7px 0 10px}.section-note{font-size:10px;color:var(--muted);line-height:1.8;margin:0 0 12px}.record-card{font-size:11px;line-height:1.9;background:var(--soft);border:1px solid var(--line);padding:12px;border-radius:10px;margin-bottom:12px}.record-card p{margin:0 0 8px}.record-card p:last-child{margin:0}.record-card strong,.record-card b{color:var(--ink)}.record-card ul{margin:6px 0;padding-left:17px}.record-card dl{margin:0}.record-card dt{color:var(--muted)}.record-card dd{margin:0 0 9px;font-weight:550}.issue-list{display:flex;flex-direction:column;gap:8px}.issue-list>button{width:100%;white-space:normal;padding:11px 12px;text-align:left;font-size:11px;line-height:1.7;border:1px solid var(--line);background:var(--soft);border-radius:9px}.issue-list>button.active,.issue-list>button.selected{border-color:var(--blue);background:var(--blue-soft)}.issue-list small,.issue-list button span{font-size:9px;color:var(--muted);display:block;line-height:1.65}.issue-list b{display:block;font-weight:600}.issue-list>.empty,.issue-list>p{font-size:11px;line-height:1.8;color:var(--mint);padding:12px;background:var(--mint-soft);border-radius:9px}.repair-actions{display:grid;gap:8px;margin-top:13px}#deliveryPanel{text-align:center;border-top:0;margin-top:5px;padding-top:4px}.delivery-mark{width:64px;height:64px;margin:12px auto 21px;display:flex;align-items:center;justify-content:center;background:var(--mint-soft);border:1px solid #a9d8c8;color:var(--mint);font-size:30px;border-radius:50%}#deliverySummary{text-align:left;margin-top:17px}
+.app-footer{display:flex;align-items:center;justify-content:space-between;padding:0 24px;border-top:1px solid var(--line);font-size:7px;color:var(--muted);background:var(--surface);letter-spacing:.3px}.app-footer>span:first-child{display:flex;align-items:center;gap:6px}.app-footer>span:last-child{font-size:6px;letter-spacing:1.6px}.app-footer b{margin-left:9px;font-weight:500;color:var(--blue)}dialog{position:fixed;max-width:570px;width:calc(100% - 32px);border:1px solid var(--line);padding:31px;border-radius:17px;background:var(--surface);color:var(--ink);box-shadow:0 20px 100px #0d2b4540}dialog::backdrop{background:#18354d66;backdrop-filter:blur(4px)}dialog h2{margin:8px 0 13px;font-size:25px;font-weight:600}dialog>p{font-size:12px;line-height:1.9;color:var(--muted)}.dialog-close{position:absolute;right:15px;top:13px;width:28px;height:28px;border:0;background:var(--soft);font-size:19px}.guide-grid{display:grid;grid-template-columns:1fr 1fr;gap:15px;margin-top:22px}.guide-grid>div{padding:13px;background:var(--soft);border-radius:9px}.guide-grid b{font-size:11px}.guide-grid p{font-size:10px;color:var(--muted);line-height:1.8;margin:7px 0 0}
+@media(min-width:1800px){.workspace{grid-template-columns:minmax(0,1fr) 360px}.topbar{padding-left:30px;padding-right:30px}.work-panel{padding:28px 26px 0}.panel-intro{font-size:11px;margin-bottom:25px}.parameter{margin-bottom:22px}.parameter>label,.guard-field label,.switch-row>span,.color-field{font-size:12px}.parameter output{font-size:12px}.switch-row{padding:16px 0}.parameter input{margin-top:12px}.mission-card{left:30px;top:85px;width:268px;padding:18px 20px}.mission-card h2{font-size:17px}.mission-card p{font-size:11px}.scene-top{left:30px;right:28px}.scene-left-tools,.orbit-hint{left:30px}.world{grid-template-rows:minmax(0,1fr) 115px 68px}.control-deck{padding-left:32px;padding-right:32px;gap:40px}.readout strong{font-size:32px}.readout>span{font-size:11px}}
+@media(max-height:800px) and (min-width:901px){.app{grid-template-rows:56px minmax(0,1fr) 22px}.world{grid-template-rows:minmax(0,1fr) 92px 54px}.topbar{padding-left:20px;padding-right:20px}.work-panel{padding:17px 19px 0}.panel-header h2{font-size:17px}.panel-intro{margin:8px 0 12px;font-size:9px}.parameter{margin-bottom:11px}.parameter output{padding:3px 6px}.parameter>label{font-size:10px}.guard-field{padding-top:10px}.guard-field select{height:31px;font-size:10px}.guard-field label{font-size:10px;margin-bottom:6px}.switch-row{padding:9px 0}.switch-row>span{font-size:10px}.switch-row small{font-size:7px;margin-top:4px}.color-field{padding:10px 0}.plan-note{padding:8px 10px;font-size:8px}.panel-action{padding:11px 0 9px}.primary{height:39px;font-size:11px}.panel-action>p{margin-top:7px;font-size:7px}.mission-card{top:68px;padding:13px 15px;width:230px}.mission-card h2{font-size:14px;margin-top:9px}.mission-card p{font-size:9px}.mission-foot{margin-top:9px;padding-top:8px;font-size:7px}.scene-top{top:15px}.control-deck{padding-top:13px;padding-bottom:13px}.readout strong{font-size:25px}.readout>span{font-size:9px}.project-steps button{font-size:10px}.readout+.readout{padding-left:14px}.playback{padding-left:18px}}
+@media(max-width:1200px) and (min-width:901px){.workspace{grid-template-columns:minmax(0,1fr) 300px}.topbar{gap:20px}.project-heading{padding-left:20px;gap:10px}.session-tag{display:none}.header-actions{margin-left:auto}.stage-badge #stageHint,.stage-divider{display:none}.mission-card{width:216px}.control-deck{gap:16px;padding-left:18px;padding-right:18px}.readout+.readout{padding-left:12px}.readouts{gap:8px}.playback-bottom>span{display:none}.playback-bottom{justify-content:flex-end}.scene-live{font-size:8px;gap:5px}.scene-live #sceneStatus{display:none}.project-steps{padding:0 8px}.project-steps button{gap:5px}}
+@media(max-width:900px){body{overflow:auto}.app{height:auto;min-height:100dvh;grid-template-rows:58px minmax(0,1fr) 29px}.topbar{padding:0 15px;gap:16px}.brand{font-size:13px;gap:8px}.brand-mark{width:31px;height:31px;padding:5px;gap:3px}.brand small{font-size:6px;letter-spacing:1.5px}.project-heading{padding-left:15px;gap:0;display:block}.project-heading>span{font-size:8px}h1{font-size:14px;margin-top:3px}.session-tag{display:none}.header-actions{margin-left:auto;gap:3px}.header-actions button{font-size:10px;padding:0 8px}.header-actions #reset{display:none}.workspace{display:flex;flex-direction:column}.world{display:grid;grid-template-rows:min(64vw,480px) 105px 60px}.scene-shell{min-height:300px}.work-panel{min-height:0;border-left:0;border-top:1px solid var(--line);padding:22px 24px 0}.panel-scroll{overflow:visible;flex:none;margin:0;padding:0}.parameter-panel{display:grid;grid-template-columns:1fr 1fr;gap:5px 25px}.parameter{margin-bottom:14px}.guard-field{margin:0;padding:0;border:0}.switches{display:flex;gap:17px;grid-column:1/-1;flex-wrap:wrap}.switch-row{flex:1;min-width:210px;padding:12px 0}.color-field{padding:10px 0}.plan-note{margin:3px 0 12px}.panel-intro{max-width:600px;margin-bottom:18px}.panel-action{margin-top:15px;padding:17px 0 18px;display:flex;gap:20px;align-items:center}.panel-action>.primary{max-width:300px}.panel-action>p{margin:0;text-align:left;font-size:9px}.stage-panel{margin-bottom:12px}.scene-top{top:15px;left:17px;right:17px}.mission-card{top:67px;left:17px;width:220px;padding:14px 15px}.scene-left-tools,.orbit-hint{left:17px}.scene-live{right:17px}.app-footer{padding:0 17px;font-size:7px}.app-footer>span:last-child{display:none}}
+@media(max-width:540px){.app{grid-template-rows:56px minmax(0,1fr) 32px}.topbar{padding:0 12px;gap:10px}.brand small{display:none}.brand{font-size:12px;gap:6px}.brand-mark{display:none}.project-heading{padding-left:10px}.project-heading>span{font-size:7px}.project-heading h1{font-size:13px;letter-spacing:.2px}.header-actions{gap:2px}.header-actions button{height:28px;font-size:9px;padding:0 5px}.header-actions .icon-button{height:28px;width:27px;font-size:16px}.header-actions #help{font-size:0;width:25px}.header-actions #help:after{content:"指南";font-size:9px}.world{grid-template-rows:390px 145px 59px}.scene-shell{min-height:350px}.scene-top{left:12px;right:12px;top:12px;align-items:flex-start}.stage-badge{font-size:8px;gap:5px;padding-top:8px}.stage-badge #stageHint,.stage-divider{display:none}.view-switch{padding:2px;gap:0}.view-switch button{padding:5px 7px;font-size:8px}.mission-card{top:53px;left:12px;width:188px;padding:10px 12px;border-radius:9px}.mission-eyebrow{font-size:7px;letter-spacing:.5px;gap:5px}.mission-card h2{font-size:12px;margin:7px 0 4px}.mission-card p{font-size:8px;line-height:1.7}.mission-foot{display:none}.scene-left-tools{left:12px;bottom:46px;gap:5px}.hud-toggle{padding:6px 7px;font-size:8px;gap:4px}.hud-toggle input{height:10px;width:10px}.scene-live{right:12px;bottom:47px;font-size:7px;padding:6px 7px;gap:4px}.scene-live #sceneStatus,.scene-live .live-separator{display:none}#liveSpeed{margin-left:2px}.orbit-hint{left:12px;right:12px;bottom:18px;font-size:6px;gap:3px}.orbit-hint svg{width:10px;height:10px}.orbit-hint #tcp{letter-spacing:0;font-size:6px}.control-deck{grid-template-columns:1fr;grid-template-rows:58px 1fr;padding:13px 16px;gap:12px}.readouts{gap:16px}.readout>span{font-size:9px}.readout strong{font-size:26px;margin-top:7px}.readout+.readout{padding-left:19px}.readout small{font-size:9px}.playback{padding:0;border:0;display:grid;grid-template-columns:1fr auto;column-gap:10px}.progress-heading{font-size:8px;grid-column:1;grid-row:1}.playback #progress{grid-column:1;grid-row:2;margin:6px 0 0}.playback-bottom{grid-column:2;grid-row:1/3;align-self:center}.playback-bottom>span{display:none}.playback-bottom>div{gap:5px}#rate{font-size:8px;padding:3px;height:27px}#play{font-size:8px;padding:3px 7px;height:27px}.project-steps{padding:0 6px;gap:0}.project-steps button{flex-direction:column;gap:4px;font-size:8px}.step-number{font-size:8px;padding:2px 4px;min-width:22px;border-radius:4px;line-height:1.2}.project-steps i{font-size:13px;right:-3px}.project-steps button.active:after{left:13%;right:13%;height:2px}.work-panel{padding:20px 18px 0}.panel-header h2{font-size:18px}.panel-intro{font-size:10px;margin-bottom:20px}.parameter-panel{display:block}.parameter{margin-bottom:21px}.parameter>label{font-size:12px}.parameter output{font-size:12px}.parameter input{height:24px;margin-top:10px}.range-bounds{font-size:9px}.guard-field{padding-top:2px;margin-bottom:10px}.guard-field label{font-size:12px}.guard-field select{height:40px;font-size:12px}.switches{display:block}.switch-row{padding:15px 0;min-width:0}.switch-row>span{font-size:12px}.switch-row small{font-size:9px}.switch-row input{width:34px;height:20px}.switch-row input:after{width:16px;height:16px}.switch-row input:checked:after{transform:translateX(14px)}.color-field{padding:17px 0;font-size:12px}.color-swatches button{width:32px;height:32px;padding:4px}.color-swatches button span{width:22px;height:22px}.color-swatches button.active span:after{line-height:22px}.plan-note{font-size:10px;padding:11px 12px}.panel-action{display:block;padding:17px 0}.panel-action>.primary{max-width:none;height:45px;font-size:12px}.panel-action>p{font-size:9px;text-align:center;margin-top:10px}.secondary{height:40px;font-size:11px}.issue-list>button{padding:12px;font-size:12px}.issue-list button span,.issue-list small{font-size:10px}.toast{bottom:88px;font-size:10px;padding:10px 13px;width:max-content;max-width:90%}.app-footer{font-size:6px;justify-content:center;padding:0 10px}dialog{padding:25px 21px}.guide-grid{grid-template-columns:1fr;gap:9px;max-height:48dvh;overflow:auto}.guide-grid>div{padding:11px}dialog h2{font-size:23px}dialog>p{font-size:11px}}
+@media(max-height:540px) and (min-width:541px){body{overflow:auto}.app{height:auto;min-height:100dvh;grid-template-rows:52px minmax(0,1fr) 24px}.workspace{grid-template-columns:minmax(0,1fr) 290px;display:grid}.world{grid-template-rows:350px 95px 54px}.work-panel{border-top:0;border-left:1px solid var(--line);padding:17px 17px 0}.panel-scroll{overflow-y:auto;max-height:345px;flex:1}.parameter-panel{display:block}.switches{display:block}.switch-row{min-width:0}.panel-action{display:block;margin-top:0;padding:11px 0}.panel-action>p{font-size:7px;text-align:center;margin-top:6px}.primary{height:37px;font-size:10px}.stage-badge #stageHint,.stage-divider{display:none}.mission-card{width:194px;top:64px;padding:12px}.mission-card h2{font-size:13px}.mission-card p{font-size:8px}.mission-foot{display:none}.scene-live{font-size:7px}.scene-live #sceneStatus{display:none}.control-deck{grid-template-columns:1fr 1fr;gap:10px;padding:12px}.readouts{gap:7px}.readout+.readout{padding-left:7px}.readout>span{font-size:7px}.readout strong{font-size:22px}.playback{padding-left:10px}.playback-bottom>span{display:none}.project-steps{padding:0 4px}.project-steps button{font-size:8px;gap:4px}.step-number{font-size:7px;min-width:20px;padding:3px}.header-actions{margin-left:auto}.session-tag{display:none}}
+@media(prefers-reduced-motion:reduce){*,*:before,*:after{transition:none!important;scroll-behavior:auto!important}}
+.toast{opacity:0;visibility:hidden;transition:opacity .15s}.toast.show{opacity:1;visibility:visible}.plan-note>span{display:block}.issue-item{display:flex;gap:9px;align-items:flex-start}.issue-item>span:nth-child(2){flex:1;min-width:0}.issue-item b{font-size:11px}.issue-item small{display:block;font-size:9px;line-height:1.7;margin-top:5px;color:var(--muted)}.issue-dot{width:6px;height:6px;background:#e99a4f;border-radius:50%;flex:0 0 6px;margin-top:5px}.issue-summary{font-size:10px;line-height:1.8;color:var(--muted)}.delivery-seal{display:none}#valveState[data-on=true]{color:var(--mint)}
+@media(min-width:901px) and (min-height:541px){html,.app{overflow:clip}}
+@media(max-width:540px){.mission-card p{display:none}.mission-card{width:188px}.mission-card h2{margin-bottom:0}}
+.inspection-legend{position:absolute;bottom:88px;left:22px;display:flex;flex-wrap:wrap;gap:12px;background:var(--hud);padding:9px 12px;border:1px solid var(--line);border-radius:8px;font-size:9px;color:var(--ink);pointer-events:none}.inspection-legend span{display:flex;align-items:center;gap:5px}.inspection-legend i{display:inline-block;width:7px;height:7px;border-radius:2px}@media(max-width:540px){.inspection-legend{left:12px;right:12px;bottom:84px;gap:8px;font-size:8px;padding:7px}}
+</style><style>:root{--c6-nav-height:64px}
+.c6-nav{position:fixed;inset:0 0 auto;height:var(--c6-nav-height);z-index:1000;display:flex;align-items:center;gap:24px;padding:0 24px;background:#111d30;color:#dbe9fc;border-bottom:1px solid #334660;font:15px/1.4 "Segoe UI","Microsoft YaHei",sans-serif;box-sizing:border-box}
+.c6-nav a{text-decoration:none;color:#c0d2ec;white-space:nowrap;font-size:15px}.c6-nav .c6-home{font-weight:700;color:#8ebeff;padding-right:20px;border-right:1px solid #3a4a62}.c6-links{display:flex;align-items:center;gap:5px;flex:1}.c6-links a{padding:8px 12px;border-radius:6px}.c6-links a:hover,.c6-links a[aria-current]{background:#294260;color:#fff}.c6-nav button{border:1px solid #465d79;background:#22354d;color:#e5efff;border-radius:7px;padding:8px 12px;font:inherit;cursor:pointer;white-space:nowrap}.c6-nav :focus-visible{outline:3px solid #e7ac54;outline-offset:3px}
+html[data-c6] body{display:block;overflow:hidden;margin:0;padding:0;width:100%;height:100dvh}
+#c6-content{position:absolute;inset:var(--c6-nav-height) 0 0;overflow:auto;background:var(--paper,var(--bg,#101b2b))}
+html[data-c6=spray] #c6-content{background:var(--bg)}
+html[data-c6=spray] .app{height:calc(100dvh - var(--c6-nav-height))}
+html[data-c6=tiling] #c6-content,html[data-c6=sanding] #c6-content{overflow:hidden}
+@media(max-width:999px){.c6-nav{gap:8px;padding:0 12px}.c6-nav .c6-home{padding-right:10px}.c6-links{overflow:auto}.c6-links a{font-size:13px;padding:8px}.c6-nav button{font-size:13px;padding:7px}}
+@media(max-width:900px){html[data-c6=spray] .app{height:auto;min-height:calc(100dvh - var(--c6-nav-height))}}
+@media(max-width:760px){html[data-c6=tiling] #c6-content,html[data-c6=sanding] #c6-content{overflow:auto}html[data-c6=tiling] .app,html[data-c6=sanding] .app{height:calc(100dvh - var(--c6-nav-height))}}
+@media(max-width:760px){html[data-c6=sanding] .mobile-controls main{overflow:hidden}html[data-c6=sanding] .mobile-controls .controls{height:100%;overflow-y:auto;overflow-x:hidden;overscroll-behavior:contain}html[data-c6=sanding] .app>footer{position:relative;z-index:2;background:var(--paper)}}
+@media(max-width:600px){:root{--c6-nav-height:96px}.c6-nav{height:96px;display:grid;grid-template-columns:1fr auto;grid-template-rows:44px 44px;gap:0}.c6-nav .c6-home{border:0}.c6-links{grid-column:1/-1;grid-row:2;width:100%;overflow-x:auto;min-width:0}.c6-nav button{grid-column:2;grid-row:1}.c6-links a{flex:none}}
+</style><script data-course-navigation src="../../../../../shared/navigation.js"></script><link data-course-theme rel="stylesheet" href="../../../../../shared/styles/theme.css"><script data-course-theme src="../../../../../shared/theme.js"></script></head>
+<body data-theme="light"><div class="app">
+<header class="topbar">
+<a class="brand" href="../../overview/index.html" aria-label="智能建造项目目录"><span class="brand-mark" aria-hidden="true"><i></i><i></i><i></i><i></i></span><span>智能建造<small>FIELD STUDIO</small></span></a>
+<div class="project-heading"><span>实训项目 06.04</span><h1>室内喷涂工坊</h1></div><div class="session-tag"><i></i>项目进行中</div>
+<div class="header-actions"><button id="reset" class="quiet">重新开工</button><button id="help" class="quiet">操作指南</button><button id="theme" class="icon-button" aria-label="切换明暗主题" title="切换明暗主题">◐</button><button id="fullscreen" class="icon-button" aria-label="全屏作业" title="全屏作业">⛶</button></div>
+</header>
+<main class="workspace">
+<section class="world" aria-label="喷涂作业现场">
+<div class="scene-shell">
+<div id="scene" tabindex="0" role="application" aria-label="三维喷涂作业现场，拖动旋转、滚轮缩放，方向键旋转，加减键缩放"></div>
+<div class="scene-top"><div class="stage-badge"><i></i><span id="stageLabel">01 / 规划路线</span><span class="stage-divider"></span><span id="stageHint">把方案带到墙面上</span></div><div class="view-switch" aria-label="观察视角"><button data-view="orbit" class="active" aria-pressed="true">立体</button><button data-view="front" aria-pressed="false">正视</button><button data-view="top" aria-pressed="false">俯视</button><button data-view="nozzle" aria-pressed="false">喷头</button></div></div>
+<div class="mission-card"><div class="mission-eyebrow"><span class="wall-dot"></span>WALL A <span>3.6 × 2.4 m</span></div><h2 id="missionTitle">让每一条路径都有交叠</h2><p id="missionHint">调节喷距和道间距，为这面墙规划涂装路线。</p><div class="mission-foot"><span class="small-window" aria-hidden="true"></span>窗洞 800 × 800 mm · 保留保护区</div></div>
+<div class="scene-left-tools"><label class="hud-toggle"><input type="checkbox" id="pathToggle" checked><span>作业路径</span></label><label class="hud-toggle"><input type="checkbox" id="inspectToggle"><span>质检视图</span></label></div>
+<div id="inspectionLegend" class="inspection-legend" hidden><span><i style="background:#efad57"></i>漏喷</span><span><i style="background:#efbd6c"></i>沉积偏少</span><span><i style="background:#a17ac7"></i>单道异常</span><span><i style="background:#e8505e"></i>窗面受喷</span><span><i style="background:#4fbaa9"></i>已涂达标</span></div>
+<div class="scene-live"><span class="live-dot"></span><span id="sceneStatus">等待开工</span><span class="live-separator"></span><span id="valveState">喷枪关闭</span><span id="liveSpeed">0 mm/s</span></div>
+<div class="orbit-hint"><svg viewBox="0 0 20 20" aria-hidden="true"><path d="M10 2a4 4 0 0 0-4 4v7a4 4 0 0 0 8 0V6a4 4 0 0 0-4-4ZM10 2v5"/></svg><span>拖动环视 · 滚轮近看</span><span id="tcp">TCP · X 0.10 / Z 0.04 m</span></div><div id="toast" class="toast" role="status" aria-live="polite"></div>
+</div>
+<div class="control-deck">
+<div class="readouts" aria-label="实际作业读数"><div class="readout"><span><i class="mint-dot"></i>已喷覆盖</span><strong id="coverageValue">0.0<small>%</small></strong></div><div class="readout"><span><i class="orange-dot"></i>窗面污染</span><strong id="pollutionValue">0.0<small>%</small></strong></div><div class="readout"><span><i class="blue-dot"></i>沉积达标</span><strong id="uniformityValue">0.0<small>%</small></strong></div></div>
+<div class="playback"><div class="progress-heading"><span id="passLabel">待执行路径</span><span id="progressText">0%</span></div><input id="progress" type="range" min="0" max="1000" step="1" value="0" disabled aria-label="实际作业进度"><div class="playback-bottom"><span>执行记录 · 随作业累积</span><div><select id="rate" aria-label="教学演示速度"><option value="8">8× 慢看</option><option value="20" selected>20× 演示</option><option value="40">40× 快览</option></select><button id="play" disabled>Ⅱ 暂停</button></div></div></div>
+</div>
+<nav id="steps" class="project-steps" aria-label="项目进程"><button data-stage="plan" class="active" aria-current="step"><span class="step-number">01</span><span>规划路线</span><i>›</i></button><button data-stage="trial" disabled><span class="step-number">02</span><span>试喷调机</span><i>›</i></button><button data-stage="spray" disabled><span class="step-number">03</span><span>执行喷涂</span><i>›</i></button><button data-stage="inspect" disabled><span class="step-number">04</span><span>巡检返修</span><i>›</i></button><button data-stage="deliver" disabled><span class="step-number">05</span><span>项目交付</span></button></nav>
+</section>
+<aside class="work-panel" aria-label="作业操作面板">
+<div class="panel-header"><div><span id="panelKicker" class="eyebrow">PLAN / 01</span><h2 id="panelTitle">规划你的第一面墙</h2></div><span class="panel-emblem" aria-hidden="true">↗</span></div><p id="panelHint" class="panel-intro">先安排喷枪与墙面的距离，再让相邻喷幅自然交叠。</p>
+<div class="panel-scroll">
+<section id="parameterPanel" class="parameter-panel" aria-label="喷涂参数">
+<div class="parameter"><label for="spacing">作业道间距<output id="spacingOut" for="spacing">500 mm</output></label><input id="spacing" type="range" min="100" max="600" step="10" value="500"><div class="range-bounds"><span>100</span><span>600 mm</span></div></div>
+<div class="parameter"><label for="distance">喷嘴距墙面<output id="distanceOut" for="distance">300 mm</output></label><input id="distance" type="range" min="200" max="450" step="10" value="300"><div class="range-bounds"><span>200</span><span>450 mm</span></div></div>
+<div class="parameter"><label for="speed">直线喷涂速度<output id="speedOut" for="speed">420 mm/s</output></label><input id="speed" type="range" min="150" max="600" step="10" value="420"><div class="range-bounds"><span>150</span><span>600 mm/s</span></div></div>
+<div class="guard-field"><label for="guard">窗洞保护策略</label><select id="guard"><option value="footprint">完整喷幅避让</option><option value="center" selected>只按喷嘴中心</option><option value="off">不停喷 · 观察污染</option></select></div>
+<div class="switches"><label class="switch-row" for="slow"><span>起收段减速<small>靠近两端时，降到一半速度</small></span><input id="slow" type="checkbox" checked></label><label class="switch-row" for="compensate"><span>流量随速度调整<small>保持单位路程的相对沉积</small></span><input id="compensate" type="checkbox"></label></div>
+<div class="color-field"><span>本次面漆</span><div id="color" class="color-swatches" role="group" aria-label="面漆颜色"><button data-color="#4ab4aa" class="active" style="--swatch:#4ab4aa" aria-label="薄荷青" aria-pressed="true"><span></span></button><button data-color="#5b8bd9" style="--swatch:#5b8bd9" aria-label="晴空蓝" aria-pressed="false"><span></span></button><button data-color="#dc9976" style="--swatch:#dc9976" aria-label="暖陶橙" aria-pressed="false"><span></span></button></div></div>
+<div id="planNote" class="plan-note">喷幅 400 mm · 需要留出相邻道的搭接。</div>
+</section>
+<section id="trialPanel" class="stage-panel" hidden><div class="section-heading"><span class="eyebrow">TRIAL RECORD</span><h3>试喷记录</h3></div><div id="trialResult" class="record-card">完成一段试喷，查看这组参数留下的涂层表现。</div><button id="retryTrial" class="secondary wide">↻ 重新试喷</button></section>
+<section id="inspectionPanel" class="stage-panel" hidden><div class="section-heading"><span class="eyebrow">WALL INSPECTION</span><h3>现场待处理</h3></div><p class="section-note">点选墙面或下方记录，定位需要处理的区域。返修采用校准后的精细作业：清理污染、处理异常层后重涂、补齐漏喷。</p><div id="issueList" class="issue-list"></div><div class="repair-actions"><button id="repairSelected" class="secondary wide" disabled>处理当前区域</button><button id="repairAll" class="secondary wide">完成剩余返修</button></div></section>
+<section id="deliveryPanel" class="stage-panel" hidden><div class="delivery-mark" aria-hidden="true">✓</div><span class="eyebrow">PROJECT RECORD</span><h3>把过程一起交付</h3><div id="deliverySummary" class="record-card"></div><button id="export" class="secondary wide">↓ 导出作业记录</button></section>
+</div>
+<div class="panel-action"><button id="actionPrimary" class="primary wide">确认路线，进入试喷 <span>→</span></button><p id="actionHint">每一次调整，都能在现场看见结果。</p></div>
+</aside></main>
+<footer class="app-footer"><span><i></i>教学模拟 · 参数用于观察几何覆盖与相对沉积</span><span>SPRAYING WORKSHOP <b>06.04</b></span></footer>
+</div>
+<dialog id="helpDialog"><button id="closeHelp" class="dialog-close" aria-label="关闭操作指南">×</button><span class="eyebrow">FIELD GUIDE</span><h2>亲手完成一面墙</h2><p>规划路线、试喷调机、执行喷涂、巡检返修，最后导出作业记录。先观察，再调整，让过程留下可检查的痕迹。</p><div class="guide-grid"><div><b>观察现场</b><p>拖动旋转场景，滚轮缩放；触屏可双指缩放。方向键旋转，加减键缩放；顶部按钮可切换正视、俯视与喷头近景。</p></div><div><b>控制作业</b><p>调节参数后开始试喷。正式喷涂时可暂停观察，用演示速度调整观察节奏。覆盖数据只记录已执行的作业。</p></div><div><b>巡检返修</b><p>打开质检视图，点选墙面或待处理记录，再进行局部处理。保护窗洞的同时，也要完成窗边补作业。</p></div><div><b>模型约定</b><p>本页使用固定扇角、矩形喷幅与相对沉积的教学模型。颜色和达标比例用于项目练习，不代表真实膜厚或工程验收结论。</p></div></div></dialog>
+<script>(()=>{'use strict';
+const lab="spray";
+const root=document.documentElement;root.dataset.c6=lab;
+const content=document.createElement('div');content.id='c6-content';
+for(const node of [...document.body.children])if(!['SCRIPT','STYLE','DIALOG'].includes(node.tagName))content.append(node);
+document.body.prepend(content);
+const nav=document.createElement('nav');nav.className='c6-nav';nav.setAttribute('aria-label','第六章学习导航');
+const routes=[['masonry','6-1 砌筑','course/chapters/06/tasks/6-1/index.html'],['tiling','6-2 地砖铺贴','course/chapters/06/tasks/6-2/index.html'],['sanding','6-3 腻子打磨','course/chapters/06/tasks/6-3/index.html'],['spray','6-4 室内喷涂','course/chapters/06/tasks/6-4/index.html']];
+nav.innerHTML='<a class="c6-home" href="../../overview/index.html">← 第六章总览</a><div class="c6-links">'+routes.map(([id,name,url])=>`<a data-route="${id}" ${id===lab?'aria-current="page"':''} href="../${url}">${name}</a>`).join('')+'</div>';
+document.body.prepend(nav);
+})();
+</script><script></script><script src="../../../../../shared/vendor/three-r160.min.js"></script><script>
+
+;
+const M = (() => {const WALL={w:3600,h:2400,hole:{x:1550,z:800,w:800,h:800},base:45,y:-70};
+const DEFAULTS={spacing:200,distance:300,speed:300,guard:'footprint',compensate:false,slow:true};
+function fanWidth(distance){return 400*distance/300;}
+function passes(spacing){const xs=[];for(let x=100;x<=3500+.001;x+=spacing)xs.push(x);if(xs.at(-1)<3500-1)xs.push(3500);return xs;}
+function inHole(x,z){const h=WALL.hole;return x>=h.x&&x<h.x+h.w&&z>=h.z&&z<h.z+h.h;}
+function intersectsHole(x,z,width){const h=WALL.hole;return x+width/2>h.x&&x-width/2<h.x+h.w&&z+40>h.z&&z-40<h.z+h.h;}
+function sprayAllowed(x,z,p,travel=false){if(travel)return false;if(p.guard==='off')return true;return !(p.guard==='center'?inHole(x,z):intersectsHole(x,z,fanWidth(p.distance)));}
+function pathSegments(p){const xs=passes(p.spacing),out=[];for(let i=0;i<xs.length;i++){const z0=i%2?2360:40,z1=i%2?40:2360;out.push({x0:xs[i],x1:xs[i],z0,z1,travel:false,length:2320});if(i<xs.length-1)out.push({x0:xs[i],x1:xs[i+1],z0:z1,z1,travel:true,length:xs[i+1]-xs[i]});}return out;}
+function poseAt(progress,p){const segs=pathSegments(p),total=segs.reduce((s,a)=>s+a.length,0);let d=Math.max(0,Math.min(.999999,progress))*total;let i=0;for(;i<segs.length-1&&d>segs[i].length;i++)d-=segs[i].length;const a=segs[i],t=d/a.length;const x=a.x0+(a.x1-a.x0)*t,z=a.z0+(a.z1-a.z0)*t;const edge=Math.min(z-40,2360-z);const factor=p.slow?(.5+.5*Math.min(1,Math.max(0,edge)/260)):1;const v=p.speed*(a.travel?1:factor);return {x,z,travel:a.travel,on:sprayAllowed(x,z,p,a.travel),v,total,index:i,pass:Math.floor(i/2)+1,progress,factor,flow:p.compensate?factor:1,dose:(p.compensate?factor:1)/factor*300/p.speed};}
+function overlap(p){const w=fanWidth(p.distance);return {width:w,ratio:Math.max(0,1-p.spacing/w),gap:Math.max(0,p.spacing-w)};}
+function coverage(p){const xs=passes(p.spacing),width=fanWidth(p.distance),cells=[];let target=0,covered=0,polluted=0,holeCells=0;for(let z=10;z<WALL.h;z+=20)for(let x=10;x<WALL.w;x+=20){const hole=inHole(x,z);let n=0;for(const px of xs){if(Math.abs(x-px)<=width/2&&(sprayAllowed(px,Math.max(40,z-40),p)||sprayAllowed(px,Math.min(2360,z+40),p)))n++;}if(hole){holeCells++;if(n)polluted++;}else{target++;if(n)covered++;}cells.push({x,z,n,hole});}return {cells,percent:100*covered/target,miss:100*(target-covered)/target,pollution:100*polluted/holeCells,area:(target-covered)*.0004};}
+function depositionAt(t,p){const z=40+2320*t,edge=Math.min(z-40,2360-z),f=p.slow?.5+.5*Math.min(1,Math.max(0,edge)/260):1;return {speed:p.speed*f,flow:p.compensate?f:1,dose:300/p.speed*(p.compensate?1:1/f)};}
+
+
+return {DEFAULTS,WALL,coverage,depositionAt,fanWidth,inHole,intersectsHole,overlap,passes,pathSegments,poseAt,sprayAllowed};})(); window.M=M;
+;
+const PM = (() => {
+// Classroom targets, not engineering acceptance limits or a film-thickness model.
+const TARGET = Object.freeze({ coverage: 99.5, minDose: 0.85, maxDose: 1.2 });
+const CELL_SIZE = 40;
+const PATH_STEP = 20;
+const REPAIR_RADIUS = 180;
+const EPS = 1e-7;
+
+function parameters(input = {}) {
+  const p = { ...M.DEFAULTS, ...input };
+  for (const key of ['spacing', 'distance', 'speed']) {
+    if (!Number.isFinite(p[key]) || p[key] <= 0) throw new RangeError(`${key} must be positive`);
+  }
+  // Keep accidental API calls from building unbounded paths.
+  if (p.spacing < 20) throw new RangeError('spacing must be at least 20 mm');
+  if (!['footprint', 'center', 'off'].includes(p.guard)) throw new RangeError('Unknown opening protection');
+  return JSON.parse(JSON.stringify(p));
+}
+
+function eventsFor(p) {
+  const segments = M.pathSegments(p);
+  const events = [];
+  let travelled = 0;
+  for (let i = 0; i < segments.length; i++) {
+    const s = segments[i];
+    if (!s.travel) {
+      // Canonical samples are independent of the animation's frame rate and batching.
+      for (let d = 0; d <= s.length + EPS; d += PATH_STEP) {
+        const t = Math.min(1, d / s.length);
+        const x = s.x0 + (s.x1 - s.x0) * t;
+        const z = s.z0 + (s.z1 - s.z0) * t;
+        events.push({ distance: travelled + d, pass: i / 2, x, z,
+          on: M.sprayAllowed(x, z, p), dose: M.depositionAt((z - 40) / 2320, p).dose });
+      }
+    }
+    travelled += s.length;
+  }
+  return { events, total: travelled };
+}
+
+function createRun(params = {}) {
+  const p = parameters(params);
+  const cols = Math.ceil(M.WALL.w / CELL_SIZE), rows = Math.ceil(M.WALL.h / CELL_SIZE);
+  const cells = [];
+  for (let row = 0; row < rows; row++) for (let col = 0; col < cols; col++) {
+    const x = (col + 0.5) * CELL_SIZE, z = (row + 0.5) * CELL_SIZE;
+    cells.push({ x, z, n: 0, dose: 0, doseIssue: false, hole: M.inHole(x, z), repaired: false });
+  }
+  const { events, total } = eventsFor(p);
+  const run = { params: p, progress: 0, coat: { cols, rows, cellSize: CELL_SIZE, cells }, repairs: [] };
+  Object.defineProperties(run, {
+    _events: { value: events }, _total: { value: total }, _cursor: { value: 0, writable: true },
+    _visits: { value: cells.map(() => new Map()) },
+    _doseIssues: { value: new Uint8Array(cells.length) },
+  });
+  return run;
+}
+
+function deposit(run, event) {
+  if (!event.on) return;
+  const { cols, rows, cellSize, cells } = run.coat;
+  const halfWidth = M.fanWidth(run.params.distance) / 2;
+  const c0 = Math.max(0, Math.ceil((event.x - halfWidth) / cellSize - 0.5));
+  const c1 = Math.min(cols - 1, Math.floor((event.x + halfWidth) / cellSize - 0.5));
+  const r0 = Math.max(0, Math.ceil((event.z - 40) / cellSize - 0.5));
+  const r1 = Math.min(rows - 1, Math.floor((event.z + 40) / cellSize - 0.5));
+  for (let row = r0; row <= r1; row++) for (let col = c0; col <= c1; col++) {
+    const index = row * cols + col, cell = cells[index], visits = run._visits[index];
+    if (visits.has(event.pass)) continue;
+    visits.set(event.pass, event.dose);
+    cell.dose = (cell.dose * cell.n + event.dose) / (cell.n + 1);
+    cell.n++;
+    if (event.dose < TARGET.minDose - EPS || event.dose > TARGET.maxDose + EPS) {
+      run._doseIssues[index] = 1;
+      cell.doseIssue = true;
+    }
+  }
+}
+
+function advanceRun(run, toProgress) {
+  if (!Number.isFinite(toProgress)) throw new TypeError('Progress must be finite');
+  const next = Math.max(0, Math.min(1, toProgress));
+  if (next < run.progress - EPS) throw new RangeError('A completed spray path cannot be rewound; create a new run');
+  if (next <= run.progress) return run;
+  const distance = next * run._total;
+  while (run._cursor < run._events.length && run._events[run._cursor].distance <= distance + EPS) {
+    deposit(run, run._events[run._cursor++]);
+  }
+  run.progress = next;
+  return run;
+}
+
+function nearOpening(cell) {
+  const h = M.WALL.hole;
+  return cell.x >= h.x - 340 && cell.x <= h.x + h.w + 340 &&
+    cell.z >= h.z - 160 && cell.z <= h.z + h.h + 160;
+}
+
+function issueFor(run, cell, index) {
+  if (cell.hole) return cell.n ? 'pollution' : null;
+  if (!cell.n) return nearOpening(cell) ? 'edge' : 'miss';
+  return run._doseIssues[index] ? 'dose' : null;
+}
+
+const ISSUE_TEXT = {
+  miss: ['漏喷区', '这部分墙面尚未被实际喷幅覆盖；调整道间距或安排局部补喷。'],
+  edge: ['窗边待补喷', '完整喷幅保护保留了窗边空白；保留遮蔽，用局部精细作业补齐。'],
+  pollution: ['保护区受喷', '窗洞保护区记录到喷涂；先清理污染，再复核停喷时机。'],
+  dose: ['相对沉积偏差', '至少一道的相对沉积超出本项目 0.85–1.20× 教学目标；核对速度和流量后处理。'],
+};
+
+function summarizeRun(run) {
+  let target = 0, covered = 0, holes = 0, polluted = 0, uniform = 0, issueCount = 0;
+  const byType = { pollution: [], dose: [], edge: [], miss: [] };
+  run.coat.cells.forEach((cell, index) => {
+    if (cell.hole) { holes++; if (cell.n) polluted++; }
+    else { target++; if (cell.n) { covered++; if (!run._doseIssues[index]) uniform++; } }
+    const type = issueFor(run, cell, index);
+    if (type) { issueCount++; byType[type].push({ cell, index }); }
+  });
+  // Pick spatially distinct examples and reserve room for each kind of defect.
+  const issues = [];
+  for (let round = 0; round < 2; round++) for (const [type, candidates] of Object.entries(byType)) {
+    const item = candidates.find(({ cell }) => !issues.some(i => i.type === type && Math.hypot(i.x - cell.x, i.z - cell.z) < 420));
+    if (item) {
+      const [label, detail] = ISSUE_TEXT[type];
+      issues.push({ id: `${type}-${item.index}`, type, x: item.cell.x, z: item.cell.z, label, detail });
+    }
+  }
+  const coverage = target ? covered / target * 100 : 0;
+  const pollution = holes ? polluted / holes * 100 : 0;
+  const uniformity = covered ? uniform / covered * 100 : 0;
+  const complete = run.progress >= 1;
+  return { coverage, pollution, missArea: (target - covered) * run.coat.cellSize ** 2 / 1e6,
+    uniformity, issueCount, complete,
+    ready: complete && coverage >= TARGET.coverage && polluted === 0 && uniform === covered,
+    issues };
+}
+
+function repairAt(run, x, z) {
+  if (!Number.isFinite(x) || !Number.isFinite(z)) throw new TypeError('Repair position must be finite');
+  if (run.progress < 1) return { changed: 0, reason: '请完成本轮喷涂后再进行局部处理。', x, z };
+  const action = { id: `repair-${run.repairs.length + 1}`, x, z, radius: REPAIR_RADIUS,
+    changed: 0, filled: 0, cleaned: 0, recoated: 0, cellIndices: [] };
+  run.coat.cells.forEach((cell, index) => {
+    if (Math.hypot(cell.x - x, cell.z - z) > REPAIR_RADIUS) return;
+    const type = issueFor(run, cell, index);
+    if (!type) return;
+    if (type === 'pollution') {
+      cell.n = 0; cell.dose = 0; action.cleaned++;
+    } else {
+      // The local finishing operation includes removal/recoating for an abnormal layer.
+      // n describes the currently retained coat; the removal remains in the action log.
+      if (type === 'dose') action.recoated++; else action.filled++;
+      cell.n = 1; cell.dose = 1;
+    }
+    cell.repaired = true;
+    cell.doseIssue = false;
+    run._doseIssues[index] = 0;
+    run._visits[index].clear();
+    if (!cell.hole) run._visits[index].set(action.id, 1);
+    action.cellIndices.push(index); action.changed++;
+  });
+  action.label = [action.filled ? `精细补喷 ${action.filled} 格` : '',
+    action.cleaned ? `清理保护区 ${action.cleaned} 格` : '',
+    action.recoated ? `处理异常层并重喷 ${action.recoated} 格` : ''].filter(Boolean).join('；') || '该区域无需处理';
+  if (action.changed) run.repairs.push(action);
+  return action;
+}
+
+function repairAll(run) {
+  if (run.progress < 1) return { changed: 0, actions: [], summary: summarizeRun(run), reason: '请完成本轮喷涂后再进行局部处理。' };
+  const actions = [];
+  // Traverse actual faulty cells; each action changes only its bounded local area.
+  run.coat.cells.forEach((cell, index) => {
+    if (issueFor(run, cell, index)) {
+      const action = repairAt(run, cell.x, cell.z);
+      if (action.changed) actions.push(action);
+    }
+  });
+  return { changed: actions.reduce((n, a) => n + a.changed, 0), actions, summary: summarizeRun(run) };
+}
+
+function planReport(params = {}) {
+  const p = parameters(params), geometry = M.coverage(p), overlap = M.overlap(p);
+  const doses = Array.from({ length: 101 }, (_, i) => M.depositionAt(i / 100, p).dose);
+  const doseRange = { min: Math.min(...doses), max: Math.max(...doses) };
+  return { params: p, geometry: { coverage: geometry.percent, pollution: geometry.pollution, missArea: geometry.area },
+    coverage: geometry.percent, pollution: geometry.pollution, missArea: geometry.area,
+    width: overlap.width, overlap: overlap.ratio, gap: overlap.gap, passCount: M.passes(p.spacing).length,
+    doseRange, doseMin: doseRange.min, doseMax: doseRange.max, target: { ...TARGET } };
+}
+
+return {CELL_SIZE,TARGET,advanceRun,createRun,planReport,repairAll,repairAt,summarizeRun};})();
+;
+/* Real perspective meshes. Wall coordinates are millimetres; scene units are metres. */
+(function () {
+  'use strict';
+  const BASE = 0.12, WALL_W = 3.6, WALL_H = 2.4;
+  const clamp = (v, lo, hi) => Math.max(lo, Math.min(hi, v));
+  window.createSprayScene = function (host, callbacks = {}) {
+    let data = { params: { spacing: 200, distance: 300, speed: 300, guard: 'footprint', slow: true, compensate: false }, pose: { x: 100, z: 40, on: false }, progress: 0, coat: null, viewMode: 'plan', color: '#258ad4', running: false };
+    let theme = 'light', pathVisible = true, destroyed = false, visible = true, dirty = true, raf = 0, lastPaint = 0, lastTime = 0, coatDirty = true, viewName = 'orbit';
+    let renderer;
+    try {
+      const flags = new URLSearchParams(location.search);
+      if (flags.has('no-webgl') || flags.get('noWebGL') === '1' || !window.THREE) throw new Error('WebGL disabled');
+      renderer = new THREE.WebGLRenderer({ antialias: true, alpha: true, powerPreference: 'high-performance' });
+    } catch (_) { return createFallback(host, callbacks, data); }
+    const T = THREE, scene = new T.Scene(), camera = new T.PerspectiveCamera(39, 1, 0.03, 60);
+    renderer.setPixelRatio(Math.min(window.devicePixelRatio || 1, 1.5));
+    renderer.shadowMap.enabled = true; renderer.shadowMap.type = T.PCFSoftShadowMap;
+    renderer.outputColorSpace = T.SRGBColorSpace; renderer.toneMapping = T.ACESFilmicToneMapping; renderer.toneMappingExposure = 1.32;
+    renderer.setClearColor(0xeaf3fb, 0);
+    const canvas = renderer.domElement; canvas.className = 'spray-webgl'; canvas.style.cssText = 'display:block;width:100%;height:100%;touch-action:none;outline:none;';
+    canvas.tabIndex = 0; canvas.setAttribute('role', 'img'); canvas.setAttribute('aria-label', '真实三维喷涂现场，可拖动旋转、滚轮缩放，方向键旋转，加减键缩放'); host.appendChild(canvas);
+    const materials = {}, geometries = new Map(), physicalParts = [];
+    function mat(name, color, metalness = 0, roughness = 0.62) { return materials[name] = new T.MeshStandardMaterial({ color, metalness, roughness }); }
+    mat('wall', 0xf7eddc, 0, .87); mat('cut', 0xe3d9cb); mat('floor', 0xe5ddd2); mat('floorEdge', 0xc5ced7, .1); mat('seam', 0xc7bfb3);
+    mat('blue', 0x1765c8, .28, .35); mat('lightblue', 0x52a4eb, .2, .38); mat('navy', 0x173b67, .35, .4); mat('orange', 0xf69a36, .08, .4);
+    mat('silver', 0xcbd8e1, .72, .28); mat('steel', 0x71899e, .7, .34); mat('rubber', 0x253541, .02, .85); mat('brass', 0xe4b664, .65, .3);
+    mat('white', 0xf3f7f7, .15, .4); mat('black', 0x253a4b, .05, .6); mat('red', 0xe8473d, .1, .38); mat('green', 0x35caaa, .12, .38);
+    mat('cloth', 0xe9bd7e, 0, .98); mat('tape', 0xf3d353, 0, .75); mat('glass', 0xaad9e9, .14, .22); mat('film', 0xd9e9df, 0, .8);
+    materials.screen = new T.MeshStandardMaterial({ color: 0x0a3855, emissive: 0x0b405a, emissiveIntensity: .3, roughness: .3 });
+    const hemi = new T.HemisphereLight(0xecf8ff, 0xb0a28b, 2.25); scene.add(hemi);
+    const sun = new T.DirectionalLight(0xffefda, 3.4); sun.position.set(-3.7, 7, 5.4); sun.castShadow = true; sun.shadow.mapSize.set(2048, 2048);
+    Object.assign(sun.shadow.camera, { left: -5, right: 5, top: 5, bottom: -4, near: .2, far: 20 }); sun.shadow.bias = -.00035; sun.shadow.normalBias = .018; sun.shadow.radius = 4; scene.add(sun);
+    const fill = new T.DirectionalLight(0xc9e5ff, 1.75); fill.position.set(5, 3, -1); scene.add(fill);
+    function put(name, geometry, material, at, parent = scene) { const o = new T.Mesh(geometry, typeof material === 'string' ? materials[material] : material); o.position.set(...at); o.castShadow = true; o.receiveShadow = true; o.name = name; parent.add(o); physicalParts.push(o); return o; }
+    function box(name, w, h, d, x, y, z, material, parent) { const key = `b:${w}:${h}:${d}`; if (!geometries.has(key)) geometries.set(key, new T.BoxGeometry(w, h, d)); return put(name, geometries.get(key), material, [x, y, z], parent); }
+    function roundBox(name, w, h, d, x, y, z, material, parent, r = .035) {
+      r = Math.min(r, w / 4, h / 4, d / 4); const shape = new T.Shape(), x0 = -w / 2, y0 = -h / 2;
+      shape.moveTo(x0 + r, y0); shape.lineTo(x0 + w - r, y0); shape.quadraticCurveTo(x0 + w, y0, x0 + w, y0 + r); shape.lineTo(x0 + w, y0 + h - r); shape.quadraticCurveTo(x0 + w, y0 + h, x0 + w - r, y0 + h); shape.lineTo(x0 + r, y0 + h); shape.quadraticCurveTo(x0, y0 + h, x0, y0 + h - r); shape.lineTo(x0, y0 + r); shape.quadraticCurveTo(x0, y0, x0 + r, y0);
+      const g = new T.ExtrudeGeometry(shape, { depth: d - 2 * r, bevelEnabled: true, bevelSegments: 2, steps: 1, bevelSize: r, bevelThickness: r, curveSegments: 3 }); g.translate(0, 0, -d / 2 + r); return put(name, g, material, [x, y, z], parent);
+    }
+    function cyl(name, r, length, x, y, z, material, parent, axis = 'y', r2 = r) { const o = put(name, new T.CylinderGeometry(r2, r, length, 28), material, [x, y, z], parent); if (axis === 'x') o.rotation.z = Math.PI / 2; if (axis === 'z') o.rotation.x = Math.PI / 2; return o; }
+    function tube(name, points, radius, material, parent = scene, segments = 40) { const curve = new T.CatmullRomCurve3(points.map(p => new T.Vector3(...p))); return put(name, new T.TubeGeometry(curve, segments, radius, 8, false), material, [0, 0, 0], parent); }
+    function bolt(name, x, y, z, parent = scene, axis = 'y') { return cyl(name, .011, .008, x, y, z, 'steel', parent, axis); }
+    function disposeObject(o) { if (o.geometry) o.geometry.dispose(); if (Array.isArray(o.material)) o.material.forEach(m => m.dispose()); else if (o.material && !Object.values(materials).includes(o.material)) o.material.dispose(); }
+    const room = new T.Group(); room.name = 'room'; scene.add(room);
+    box('concrete-floor', 5.1, .16, 3.55, 0, -.07, .9, 'floorEdge', room);
+    box('floor-finish', 5.08, .025, 3.53, 0, .0225, .9, 'floor', room);
+    for (let x = -2.4; x <= 2.4; x += .6) box(`floor-seam-x-${x}`, .006, .002, 3.5, x, .036, .9, 'seam', room);
+    for (let z = -.6; z <= 2.4; z += .6) box(`floor-seam-z-${z}`, 5, .002, .006, 0, .036, z, 'seam', room);
+    box('drop-cloth', 4.15, .012, 2.05, 0, .044, 1.05, 'cloth', room);
+    for (const x of [-2.04, 2.04]) box(`cloth-tape-side-${x}`, .035, .004, 2.07, x, .053, 1.05, 'tape', room);
+    for (const z of [.04, 2.06]) box(`cloth-tape-end-${z}`, 4.12, .004, .035, 0, .053, z, 'tape', room);
+    // Four solids enclose an actual opening. No wall polygon crosses the window.
+    box('wall-left', 1.55, 2.4, .16, -1.025, BASE + 1.2, -.08, 'wall', room);
+    box('wall-right', 1.25, 2.4, .16, 1.175, BASE + 1.2, -.08, 'wall', room);
+    box('wall-below-window', .8, .8, .16, .15, BASE + .4, -.08, 'wall', room);
+    box('wall-above-window', .8, .8, .16, .15, BASE + 2, -.08, 'wall', room);
+    box('wall-top-cap', 3.66, .035, .2, 0, BASE + 2.4175, -.08, 'white', room);
+    box('wall-plinth', 3.6, .08, .17, 0, BASE - .04, -.075, 'cut', room);
+    box('side-wall-cutaway', .14, 1.55, 1.2, -2.18, .815, .43, 'wall', room);
+    box('side-wall-cap', .16, .03, 1.22, -2.18, 1.605, .43, 'white', room);
+    box('wall-return-left', .31, 1.55, .16, -1.955, .815, -.08, 'wall', room);
+    box('back-skirt', 3.6, .07, .025, 0, BASE + .035, .014, 'white', room);
+    for (const x of [-.265, .565]) box(`window-reveal-${x}`, .03, .84, .18, x, BASE + 1.2, -.06, 'white', room);
+    for (const y of [BASE + .785, BASE + 1.615]) box(`window-reveal-${y}`, .86, .03, .18, .15, y, -.06, 'white', room);
+    for (const x of [-.2325, .5325]) box(`window-jamb-${x}`, .035, .77, .045, x, BASE + 1.2, -.105, 'silver', room);
+    for (const y of [BASE + .8325, BASE + 1.5675]) box(`window-frame-${y}`, .77, .035, .045, .15, y, -.105, 'silver', room);
+    box('window-mullion', .025, .71, .045, .15, BASE + 1.2, -.105, 'silver', room);
+    for (const x of [-.041, .341]) box(`window-glass-${x}`, .35, .7, .009, x, BASE + 1.2, -.128, 'glass', room);
+    const film = box('window-protection-film', .73, .73, .003, .15, BASE + 1.2, -.076, 'film', room);
+    film.material = materials.film.clone(); film.material.transparent = true; film.material.opacity = .34; film.castShadow = false;
+    for (const x of [-.235, .535]) box(`window-mask-tape-${x}`, .025, .8, .004, x, BASE + 1.2, -.048, 'tape', room);
+    for (const y of [BASE + .815, BASE + 1.585]) box(`window-mask-tape-${y}`, .8, .025, .004, .15, y, -.048, 'tape', room);
+    box('window-handle-base', .035, .09, .015, .195, BASE + 1.17, -.067, 'white', room);
+    box('window-handle', .016, .065, .035, .195, BASE + 1.17, -.047, 'white', room);
+    // Attached furniture remains outside the moving machine's operating strip.
+    box('boundary-bollard-foot', .25, .035, .25, 2.25, .055, 1.8, 'navy', room);
+    cyl('boundary-bollard', .045, .55, 2.25, .345, 1.8, 'orange', room);
+    cyl('boundary-reflector', .046, .075, 2.25, .52, 1.8, 'white', room);
+    const robot = new T.Group(); robot.name = 'spray-robot'; scene.add(robot);
+    box('chassis-underplate', .59, .06, .68, 0, .235, .94, 'navy', robot);
+    roundBox('chassis-shell', .6, .23, .69, 0, .37, .94, 'blue', robot, .035);
+    roundBox('chassis-top', .59, .035, .67, 0, .5, .94, 'lightblue', robot, .009);
+    const wheelGroups = [];
+    for (const x of [-.235, .235]) for (const z of [.5475, 1.3325]) {
+      const front = z < .94, inward = front ? 1 : -1;
+      box(`wheel-fork-${x}-${z}`, .10, .12, .035, x, .233, z + inward * .065, 'steel', robot);
+      const wheel = new T.Group(); wheel.name=`wheel-assembly-${x}-${z}`;wheel.position.set(x,.183,z);robot.add(wheel);wheelGroups.push(wheel);
+      cyl(`wheel-tire-${x}-${z}`, .13, .095, 0, 0, 0, 'rubber', wheel, 'z');
+      cyl(`wheel-hub-${x}-${z}`, .083, .099, 0, 0, 0, 'silver', wheel, 'z');
+      cyl(`wheel-cap-${x}-${z}`, .035, .105, 0, 0, 0, 'navy', wheel, 'z');
+      for(let i=0;i<3;i++){const spoke=box(`wheel-spoke-${x}-${z}-${i}`,.115,.012,.003,0,0,-inward*.051,'steel',wheel);spoke.rotation.z=i*Math.PI/3;}
+    }
+    for (const x of [-.24, .24]) for (const z of [.66, .82, 1.04, 1.22]) bolt(`chassis-screw-${x}-${z}`, x, .523, z, robot);
+    for (const x of [-.115, .115]) {
+      cyl(`lift-rail-${x}`, .027, 2.6, x, 1.6, .53, 'silver', robot);
+      box(`lift-rail-foot-${x}`, .095, .06, .095, x, .27, .5475, 'navy', robot);
+      box(`lift-rail-cap-${x}`, .085, .07, .1, x, 2.9, .53, 'blue', robot);
+    }
+    cyl('lead-screw', .015, 2.58, 0, 1.59, .565, 'steel', robot);
+    cyl('lead-screw-bearing', .033, .045, 0, 2.8875, .565, 'brass', robot);
+    box('top-crosshead', .36, .08, .15, 0, 2.975, .53, 'blue', robot);
+    cyl('lift-motor', .061, .16, 0, .6, .98, 'navy', robot);
+    cyl('lift-motor-cap', .064, .023, 0, .69, .98, 'silver', robot);
+    cyl('signal-lamp-base', .046, .035, 0, 3.0325, .53, 'navy', robot);
+    cyl('signal-lamp', .038, .065, 0, 3.0825, .53, 'orange', robot);
+    box('rail-ruler', .025, 2.08, .005, -.16, 1.65, .562, 'white', robot);
+    for(const y of [.62,2.68])box(`ruler-mount-${y}`,.07,.02,.025,-.1375,y,.545,'steel',robot);
+    for (let i = 0; i < 26; i++) box(`ruler-tick-${i}`, i % 5 === 0 ? .023 : .012, .003, .002, -.16, .63 + i * .08, .566, 'navy', robot);
+    for (let i = 0; i < 6; i++) roundBox(`chassis-vent-${i}`, .025, .08, .006, -.18 + i * .072, .39, 1.29, 'navy', robot, .004);
+    const panel = box('control-panel', .21, .12, .045, .13, .55, 1.16, 'white', robot); panel.rotation.x = -.35;
+    box('control-screen', .115, .055, .005, .095, .559, 1.185, materials.screen, robot);
+    cyl('estop-base', .029, .009, .22, .56, 1.19, 'tape', robot, 'z');
+    cyl('estop-head', .022, .024, .22, .56, 1.204, 'red', robot, 'z');
+    for (let i = 0; i < 2; i++) cyl(`control-led-${i}`, .006, .007, .06 + i * .025, .524, 1.19, i ? 'green' : 'orange', robot, 'z');
+    const labelPlate = box('machine-label', .17, .055, .003, 0, .38, 1.301, 'white', robot);
+    const labelCanvas = document.createElement('canvas'); labelCanvas.width=256;labelCanvas.height=96;const labelCtx=labelCanvas.getContext('2d');labelCtx.fillStyle='#eaf2f7';labelCtx.fillRect(0,0,256,96);labelCtx.fillStyle='#174b83';labelCtx.font='bold 40px sans-serif';labelCtx.fillText('SPR–04',18,48);labelCtx.fillStyle='#7b99b1';labelCtx.fillRect(18,65,135,4);labelCtx.fillRect(18,76,96,3);const labelTexture=new T.CanvasTexture(labelCanvas);labelTexture.colorSpace=T.SRGBColorSpace;
+    const labelFace=new T.Mesh(new T.PlaneGeometry(.155,.049),new T.MeshStandardMaterial({map:labelTexture,roughness:.7}));labelFace.position.set(0,.38,1.303);robot.add(labelFace);
+    box('distance-sensor', .06, .05, .04, -.265, .54, .65, 'navy', robot);
+    box('sensor-window', .03, .026, .003, -.265, .54, .628, materials.screen, robot);
+    const carriage = new T.Group(); carriage.name = 'lift-carriage'; robot.add(carriage);
+    box('carriage-body', .32, .17, .15, 0, 0, .51, 'blue', carriage);
+    for (const x of [-.115, .115]) for (const y of [-.07, .07]) cyl(`carriage-bushing-${x}-${y}`, .037, .045, x, y, .53, 'brass', carriage);
+    for (const x of [-.13, .13]) for (const y of [-.05, .05]) bolt(`carriage-screw-${x}-${y}`, x, y, .589, carriage, 'z');
+    const arm = box('spray-extension', .055, .065, .4, 0, 0, .5, 'silver', carriage);
+    const gun = new T.Group(); gun.name = 'spray-gun'; carriage.add(gun);
+    box('nozzle-drop-bracket', .055, .23, .045, 0, -.12, .14, 'blue', gun);
+    cyl('spray-gun-body', .032, .145, 0, -.24, .095, 'silver', gun, 'z');
+    cyl('nozzle-seat', .026, .025, 0, -.24, .016, 'brass', gun, 'z');
+    box('orange-nozzle-guard', .094, .05, .025, 0, -.24, .012, 'orange', gun);
+    cyl('nozzle-outlet', .012, .008, 0, -.24, -.005, 'black', gun, 'z');
+    cyl('spray-flow-valve', .018, .043, .04, -.24, .1, 'brass', gun, 'x');
+    cyl('gun-hose-connector', .017, .025, .065, -.24, .1, 'navy', gun, 'x');
+    const supply = new T.Group(); supply.name = 'onboard-supply'; robot.add(supply);
+    cyl('paint-bucket', .125, .3, -.1, .67, 1.07, 'white', supply, 'y', .14);
+    cyl('bucket-top-ring', .145, .024, -.1, .828, 1.07, 'silver', supply);
+    cyl('bucket-lid', .137, .012, -.1, .846, 1.07, 'orange', supply);
+    tube('bucket-handle', [[-.24,.73,1.07],[-.24,.96,1.07],[.04,.96,1.07],[.04,.73,1.07]], .008, 'steel', supply, 24);
+    cyl('paint-pump', .052, .16, .175, .64, 1.01, 'navy', supply);
+    cyl('pump-top', .058, .035, .175, .735, 1.01, 'silver', supply);
+    cyl('base-hose-connector', .022, .055, .232, .65, 1.01, 'brass', supply, 'x');
+    for (const x of [.13, .22]) for (const z of [.97, 1.05]) box(`pump-foot-${x}-${z}`, .02, .035, .03, x, .535, z, 'steel', supply);
+    cyl('pressure-gauge-case', .045, .025, .175, .76, 1.07, 'steel', supply, 'z');
+    cyl('pressure-gauge-face', .038, .002, .175, .76, 1.084, 'white', supply, 'z');
+    for(let i=0;i<13;i++){const a=(-140+i*280/12)*Math.PI/180;const tick=box(`pressure-gauge-tick-${i}`,.0025,i%3===0?.008:.004,.001,.175+Math.sin(a)*.029,.76+Math.cos(a)*.029,1.0854,'navy',supply);tick.rotation.z=-a;}
+    const needle = box('pressure-gauge-needle', .003, .03, .001, .182, .77, 1.086, 'red', supply); needle.rotation.z = -.6;
+    let hose = null;
+    function updateHose(y, distance) {
+      if (hose) { robot.remove(hose); hose.geometry.dispose(); }
+      hose = tube('flexible-supply-hose', [[.2595,.65,1.01],[.31,.65,1.01],[.39,.72,1.01],[.39,Math.max(.82,y-.36),.84],[.23,y-.22,distance+.24],[.115,y-.24,distance+.1],[.0775,y-.24,distance+.1]], .011, 'rubber', robot, 36);
+      // The hose is a deformable display mesh, excluded from static part counting.
+      physicalParts.pop();
+    }
+    const paintCanvas = document.createElement('canvas'); paintCanvas.width = 900; paintCanvas.height = 600; const ctx = paintCanvas.getContext('2d');
+    const paintTexture = new T.CanvasTexture(paintCanvas); paintTexture.colorSpace = T.SRGBColorSpace;
+    const paintMat = new T.MeshStandardMaterial({ map: paintTexture, transparent: true, depthWrite: false, roughness: .8, polygonOffset: true, polygonOffsetFactor: -1 });
+    const wallPaint = put('live-painted-surface', new T.PlaneGeometry(3.6, 2.4), paintMat, [0, BASE + 1.2, .003]); wallPaint.castShadow = false;
+    const windowCanvas=document.createElement('canvas');windowCanvas.width=windowCanvas.height=200;const windowCtx=windowCanvas.getContext('2d'),windowTexture=new T.CanvasTexture(windowCanvas);windowTexture.colorSpace=T.SRGBColorSpace;
+    const windowPaint=put('window-film-pollution',new T.PlaneGeometry(.8,.8),new T.MeshStandardMaterial({map:windowTexture,transparent:true,depthWrite:false,roughness:.8}),[.15,BASE+1.2,-.073]);windowPaint.castShadow=false;
+    const selectable = new T.Mesh(new T.PlaneGeometry(3.6, 2.4), new T.MeshBasicMaterial({ visible: false, side: T.DoubleSide })); selectable.position.set(0, BASE + 1.2, .04); scene.add(selectable);
+    const routeGroup = new T.Group(); routeGroup.name = 'planned-route'; scene.add(routeGroup); let lastRoute = '';
+    const routeMat = new T.LineDashedMaterial({ color: 0x347ccb, dashSize: .045, gapSize: .037, transparent: true, opacity: .55, depthWrite: false });
+    const offMat = new T.LineDashedMaterial({ color: 0xe59342, dashSize: .025, gapSize: .035, transparent: true, opacity: .55, depthWrite: false });
+    function buildRoute() {
+      const key = JSON.stringify([data.params.spacing, data.params.distance, data.params.guard]); if (key === lastRoute) return; lastRoute = key;
+      for (const o of [...routeGroup.children]) { routeGroup.remove(o); o.geometry.dispose(); }
+      const p = data.params, xs = typeof M !== 'undefined' ? M.passes(p.spacing) : [100, 300, 500, 700, 900, 1100, 1300, 1500, 1700, 1900, 2100, 2300, 2500, 2700, 2900, 3100, 3300, 3500];
+      const onPoints = [], offPoints = [];
+      function line(points, material) { const target = material === routeMat ? onPoints : offPoints; for (const v of points) target.push(new T.Vector3(...v)); }
+      xs.forEach((x, i) => {
+        for (let z = 40; z < 2360; z += 80) { const on = typeof M === 'undefined' || M.sprayAllowed(x, z + 40, p); line([[x / 1000 - 1.8, BASE + z / 1000, .012], [x / 1000 - 1.8, BASE + Math.min(z + 80, 2360) / 1000, .012]], on ? routeMat : offMat); }
+        if (i < xs.length - 1) { const z = i % 2 ? 40 : 2360; line([[x / 1000 - 1.8, BASE + z / 1000, .012], [xs[i + 1] / 1000 - 1.8, BASE + z / 1000, .012]], offMat); }
+      });
+      for (const [points, material] of [[onPoints, routeMat], [offPoints, offMat]]) { if (!points.length) continue; const o = new T.LineSegments(new T.BufferGeometry().setFromPoints(points), material); o.computeLineDistances(); routeGroup.add(o); }
+    }
+    const marker = new T.Mesh(new T.TorusGeometry(.055, .004, 8, 40), new T.MeshBasicMaterial({ color: 0xf8b438, depthTest: false })); marker.position.z = .045; marker.visible = false; marker.renderOrder = 10; scene.add(marker);
+    const footprintGeometry = new T.BufferGeometry(), footprintPositions = new Float32Array(12);
+    footprintGeometry.setAttribute('position', new T.BufferAttribute(footprintPositions, 3));
+    const footprint = new T.LineLoop(footprintGeometry, new T.LineBasicMaterial({ color: 0x13b6bd, transparent: true, opacity: .85 })); scene.add(footprint);
+    const fanGeometry = new T.BufferGeometry(); const fanPositions = new Float32Array(18); fanGeometry.setAttribute('position', new T.BufferAttribute(fanPositions, 3));
+    const fanMaterial = new T.MeshBasicMaterial({ color: 0x36a7df, transparent: true, opacity: 0, depthWrite: false, side: T.DoubleSide }); const fan = new T.Mesh(fanGeometry, fanMaterial); scene.add(fan);
+    const dotCanvas = document.createElement('canvas'); dotCanvas.width = dotCanvas.height = 32; const dot = dotCanvas.getContext('2d'), grad = dot.createRadialGradient(16,16,0,16,16,16); grad.addColorStop(0,'rgba(255,255,255,.9)'); grad.addColorStop(.3,'rgba(255,255,255,.45)'); grad.addColorStop(1,'rgba(255,255,255,0)'); dot.fillStyle = grad; dot.fillRect(0,0,32,32);
+    const dotTexture = new T.CanvasTexture(dotCanvas), particleCount = 150, particlePositions = new Float32Array(particleCount * 3), particlesG = new T.BufferGeometry(); particlesG.setAttribute('position', new T.BufferAttribute(particlePositions, 3));
+    const particlesM = new T.PointsMaterial({ color: 0x70cdf2, size: .025, map: dotTexture, transparent: true, opacity: 0, depthWrite: false }); const particles = new T.Points(particlesG, particlesM); scene.add(particles);
+    let sprayLevel = 0, hoseY = -9, hoseD = -9, frameCount = 0, lastPoseX = 0;
+    const reduced = matchMedia('(prefers-reduced-motion: reduce)').matches;
+    let orbit = { az: .48, el: .28, radius: 6.15, tx: 0, ty: 1.25, tz: .48 }, goal = { ...orbit };
+    function applyCamera() { camera.position.set(orbit.tx + Math.sin(orbit.az) * Math.cos(orbit.el) * orbit.radius, orbit.ty + Math.sin(orbit.el) * orbit.radius, orbit.tz + Math.cos(orbit.az) * Math.cos(orbit.el) * orbit.radius); camera.lookAt(orbit.tx, orbit.ty, orbit.tz); }
+    function setView(name) {
+      viewName = name; const p = data.pose;
+      if (name === 'front') goal = { az: 0, el: .03, radius: 5.8, tx: 0, ty: 1.38, tz: .03 };
+      else if (name === 'top') goal = { az: .15, el: 1.05, radius: 5.6, tx: 0, ty: .95, tz: .55 };
+      else if (name === 'nozzle') goal = { az: 1.35, el: .3, radius: .95, tx: p.x / 1000 - 1.8, ty: p.z / 1000 + BASE + .08, tz: data.params.distance / 1000 + .02 };
+      else goal = { az: .48, el: .28, radius: 6.15, tx: 0, ty: 1.25, tz: .48 };
+      if (reduced) orbit = { ...goal }; requestRender();
+    }
+    function paintWall() {
+      ctx.clearRect(0, 0, 900, 600); windowCtx.clearRect(0,0,200,200); const coat = data.coat;
+      if (coat && coat.cells) {
+        const size = coat.cellSize || (coat.cols ? 3600 / coat.cols : 40), px = size / 4, color = new T.Color(data.color || '#258ad4');
+        const c0 = '#' + color.getHexString();
+        for (const c of coat.cells) {
+          const x = (c.x - size / 2) / 4, y = (2400 - c.z - size / 2) / 4;
+          if (c.hole) { if (c.n > 0) { windowCtx.fillStyle = data.viewMode === 'inspect' ? 'rgba(232,80,94,.8)' : c0; windowCtx.globalAlpha = .6; windowCtx.fillRect((c.x-size/2-1550)/4,(1600-c.z-size/2)/4,px+.3,px+.3); windowCtx.globalAlpha=1; } continue; }
+          if (data.viewMode === 'inspect') { ctx.fillStyle = c.n === 0 ? '#efad57' : c.dose < .85 ? '#efbd6c' : (c.doseIssue || c.dose > 1.2) ? '#a17ac7' : c.repaired ? '#43b59c' : '#4fbaa9'; ctx.globalAlpha = .82; ctx.fillRect(x,y,px+.3,px+.3); ctx.globalAlpha=1; }
+          else if (c.n > 0) { ctx.fillStyle = c0; ctx.globalAlpha = .68 + Math.min(.25, c.n * .1); ctx.fillRect(x,y,px+.3,px+.3); ctx.globalAlpha = 1; }
+        }
+      }
+      paintTexture.needsUpdate = true; windowTexture.needsUpdate=true; coatDirty = false; lastPaint = performance.now();
+    }
+    function updateMachine(now) {
+      const p = data.pose || { x: 100, z: 40, on: false }, distance = (data.params.distance || 300) / 1000, nozzleX = p.x / 1000 - 1.8, nozzleY = p.z / 1000 + BASE, carriageY = nozzleY + .24;
+      robot.position.x = nozzleX; robot.position.z = distance - .3; carriage.position.y = carriageY; gun.position.z = .309;
+      const armEnd = .449; arm.position.z = (.51 + armEnd) / 2; arm.scale.z = (.51 - armEnd) / .4;
+      if (Math.abs(hoseY - carriageY) > .025 || hoseD !== .309) { updateHose(carriageY, .309); hoseY = carriageY; hoseD = .309; }
+      if (Math.abs(nozzleX - lastPoseX) > .001) { for (const wheel of wheelGroups) wheel.rotation.z -= (nozzleX - lastPoseX) / .13; lastPoseX = nozzleX; }
+      const width = (typeof M !== 'undefined' ? M.fanWidth(data.params.distance) : 400 * distance / .3) / 1000;
+      footprintPositions.set([nozzleX-width/2,nozzleY-.04,.021,nozzleX+width/2,nozzleY-.04,.021,nozzleX+width/2,nozzleY+.04,.021,nozzleX-width/2,nozzleY+.04,.021]);
+      footprintGeometry.attributes.position.needsUpdate = true; footprintGeometry.computeBoundingSphere(); footprint.visible = data.viewMode !== 'inspect';
+      const vertex = [nozzleX,nozzleY,distance, nozzleX-width/2,nozzleY-.04,.018, nozzleX+width/2,nozzleY-.04,.018, nozzleX,nozzleY,distance, nozzleX+width/2,nozzleY+.04,.018, nozzleX-width/2,nozzleY+.04,.018]; fanPositions.set(vertex); fanGeometry.attributes.position.needsUpdate = true; fanGeometry.computeBoundingSphere();
+      const target = data.running && p.on && !p.travel ? 1 : 0; sprayLevel += (target - sprayLevel) * (reduced ? 1 : .23); fanMaterial.opacity = sprayLevel * .12; particlesM.opacity = sprayLevel * .7;
+      fan.visible = particles.visible = sprayLevel > .005;
+      if (particles.visible) {
+        for (let i=0;i<particleCount;i++) { const t = ((i*.6180339 + now*.0015) % 1); const side = Math.sin(i*14.71)*width*.5*t; particlePositions[i*3] = nozzleX+side; particlePositions[i*3+1]=nozzleY+Math.cos(i*7.27)*.04*t; particlePositions[i*3+2]=distance*(1-t)+.008; }
+        particlesG.attributes.position.needsUpdate=true; particlesG.computeBoundingSphere();
+      }
+      marker.visible = !!data.selectedCell; if (data.selectedCell) marker.position.set(data.selectedCell.x/1000-1.8,data.selectedCell.z/1000+BASE,.05);
+      routeGroup.visible = pathVisible && data.viewMode !== 'inspect';
+      if (viewName === 'nozzle') { goal.tx = nozzleX; goal.ty = nozzleY+.08; goal.tz = distance+.02; }
+    }
+    function frame(now) {
+      raf=0; if(destroyed || !visible || document.hidden)return;
+      const dt=Math.min(.06,(now-lastTime)/1000 || .016); lastTime=now; let easing=false;
+      for(const key of Object.keys(orbit)) { const d=goal[key]-orbit[key]; if(Math.abs(d)>.0001){orbit[key]+=d*(1-Math.exp(-dt*10));easing=true;}else orbit[key]=goal[key]; }
+      if(dirty || easing || data.running || sprayLevel>.005) {
+        applyCamera(); updateMachine(now); if(coatDirty && (now-lastPaint>65 || !data.running))paintWall(); renderer.render(scene,camera); frameCount++; dirty=false;
+      }
+      if(data.running || easing || sprayLevel>.005 || coatDirty) requestRender();
+    }
+    function requestRender(){dirty=true;if(!raf && !destroyed && visible && !document.hidden)raf=requestAnimationFrame(frame);}
+    function update(next) { const old=data; data={...data,...next,params:{...data.params,...next.params},pose:{...data.pose,...next.pose}}; coatDirty=true; buildRoute(); if(old.color!==data.color){fanMaterial.color.set(data.color);particlesM.color.set(data.color);} requestRender(); }
+    function resize(){const w=Math.max(1,host.clientWidth),h=Math.max(1,host.clientHeight);renderer.setSize(w,h,false);camera.aspect=w/h;camera.fov=2*Math.atan(Math.tan(39*Math.PI/360)*Math.max(1,1.45/camera.aspect))*180/Math.PI;camera.updateProjectionMatrix();requestRender();}
+    function setTheme(value) { theme=value; const dark=value==='dark'; hemi.intensity=dark?1.6:2.25;sun.intensity=dark?2.5:3.4;renderer.toneMappingExposure=dark?1.05:1.32;requestRender(); }
+    const raycaster=new T.Raycaster(); function pick(e){const r=canvas.getBoundingClientRect();raycaster.setFromCamera(new T.Vector2((e.clientX-r.left)/r.width*2-1,-(e.clientY-r.top)/r.height*2+1),camera);const hit=raycaster.intersectObject(selectable)[0];if(hit)callbacks.onWallPick?.({x:clamp((hit.point.x+1.8)*1000,0,3600),z:clamp((hit.point.y-BASE)*1000,0,2400)});}
+    const pointers=new Map();let pointerStart=null,pinch=null;
+    const down=e=>{canvas.focus({preventScroll:true});canvas.setPointerCapture(e.pointerId);pointers.set(e.pointerId,{x:e.clientX,y:e.clientY});if(pointers.size===1)pointerStart={x:e.clientX,y:e.clientY,moved:false};if(pointers.size===2){const a=[...pointers.values()];pinch=Math.hypot(a[0].x-a[1].x,a[0].y-a[1].y);if(pointerStart)pointerStart.moved=true;}};
+    const move=e=>{if(!pointers.has(e.pointerId))return;const prev=pointers.get(e.pointerId);pointers.set(e.pointerId,{x:e.clientX,y:e.clientY});if(pointerStart&&Math.hypot(e.clientX-pointerStart.x,e.clientY-pointerStart.y)>5)pointerStart.moved=true;if(pointers.size===2){const a=[...pointers.values()],d=Math.hypot(a[0].x-a[1].x,a[0].y-a[1].y);if(pinch)goal.radius=clamp(goal.radius*pinch/d,.8,11);pinch=d;}else{goal.az-=(e.clientX-prev.x)*.006;goal.el=clamp(goal.el+(e.clientY-prev.y)*.004,.03,1.35);viewName='free';}requestRender();};
+    const up=e=>{if(pointers.size===1&&pointerStart&&!pointerStart.moved)pick(e);pointers.delete(e.pointerId);if(canvas.hasPointerCapture(e.pointerId))canvas.releasePointerCapture(e.pointerId);if(!pointers.size)pointerStart=null;pinch=null;};
+    const wheel=e=>{e.preventDefault();goal.radius=clamp(goal.radius*Math.exp(e.deltaY*.0008),.8,11);requestRender();};
+    const key=e=>{if(!['ArrowLeft','ArrowRight','ArrowUp','ArrowDown','+','=','-','Home'].includes(e.key))return;e.preventDefault();if(e.key==='ArrowLeft')goal.az-=.12;if(e.key==='ArrowRight')goal.az+=.12;if(e.key==='ArrowUp')goal.el=clamp(goal.el+.08,.03,1.35);if(e.key==='ArrowDown')goal.el=clamp(goal.el-.08,.03,1.35);if(e.key==='+'||e.key==='=')goal.radius=clamp(goal.radius*.9,.8,11);if(e.key==='-')goal.radius=clamp(goal.radius/ .9,.8,11);if(e.key==='Home')setView('orbit');requestRender();};
+    canvas.addEventListener('pointerdown',down);canvas.addEventListener('pointermove',move);canvas.addEventListener('pointerup',up);canvas.addEventListener('pointercancel',up);canvas.addEventListener('wheel',wheel,{passive:false});canvas.addEventListener('keydown',key);
+    const contextLost=e=>{e.preventDefault();data.running=false;callbacks.onContextLost?.();const note=document.createElement('div');note.className='webgl-context-notice';note.textContent='三维显示已暂停，请刷新页面恢复。';note.style.cssText='position:absolute;inset:auto 20px 20px;padding:14px;background:#fff5dc;color:#674918;border:1px solid #e8cb8c;border-radius:10px;';host.appendChild(note);};canvas.addEventListener('webglcontextlost',contextLost);
+    const ro=new ResizeObserver(resize);ro.observe(host);const io=new IntersectionObserver(entries=>{visible=entries[0].isIntersecting;if(visible)requestRender();else if(raf){cancelAnimationFrame(raf);raf=0;}},{threshold:.01});io.observe(host);
+    const visibility=()=>{if(!document.hidden)requestRender();else if(raf){cancelAnimationFrame(raf);raf=0;}};document.addEventListener('visibilitychange',visibility);
+    buildRoute();resize();updateMachine(0);paintWall();applyCamera();requestRender();callbacks.onReady?.({webgl:true});
+    return {update,setView,setTheme,setPathVisible(v){pathVisible=!!v;requestRender();},resize,getStats(){return {webgl:true,meshCount:physicalParts.length,renderCalls:renderer.info.render.calls,triangles:renderer.info.render.triangles,frameCount,view:viewName,camera:{...orbit,position:camera.position.toArray(),target:[orbit.tx,orbit.ty,orbit.tz]},wallBase:BASE,paintedCells:data.coat?.cells?.filter(c=>c.n>0&&!c.hole).length||0,robotX:robot.position.x,nozzle:{x:data.pose.x,z:data.pose.z,distance:data.params.distance},canvas:{width:canvas.width,height:canvas.height}};},destroy(){destroyed=true;cancelAnimationFrame(raf);ro.disconnect();io.disconnect();document.removeEventListener('visibilitychange',visibility);scene.traverse(disposeObject);Object.values(materials).forEach(m=>m.dispose());paintTexture.dispose();windowTexture.dispose();dotTexture.dispose();labelTexture.dispose();renderer.dispose();canvas.remove();}};
+  };
+  function createFallback(host,callbacks,initial){
+    let data=initial;const wrapper=document.createElement('div');wrapper.className='spray-fallback';wrapper.style.cssText='height:100%;display:flex;flex-direction:column;align-items:center;justify-content:center;padding:26px;box-sizing:border-box;';
+    const note=document.createElement('p');note.textContent='当前设备无法启用三维，已切换为二维备用视图。仍可规划、喷涂和点选墙面检查。';note.style.cssText='font-size:13px;color:#536b85;max-width:650px;text-align:center;';const canvas=document.createElement('canvas');canvas.width=900;canvas.height=600;canvas.style.cssText='display:block;width:min(100%,900px);height:auto;max-height:80%;object-fit:contain;';canvas.tabIndex=0;canvas.setAttribute('aria-label','二维备用墙面图，点击检查作业网格');wrapper.append(note,canvas);host.appendChild(wrapper);const c=canvas.getContext('2d');
+    function draw(){c.clearRect(0,0,900,600);c.fillStyle='#f3e6d4';c.fillRect(0,0,900,600);c.fillStyle='#c5e3ec';c.fillRect(387.5,200,200,200);if(data.coat?.cells){const size=data.coat.cellSize||40;for(const cell of data.coat.cells){if(cell.hole&&!cell.n)continue;if(!cell.n&&data.viewMode!=='inspect')continue;c.fillStyle=data.viewMode==='inspect'?(cell.hole?'#e8505e':cell.n===0?'#efad57':cell.dose<.85?'#efbd6c':(cell.doseIssue||cell.dose>1.2)?'#a17ac7':'#4fbaa9'):(data.color||'#258ad4');c.globalAlpha=.8;c.fillRect((cell.x-size/2)/4,(2400-cell.z-size/2)/4,size/4+.2,size/4+.2);c.globalAlpha=1;}}c.strokeStyle='#dfbc4d';c.lineWidth=7;c.strokeRect(387.5,200,200,200);const p=data.pose;c.strokeStyle='#173b67';c.lineWidth=3;c.beginPath();c.arc(p.x/4,(2400-p.z)/4,8,0,Math.PI*2);c.stroke();if(data.selectedCell){c.strokeStyle='#ee813b';c.lineWidth=4;c.beginPath();c.arc(data.selectedCell.x/4,(2400-data.selectedCell.z)/4,15,0,Math.PI*2);c.stroke();}}
+    canvas.onclick=e=>{const r=canvas.getBoundingClientRect();const scale=Math.min(r.width/900,r.height/600),w=900*scale,h=600*scale,x=(e.clientX-r.left-(r.width-w)/2)/w*3600,z=2400-(e.clientY-r.top-(r.height-h)/2)/h*2400;if(x>=0&&x<=3600&&z>=0&&z<=2400)callbacks.onWallPick?.({x,z});};draw();callbacks.onReady?.({webgl:false});
+    return {update(next){data={...data,...next,params:{...data.params,...next.params},pose:{...data.pose,...next.pose}};draw();},setView(){},setTheme(){},setPathVisible(){},resize:draw,destroy(){wrapper.remove();},getStats(){return {webgl:false,meshCount:0,frameCount:0,paintedCells:data.coat?.cells?.filter(c=>c.n>0&&!c.hole).length||0};}};
+  }
+})();
+
+;
+(() => {
+  'use strict';
+  const $ = id => document.getElementById(id);
+  const stages = ['plan', 'trial', 'spray', 'inspect', 'deliver'];
+  const titles = ['规划一面墙的作业路线', '让第一道涂层告诉你结果', '把你的方案变成墙面', '走近墙面，处理留下的痕迹', '一面墙，一份完整作业记录'];
+  const hints = [
+    '调整喷距与道间距，沿着路线观察喷幅搭接；窗洞需要完整喷幅避让。',
+    '先试喷左侧两道，观察漏带与起收段沉积，再调整道间距、速度和流量同步。',
+    '机器人按已保存的参数执行。你可以暂停、切换视角，近看喷枪的启停。',
+    '点选墙面或返修清单。漏喷区补涂，污染区清理，沉积偏差区处理后重涂。',
+    '路线、实际涂覆、窗洞保护与返修操作已汇总，可导出本次作业记录。'
+  ];
+  const initial = {spacing:500, distance:300, speed:420, guard:'center', slow:true, compensate:false};
+  let state, lastTime=0, lastUI=0, frame=0, visible=true, scene;
+  const logs=[];
+  const log = (action, detail='') => logs.push({time:new Date().toISOString(), action, detail});
+  const fmt = n => Number.isFinite(n) ? n.toFixed(1) : '0.0';
+  function focusScene() { if(innerWidth<=900)document.querySelector('.world').scrollIntoView({block:'start',behavior:matchMedia('(prefers-reduced-motion: reduce)').matches?'instant':'smooth'}); }
+  function setCamera(name) { scene?.setView(name);document.querySelectorAll('[data-view]').forEach(b=>{const active=b.dataset.view===name;b.classList.toggle('active',active);b.setAttribute('aria-pressed',String(active));}); }
+  function toast(message) { $('toast').textContent=message; $('toast').classList.add('show'); clearTimeout(toast.timer); toast.timer=setTimeout(()=>$('toast').classList.remove('show'),4000); }
+  function reset() {
+    state={stage:'plan', reached:0, params:{...initial}, color:'#4ab4aa', run:null, trialRun:null, trialDone:false, active:null, running:false, selection:null, inspect:false, repair:null};
+    logs.length=0; log('接收作业单','WALL A · 3600 × 2400 mm');
+    ['spacing','distance','speed','guard'].forEach(k=>$(k).value=state.params[k]);
+    ['slow','compensate'].forEach(k=>$(k).checked=state.params[k]);
+    $('rate').value='8'; $('pathToggle').checked=true; $('inspectToggle').checked=false;
+    document.querySelectorAll('[data-color]').forEach(b=>b.classList.toggle('active',b.dataset.color===state.color));
+    setCamera('orbit'); scene?.setPathVisible(true); refresh();document.querySelector('.panel-scroll').scrollTop=0;
+  }
+  function summary() { return state.run ? PM.summarizeRun(state.run) : null; }
+  function activeRun() { return state.stage==='trial' ? state.trialRun : state.run; }
+  function stageTo(stage) {
+    if(state.active==='trial'&&stage!=='trial'){state.active=null;state.running=false;}
+    state.stage=stage; state.reached=Math.max(state.reached,stages.indexOf(stage));
+    state.inspect=stage==='inspect'; $('inspectToggle').checked=state.inspect;
+    log('进入阶段',stage); refresh();document.querySelector('.panel-scroll').scrollTop=0;
+  }
+  function paramsChanged() {
+    if(state.run || state.running) return;
+    ['spacing','distance','speed'].forEach(k=>state.params[k]=Number($(k).value));
+    state.params.guard=$('guard').value;
+    ['slow','compensate'].forEach(k=>state.params[k]=$(k).checked);
+    state.trialDone=false; state.trialRun=null; state.active=null; state.running=false;
+    log('调整参数',JSON.stringify(state.params)); refresh();
+  }
+  function startTrial() {
+    if(state.running || state.run) return;
+    state.trialRun=PM.createRun(state.params); state.trialDone=false;
+    state.active='trial'; state.running=true;
+    if(state.stage!=='trial')stageTo('trial');
+    log('开始两道试喷',JSON.stringify(state.params)); refresh();focusScene();
+  }
+  function startSpray() {
+    if(!state.trialDone || state.running) return;
+    state.run=PM.createRun(state.params); state.active='spray'; state.running=true;
+    state.selection=null; log('开始正式喷涂',JSON.stringify(state.params)); stageTo('spray');focusScene();
+  }
+  function togglePlay() {
+    if(!state.active) return;
+    state.running=!state.running; log(state.running?'继续作业':'暂停作业'); refresh();
+  }
+  function beginRepair(all) {
+    if(!state.run || state.run.progress<1 || state.running || (!all&&!state.selection))return;
+    const s=summary(); if(s.ready) {toast('本次教学目标已达成，可以交付。');return;}
+    state.repair={all, elapsed:0, lastPatch:0, duration:all?8:1.8, targets:all?s.issues.map(i=>({x:i.x,z:i.z})): [{x:state.selection.x,z:state.selection.z}]};
+    if(!state.repair.targets.length)state.repair.targets=[{x:1800,z:1200}];
+    state.active='repair'; state.running=true;
+    log('执行返修工单',all?'采用校准后的精细作业，清理保护区、处理异常层并补涂':`局部 x=${state.selection.x}, z=${state.selection.z} mm；采用校准后的精细作业`);
+    toast('返修使用校准后的精细作业：先清理污染或异常层，再完成局部补涂。');
+    refresh();focusScene();
+  }
+  function selectPoint(point) {
+    if(state.stage!=='inspect'||state.running||state.active==='repair')return;
+    state.selection={x:point.x,z:point.z};
+    const c=state.run.coat.cells.reduce((best,c)=>Math.hypot(c.x-point.x,c.z-point.z)<Math.hypot(best.x-point.x,best.z-point.z)?c:best);
+    state.selection={x:c.x,z:c.z};
+    const note=c.hole ? (c.n?'窗面有涂料痕迹：先清理并恢复遮蔽。':'窗洞保护区，当前无污染。') : (!c.n?'这里还没有涂覆，需要精细补涂。':c.doseIssue?'相对沉积偏离教学目标：先处理，再按记录重涂。':'此处已达到本次教学目标。');
+    toast(`定位 ${Math.round(c.x)} / ${Math.round(c.z)} mm · ${note}`);
+    log('点选墙面检查',`${Math.round(c.x)},${Math.round(c.z)}`);refresh();
+  }
+  function refresh() {
+    if(!state)return;
+    const i=stages.indexOf(state.stage), s=summary(), r=activeRun();
+    $('stageLabel').textContent=`0${i+1} / ${['规划路线','试喷调机','执行喷涂','巡检返修','项目交付'][i]}`;
+    $('stageHint').textContent=['拖动旋转 · 滚轮缩放','先试喷，再调整','涂层随作业累积','点选墙面定位','作业记录已生成'][i];
+    $('missionTitle').textContent=titles[i]; $('missionHint').textContent=hints[i];
+    $('panelTitle').textContent=['编排你的方案','试喷与调机','作业进行中','巡检与返修','完成本次交付'][i];
+    $('panelKicker').textContent=['PLAN','TRY & TUNE','SPRAY','INSPECT & REPAIR','DELIVER'][i];
+    $('panelHint').textContent=hints[i];
+    $('parameterPanel').hidden=i>2;
+    $('trialPanel').hidden=i!==1;
+    $('inspectionPanel').hidden=i!==3;
+    $('deliveryPanel').hidden=i!==4;
+    ['spacing','distance','speed'].forEach(k=>{$(k+'Out').textContent=state.params[k]+(k==='speed'?' mm/s':' mm');});
+    document.querySelectorAll('#parameterPanel input,#parameterPanel select,#parameterPanel button').forEach(el=>el.disabled=!!state.run||state.running);
+    document.querySelectorAll('[data-stage]').forEach(b=>{
+      b.classList.toggle('active',b.dataset.stage===state.stage);
+      b.classList.toggle('done',stages.indexOf(b.dataset.stage)<i);
+      b.disabled=stages.indexOf(b.dataset.stage)>state.reached||state.running||!!state.run&&stages.indexOf(b.dataset.stage)<2;
+      b.setAttribute('aria-current',b.dataset.stage===state.stage?'step':'false');
+    });
+    const ov=M.overlap(state.params), d0=M.depositionAt(0,state.params).dose, d1=M.depositionAt(.5,state.params).dose;
+    $('planNote').innerHTML=`<b>喷幅 ${Math.round(ov.width)} mm</b><span>${ov.gap>0?`相邻道留有 ${Math.round(ov.gap)} mm 漏带`:`名义搭接 ${Math.round(ov.ratio*100)}%`} · ${M.passes(state.params.spacing).length} 道</span>`;
+    $('trialResult').innerHTML=state.trialDone?`<strong>两道试喷已完成</strong><p>已涂区域 ${fmt(PM.summarizeRun(state.trialRun).coverage)}%。起收段相对沉积 ${fmt(d0)}×，中段 ${fmt(d1)}×。</p><p>${ov.gap>0?'可见间距漏带；减小道间距后再试。':'路线间无名义漏带。正式作业时继续观察窗边停喷。'}${d0>1.2||d1<.85?' 调整速度与流量同步，观察涂层变化。':''}</p>`:state.running?'<strong>正在试喷两道</strong><p>近看喷头与墙面，观察起收段和实际涂覆。</p>':'<strong>当前参数还未试喷</strong><p>每次调整参数后，重新试喷，再开始正式作业。</p>';
+    $('retryTrial').disabled=state.running;
+    if(state.stage==='inspect')renderIssues(s);
+    $('repairSelected').disabled=state.running||!state.selection||!!s?.ready;
+    $('repairAll').disabled=state.running||!!s?.ready;
+    $('repairSelected').textContent=state.selection?`处理此处 · ${Math.round(state.selection.x)} / ${Math.round(state.selection.z)}`:'点选墙面后局部返修';
+    if(state.stage==='deliver'){
+      $('deliverySummary').innerHTML=`<div class="delivery-seal">✓</div><strong>WALL A · 项目已交付</strong><p>已喷覆盖 ${fmt(s.coverage)}%<br>窗面污染 ${fmt(s.pollution)}%<br>相对沉积达标 ${fmt(s.uniformity)}%</p><p>完成 ${state.run.repairs.length} 次区域处理，记录 ${logs.length} 项操作。</p><small>以上为本教学项目的网格模拟结果。</small>`;
+    }
+    const primary=$('actionPrimary');primary.disabled=state.running;
+    if(state.stage==='plan'){primary.textContent='保存路线，开始试喷 →';$('actionHint').textContent='可以先保留当前参数，用试喷观察你的方案。';}
+    if(state.stage==='trial'){primary.textContent=state.running?'试喷进行中…':state.trialDone?'按当前方案开始作业 →':'按新参数重新试喷 →';$('actionHint').textContent='试喷不会计入正式作业；正式喷涂会使用当前参数快照。';}
+    if(state.stage==='spray'){primary.textContent=state.run?.progress>=1?'完成喷涂，开始巡检 →':'按已保存方案执行中';primary.disabled=state.run?.progress<1;$('actionHint').textContent='作业中锁定参数。发现异常可以暂停查看，完成后处理返修。';}
+    if(state.stage==='inspect'){primary.textContent=s?.ready?'确认记录，交付项目 →':'先处理墙面，再交付';primary.disabled=!s?.ready||state.running;$('actionHint').textContent='本次目标：覆盖 ≥99.5%，窗面无污染，相对沉积在 0.85–1.20×。';}
+    if(state.stage==='deliver'){primary.textContent='新开一面墙 ↗';$('actionHint').textContent='下载记录后，可用另一组参数开始新的项目。';}
+    $('play').textContent=state.running?'Ⅱ 暂停':'▶ 继续';$('play').disabled=!state.active;
+    $('sceneStatus').textContent=state.active==='repair'?(state.running?'返修工单执行中':'返修已暂停'):state.running?(state.active==='trial'?'两道试喷中':'正在喷涂'):r?.progress>=1?'本轮路径已完成':r?'作业已暂停':'等待你的操作';
+    updateReadouts(); updateScene();
+  }
+  function renderIssues(s) {
+    const list=$('issueList');list.replaceChildren();
+    const intro=document.createElement('p');intro.className='issue-summary';
+    intro.textContent=s.ready?'本次教学目标已达成。可以查看墙面后交付。':`待处理网格 ${s.issueCount} 个 · 漏喷 ${fmt(s.missArea)} m²。以下为代表位置，可直接点击墙面检查。`;
+    list.append(intro);
+    for(const issue of s.issues){const b=document.createElement('button');b.type='button';b.className='issue-item';b.innerHTML=`<span class="issue-dot"></span><span><b>${issue.label}</b><small>${issue.detail}</small></span><span>↗</span>`;
+      b.addEventListener('click',()=>{setCamera('front');selectPoint(issue);});list.append(b);}
+  }
+  function updateReadouts() {
+    const r=activeRun(), s=r?PM.summarizeRun(r):null, progress=r?.progress||0;
+    $('coverageValue').textContent=fmt(s?.coverage||0)+'%';$('pollutionValue').textContent=fmt(s?.pollution||0)+'%';$('uniformityValue').textContent=s?fmt(s.uniformity)+'%':'—';
+    $('progress').value=Math.round(progress*1000);$('progressText').textContent=state.active==='repair'?`返修 ${Math.round(state.repair.elapsed/state.repair.duration*100)}%`:`${Math.round(progress*100)}%`;
+    const pose=currentPose();$('passLabel').textContent=`${state.stage==='trial'?'试喷 · ':''}第 ${pose.pass} / ${M.passes(state.params.spacing).length} 道`;
+    $('tcp').textContent=`喷枪 X ${(pose.x/1000).toFixed(2)} m · 高 ${(pose.z/1000).toFixed(2)} m`;
+    $('valveState').textContent=state.active==='repair'?'区域处理':state.running?(pose.on?'喷枪开启':'喷枪关闭'):'喷枪关闭';
+    $('valveState').dataset.on=String(!!(state.running&&pose.on));
+    $('liveSpeed').textContent=state.running?`${Math.round(pose.v)} mm/s`:'0 mm/s';
+  }
+  function currentPose() {
+    const r=activeRun();let pose=M.poseAt(r?.progress||0,state.params);
+    if(state.active==='repair'&&state.repair){const work=state.repair;const t=Math.min(.999,work.elapsed/work.duration)*work.targets.length;const a=work.targets[Math.floor(t)];pose={...pose,x:a.x,z:a.z,on:false,v:0};}
+    return pose;
+  }
+  function updateScene() {
+    if(!scene||!state)return;
+    $('inspectionLegend').hidden=!state.inspect;
+    const r=activeRun();
+    scene.update({params:state.params,pose:currentPose(),progress:r?.progress||0,coat:r?.coat||null,viewMode:state.inspect?'inspect':r?'paint':'plan',color:state.color,running:state.running,trial:state.stage==='trial',selectedCell:state.selection});
+  }
+  function tick(now) {
+    frame=0;if(!visible)return;
+    const dt=Math.min(.08,(now-(lastTime||now))/1000);lastTime=now;
+    if(state.running){
+      if(state.active==='repair'){
+        state.repair.elapsed+=dt;
+        if(state.repair.all&&state.repair.elapsed-state.repair.lastPatch>.12){
+          state.repair.lastPatch=state.repair.elapsed;
+          const issue=PM.summarizeRun(state.run).issues[0];
+          if(issue){state.repair.targets=[issue];PM.repairAt(state.run,issue.x,issue.z);}
+        }
+        if(state.repair.elapsed>=state.repair.duration){
+          if(state.repair.all)PM.repairAll(state.run);else PM.repairAt(state.run,state.repair.targets[0].x,state.repair.targets[0].z);
+          state.running=false;state.active=null;state.repair=null;state.selection=null;
+          log('返修完成');toast(summary().ready?'墙面已达到本次教学目标，可以交付。':'此区域处理完成，继续检查其他位置。');refresh();
+        }
+      }else{
+        const r=state.active==='trial'?state.trialRun:state.run,pose=M.poseAt(r.progress,r.params);
+        const rate=state.active==='trial'?2.5:Number($('rate').value);
+        const trialLimit=Math.min(1,(2320*2+state.params.spacing)/pose.total);
+        const limit=state.active==='trial'?trialLimit:1;
+        PM.advanceRun(r,Math.min(limit,r.progress+pose.v*dt*rate/pose.total));
+        if(r.progress>=limit-1e-8){const trial=state.active==='trial';state.running=false;state.active=null;state.trialDone=trial||state.trialDone;log(trial?'两道试喷完成':'正式路径执行完成');toast(trial?'试喷结束。调整参数后可以再试，或按此方案开始作业。':'喷涂完成。进入巡检，查看墙面上的实际结果。');refresh();if(trial)document.querySelector('.panel-scroll').scrollTop=0;}
+      }
+      updateScene();
+    }
+    if(now-lastUI>180){lastUI=now;updateReadouts();}
+    frame=requestAnimationFrame(tick);
+  }
+  function exportRecord() {
+    if(state.stage!=='deliver')return;
+    const s=summary();const rows=[['室内喷涂工坊 · 教学作业记录'],['墙面','WALL A 3600 × 2400 mm'],['完成时间',new Date().toLocaleString('zh-CN')],['道间距 mm',state.params.spacing],['喷距 mm',state.params.distance],['设定速度 mm/s',state.params.speed],['洞口保护',state.params.guard],['流量同步',state.params.compensate?'是':'否'],['已喷覆盖 %',fmt(s.coverage)],['窗面污染 %',fmt(s.pollution)],['相对沉积达标 %',fmt(s.uniformity)],['范围说明','教学几何与相对沉积模型，不代表实际膜厚与工程验收'],[],['时间','操作','详情'],...logs.map(l=>[l.time,l.action,l.detail])];
+    rows.push([],['返修编号','X mm','高度 mm','处理内容','处理网格数'],...state.run.repairs.map(a=>[a.id,a.x,a.z,a.label,a.changed]));
+    const csv='\uFEFF'+rows.map(row=>row.map(v=>'"'+String(v).replace(/"/g,'""')+'"').join(',')).join('\r\n');
+    const url=URL.createObjectURL(new Blob([csv],{type:'text/csv;charset=utf-8'}));const a=document.createElement('a');a.href=url;a.download='WALL-A_喷涂项目作业记录.csv';a.click();setTimeout(()=>URL.revokeObjectURL(url),1000);toast('作业记录已导出。');
+  }
+  $('parameterPanel').before($('trialPanel'));
+  scene=window.createSprayScene($('scene'),{onWallPick:selectPoint,onContextLost:()=>{if(state){state.running=false;refresh();toast('三维显示暂停，作业进度已停住。刷新页面可重新开工。');}}});
+  scene.setTheme(document.body.dataset.theme);
+  ['spacing','distance','speed','guard','slow','compensate'].forEach(k=>$(k).addEventListener('input',paramsChanged));
+  $('actionPrimary').addEventListener('click',()=>{if(state.stage==='plan')startTrial();else if(state.stage==='trial')state.trialDone?startSpray():startTrial();else if(state.stage==='spray'&&state.run.progress>=1)stageTo('inspect');else if(state.stage==='inspect'&&summary().ready)stageTo('deliver');else if(state.stage==='deliver')reset();});
+  $('retryTrial').addEventListener('click',startTrial);$('play').addEventListener('click',togglePlay);
+  $('repairSelected').addEventListener('click',()=>beginRepair(false));$('repairAll').addEventListener('click',()=>beginRepair(true));
+  $('export').addEventListener('click',exportRecord);$('reset').addEventListener('click',()=>{reset();toast('已新建作业，重新安排你的喷涂方案。');});
+  document.querySelectorAll('[data-view]').forEach(b=>b.addEventListener('click',()=>setCamera(b.dataset.view)));
+  document.querySelectorAll('[data-stage]').forEach(b=>b.addEventListener('click',()=>{if(!b.disabled)stageTo(b.dataset.stage);}));
+  document.querySelectorAll('[data-color]').forEach(b=>b.addEventListener('click',()=>{if(state.run||state.running)return;state.color=b.dataset.color;document.querySelectorAll('[data-color]').forEach(v=>{v.classList.toggle('active',v===b);v.setAttribute('aria-pressed',String(v===b));});updateScene();}));
+  $('pathToggle').addEventListener('change',()=>scene.setPathVisible($('pathToggle').checked));
+  $('inspectToggle').addEventListener('change',()=>{state.inspect=$('inspectToggle').checked;updateScene();});
+  CourseTheme.register(theme => scene.setTheme(theme));
+  $('fullscreen').addEventListener('click',async()=>{try{if(document.fullscreenElement)await document.exitFullscreen();else await document.documentElement.requestFullscreen();}catch{toast('当前窗口不支持全屏，可使用浏览器全屏功能。');}});
+  $('help').addEventListener('click',()=>$('helpDialog').showModal());$('closeHelp').addEventListener('click',()=>$('helpDialog').close());
+  document.addEventListener('keydown',e=>{if(e.target.closest('input,select,textarea,button')||$('helpDialog').open)return;if(e.code==='Space'){e.preventDefault();togglePlay();}if(e.key.toLowerCase()==='f')$('fullscreen').click();});
+  document.addEventListener('visibilitychange',()=>{visible=!document.hidden;lastTime=0;if(visible&&!frame)frame=requestAnimationFrame(tick);else if(!visible){cancelAnimationFrame(frame);frame=0;}});
+  window.sprayLab={model:M,projectModel:PM,scene,snapshot:()=>({stage:state.stage,params:{...state.params},progress:activeRun()?.progress||0,playing:state.running,active:state.active,trialDone:state.trialDone,pose:currentPose(),summary:summary(),selection:state.selection,stats:scene.getStats(),logCount:logs.length})};
+  reset();frame=requestAnimationFrame(tick);
+})();
+</script></body></html>

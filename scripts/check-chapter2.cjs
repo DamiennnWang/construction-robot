@@ -3,7 +3,7 @@ const {chromium}=require('playwright');
 const assert=require('node:assert/strict'),fs=require('node:fs'),path=require('node:path'),{pathToFileURL}=require('node:url');
 const args=process.argv.slice(2),arg=(name,fallback)=>args.includes(name)?args[args.indexOf(name)+1]:fallback;
 const root=path.resolve(arg('--site',path.join(__dirname,'..'))),packaged=args.includes('--packaged'),screenshots=arg('--screenshots',null);
-const routes=packaged?{entry:'index.html',motor:'lessons/motor.html',diesel:'lessons/diesel.html',transmission:'lessons/transmission.html',mechanisms:'lessons/mechanisms.html',fourbar:'lessons/fourbar.html'}:{entry:'第二章_动力与工作机构/index.html',motor:'任务2-1_动力装置的基本原理/index.html',diesel:'任务2-1_动力装置的基本原理/diesel.html',transmission:'任务2-2_动力的传递与变换/index.html',mechanisms:'任务2-3_工作机构与施工动作/index.html',fourbar:'任务2-3_工作机构与施工动作/fourbar.html'};
+const routes=packaged?{entry:'index.html',motor:'lessons/motor.html',diesel:'lessons/diesel.html',transmission:'lessons/transmission.html',mechanisms:'lessons/mechanisms.html',fourbar:'lessons/fourbar.html'}:{entry:'course/chapters/02/overview/index.html',motor:'course/chapters/02/tasks/2-1/index.html',diesel:'course/chapters/02/tasks/2-1/diesel.html',transmission:'course/chapters/02/tasks/2-2/index.html',mechanisms:'course/chapters/02/tasks/2-3/index.html',fourbar:'course/chapters/02/tasks/2-3/fourbar.html'};
 const url=name=>pathToFileURL(path.join(root,routes[name])).href;
 (async()=>{
   const browser=await chromium.launch({headless:true,channel:process.env.CHAPTER2_BROWSER||undefined});

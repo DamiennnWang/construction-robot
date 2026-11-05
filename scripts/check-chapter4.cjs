@@ -3,7 +3,7 @@ const {chromium}=require('playwright');
 const assert=require('node:assert/strict'),fs=require('node:fs'),path=require('node:path'),{pathToFileURL,fileURLToPath}=require('node:url');
 const args=process.argv.slice(2),arg=(name,fallback)=>args.includes(name)?args[args.indexOf(name)+1]:fallback;
 const packaged=args.includes('--packaged'),root=path.resolve(arg('--site',path.join(__dirname,'..'))),shots=arg('--screenshots',null);
-const routes=packaged?{entry:'index.html',state:'lessons/state.html',lidar:'lessons/lidar.html',vision:'lessons/vision.html'}:{entry:'第四章_感知与智能识别/index.html',state:'任务4-1_机器人自身状态感知/index.html',lidar:'任务4-2_机器人激光雷达感知/index.html',vision:'任务4-3_标注安全帽并应用YOLO模型/index.html'};
+const routes=packaged?{entry:'index.html',state:'lessons/state.html',lidar:'lessons/lidar.html',vision:'lessons/vision.html'}:{entry:'course/chapters/04/overview/index.html',state:'course/chapters/04/tasks/4-1/index.html',lidar:'course/chapters/04/tasks/4-2/index.html',vision:'course/chapters/04/tasks/4-3/index.html'};
 const url=name=>pathToFileURL(path.join(root,routes[name])).href;
 (async()=>{const browser=await chromium.launch({headless:true,channel:process.env.CHAPTER4_BROWSER||undefined});const checks=[],errors=[],external=[];
 try{const page=await browser.newPage({viewport:{width:1600,height:900}});

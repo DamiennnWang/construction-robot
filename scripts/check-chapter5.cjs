@@ -3,7 +3,7 @@ const {chromium}=require('playwright');
 const assert=require('node:assert/strict'),fs=require('node:fs'),path=require('node:path'),{pathToFileURL,fileURLToPath}=require('node:url');
 const args=process.argv.slice(2),arg=(name,fallback)=>args.includes(name)?args[args.indexOf(name)+1]:fallback;
 const packaged=args.includes('--packaged'),root=path.resolve(arg('--site',path.join(__dirname,'..'))),shots=arg('--screenshots',null);
-const routes=packaged?{entry:'index.html',rebar:'lessons/rebar.html',tying:'lessons/tying.html',concrete:'lessons/concrete.html'}:{entry:'第五章_主体结构施工/index.html',rebar:'任务5-1_钢筋加工机械与绑扎作业面识读/index.html',tying:'任务5-2_钢筋绑扎机器人操作与人工复核/index.html',concrete:'任务5-3_混凝土泵送布料与整平抹光机器人/index.html'};
+const routes=packaged?{entry:'index.html',rebar:'lessons/rebar.html',tying:'lessons/tying.html',concrete:'lessons/concrete.html'}:{entry:'course/chapters/05/overview/index.html',rebar:'course/chapters/05/tasks/5-1/index.html',tying:'course/chapters/05/tasks/5-2/index.html',concrete:'course/chapters/05/tasks/5-3/index.html'};
 const url=name=>pathToFileURL(path.join(root,routes[name])).href;
 (async()=>{const browser=await chromium.launch({headless:true,channel:process.env.CHAPTER5_BROWSER||undefined}),checks=[],errors=[],external=[];
 try{const page=await browser.newPage({viewport:{width:1600,height:900},reducedMotion:'reduce'});page.setDefaultTimeout(15000);
@@ -27,7 +27,7 @@ try{const page=await browser.newPage({viewport:{width:1600,height:900},reducedMo
  checks.push('shared navigation, return links, theme switching and default dark after reload');
  await page.goto(url('rebar'));await ready('rebar');await shot('第五章加工课堂');
  // Replay the existing task-owned game regression, preserving all original gates.
- const actions=JSON.parse(fs.readFileSync(path.join(__dirname,'../任务5-1_钢筋加工机械与绑扎作业面识读/qa/game-actions.json'),'utf8'));
+ const actions=JSON.parse(fs.readFileSync(path.join(__dirname,'../course/chapters/05/tasks/5-1/qa/game-actions.json'),'utf8'));
  for(const[type,value,timeout]of actions){
    if(type==='eval')await page.evaluate(value);
    else if(type==='click'){const target=page.locator(value);if(await target.getAttribute('aria-disabled')==='true')await target.evaluate(e=>e.click());else await target.click();}

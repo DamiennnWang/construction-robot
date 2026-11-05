@@ -6,7 +6,7 @@ import {spawnSync} from 'node:child_process';
 const root = fileURLToPath(new URL('../', import.meta.url));
 function collect(dir) {
   return readdirSync(dir, {withFileTypes: true}).flatMap(entry => {
-    if (['.git', '.local', 'node_modules', 'previous'].includes(entry.name)) return [];
+    if (['.git', 'archive', 'artifacts', 'resources', 'node_modules', 'previous'].includes(entry.name)) return [];
     const path = join(dir, entry.name);
     return entry.isDirectory() ? collect(path) : /\.test\.(cjs|mjs)$/.test(entry.name) ? [path] : [];
   });

@@ -1,0 +1,1160 @@
+<!doctype html><html lang="zh-CN" data-theme="light"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>任务7-1 · 桥梁巡检三维现场</title><style>:root{font-family:"Segoe UI","Microsoft YaHei",sans-serif;color-scheme:light;--paper:#edf2f5;--surface:#fff;--soft:#f2f6fa;--ink:#203e55;--muted:#778994;--line:#dce5e9;--accent:#1c6fc0;--accent-soft:#e9f2fb;--green:#258c76;--warn:#ad722b;--danger:#b95c4f;background:var(--paper);color:var(--ink);font-synthesis:none}*{box-sizing:border-box}body{margin:0;width:100vw;height:100dvh;overflow:hidden}button,input,select{font:inherit}button{cursor:pointer;color:var(--ink);background:var(--surface);border:1px solid var(--line);border-radius:8px;padding:9px 12px;font-size:13px;transition:background .15s,border-color .15s}button:hover{background:var(--soft);border-color:#9db9cd}button[aria-pressed=true]{background:var(--accent-soft);border-color:var(--accent);color:var(--accent)}button:disabled{opacity:.48;cursor:not-allowed}button:focus-visible,input:focus-visible,select:focus-visible,a:focus-visible{outline:2px solid var(--accent);outline-offset:3px}[hidden]{display:none!important}a{color:var(--accent)}
+.app{width:1600px;height:900px;position:absolute;left:50%;top:50%;transform:translate(-50%,-50%) scale(var(--scale,1));transform-origin:center;padding:0 28px;display:grid;grid-template-rows:72px 76px 682px 70px;background:var(--paper)}header{display:flex;align-items:center;gap:28px;border-bottom:1px solid var(--line)}.brand{display:flex;align-items:center;gap:12px;font-size:17px;font-weight:650;text-decoration:none;color:var(--ink);letter-spacing:1px}.brand-mark{width:41px;height:41px;display:grid;place-items:center;color:white;background:var(--accent);border-radius:9px;font-size:23px;font-weight:400}.brand small{display:block;font-size:9px;font-weight:400;letter-spacing:1.8px;color:var(--muted);margin-top:4px}.task-tag{font-size:14px;border-left:1px solid var(--line);padding-left:28px;color:var(--muted)}.header-tools{display:flex;gap:8px;margin-left:auto}.header-tools button{padding:8px 11px;font-size:12px;background:transparent}.steps{display:grid;grid-template-columns:repeat(4,1fr);gap:13px;padding:11px 0}.steps button{display:flex;gap:16px;align-items:center;text-align:left;border-color:transparent;background:transparent;padding:8px 16px}.steps button[aria-pressed=true]{background:var(--surface);border-color:var(--line);box-shadow:0 3px 12px #2c57770a}.steps b{font-size:24px;font-weight:400;color:var(--muted)}.steps span{font-size:16px;font-weight:600}.steps small{display:block;font-size:11px;color:var(--muted);font-weight:400;margin-top:4px}.steps i{width:7px;height:7px;border-radius:50%;border:1px solid #92a8b9;margin-left:auto}.steps .done i{background:var(--green);border-color:var(--green)}
+main{display:grid;grid-template-columns:minmax(0,1fr) 378px;gap:16px;min-height:0}.workspace{display:grid;grid-template-rows:100px minmax(0,1fr) 86px 31px;min-width:0;min-height:0;background:var(--surface);border:1px solid var(--line);border-radius:15px;overflow:hidden}.intro{padding:20px 25px 0}.eyebrow{display:flex;align-items:center;justify-content:space-between;font-size:10px;letter-spacing:1.5px;color:var(--muted)}h1{font-size:27px;letter-spacing:.2px;margin:9px 0 5px;font-weight:650}.intro p{font-size:13px;color:var(--muted);margin:0;line-height:1.7}.scene-area{position:relative;min-height:0;background:linear-gradient(180deg,#f5f8fa,#e6edef);isolation:isolate;overflow:hidden}#viewport{position:absolute;inset:0}#viewport canvas{width:100%;height:100%;display:block;touch-action:none;cursor:grab;outline-offset:-4px}#viewport canvas:active{cursor:grabbing}.view-tools{position:absolute;top:15px;left:21px;display:flex;gap:2px;padding:4px;background:var(--surface);border:1px solid var(--line);border-radius:10px;box-shadow:0 3px 14px #35516e08;z-index:3}.view-tools button{border:0;background:transparent;padding:7px 10px;font-size:11px;border-radius:6px}.view-tools button[aria-pressed=true]{background:var(--accent-soft);color:var(--accent)}#explodeButton{border-left:1px solid var(--line);margin-left:3px}.scene-live{position:absolute;right:22px;top:28px;display:flex;align-items:center;gap:7px;font-size:10px;color:var(--muted);pointer-events:none}.scene-live i{height:6px;width:6px;border-radius:50%;background:#43af95;box-shadow:0 0 0 3px #43af9515}.scene-caption-overlay{position:absolute;bottom:14px;left:23px;right:23px;display:flex;justify-content:space-between;gap:10px;font-size:10px;color:#6a7e8b;pointer-events:none}.scene-caption-overlay span{background:#f3f7f9d9;padding:5px 8px;border-radius:5px}#liveReadout{font-variant-numeric:tabular-nums;color:#27617f}.scene-toast{position:absolute;left:50%;bottom:48px;transform:translateX(-50%);font-size:12px;padding:10px 16px;border:1px solid var(--line);border-radius:8px;background:var(--surface);box-shadow:0 3px 15px #26395116;max-width:80%;line-height:1.6}.world-pin{position:absolute;transform:translate(-50%,-100%);border:0;border-radius:50% 50% 50% 0;rotate:-45deg;background:var(--surface);width:31px;height:31px;padding:0;box-shadow:0 3px 9px #25436125;z-index:2;color:var(--accent)}.world-pin span{display:block;rotate:45deg;font-size:13px;font-weight:700}.world-pin.selected{background:var(--accent);color:white}.point-list{display:grid;grid-template-columns:repeat(3,1fr);gap:12px;padding:13px 23px;background:var(--surface);border-top:1px solid var(--line)}.point-list button{text-align:left;display:flex;align-items:center;gap:12px;padding:9px 13px;border:1px solid var(--line);background:transparent}.point-list button[aria-pressed=true]{background:var(--accent-soft);border-color:#b9d4e9}.point-letter{font-size:22px;color:var(--muted);font-weight:400}.point-text{display:flex;flex:1;flex-direction:column;gap:5px}.point-text strong{font-size:13px;font-weight:600}.point-text small{font-size:10px;color:var(--muted)}.point-check{font-size:12px;color:var(--muted)}.point-check.complete{color:var(--green)}.scene-bottom{display:flex;align-items:center;justify-content:space-between;padding:0 23px;font-size:10px;background:var(--soft);border-top:1px solid var(--line);color:var(--muted)}
+.controls{background:var(--surface);border:1px solid var(--line);border-radius:15px;padding:23px 22px 18px;display:flex;flex-direction:column;min-height:0;overflow:hidden}.panel-heading{display:flex;justify-content:space-between;font-size:11px;color:var(--muted)}#panelStatus{color:var(--accent)}h2{font-size:21px;line-height:1.5;font-weight:650;margin:9px 0 10px}#controlPanel{flex:1;min-height:0;display:flex;flex-direction:column;gap:12px}.brief{font-size:12px;color:var(--muted);line-height:1.8;margin:0}.mission-card{padding:14px;border:1px solid var(--line);border-radius:10px;background:var(--soft)}.mission-card h3{font-size:14px;margin:0 0 9px}.mission-card p{font-size:12px;color:var(--muted);line-height:1.8;margin:0}.mission-card dl{display:grid;grid-template-columns:52px 1fr;gap:9px;margin:12px 0 0;font-size:11px}.mission-card dt{color:var(--muted)}.mission-card dd{margin:0}.section-label{display:flex;align-items:center;justify-content:space-between;font-size:12px;font-weight:600;margin:0 0 7px}.robot-options{display:grid;grid-template-columns:repeat(3,1fr);gap:7px}.robot-options button{padding:10px 5px 8px;text-align:center;font-size:12px}.robot-options svg{display:block;width:65px;height:42px;margin:0 auto 7px}.robot-options small{font-size:9px;display:block;color:var(--muted);margin-top:4px}.robot-description{font-size:11px;line-height:1.7;color:var(--muted);margin:8px 0 0}.two-buttons{display:grid;grid-template-columns:1fr 1fr;gap:7px}.two-buttons button{font-size:12px;padding:9px 5px}.primary{background:var(--accent);color:white;border-color:var(--accent);font-weight:600}.primary:hover{background:#195fa5;color:white}.wide{width:100%;font-size:13px;padding:11px 12px}.dark-button{background:var(--ink);color:var(--surface);border:0}.route-meter{padding:12px 13px;border:1px solid var(--line);border-radius:8px}.route-meter>div:first-child{display:flex;justify-content:space-between;font-size:11px;color:var(--muted)}.meter{height:5px;border-radius:4px;background:var(--line);margin:10px 0 6px;overflow:hidden}.meter i{display:block;height:100%;width:0;background:var(--accent);border-radius:4px;transition:width .08s linear}.route-meter small{font-size:10px;color:var(--muted)}.check-row{display:flex;align-items:center;gap:8px;font-size:12px;line-height:1.7;margin:0}.check-row input{accent-color:var(--accent);width:15px;height:15px}.check-row small{font-size:10px;color:var(--muted)}.preflight{display:grid;gap:7px;padding:10px 12px;background:var(--soft);border-radius:8px}.preflight strong{font-size:11px;font-weight:500}.feedback{margin-top:13px;background:var(--accent-soft);border-radius:8px;font-size:12px;line-height:1.75;padding:12px 13px;min-height:66px;border-left:3px solid var(--accent);flex:0 0 auto}.feedback[data-kind=warn]{border-color:var(--warn)}.feedback[data-kind=success]{border-color:var(--green)}.micro{font-size:10px;color:var(--muted);line-height:1.7;margin:0}.push{margin-top:auto}
+.controls[data-stage=travel][data-mission=wall] #controlPanel{gap:9px}.controls[data-stage=travel][data-mission=wall] .robot-description,.controls[data-stage=travel][data-mission=wall] #controlPanel>.two-buttons:nth-last-child(2){display:none}.controls[data-stage=travel][data-mission=wall] .robot-options svg{height:34px;margin-bottom:4px}.controls[data-stage=travel][data-mission=wall] .robot-options button{padding:7px 5px}.controls[data-stage=travel][data-mission=wall] .preflight{gap:5px;padding:9px 11px}
+.camera-view{position:relative;background:#1c2d38;border-radius:9px;overflow:hidden;border:1px solid var(--line);height:183px;flex-shrink:0}.camera-view canvas{width:100%;height:100%;object-fit:cover;display:block}.reticle{position:absolute;inset:42% 45%;border:1px solid #ffffffa8;pointer-events:none}.camera-badge{position:absolute;top:9px;left:10px;font-size:9px;color:white;letter-spacing:1px;text-shadow:0 1px 3px #0008}.camera-quality{position:absolute;bottom:8px;left:9px;right:9px;font-size:9px;color:white;display:flex;align-items:center;justify-content:space-between;text-shadow:0 1px 4px #0009}.camera-quality b{font-weight:500;background:#152b38bd;padding:4px 7px;border-radius:4px}.camera-quality b.good{color:#8ce0c3}.camera-quality b.bad{color:#ffcd91}.mode-row{display:grid;grid-template-columns:1fr 1fr;gap:6px}.mode-row button{font-size:11px;padding:7px}.range-group{display:grid;grid-template-columns:1fr 1fr;gap:14px}.range-group label{font-size:10px;color:var(--muted)}.range-group label>span{display:flex;justify-content:space-between;margin-bottom:5px}.range-group output{color:var(--accent)}input[type=range]{width:100%;accent-color:var(--accent);margin:0;height:17px;cursor:pointer}.photo-counts{display:flex;justify-content:space-between;align-items:center;font-size:10px;color:var(--muted);padding:7px 0;border-top:1px solid var(--line)}.photo-counts .done{color:var(--green)}.photo-strip{display:grid;grid-template-columns:1fr 1fr;gap:8px}.photo-item{padding:0;overflow:hidden;text-align:left;position:relative}.photo-item img{width:100%;height:75px;object-fit:cover;display:block}.photo-item>span{display:flex;justify-content:space-between;gap:4px;font-size:9px;padding:6px 7px;background:var(--soft);color:var(--muted)}.photo-item em{font-style:normal;color:var(--green)}.photo-placeholder{height:101px;border:1px dashed var(--line);border-radius:7px;display:grid;place-items:center;color:var(--muted);font-size:11px}.record-field{font-size:12px;display:block}.record-field span{display:block;margin-bottom:7px;font-weight:600}select{width:100%;padding:9px 8px;border:1px solid var(--line);border-radius:7px;background:var(--surface);color:var(--ink);font-size:11px;line-height:1.5}.record-state{background:var(--soft);padding:12px 13px;border:1px solid var(--line);border-radius:8px;font-size:11px;line-height:1.8}.record-state strong{display:block;color:var(--green);margin-bottom:4px}.follow-note{font-size:11px;color:var(--warn);line-height:1.8}.inline-link{padding:0;border:0;background:none;color:var(--accent);font-size:10px}.camera-actions{display:grid;grid-template-columns:1fr 1fr;gap:7px}.camera-actions button{font-size:11px;padding:7px 6px}
+footer{display:flex;align-items:center;gap:22px}.lesson-note{display:flex;flex-direction:column;gap:5px}.lesson-note b{font-size:13px;font-weight:600}.lesson-note span{font-size:11px;color:var(--muted)}.progress{margin-left:auto;text-align:right;font-size:11px;color:var(--muted)}#progressDots{display:flex;justify-content:flex-end;gap:4px;margin-top:8px}#progressDots i{width:33px;height:4px;border-radius:3px;background:var(--line)}#progressDots .done{background:var(--green)}footer button{font-size:12px;padding:11px 18px}#reportButton{background:transparent}dialog{width:min(760px,94vw);max-height:88dvh;overflow:auto;border:1px solid var(--line);border-radius:17px;padding:32px;background:var(--surface);color:var(--ink);box-shadow:0 20px 100px #0003}dialog::backdrop{background:#10243c80;backdrop-filter:blur(4px)}dialog .close{position:absolute;right:12px;top:8px;border:0;background:transparent;font-size:24px;padding:4px 8px}dialog h2{font-size:24px;margin:16px 0}dialog h3{font-size:14px;margin:16px 0 6px}dialog p{font-size:13px;color:var(--muted);line-height:1.85}.guide-grid{display:grid;grid-template-columns:1fr 1fr;gap:24px}.sources{font-size:12px;line-height:2;color:var(--muted);padding-left:20px}.sources a{color:var(--accent)}.dialog-actions{display:flex;gap:10px;margin-top:22px}.report-entry{border-top:1px solid var(--line);padding:17px 0}.report-entry h3{display:flex;justify-content:space-between;margin:0}.report-entry h3 small{font-size:11px;color:var(--muted);font-weight:400}.report-entry .photo-strip{grid-template-columns:repeat(3,1fr)}.report-entry img{height:100px}#photoContent img{width:100%;height:auto;border-radius:8px;margin-top:20px}.fallback{max-width:500px;position:absolute;left:50%;top:50%;transform:translate(-50%,-50%);text-align:center;width:85%;padding:30px;color:var(--muted)}.fallback b{color:var(--ink)}.fallback p{font-size:13px;line-height:1.8}
+:root[data-theme=dark]{color-scheme:dark;--paper:#101b29;--surface:#172738;--soft:#203347;--ink:#dce8f6;--muted:#9bafc3;--line:#30485e;--accent:#80b5ec;--accent-soft:#293f59;--green:#78c4ae;--warn:#e4b26e}:root[data-theme=dark] .scene-area{background:linear-gradient(#203141,#273d48)}:root[data-theme=dark] .primary{background:#2c79c3;color:#fff}:root[data-theme=dark] .scene-caption-overlay span{background:#172738d9;color:#c1d4e2}:root[data-theme=dark] .point-list button[aria-pressed=true]{border-color:#52799b}
+@media(max-width:760px){body{height:auto;overflow:auto}.app{width:100%;height:auto;position:static;transform:none;padding:0 12px;display:block}header{height:64px;gap:10px}.brand{font-size:12px;gap:8px;letter-spacing:0}.brand-mark{width:33px;height:33px;font-size:20px}.brand small{font-size:6px;letter-spacing:1px}.task-tag{display:none}.header-tools{gap:4px}.header-tools button{padding:7px;font-size:10px}#fullButton,#resetButton{display:none}.steps{gap:4px;padding:9px 0}.steps button{padding:8px 5px;gap:5px;border-radius:7px}.steps b{font-size:14px}.steps span{font-size:11px}.steps small,.steps i{display:none}main{display:flex;flex-direction:column;gap:12px}.workspace{height:500px;grid-template-rows:88px minmax(0,1fr) 75px 26px;border-radius:12px}.intro{padding:15px 15px 0}.eyebrow{font-size:8px;letter-spacing:.8px}h1{font-size:20px;margin:8px 0 5px}.intro p{font-size:10px}.view-tools{top:10px;left:10px;padding:3px;gap:0;max-width:calc(100% - 20px)}.view-tools button{font-size:9px;padding:7px 6px}#explodeButton{margin-left:1px}.scene-live{top:52px;right:14px;font-size:8px}.scene-caption-overlay{left:11px;right:11px;bottom:10px;font-size:8px;gap:3px}.scene-caption-overlay span{padding:4px}.point-list{padding:10px;gap:6px}.point-list button{gap:6px;padding:8px 6px}.point-letter{font-size:17px}.point-text strong{font-size:10px}.point-text small{font-size:8px}.point-check{font-size:9px}.scene-bottom{font-size:8px;padding:0 11px}.controls{padding:20px;border-radius:12px;min-height:540px;overflow:visible}.controls h2{font-size:20px}#controlPanel{gap:12px}.camera-view{height:195px}.feedback{margin-top:18px}.camera-actions button,.mode-row button{font-size:12px;padding:10px}.two-buttons button{padding:12px 5px}.photo-item img{height:90px}.photo-item>span{font-size:10px}.range-group label{font-size:11px}input[type=range]{height:25px}footer{padding:18px 2px;gap:8px;flex-wrap:wrap}.lesson-note{width:100%;margin-bottom:6px}.lesson-note b{font-size:12px}.lesson-note span{font-size:10px}.progress{margin-left:0;margin-right:auto;font-size:10px}footer button{font-size:11px;padding:10px 12px}dialog{padding:25px 20px}.guide-grid{grid-template-columns:1fr;gap:0}.report-entry .photo-strip{grid-template-columns:1fr 1fr}.world-pin{width:27px;height:27px}.scene-toast{font-size:10px;bottom:40px;max-width:85%;width:85%}}
+.view-tools{max-width:calc(100% - 42px);flex-wrap:wrap}.scene-live{top:auto;bottom:49px}#partsButton{border-left:1px solid var(--line)}.parts-panel{position:absolute;z-index:4;right:18px;top:70px;width:224px;max-height:calc(100% - 122px);overflow:auto;background:var(--surface);border:1px solid var(--line);border-radius:12px;padding:13px;box-shadow:0 8px 28px #193c5720}.parts-heading{display:flex;align-items:center;justify-content:space-between;gap:8px;font-size:12px}.parts-heading button{padding:0 5px;font-size:20px;border:0;line-height:1.2}.parts-hint{font-size:10px;color:var(--muted);margin:5px 0 10px}.parts-list{display:grid;gap:5px}.parts-list button{display:flex;align-items:center;gap:7px;text-align:left;font-size:11px;padding:7px}.parts-list button>span{font-size:10px;font-variant-numeric:tabular-nums;color:var(--muted)}.parts-list button>small{margin-left:auto;font-size:9px;font-weight:400;color:var(--muted)}.parts-list button[aria-pressed=true]{border-color:#d59532;background:var(--accent-soft)}.part-description{font-size:11px;line-height:1.7;margin:10px 0 0;color:var(--muted);border-top:1px solid var(--line);padding-top:9px}
+@media(max-width:760px){.view-tools{max-width:calc(100% - 20px)}.scene-live{top:auto;bottom:40px}.scene-area:has(.parts-panel:not([hidden])) .scene-live{display:none}.parts-panel{top:88px;right:8px;width:152px;padding:9px;max-height:calc(100% - 126px);border-radius:8px}.parts-heading{font-size:10px}.parts-hint{font-size:9px;margin-bottom:6px}.parts-list{gap:4px}.parts-list button{font-size:9px;padding:5px 4px;gap:4px}.parts-list button>span{font-size:9px}.parts-list button>small{display:none}.part-description{font-size:9px;line-height:1.6;margin-top:7px;padding-top:7px}}
+@media(prefers-reduced-motion:reduce){*,*::before,*::after{transition:none!important;animation:none!important}}
+</style><style>:root{--c7-nav-height:64px}
+.c7-nav{position:fixed;inset:0 0 auto;height:var(--c7-nav-height);z-index:1000;display:flex;align-items:center;gap:24px;padding:0 24px;background:#111d30;color:#dbe9fc;border-bottom:1px solid #334660;font:15px/1.4 "Segoe UI","Microsoft YaHei",sans-serif;box-sizing:border-box}
+.c7-nav a{text-decoration:none;color:#c0d2ec;white-space:nowrap;font-size:15px}.c7-nav .c7-home{font-weight:700;color:#8ebeff;padding-right:20px;border-right:1px solid #3a4a62}.c7-links{display:flex;align-items:center;gap:5px;flex:1}.c7-links a{padding:8px 12px;border-radius:6px}.c7-links a:hover,.c7-links a[aria-current]{background:#294260;color:#fff}.c7-nav button{border:1px solid #465d79;background:#22354d;color:#e5efff;border-radius:7px;padding:8px 12px;font:inherit;cursor:pointer;white-space:nowrap}.c7-nav :focus-visible{outline:3px solid #e7ac54;outline-offset:3px}
+html[data-c7] body{display:block;overflow:hidden;margin:0;padding:0;width:100%;height:100dvh}
+#c7-content{position:absolute;inset:var(--c7-nav-height) 0 0;overflow:auto;background:var(--paper,var(--bg,#101b2b))}
+html[data-c7=patrol] #c7-content{overflow:hidden}
+@media(max-width:999px){.c7-nav{gap:8px;padding:0 12px}.c7-nav .c7-home{padding-right:10px}.c7-links{overflow:auto}.c7-links a{font-size:13px;padding:8px}.c7-nav button{font-size:13px;padding:7px}}
+@media(max-width:760px){html[data-c7=patrol] #c7-content{overflow:auto}}
+@media(max-width:600px){:root{--c7-nav-height:96px}.c7-nav{height:96px;display:grid;grid-template-columns:1fr auto;grid-template-rows:44px 44px;gap:0}.c7-nav .c7-home{border:0}.c7-links{grid-column:1/-1;grid-row:2;width:100%;overflow-x:auto;min-width:0}.c7-nav button{grid-column:2;grid-row:1}.c7-links a{flex:none}}
+</style><script data-course-navigation src="../../../../../shared/navigation.js"></script><link data-course-theme rel="stylesheet" href="../../../../../shared/styles/theme.css"><script data-course-theme src="../../../../../shared/theme.js"></script></head><body>
+<div class="app" id="app">
+ <header><a class="brand" href="../../overview/index.html"><span class="brand-mark">巡</span><span>智能建造实训室<small>CONSTRUCTION ROBOTICS LAB</small></span></a><span class="task-tag">任务 7-1 / 巡检机器人</span><div class="header-tools"><button id="helpButton">操作与依据</button><button id="themeButton" aria-label="切换明暗主题">◐</button><button id="fullButton">全屏 ⛶</button><button id="resetButton">重新巡查 ↻</button></div></header>
+ <nav class="steps" aria-label="巡检步骤"><button data-stage="survey"><b>01</b><span>看现场<small>明确对象与点位</small></span><i></i></button><button data-stage="travel"><b>02</b><span>走到位<small>选平台、过地形</small></span><i></i></button><button data-stage="capture"><b>03</b><span>看清楚<small>全景定位、近景取证</small></span><i></i></button><button data-stage="record"><b>04</b><span>留记录<small>处置、复查与交接</small></span><i></i></button></nav>
+ <main><section class="workspace"><div class="intro"><div class="eyebrow"><span id="eyebrow">01 / SITE INSPECTION</span><span>青溪桥 · 雨后巡查</span></div><h1 id="sceneTitle">巡检，要把问题带回来。</h1><p id="sceneDescription">沿桥面、检修楼梯与钢梁表面，完成三处检查。</p></div>
+ <div class="scene-area"><div id="viewport"></div><div class="view-tools" aria-label="三维视角"><button data-view="overview" aria-pressed="true">全桥</button><button data-view="follow">跟随</button><button data-view="target">检查部位</button><button data-view="robot">机器人近看</button><button id="cameraViewButton" data-view="camera" hidden>相机视野</button><button id="explodeButton" aria-pressed="false">拆开机体</button><button id="partsButton" aria-pressed="false" aria-expanded="false" aria-controls="partsPanel">展示相关部件</button></div><div class="scene-live"><i></i><span id="sceneLive">桥梁管养现场</span></div><section id="partsPanel" class="parts-panel" aria-labelledby="partsTitle" hidden><div class="parts-heading"><strong id="partsTitle">机器人部件</strong><button id="closePartsButton" aria-label="关闭部件展示">×</button></div><p class="parts-hint">点击部件，在模型中高亮查看</p><div id="partsList" class="parts-list"></div><p id="partDescription" class="part-description" aria-live="polite"></p></section><div class="scene-caption-overlay"><span id="viewHint">拖动旋转 · 滚轮缩放 · 点击 A / B / C 选点</span><span id="liveReadout">待出发</span></div><div class="scene-toast" id="sceneToast" hidden></div></div>
+ <div class="point-list" id="pointList" aria-label="本轮检查点"></div><div class="scene-bottom"><span>教学模拟 · 现场尺寸与影像均为示意</span><span id="evidenceCount">0 张可用照片</span></div></section>
+ <aside class="controls"><div class="panel-heading"><span id="panelTag">本次委托</span><span id="panelStatus">进行中</span></div><h2 id="panelTitle">先明确要检查什么</h2><div id="controlPanel"></div><div id="feedback" class="feedback" role="status" aria-live="polite">点选桥上的检查点，观察路线和部位。</div></aside></main>
+ <footer><div class="lesson-note"><b id="lessonTitle">巡检的交付物，是可追溯的问题记录。</b><span id="lessonText">到达现场 → 看清现象 → 留下证据 → 安排处理 → 复查反馈。</span></div><div class="progress"><span id="progressText">已完成 0 / 3 处</span><div id="progressDots"><i></i><i></i><i></i></div></div><button id="reportButton">本轮记录 ↗</button><button id="nextButton" class="dark-button">进入选机 →</button></footer>
+</div>
+<dialog id="helpDialog"><button class="close" data-close="helpDialog" aria-label="关闭说明">×</button><span class="eyebrow">FIELD GUIDE</span><h2>一次巡检，做成一条完整记录</h2><p>接手虚构的青溪桥雨后巡查。轮式、四足和爬壁平台分别帮助你跨越不同的到达条件。每处先拍能定位的全景，再拍能看清现象的近景；根据可见证据安排处理，最后复查或交接。</p><div class="guide-grid"><div><h3>三维操作</h3><p>拖动旋转，滚轮缩放。选中场景后方向键调整视角，Home 恢复全桥。查看机器人近景时可拆开外壳。</p></div><div><h3>相机与照片</h3><p>取景器实时渲染同一个三维现场。偏离目标、遮挡、暗处未补光或移动中拍摄都会影响证据。已拍照片会保持拍摄时的样子。</p></div></div><h3>本课边界</h3><p>本课练习日常巡查和记录流程。水迹不等于已知渗漏原因，涂层线状异常不等于已确认钢材裂缝。平台通行、磁吸状态和影像质量判定使用教学模型，不能作为现场设备能力或工程验收标准。</p><h3>资料依据</h3><ul class="sources"><li><a href="https://infotechnology.fhwa.dot.gov/high-resolution-digital-photography/" target="_blank" rel="noopener">FHWA · 高分辨率摄影</a>：表面异常的识别、定位与留档，为后续深入检查提供依据。</li><li><a href="https://www.txdot.gov/manuals/brg/ins/chapter-8-bridge-records/section-3-inspection-documentation-and-the-bridge-.html" target="_blank" rel="noopener">TxDOT · 桥梁检查记录</a>：定位全景与问题近景、维修记录和接近原视角的完成照片。仅借用记录流程，不移植其等级或时限。</li><li><a href="https://dev.bostondynamics.com/docs/concepts/about_spot.html" target="_blank" rel="noopener">Boston Dynamics · Spot 环境条件</a>：四足通行能力依赖具体台阶、坡度与环境条件。</li><li><a href="https://engineering.cmu.edu/pita/news/2025/11/10-johnson.html" target="_blank" rel="noopener">CMU · 磁吸爬壁巡检研究</a>：磁吸移动用于适配的钢结构，贴合与越障条件影响作业。</li><li><a href="https://www.mdpi.com/2076-3417/15/1/80" target="_blank" rel="noopener">负压爬壁机器人吸附力研究</a>：压差形成吸附，密封与边缘漏气影响保持能力。</li></ul></dialog>
+<dialog id="reportDialog"><button class="close" data-close="reportDialog" aria-label="关闭记录">×</button><span class="eyebrow">INSPECTION RECORD</span><h2>青溪桥 · 本轮巡检交接</h2><p id="reportSummary"></p><div id="reportContent"></div><div class="dialog-actions"><button id="exportButton" class="primary">导出含照片的巡检记录</button><button data-close="reportDialog">返回现场</button></div></dialog>
+<dialog id="photoDialog"><button class="close" data-close="photoDialog" aria-label="关闭照片">×</button><div id="photoContent"></div></dialog>
+<script>(()=>{'use strict';
+const lab="patrol";
+const root=document.documentElement;root.dataset.c7=lab;
+const content=document.createElement('div');content.id='c7-content';
+for(const node of [...document.body.children])if(!['SCRIPT','STYLE','DIALOG'].includes(node.tagName))content.append(node);
+document.body.prepend(content);
+const nav=document.createElement('nav');nav.className='c7-nav';nav.setAttribute('aria-label','第七章学习导航');
+const routes=[['patrol','7-1 桥梁巡检机器人','course/chapters/07/tasks/7-1/index.html'],['uav','7-2 无人机巡检与复核','course/chapters/07/tasks/7-2/index.html']];
+nav.innerHTML='<a class="c7-home" href="../../overview/index.html">← 第七章总览</a><div class="c7-links">'+routes.map(([id,name,url])=>`<a data-route="${id}" ${id===lab?'aria-current="page"':''} href="../${url}">${name}</a>`).join('')+'</div>';
+document.body.prepend(nav);
+})();
+</script><script></script><script src="../../../../../shared/vendor/three-r160.min.js"></script><script>
+</script><script>const M=(()=>{/* Inspection evidence model. Metres in the scene, seconds in advance().
+ * Capture gates are lesson settings, not inspection or machine safety standards.
+ */
+const freeze = value => {
+  if (value && typeof value === 'object' && !Object.isFrozen(value)) {
+    Object.values(value).forEach(freeze);
+    Object.freeze(value);
+  }
+  return value;
+};
+const clone = value => JSON.parse(JSON.stringify(value));
+const result = (ok, reason = '', extra = {}) => ({ ok, reason, ...extra });
+const finite = value => typeof value === 'number' && Number.isFinite(value);
+
+const ROBOTS = freeze([
+  { id: 'wheel', type: 'wheel', name: '轮式机器人', short: '轮式', role: '沿桥面与平整通道巡视', limitation: '本课轮式平台不能越过检修阶梯，也不能附着钢梁。' },
+  { id: 'dog', type: 'dog', name: '四足机器人', short: '四足', role: '通过台阶到达桥台检查点', limitation: '本课四足平台可以通过设定台阶；不能附着竖直钢梁。' },
+  { id: 'crawler', type: 'crawler', name: '爬壁机器人', short: '爬壁', role: '沿可磁吸钢梁表面近距观察', limitation: '本课采用磁吸机型，需核对钢梁表面并安装独立防坠系绳。' }
+]);
+
+const MISSIONS = freeze([
+  {
+    id: 'road', code: 'A01', name: '桥面排水口', short: '桥面', robot: 'wheel', seconds: 8,
+    target: [-2, 4.80, 2.65],
+    brief: '雨后先沿桥面找积水。确认排水口的位置，再近看堵塞物，留下能够复查的照片。',
+    observation: '排水口可见落叶杂物堵塞，周边有积水',
+    disposition: '安排清理，并在清理后回到同一点复查排水情况',
+    conclusion: '复查照片显示堵塞物已清理、积水消退，本条工单可关闭。',
+    followStatus: 'resolved', followLabel: '已闭环',
+    principle: '机器人把异常带回记录；清理后的同点复查，才让这条管养任务闭环。'
+  },
+  {
+    id: 'stairs', code: 'B02', name: '桥台侧面水迹', short: '桥台', robot: 'dog', seconds: 12,
+    target: [-8.3, 3.85, 3.52],
+    brief: '检修台阶把桥台观察点与桥面分开。选能通过台阶的平台，找到水迹与接缝的相对位置。',
+    observation: '桥台侧面可见水迹，来源尚未确认',
+    disposition: '登记位置并安排同点复查，结合排水与接缝检查查明来源',
+    conclusion: '同点复查仍能看到水迹，继续跟踪并查找来源，不能仅凭照片判定渗漏成因。',
+    followStatus: 'tracked', followLabel: '继续跟踪',
+    principle: '看到了水迹，只能先记录可见现象；原因需要后续检查与复核。'
+  },
+  {
+    id: 'wall', code: 'C03', name: '钢梁表面近查', short: '钢梁', robot: 'crawler', seconds: 8,
+    target: [3, 3.9, 3.21],
+    brief: '从桥下近看钢梁表面。先确认磁吸条件与防坠系绳，再靠近涂层上的线状异常。',
+    observation: '钢梁涂层表面可见线状异常，性质尚未确认',
+    disposition: '标注位置并提交专业复核，必要时采用适用检测手段确认',
+    conclusion: '复拍确认异常仍在原位置，转交专业人员复核；照片不能给出结构安全结论。',
+    followStatus: 'professional-review', followLabel: '待专业复核',
+    principle: '爬上去、拍清楚，是获取证据；异常性质与结构安全还需要专业判断。'
+  }
+]);
+
+const missionOf = id => MISSIONS.find(m => m.id === id);
+const entryOf = state => state?.entries?.[state.mission];
+const freshCamera = () => ({ mode: 'wide', yaw: 0, pitch: 0, zoom: 1, lamp: false });
+
+function createState() {
+  return {
+    mission: 'road', stage: 'survey', robot: 'wheel', camera: freshCamera(), serial: 0,
+    entries: Object.fromEntries(MISSIONS.map(m => [m.id, {
+      robot: m.robot, progress: 0, moving: false, arrived: false, blocked: '',
+      magnet: false, tether: false, serviceDone: false, photos: [], record: null, follow: null
+    }]))
+  };
+}
+
+function selectMission(state, id) {
+  if (!missionOf(id)) return result(false, '没有这个巡检点。');
+  const previous = entryOf(state);
+  if (previous) previous.moving = false;
+  state.mission = id;
+  state.robot = state.entries[id].robot;
+  state.camera = freshCamera();
+  state.stage = state.entries[id].arrived ? 'capture' : 'survey';
+  return result(true, `已切换至${missionOf(id).name}。`);
+}
+
+function selectRobot(state, type) {
+  if (!ROBOTS.some(r => r.id === type)) return result(false, '没有这个机器人。');
+  const entry = entryOf(state);
+  if (!entry) return result(false, '请先选择巡检点。');
+  if (entry.robot === type) { state.robot = type; return result(true, '已选择该机器人。'); }
+  entry.robot = type;
+  state.robot = type;
+  entry.progress = 0;
+  entry.moving = false;
+  entry.arrived = false;
+  entry.blocked = '';
+  return result(true, '机器人已更换，请重新到达巡检点。已有照片与记录保留。');
+}
+
+function access(state) {
+  const entry = entryOf(state), id = state?.mission;
+  if (!entry || !missionOf(id)) return result(false, '请先选择巡检点。', { code: 'mission' });
+  const robot = entry.robot;
+  if (id === 'road' && ['wheel', 'dog'].includes(robot)) return result(true, '可沿桥面到达排水口。', { code: 'ready' });
+  if (id === 'stairs' && robot === 'dog') return result(true, '可通过本课检修台阶。', { code: 'ready' });
+  if (id === 'wall' && robot === 'crawler') {
+    if (!entry.magnet) return result(false, '先确认磁吸机型与可磁吸钢梁表面，并完成附着检查。', { code: 'magnet' });
+    if (!entry.tether) return result(false, '独立防坠系绳尚未连接，不能开始爬升。', { code: 'tether' });
+    return result(true, '附着检查与独立防坠系绳已确认，可沿钢梁近查。', { code: 'ready' });
+  }
+  const reason = id === 'road'
+    ? '这台爬壁平台用于附着表面近查，请换轮式或四足平台巡视桥面。'
+    : id === 'stairs'
+      ? (robot === 'wheel' ? '本课轮式平台在台阶前停止，请换四足平台。' : '本课磁吸爬壁平台不能沿混凝土台阶行走，请换四足平台。')
+      : '本课的地面轮式和四足平台不能附着竖直钢梁，请换爬壁平台。';
+  return result(false, reason, { code: 'platform' });
+}
+
+function advance(state, dt) {
+  const entry = entryOf(state), mission = missionOf(state?.mission);
+  if (!entry || !mission) return result(false, '请先选择巡检点。', { updated: false, arrived: false });
+  if (!finite(dt) || dt < 0) return result(false, '推进时间必须是非负秒数。', { updated: false, arrived: entry.arrived });
+  if (!entry.moving || dt === 0) return result(true, '', { updated: false, arrived: entry.arrived, progress: entry.progress });
+  const route = access(state);
+  if (!route.ok && route.code !== 'platform') {
+    entry.moving = false;
+    entry.blocked = route.reason;
+    return result(false, route.reason, { updated: true, arrived: false, progress: entry.progress, blocked: true, code: route.code });
+  }
+  const end = route.ok ? 1 : .15;
+  const previous = entry.progress;
+  entry.progress = Math.min(end, Math.max(0, entry.progress) + dt / mission.seconds);
+  entry.blocked = '';
+  if (entry.progress >= end) {
+    entry.moving = false;
+    entry.arrived = route.ok;
+    if (!route.ok) entry.blocked = route.reason;
+  }
+  return result(route.ok, route.ok ? (entry.arrived ? '已到达，停稳后可取景拍照。' : '正在前往巡检点。') : route.reason, {
+    updated: entry.progress !== previous, arrived: entry.arrived, progress: entry.progress,
+    blocked: !!entry.blocked, code: route.code
+  });
+}
+
+function setStage(state, stage) {
+  if (typeof stage !== 'string' || !stage.trim()) return result(false, '请选择实训环节。');
+  // The presentation owns stage names; evidence gates live in the actions below.
+  state.stage = stage;
+  return result(true);
+}
+
+function photoQuality(state, metrics = {}) {
+  const entry = entryOf(state);
+  const mode = metrics.mode || state?.camera?.mode || 'wide';
+  const coverageMin = mode === 'detail' ? .13 : .025;
+  const checks = {
+    arrived: !!entry?.arrived,
+    stationary: !!entry && !entry.moving,
+    centered: metrics.centered === true,
+    visible: metrics.visible === true,
+    exposure: finite(metrics.exposure) && metrics.exposure >= .45,
+    incidence: finite(metrics.incidence) && metrics.incidence >= 0 && metrics.incidence <= 70,
+    coverage: finite(metrics.coverage) && metrics.coverage >= coverageMin,
+    mode: mode === 'wide' || mode === 'detail'
+  };
+  const messages = {
+    arrived: '机器人尚未到达这个巡检点。', stationary: '机器人仍在移动，停稳后再拍。',
+    centered: '巡检点偏离取景中心，请转动镜头重新对准。', visible: '巡检点被遮挡，当前画面不能作为有效证据。',
+    exposure: '画面太暗，打开补光或调整取景。', incidence: '观察角度太斜，调整到更正对表面的位置。',
+    coverage: mode === 'detail' ? '细部在画面中太小，请放大或靠近。' : '巡检点在全景中太小，请调整距离。',
+    mode: '请选择全景或细部拍摄。'
+  };
+  const reasons = Object.entries(checks).filter(([, pass]) => !pass).map(([key]) => messages[key]);
+  return result(!reasons.length, reasons.join(' ') || '取景满足本课证据要求。', {
+    valid: !reasons.length, reasons, checks, mode,
+    thresholds: { exposureMin: .45, incidenceMax: 70, coverageMin, teachingOnly: true }
+  });
+}
+
+function addPhoto(state, supplied = {}) {
+  const entry = entryOf(state);
+  if (!entry) return result(false, '请先选择巡检点。');
+  if (supplied.mission && supplied.mission !== state.mission) return result(false, '照片属于另一个巡检点，不能放入当前记录。');
+  const mode = supplied.mode || state.camera.mode;
+  const metrics = clone({ ...(supplied.metrics || {}), mode });
+  const quality = photoQuality(state, metrics);
+  const reasons = [...quality.reasons];
+  if (typeof supplied.image !== 'string' || !supplied.image.length) reasons.push('没有保存到实际拍摄画面，请重新拍照。');
+  state.serial += 1;
+  const photo = freeze({
+    ...clone(supplied), id: `P${String(state.serial).padStart(3, '0')}`, serial: state.serial,
+    mission: state.mission, code: missionOf(state.mission).code, robot: entry.robot,
+    mode, image: typeof supplied.image === 'string' ? supplied.image : '', metrics,
+    // The renderer supplies this condition from the world that produced the image.
+    // Never infer a captured condition from the current UI or later scene state.
+    condition: typeof supplied.condition === 'string' ? supplied.condition : 'unverified',
+    camera: clone(state.camera), progress: entry.progress, arrived: entry.arrived,
+    moving: entry.moving, valid: !reasons.length, reasons,
+    reason: reasons.join(' ') || quality.reason,
+    quality: { ...quality, ok: !reasons.length, valid: !reasons.length, reason: reasons.join(' ') || quality.reason, reasons },
+    capturedAt: supplied.capturedAt || new Date().toISOString()
+  });
+  entry.photos.push(photo);
+  return result(true, photo.reason, { photo, valid: photo.valid });
+}
+
+function saveRecord(state, observation, disposition) {
+  const entry = entryOf(state), mission = missionOf(state?.mission);
+  if (!entry || !mission) return result(false, '请先选择巡检点。');
+  const photos = entry.photos.filter(p => p.mission === state.mission && p.valid);
+  const wide = [...photos].reverse().find(p => p.mode === 'wide');
+  const detail = [...photos].reverse().find(p => p.mode === 'detail');
+  if (!wide || !detail) return result(false, !wide && !detail ? '先保存一张合格全景和一张合格细部照片。' : !wide ? '还缺少能定位的合格全景照片。' : '还缺少看清异常的合格细部照片。');
+  if (observation !== mission.observation) return result(false, '记录应只写照片能支持的可见现象，不要把异常直接写成原因或结构安全结论。');
+  if (disposition !== mission.disposition) return result(false, '请安排与现有证据相符的管养处置，保留需要复查或专业确认的事项。');
+  const record = freeze({
+    id: `R-${mission.code}-${state.serial}`, mission: mission.id, code: mission.code,
+    observation, disposition, photos: [wide.id, detail.id],
+    photoIDs: { wide: wide.id, detail: detail.id }, referencePhotoID: detail.id,
+    captureSerial: state.serial, createdAt: new Date().toISOString()
+  });
+  entry.record = record;
+  entry.follow = null;
+  return result(true, '位置、全景、细部和处置已归入记录。接下来回到同一点复查。', { record });
+}
+
+function followup(state, supplied) {
+  const entry = entryOf(state), mission = missionOf(state?.mission);
+  if (!entry || !mission) return result(false, '请先选择巡检点。');
+  if (!entry.record) return result(false, '先形成巡检记录，再进行同点复查。');
+  if (!supplied || typeof supplied !== 'object') return result(false, '请保存一张本次复查的实际照片。');
+  if (supplied.mission && supplied.mission !== state.mission) return result(false, '复查照片不属于当前巡检点。');
+  let photo;
+  if (supplied.id) {
+    photo = entry.photos.find(p => p.id === supplied.id);
+    if (!photo) return result(false, '这张照片不在当前巡检点的证据册中。');
+  } else {
+    const saved = addPhoto(state, supplied);
+    if (!saved.ok) return saved;
+    photo = saved.photo;
+  }
+  if (!photo.valid) return result(false, `复查照片尚不合格：${photo.reason}`, { photo });
+  if (photo.serial <= entry.record.captureSerial) return result(false, '需要记录形成后重新拍摄的复查照片，不能复用原始证据。');
+  if (photo.mode !== 'detail') return result(false, '请按原细部观察位置重新取景，便于对比异常变化。');
+  if (mission.id === 'road' && photo.condition !== 'after-maintenance') {
+    return result(false, '这张照片尚未记录清理后的现场状态。请在管养清理完成后重新复拍，再判断能否关闭工单。', { photo });
+  }
+  const follow = freeze({
+    mission: mission.id, recordID: entry.record.id,
+    originalPhotoID: entry.record.photoIDs.detail, photoID: photo.id,
+    status: mission.followStatus, label: mission.followLabel,
+    conclusion: mission.conclusion, createdAt: new Date().toISOString()
+  });
+  entry.follow = follow;
+  return result(true, mission.conclusion, { follow, photo });
+}
+
+function summary(state) {
+  const items = MISSIONS.map(m => {
+    const entry = state.entries[m.id];
+    return {
+      id: m.id, code: m.code, name: m.name, recorded: !!entry.record,
+      completed: !!(entry.record && entry.follow),
+      status: entry.follow?.status || (entry.record ? 'awaiting-followup' : 'unrecorded'),
+      label: entry.follow?.label || (entry.record ? '等待复查' : '尚未记录'),
+      pending: !!entry.record && entry.follow?.status !== 'resolved',
+      validPhotos: entry.photos.filter(p => p.valid).length,
+      photos: entry.photos.length
+    };
+  });
+  return {
+    total: MISSIONS.length, completed: items.filter(i => i.completed).length,
+    recorded: items.filter(i => i.recorded).length, pending: items.filter(i => i.pending).length,
+    resolved: items.filter(i => i.status === 'resolved').length,
+    awaitingFollowup: items.filter(i => i.status === 'awaiting-followup').length,
+    allComplete: items.every(i => i.completed), items
+  };
+}
+;return {MISSIONS,ROBOTS,access,addPhoto,advance,createState,followup,photoQuality,saveRecord,selectMission,selectRobot,setStage,summary};})();
+/* Metre-scaled bridge landscape. Y is up. All textures are generated locally. */
+(function () {
+  'use strict';
+  window.createBridgeWorld = function createBridgeWorld(THREE) {
+    const group = new THREE.Group(); group.name = 'qingxi-bridge-world';
+    const pickables = [], materialPool = {}, geometryPool = {};
+    const state = { roadCleared: false, wallMaterial: 'steel', wet: true };
+    let seed = 17631;
+    const random = () => { seed = (seed * 1664525 + 1013904223) >>> 0; return seed / 4294967296; };
+    function texture(size, painter, repeat) {
+      const canvas = document.createElement('canvas'); canvas.width = canvas.height = size;
+      painter(canvas.getContext('2d'), size);
+      const map = new THREE.CanvasTexture(canvas); map.colorSpace = THREE.SRGBColorSpace; map.anisotropy = 4;
+      if (repeat) { map.wrapS = map.wrapT = THREE.RepeatWrapping; map.repeat.set(...repeat); }
+      return map;
+    }
+    function grain(ctx, n, base, spread, count) {
+      ctx.fillStyle = base; ctx.fillRect(0, 0, n, n);
+      for (let i = 0; i < count; i++) {
+        const tone = Math.floor(random() * spread);
+        ctx.fillStyle = `rgba(${tone},${tone},${tone},${.018 + random() * .075})`;
+        const s = .5 + random() * 2.2; ctx.fillRect(random() * n, random() * n, s, s);
+      }
+    }
+    const concreteMap = texture(256, (ctx,n) => grain(ctx,n,'#d3d8d5',100,10500), [2,2]);
+    const asphaltMap = texture(256, (ctx,n) => {
+      grain(ctx,n,'#707b81',240,18000);
+      for (let i=0;i<250;i++){ctx.fillStyle='rgba(232,239,241,.13)';ctx.fillRect(random()*n,random()*n,1.5,1.5);}
+    }, [12,3]);
+    const soilMap = texture(256, (ctx,n) => grain(ctx,n,'#c2b79b',130,9000), [4,4]);
+    const steelMap = texture(256, (ctx,n) => {
+      ctx.fillStyle='#95adb5';ctx.fillRect(0,0,n,n);
+      for(let i=0;i<6500;i++){ctx.fillStyle=`rgba(80,108,116,${.012+random()*.024})`;ctx.fillRect(random()*n,random()*n,.5+random(),.5+random());}
+      for(let i=0;i<60;i++){ctx.fillStyle='rgba(233,242,244,.012)';ctx.fillRect(0,random()*n,n,.5);}
+    }, [8,1]);
+    function mat(key, color, roughness=.75, metalness=0, extra={}) {
+      if (!materialPool[key]) materialPool[key] = new THREE.MeshStandardMaterial({color,roughness,metalness,...extra});
+      return materialPool[key];
+    }
+    const M = {
+      concrete:mat('concrete',0xe3e7e3,.93,0,{map:concreteMap}),paleConcrete:mat('paleConcrete',0xd4ddd8,.95),darkConcrete:mat('darkConcrete',0xb4bfbd,.96),
+      asphalt:mat('asphalt',0xe2e5e5,.96,0,{map:asphaltMap}),white:mat('white',0xf7f5e6,.9),
+      steel:mat('steel',0xffffff,.56,.32,{map:steelMap}),steelEdge:mat('steelEdge',0x6e8e9c,.52,.4),steelLight:mat('steelLight',0xb4c6cc,.42,.48),bolt:mat('bolt',0x566d78,.47,.57),
+      rubber:mat('rubber',0x38494b,.92),rail:mat('rail',0xe2e8e7,.38,.6),drain:mat('drain',0x4c6266,.72,.48),void:mat('void',0x243838,.99),
+      soil:mat('soil',0xe7ddc3,.98,0,{map:soilMap}),soilSide:mat('soilSide',0xb9aa8b,.98),path:mat('path',0xd6cdb5,.98),grass:mat('grass',0xa6b495,.97),
+      treeLeaf:mat('treeLeaf',0x9eb29a,.93),treeLeafLight:mat('treeLeafLight',0xb6c6a5,.93),trunk:mat('trunk',0x8d8c78,.95),stone:mat('stone',0xafae9e,.97),
+      wet:mat('wet',0x627d7b,.2,.1,{transparent:true,opacity:.4,depthWrite:false}),water:mat('water',0x92bac5,.27,.2,{transparent:true,opacity:.83,depthWrite:false}),
+      ripple:mat('ripple',0xc5dce1,.5,0,{transparent:true,opacity:.21,depthWrite:false}),debris:mat('debris',0x907b57,.97),leafDebris:mat('leafDebris',0xa59761,.96)
+    };
+    function add(geometry, material, position, name, parent=group) {
+      const mesh = new THREE.Mesh(geometry,material); mesh.position.set(...position);
+      mesh.castShadow = true; mesh.receiveShadow = true; if(name)mesh.name=name; parent.add(mesh); return mesh;
+    }
+    function box(w,h,d,x,y,z, material, name, parent=group) {
+      const k=`b:${w}:${h}:${d}`;return add(geometryPool[k]||(geometryPool[k]=new THREE.BoxGeometry(w,h,d)),material,[x,y,z],name,parent);
+    }
+    function bevel(w,h,d,x,y,z, material, radius=.035, name, parent=group) {
+      const k=`v:${w}:${h}:${d}:${radius}`;let geometry=geometryPool[k];
+      if(!geometry){
+        const r=Math.min(radius,w*.12,h*.12,d*.12), shape=new THREE.Shape();
+        shape.moveTo(-w/2+r,-h/2+r);shape.lineTo(w/2-r,-h/2+r);shape.lineTo(w/2-r,h/2-r);shape.lineTo(-w/2+r,h/2-r);shape.closePath();
+        geometry=new THREE.ExtrudeGeometry(shape,{depth:d-2*r,bevelEnabled:true,bevelThickness:r,bevelSize:r,bevelSegments:1,steps:1,curveSegments:1});
+        geometry.translate(0,0,-d/2+r);geometryPool[k]=geometry;
+      }
+      return add(geometry,material,[x,y,z],name,parent);
+    }
+    function cylinder(radius,height,x,y,z,material,name,parent=group,radial=12) {
+      const k=`c:${radius}:${height}:${radial}`;return add(geometryPool[k]||(geometryPool[k]=new THREE.CylinderGeometry(radius,radius,height,radial)),material,[x,y,z],name,parent);
+    }
+    function rod(a,b,r,material,name,parent=group,radial=8) {
+      const p=new THREE.Vector3(...a),q=new THREE.Vector3(...b),v=q.clone().sub(p);
+      const mesh=cylinder(r,v.length(),0,0,0,material,name,parent,radial);
+      mesh.position.copy(p.add(q).multiplyScalar(.5));mesh.quaternion.setFromUnitVectors(new THREE.Vector3(0,1,0),v.normalize());return mesh;
+    }
+    function surface(w,h,x,y,z,material,name,parent=group) {
+      const m=add(new THREE.PlaneGeometry(w,h),material,[x,y,z],name,parent);m.castShadow=false;return m;
+    }
+    function bolt(x,y,z,face='z',radius=.041,parent=group) {
+      const mesh=cylinder(radius,.026,x,y,z,M.bolt,'structural-bolt',parent,6);
+      if(face==='z')mesh.rotation.x=Math.PI/2;if(face==='x')mesh.rotation.z=Math.PI/2;return mesh;
+    }
+    // The entire terrain is one connected site, not isolated task pedestals.
+    for(const side of [-1,1]) {
+      bevel(16.4,.85,25,side*16.2,-.275,0,M.soil,.32,'riverbank-ground');
+      bevel(14.4,.012,23.5,side*16.8,.151,0,M.grass,.005,'grass-covered-bank');
+      box(2.3,.055,23.4,side*9.25,.185,0,M.path,'riverside-access-path');
+      const slope=box(2.2,.14,24,side*7.7,-.09,0,M.soilSide,'riverbank-slope');slope.rotation.z=-side*.26;
+      for(let row=0;row<3;row++) for(let i=0;i<18;i++) {
+        const x=side*(7.08+row*.48),z=-11.3+i*1.31+(row%2)*.42;
+        const rock=bevel(.44+random()*.23,.19+random()*.1,.86+random()*.38,x,-.21+row*.1,z,M.stone,.07,'stone-bank-revetment');
+        rock.rotation.y=(random()-.5)*.32;rock.rotation.z=-side*.2;
+      }
+      // The near bank has a retaining face so the stair foot at z=5.25 stays on open ground.
+      const shape=new THREE.Shape();shape.moveTo(-3.5,4.45);shape.lineTo(3.5,4.45);shape.lineTo(6,.18);shape.lineTo(-3.85,.18);shape.closePath();
+      const fill=new THREE.ExtrudeGeometry(shape,{depth:10,steps:1,bevelEnabled:false});fill.rotateY(Math.PI/2);fill.translate(side<0?-24:14,0,0);
+      add(fill,M.soil,[0,0,0],'approach-embankment');
+      bevel(10,4.2,.22,side*19,2.28,3.78,M.concrete,.04,'approach-retaining-wall');
+      for(let i=0;i<4;i++){
+        const x=side*(15.25+i*2.5);
+        box(.014,4.1,.009,x,2.28,3.895,M.darkConcrete,'retaining-wall-construction-joint');
+        const outlet=cylinder(.055,.022,x+.37,.68,3.91,M.void,'retaining-wall-weep-hole',group,12);outlet.rotation.x=Math.PI/2;
+        for(const y of [1.45,2.9]){
+          const tie=cylinder(.024,.009,x+.56,y,3.902,M.darkConcrete,'retaining-wall-form-tie',group,10);tie.rotation.x=Math.PI/2;
+        }
+      }
+      box(10,.18,7,side*19,4.52,0,M.concrete,'approach-road-base');box(10,.09,6.06,side*19,4.655,0,M.asphalt,'approach-asphalt');
+      for(const z of [-2.9,2.9])box(10,.009,.075,side*19,4.704,z,M.white,'approach-edge-line');
+      for(let i=0;i<4;i++)box(1.2,.012,.095,side*(14.9+i*2.5),4.707,0,M.white,'approach-center-mark');
+    }
+    const river=surface(15,25,0,-.17,0,M.water,'river-water');river.rotation.x=-Math.PI/2;river.receiveShadow=false;
+    const riverbed=box(15,.1,25,0,-.38,0,M.soilSide,'submerged-riverbed');riverbed.castShadow=false;
+    for(let i=0;i<28;i++) {
+      const ripple=surface(.2+random()*.85,.025+random()*.035,-6.4+random()*12.8,-.165,-11.9+random()*23.8,M.ripple,'water-ripple');ripple.rotation.x=-Math.PI/2;ripple.rotation.z=.1;
+    }
+    // The deck top is y=4.70: locomotion and rendering share the same datum.
+    bevel(28,.27,7,0,4.475,0,M.concrete,.035,'reinforced-concrete-deck');box(28,.09,6.06,0,4.655,0,M.asphalt,'wearing-course');
+    for(const side of [-1,1]) {
+      bevel(28,.19,.38,0,4.74,side*3.28,M.paleConcrete,.025,'raised-edge-curb');box(28,.011,.075,0,4.708,side*2.92,M.white,'road-edge-marking');
+      for(let i=0;i<=18;i++) {
+        const x=-13.7+i*1.52,z=side*3.4;
+        bevel(.22,.055,.2,x,4.86,z,M.steelLight,.009,'rail-post-base');box(.07,.96,.07,x,5.36,z,M.rail,'railing-upright');
+        for(const dx of [-.068,.068])bolt(x+dx,4.895,z,'y',.025);
+      }
+      for(const y of [5.12,5.8])rod([-13.9,y,side*3.4],[13.9,y,side*3.4],.045,M.rail,'continuous-bridge-handrail',group,10);
+      for(const x of [-10,-2,6]){
+        box(.23,.09,.22,x,4.49,side*3.44,M.drain,'scupper-connection');
+        rod([x,4.47,side*3.48],[x,3.88,side*3.48],.06,M.drain,'scupper-downpipe');rod([x,3.88,side*3.48],[x,3.67,side*3.67],.06,M.drain,'scupper-elbow');
+        for(const y of [4.28,4]){cylinder(.069,.035,x,y,side*3.48,M.steelLight,'pipe-clamp');box(.13,.045,.1,x,y,side*3.39,M.steelLight,'pipe-clamp-anchor');}
+      }
+    }
+    for(let x=-12.6;x<14;x+=2.8)box(1.35,.011,.11,x,4.708,0,M.white,'center-lane-dash');
+    for(const x of [-13.87,13.87]){box(.09,.018,6.15,x,4.71,0,M.rubber,'deck-expansion-joint');for(const dx of [-.085,.085])box(.045,.021,6.12,x+dx,4.713,0,M.steelLight,'joint-edge-angle');}
+    // Real web/flange/stiffener construction. The crawler's x=3 corridor is clear.
+    for(const z of [-2.98,2.98]){
+      box(27.6,2.24,.4,0,3.27,z,M.steel,'main-girder-web');
+      bevel(27.75,.12,.61,0,4.42,z,M.steelEdge,.014,'top-girder-flange');bevel(27.75,.12,.64,0,2.1,z,M.steelEdge,.014,'bottom-girder-flange');
+      for(const x of [-12.3,-9.9,-6.5,-4.4,-1.3,1.3,4.7,7.2,9.9,12.3])box(.075,2.18,.16,x,3.25,z+Math.sign(z)*.23,M.steelEdge,'vertical-web-stiffener');
+      for(const x of [-4.8,7.7]){
+        const faceZ=z+Math.sign(z)*.197;bevel(.64,1.93,.034,x,3.26,faceZ,M.steelLight,.012,'bolted-girder-splice');
+        for(const dx of [-.235,0,.235])for(let k=0;k<7;k++)bolt(x+dx,2.48+k*.255,faceZ+Math.sign(z)*.026,'z',.043);
+      }
+      for(const x of [-13.2,13.2])box(.22,2.18,.37,x,3.26,z,M.steelEdge,'girder-end-diaphragm');
+    }
+    for(const x of [-12,-9,-5,0,5,9,12]){
+      box(.17,.57,5.7,x,3.65,0,M.steelEdge,'transverse-floorbeam');box(.4,.065,5.72,x,3.98,0,M.steelLight,'crossbeam-top-flange');box(.4,.065,5.72,x,3.34,0,M.steelLight,'crossbeam-bottom-flange');
+    }
+    for(const x of [-9,9]){
+      bevel(2.6,.4,6.8,x,.28,0,M.darkConcrete,.07,'pier-footing');for(const z of [-2.1,2.1])bevel(1.05,1.02,1.15,x,.98,z,M.concrete,.06,'pier-column');
+      bevel(1.7,.42,7.15,x,1.64,0,M.concrete,.05,'pier-crosshead');
+      for(const z of [-2.98,2.98]){
+        bevel(.82,.065,.83,x,1.892,z,M.steelLight,.014,'bearing-bottom-steel-plate');for(let i=0;i<4;i++)box(.65,.026,.66,x,1.935+i*.034,z,i%2?M.steelEdge:M.rubber,'laminated-elastomeric-bearing');bevel(.79,.05,.81,x,2.06,z,M.steelLight,.014,'bearing-upper-steel-plate');
+      }
+    }
+    // Twelve actual treads, sloping stringers and a supported inspection landing.
+    for(let i=0;i<12;i++){
+      const top=.15+(i+1)*.27,x=-15+(i+.5)*.5;
+      bevel(.5,.15,1.9,x,top-.075,5.25,M.concrete,.012,'concrete-stair-tread');box(.035,.035,1.73,x-.215,top+.006,5.25,M.steelLight,'stair-nosing');
+    }
+    for(const z of [4.43,6.07]) {
+      bevel(.38,.12,.3,-14.88,.21,z,M.concrete,.015,'stair-stringer-ground-footing');
+      rod([-15,.075,z],[-9.05,3.288,z],.11,M.steelEdge,'stair-stringer',group,4);
+      for(let i=0;i<7;i++){const x=-14.82+i*.92,y=.15+(i*.92+.18)/.5*.27;box(.055,.95,.055,x,y+.46,z,M.rail,'stair-railing-post');}
+      rod([-15,1.08,z],[-9,4.32,z],.042,M.rail,'stair-sloping-handrail',group,10);rod([-15,.65,z],[-9,3.89,z],.026,M.rail,'stair-lower-rail',group,8);
+    }
+    bevel(2.05,.17,1.9,-7.975,3.305,5.25,M.concrete,.025,'stair-inspection-landing');
+    for(const x of [-8.84,-7.12])for(const z of [4.48,6.02]){
+      box(.13,3.08,.13,x,1.69,z,M.steelEdge,'landing-support');bevel(.42,.14,.43,x,.22,z,M.concrete,.025,'landing-post-footing');box(.055,.95,.055,x,3.86,z,M.rail,'landing-rail-post');
+    }
+    for(const z of [4.43,6.07]){rod([-9,4.32,z],[-7.02,4.32,z],.042,M.rail,'landing-handrail');rod([-9,3.88,z],[-7.02,3.88,z],.026,M.rail,'landing-midrail');}
+    rod([-7.02,4.32,4.43],[-7.02,4.32,6.07],.042,M.rail,'landing-end-handrail');rod([-7.02,3.88,4.43],[-7.02,3.88,6.07],.026,M.rail,'landing-end-midrail');rod([-8.84,.4,6.02],[-7.12,3.18,6.02],.045,M.steelEdge,'landing-diagonal-brace');
+    // Target B is a sidewall surface, never mislabelled as the lower girder bearing.
+    bevel(2.25,4.12,.36,-8.35,2.21,3.34,M.concrete,.045,'inspection-abutment-sidewall');bevel(2.38,.17,.53,-8.35,4.32,3.38,M.paleConcrete,.025,'sidewall-coping');
+    for(const y of [1.1,2.3,3.5])box(2.15,.008,.007,-8.35,y,3.525,M.darkConcrete,'concrete-formwork-joint');
+    for(const x of [-9,-7.7])for(const y of [1.7,2.9,3.8]){const hole=cylinder(.025,.009,x,y,3.535,M.darkConcrete,'form-tie-mark',group,10);hole.rotation.x=Math.PI/2;}
+    const stainMap=texture(512,(ctx,n)=>{
+      ctx.clearRect(0,0,n,n);
+      // Transparent radial clouds have soft edges at every scale. Overlapping
+      // hard ellipses resemble leaves when the actual robot camera gets close.
+      const clouds=[
+        [.47,.19,.18,.14,.18],[.57,.27,.18,.2,.18],[.4,.31,.17,.22,.18],
+        [.48,.46,.22,.25,.16],[.59,.48,.15,.25,.15],[.38,.54,.13,.22,.13],
+        [.51,.66,.17,.23,.13],[.61,.65,.09,.18,.1],[.43,.77,.1,.15,.1]
+      ];
+      for(const [x,y,rx,ry,alpha]of clouds){
+        ctx.save();ctx.translate(x*n,y*n);ctx.scale(rx*n,ry*n);
+        const fade=ctx.createRadialGradient(0,0,.05,0,0,1);
+        fade.addColorStop(0,`rgba(76,89,81,${alpha*1.8})`);fade.addColorStop(.5,`rgba(76,89,81,${alpha*1.17})`);fade.addColorStop(1,'rgba(76,89,81,0)');
+        ctx.fillStyle=fade;ctx.fillRect(-1,-1,2,2);ctx.restore();
+      }
+      for(let i=0;i<5;i++){
+        const x=n*(.38+i*.047),start=n*(.19+random()*.14),end=n*(.64+random()*.25);
+        const fade=ctx.createLinearGradient(0,start,0,end);fade.addColorStop(0,'rgba(62,78,69,0)');fade.addColorStop(.23,'rgba(62,78,69,.13)');fade.addColorStop(.7,'rgba(62,78,69,.1)');fade.addColorStop(1,'rgba(62,78,69,0)');
+        ctx.strokeStyle=fade;ctx.lineWidth=1.5+random()*3;ctx.lineCap='round';ctx.shadowColor='rgba(62,78,69,.08)';ctx.shadowBlur=5;
+        ctx.beginPath();ctx.moveTo(x,start);ctx.bezierCurveTo(x+8,start+(end-start)*.3,x-5,start+(end-start)*.6,x-2,end);ctx.stroke();
+      }
+      ctx.shadowBlur=0;
+    });
+    const stainMat=mat('water-stain',0xffffff,.92,0,{map:stainMap,transparent:true,depthWrite:false,polygonOffset:true,polygonOffsetFactor:-1});
+    const stain=surface(1.15,1.18,-8.3,3.65,3.531,stainMat,'visible-surface-water-stain');
+    // Drain A contains open slots, a dark sump and actual debris resting on the bars.
+    const drainGroup=new THREE.Group();drainGroup.name='A01-drain-assembly';group.add(drainGroup);
+    const roadX=-2,roadZ=2.65;
+    box(1.15,.018,.57,roadX,4.712,roadZ,M.void,'dark-drain-recess',drainGroup);
+    for(const dx of [-.59,.59])box(.065,.052,.65,roadX+dx,4.728,roadZ,M.drain,'grate-end-frame',drainGroup);
+    for(const dz of [-.3,.3])box(1.18,.052,.065,roadX,4.728,roadZ+dz,M.drain,'grate-side-frame',drainGroup);
+    for(let i=0;i<12;i++)box(.043,.047,.55,roadX-.53+i*.096,4.737,roadZ,M.drain,'open-grate-bar',drainGroup);
+    const debris=new THREE.Group();debris.name='removable-drain-debris';group.add(debris);
+    for(let i=0;i<26;i++){
+      const leaf=add(new THREE.SphereGeometry(.06+random()*.04,5,3),i%3?M.leafDebris:M.debris,[roadX-.55+random()*1.1,4.79+random()*.017,roadZ-.25+random()*.5],'leaf-on-drain',debris);leaf.scale.set(1.2,.1,.43);leaf.rotation.y=random()*Math.PI;
+    }
+    for(let i=0;i<7;i++)rod([roadX-.5+random()*.4,4.795,roadZ-.25+random()*.5],[roadX+.1+random()*.4,4.805,roadZ-.25+random()*.5],.013,M.debris,'twig-over-grate',debris,5);
+    const mudMap=texture(256,(ctx,n)=>{
+      ctx.clearRect(0,0,n,n);for(let i=0;i<1000;i++){
+        const x=random()*n,y=random()*n,dx=(x-n*.5)/(n*.5),dy=(y-n*.5)/(n*.5);if(dx*dx+dy*dy>random()*.8+.25)continue;
+        ctx.fillStyle=`rgba(104,89,61,${.04+random()*.22})`;ctx.fillRect(x,y,2+random()*12,1+random()*8);
+      }
+    });
+    const mud=surface(1.29,.72,roadX,4.786,roadZ,mat('mud',0xffffff,.99,0,{map:mudMap,transparent:true,depthWrite:false}),'mud-around-grate',debris);mud.rotation.x=-Math.PI/2;
+    const puddle=add(new THREE.CircleGeometry(1,48),M.wet,[roadX-.03,4.714,roadZ-.38],'shallow-water-around-drain');puddle.rotation.x=-Math.PI/2;puddle.scale.set(1.27,.62,1);puddle.castShadow=false;
+    // The thin coating line is printed onto the physical web, not a detached picture.
+    const coatingMap=texture(512,(ctx,n)=>{
+      ctx.clearRect(0,0,n,n);
+      const rust=ctx.createRadialGradient(n*.52,n*.42,2,n*.52,n*.42,n*.35);rust.addColorStop(0,'rgba(143,104,75,.2)');rust.addColorStop(.55,'rgba(147,108,75,.08)');rust.addColorStop(1,'rgba(147,108,75,0)');ctx.fillStyle=rust;ctx.fillRect(0,0,n,n);
+      const points=[[.25,.24],[.39,.32],[.46,.37],[.5,.47],[.58,.53],[.6,.62],[.71,.71]];
+      ctx.strokeStyle='rgba(119,83,57,.48)';ctx.lineWidth=7;ctx.lineJoin='round';ctx.beginPath();points.forEach(([x,y],i)=>i?ctx.lineTo(x*n,y*n):ctx.moveTo(x*n,y*n));ctx.stroke();
+      ctx.strokeStyle='rgba(59,62,57,.9)';ctx.lineWidth=2.2;ctx.beginPath();points.forEach(([x,y],i)=>i?ctx.lineTo(x*n,y*n):ctx.moveTo(x*n,y*n));ctx.stroke();
+      ctx.strokeStyle='rgba(103,80,61,.45)';ctx.lineWidth=1.1;ctx.beginPath();ctx.moveTo(n*.5,n*.47);ctx.lineTo(n*.42,n*.51);ctx.lineTo(n*.38,n*.57);ctx.stroke();
+    });
+    const coatingMaterial=mat('coating-detail',0xffffff,.56,.32,{map:coatingMap,transparent:true,depthWrite:false,polygonOffset:true,polygonOffsetFactor:-1});
+    const wallPatch=surface(.8,.8,3,3.9,3.181,coatingMaterial,'steel-coating-surface-detail');
+    const concretePanelMap=texture(512,(ctx,n)=>{
+      grain(ctx,n,'#c7ceca',130,14000);ctx.strokeStyle='rgba(73,80,76,.7)';ctx.lineWidth=2.2;ctx.beginPath();ctx.moveTo(n*.24,n*.22);ctx.lineTo(n*.41,n*.36);ctx.lineTo(n*.47,n*.48);ctx.lineTo(n*.57,n*.56);ctx.lineTo(n*.61,n*.69);ctx.stroke();
+    });
+    const concretePanelMaterial=mat('rough-concrete-panel',0xffffff,.99,0,{map:concretePanelMap});
+    const wallTestPanel=box(1.38,2.15,.035,3,3.26,3.185,M.concrete,'alternate-concrete-contact-surface');wallTestPanel.visible=false;
+    const leafGeometry=new THREE.IcosahedronGeometry(1,1), rockGeometry=new THREE.DodecahedronGeometry(1,0);
+    for(const side of [-1,1])for(let i=0;i<11;i++){
+      const x=side*(10.9+random()*11.9),z=(i<6?-1:1)*(7.1+random()*4.2),tall=.8+random()*1.25;
+      cylinder(.075,tall,x,.2+tall*.5,z,M.trunk,'riverbank-tree-trunk',group,7);
+      for(let j=0;j<3;j++){const crown=add(leafGeometry,j%2?M.treeLeafLight:M.treeLeaf,[x+(j-1)*.29,.28+tall+j*.23,z+(random()-.5)*.3],'riverbank-tree-crown');crown.scale.set(.53+random()*.3,.66+random()*.28,.5+random()*.25);crown.rotation.y=random()*Math.PI;}
+    }
+    for(let i=0;i<24;i++){
+      const side=i%2?-1:1,x=side*(9.7+random()*12),z=(i%3?-1:1)*(7+random()*4.7),r=.12+random()*.2;
+      const rock=add(rockGeometry,M.stone,[x,.2+r*.3,z],'small-bank-stone');rock.scale.set(r*1.7,r*.6,r);rock.rotation.set(random(),random(),random());
+    }
+    for(const [x,y,z,rotation] of [[-2.82,4.77,3.035,-Math.PI/2],[-9.13,3.8,3.537,0],[4.12,3.84,3.189,0]]){
+      const plate=surface(.13,.13,x,y,z,M.white,'fixed-point-survey-plate');plate.rotation.x=rotation;
+      const mark=surface(.07,.07,x,y+(rotation?.003:0),z+(rotation?0:.003),M.bolt,'survey-plate-center');mark.rotation.x=rotation;
+    }
+    const targets={
+      road:{id:'road',position:[-2,4.80,2.65],normal:[0,1,0],wideCamera:[-5.4,8.4,7.3],detailCamera:[-2.65,6.2,3.5],mesh:drainGroup,radius:.78},
+      stairs:{id:'stairs',position:[-8.3,3.85,3.52],normal:[0,0,1],wideCamera:[-11.8,8.4,10.2],detailCamera:[-8.3,4.05,5.6],mesh:stain,radius:.62},
+      wall:{id:'wall',position:[3,3.9,3.21],normal:[0,0,1],wideCamera:[6,4.8,10],detailCamera:[3,3.9,5.1],mesh:wallPatch,radius:.48}
+    };
+    for(const target of Object.values(targets)){
+      const hit=add(new THREE.SphereGeometry(target.radius,12,8),new THREE.MeshBasicMaterial({transparent:true,opacity:0,depthWrite:false}),target.position,`hit-${target.id}`);
+      hit.castShadow=hit.receiveShadow=false;hit.userData.station=target.id;hit.userData.targetId=target.id;hit.userData.inspectionTarget=target.id;pickables.push(hit);target.hit=hit;
+    }
+    function setState(next={}){
+      for(const key of Object.keys(state))if(next[key]!==undefined)state[key]=next[key];
+      debris.visible=!state.roadCleared;puddle.visible=state.wet&&!state.roadCleared;stain.visible=state.wet;
+      const concrete=!['steel','magnetic','ferromagnetic'].includes(state.wallMaterial);wallTestPanel.visible=concrete;wallPatch.material=concrete?concretePanelMaterial:coatingMaterial;wallPatch.position.z=concrete?3.207:3.181;
+    }
+    function stats(){let meshes=0,triangles=0;group.traverse(o=>{if(o.isMesh){meshes++;triangles+=(o.geometry.index?o.geometry.index.count:o.geometry.attributes.position.count)/3;}});return {meshes,triangles,materials:Object.keys(materialPool).length,units:'metres',deckTop:4.7,stairRisers:12,stairRise:.27,stairTread:.5};}
+    setState();return {group,targets,pickables,setState,stats,materials:M};
+  };
+})();
+
+/* Inspection platforms: metres, Y up, local +X forward. No scene ownership. */
+(function () {
+  'use strict';
+  window.createInspectionRobot = function createInspectionRobot(T, type) {
+    if (!['wheel', 'dog', 'crawler'].includes(type)) throw new Error('Unknown inspection platform: ' + type);
+    const group = new T.Group(); group.name = 'robot.' + type;
+    const V = p => new T.Vector3(...p), clamp = (v, a, b) => Math.max(a, Math.min(b, v));
+    const cache = new Map(), parts = [], disposables = [], wheels = [], legs = [], explode = [], internals=[];
+    const material = (name, color, roughness = .48, metalness = .12) => {
+      const m = new T.MeshStandardMaterial({color, roughness, metalness}); m.name = type + '.' + name; disposables.push(m); return m;
+    };
+    const mat = {
+      white: material('porcelain-shell', '#e9f2f8', .38, .10), light: material('edge-trim', '#c7d9e7', .39, .28),
+      blue: material('blue-shell', '#367dbb', .38, .22), navy: material('navy-frame', '#243c51', .55, .22),
+      metal: material('brushed-aluminium', '#8faabd', .36, .70), steel: material('machined-steel', '#5f788b', .34, .75),
+      rubber: material('rubber', '#202c38', .9, .01), tread: material('tread', '#384957', .84, .02),
+      black: material('optics-housing', '#152c40', .43, .16), glass: material('optical-glass', '#194d72', .14, .72),
+      board: material('control-board', '#356d7d', .7, .06), copper: material('connector', '#a78a55', .39, .62),
+      red: material('emergency-stop', '#c95a55', .56, .08), lamp: material('work-light', '#ecf8ff', .25, .05),
+      led: material('status-led', '#67bad8', .3, .13)
+    };
+    mat.glass.envMapIntensity = 1.6; mat.lamp.emissive.set('#a1c9df'); mat.lamp.emissiveIntensity = .25;
+    mat.led.emissive.set('#177fa7'); mat.led.emissiveIntensity = .5;
+    function geo(key, make) { if (!cache.has(key)) cache.set(key, make()); return cache.get(key); }
+    function add(parent, geometry, material, p, name) {
+      const mesh = new T.Mesh(geometry, material); mesh.position.set(...p); mesh.name = type + '.' + name;
+      mesh.castShadow = mesh.receiveShadow = true; parent.add(mesh); parts.push(mesh); return mesh;
+    }
+    function assembly(parent, p, name) { const g = new T.Group(); g.position.set(...p); g.name = type + '.' + name; parent.add(g); return g; }
+    function box(parent, w, h, d, p, m, name, bevel = .012) {
+      const r = Math.max(0, Math.min(bevel, w * .2, h * .2, d * .2));
+      const g = geo(['box', w, h, d, r].join('/'), () => {
+        if (r < .001) return new T.BoxGeometry(w, h, d);
+        const x = -w / 2 + r, y = -d / 2 + r, W = w - 2 * r, D = d - 2 * r, q = Math.min(r, W / 3, D / 3), s = new T.Shape();
+        s.moveTo(x + q, y); s.lineTo(x + W - q, y); s.quadraticCurveTo(x + W, y, x + W, y + q);
+        s.lineTo(x + W, y + D - q); s.quadraticCurveTo(x + W, y + D, x + W - q, y + D);
+        s.lineTo(x + q, y + D); s.quadraticCurveTo(x, y + D, x, y + D - q);
+        s.lineTo(x, y + q); s.quadraticCurveTo(x, y, x + q, y);
+        const out = new T.ExtrudeGeometry(s, {depth: h - 2 * r, steps: 1, bevelEnabled: true, bevelSize: r, bevelThickness: r, bevelSegments: 2, curveSegments: 4});
+        out.translate(0, 0, -h / 2 + r); out.rotateX(-Math.PI / 2); return out;
+      });
+      return add(parent, g, m, p, name);
+    }
+    function cyl(parent, r, length, p, m, name, axis = 'y', segments = 24) {
+      const mesh = add(parent, geo(['cylinder', r, length, segments].join('/'), () => new T.CylinderGeometry(r, r, length, segments)), m, p, name);
+      if (axis === 'x') mesh.rotation.z = -Math.PI / 2; if (axis === 'z') mesh.rotation.x = Math.PI / 2; return mesh;
+    }
+    function ring(parent, r, tube, p, m, name, axis = 'y') {
+      const mesh = add(parent, geo(['ring', r, tube].join('/'), () => new T.TorusGeometry(r, tube, 6, 32)), m, p, name);
+      if (axis === 'x') mesh.rotation.y = Math.PI / 2; if (axis === 'y') mesh.rotation.x = Math.PI / 2; return mesh;
+    }
+    function sphere(parent, r, p, m, name) { return add(parent, geo('ball/' + r, () => new T.SphereGeometry(r, 16, 10)), m, p, name); }
+    function beam(parent, a, b, radius, m, name) {
+      const o = add(parent, geo('beam/' + radius, () => new T.CylinderGeometry(radius, radius, 1, 14)), m, [0, 0, 0], name); fit(o, a, b); return o;
+    }
+    function fit(o, a, b) { const av = V(a), bv = V(b), d = bv.clone().sub(av); o.position.copy(av.add(bv).multiplyScalar(.5)); o.quaternion.setFromUnitVectors(new T.Vector3(0, 1, 0), d.clone().normalize()); o.scale.y = d.length(); }
+    function bolt(parent, p, name, axis = 'y', radius = .009) {
+      cyl(parent, radius * 1.28, radius * .35, p, mat.steel, name + '.washer', axis, 20);
+      const off = p.slice(), k = {x: 0, y: 1, z: 2}[axis]; off[k] += radius * .35;
+      cyl(parent, radius, radius * .55, off, mat.metal, name + '.head', axis, 6);
+      off[k] += radius * .31; cyl(parent, radius * .43, radius * .10, off, mat.navy, name + '.socket', axis, 6);
+    }
+    function lens(parent, p, radius, name) {
+      cyl(parent, radius * 1.27, radius * .7, p, mat.black, name + '.barrel', 'x');
+      const x = p[0] + radius * .37;
+      ring(parent, radius, radius * .09, [x, p[1], p[2]], mat.metal, name + '.retainer', 'x');
+      cyl(parent, radius * .9, .006, [x + .003, p[1], p[2]], mat.glass, name + '.glass', 'x');
+      const reflection = sphere(parent, radius * .17, [x + .009, p[1] + radius * .35, p[2] - radius * .25], mat.light, name + '.glass-reflection'); reflection.scale.x = .15;
+      return [x + .009, p[1], p[2]];
+    }
+    function lamp(parent, p, name, radius = .027) {
+      cyl(parent, radius * 1.2, .022, p, mat.black, name + '.bezel', 'x');
+      cyl(parent, radius, .005, [p[0] + .013, p[1], p[2]], mat.lamp, name + '.diffuser', 'x');
+    }
+    function battery(parent, p, w, d, name) {
+      const first=parts.length;
+      box(parent, w, .095, d, p, mat.navy, name + '.battery', .01);
+      for (const z of [-d * .30, d * .30]) box(parent, w + .008, .007, .024, [p[0], p[1] + .051, p[2] + z], mat.light, name + '.retaining-band', .002);
+      box(parent, .065, .022, .04, [p[0] + w * .36, p[1] + .058, p[2]], mat.copper, name + '.connector', .003);
+      internals.push(...parts.slice(first));
+    }
+    function controller(parent, p, w, d, name) {
+      const first=parts.length;
+      box(parent, w, .014, d, p, mat.board, name + '.pcb', .002);
+      box(parent, w * .34, .025, d * .48, [p[0], p[1] + .021, p[2]], mat.black, name + '.processor', .002);
+      for (let i = 0; i < 5; i++) box(parent, .014, .026, d * .46, [p[0] + (i - 2) * .018, p[1] + .044, p[2]], mat.metal, name + '.heat-sink-' + i, .002);
+      for (const x of [-1, 1]) for (const z of [-1, 1]) cyl(parent, .008, .026, [p[0] + x * (w / 2 - .015), p[1] - .014, p[2] + z * (d / 2 - .015)], mat.metal, name + '.mount-' + x + '-' + z);
+      internals.push(...parts.slice(first));
+    }
+    function lifting(g, baseY, lift) { explode.push({g, baseY, lift}); }
+    function lidar(parent, p, name, r = .07) {
+      cyl(parent, r * 1.13, .022, p, mat.navy, name + '.mount');
+      cyl(parent, r, .045, [p[0], p[1] + .033, p[2]], mat.black, name + '.scan-window');
+      cyl(parent, r * .96, .018, [p[0], p[1] + .064, p[2]], mat.light, name + '.cap');
+      ring(parent, r * .96, .004, [p[0], p[1] + .054, p[2]], mat.blue, name + '.seam');
+    }
+    function cameraPod(parent, p, name, size = 1) {
+      const g = assembly(parent, p, name); g.scale.setScalar(size);
+      cyl(g, .083, .035, [0, .018, 0], mat.light, name + '.base');
+      cyl(g, .056, .052, [0, .056, 0], mat.navy, name + '.yaw-drive');
+      const yoke = assembly(g, [0, .085, 0], name + '.yoke');
+      box(yoke, .14, .022, .25, [0, .006, 0], mat.blue, name + '.crossbar', .007);
+      for (const z of [-.116, .116]) {
+        box(yoke, .047, .13, .027, [0, .064, z], mat.light, name + '.fork-' + z, .009);
+        cyl(yoke, .028, .033, [0, .11, z], mat.navy, name + '.pitch-bearing-' + z, 'z');
+      }
+      const head = assembly(yoke, [0, .11, 0], name + '.head');
+      box(head, .18, .13, .18, [.025, 0, 0], mat.white, name + '.housing', .025);
+      box(head, .018, .105, .17, [.116, 0, 0], mat.navy, name + '.front-plate', .006);
+      const optical = lens(head, [.137, 0, 0], .044, name + '.optic');
+      lamp(head, [.133, .023, -.063], name + '.left-light', .017); lamp(head, [.133, .023, .063], name + '.right-light', .017);
+      for (const z of [-.063, .063]) bolt(head, [.025, .069, z], name + '.lid-bolt-' + z, 'y', .006);
+      const opticalFrame = assembly(head, optical, name + '.optical-centre'); opticalFrame.userData.forward = [1, 0, 0];
+      return {g, head, yaw: yoke, cameraMount: opticalFrame};
+    }
+    function makeWheel(parent, p, radius, width, name, magnetic = false) {
+      const g = assembly(parent, p, name); wheels.push({g, radius});
+      const treadHeight=magnetic?.007:.012,treadWidth=magnetic?.025:.032,treadRadius=radius-treadHeight/2-treadWidth*treadWidth/(8*radius);
+      cyl(g, radius-treadHeight/2, width, [0, 0, 0], mat.rubber, name + '.tyre', 'z', 36);
+      cyl(g, radius * .73, width + .008, [0, 0, 0], mat.light, name + '.hub', 'z', 28);
+      for (const side of [-1, 1]) {
+        const z = side * (width / 2 + .008);
+        cyl(g, radius * .50, .012, [0, 0, z], magnetic ? mat.steel : mat.blue, name + '.drive-cover-' + side, 'z', 24);
+        cyl(g, radius * .22, .024, [0, 0, z + side * .007], mat.metal, name + '.axle-cap-' + side, 'z');
+        ring(g, radius * .68, .005, [0, 0, z], mat.steel, name + '.rim-' + side, 'z');
+        for (let i = 0; i < 6; i++) {
+          const a = i * Math.PI / 3;
+          cyl(g, radius * .035, .009, [Math.cos(a) * radius * .38, Math.sin(a) * radius * .38, z + side * .009], mat.metal, name + '.hub-bolt-' + side + '-' + i, 'z', 6);
+        }
+      }
+      const n = magnetic ? 16 : 28;
+      for (let i = 0; i < n; i++) {
+        const a = i / n * Math.PI * 2;
+        const t = box(g,treadWidth,treadHeight,width*.92,[Math.sin(a)*treadRadius,Math.cos(a)*treadRadius,0],magnetic?mat.steel:mat.tread,name+'.traction-'+i,.002);t.rotation.z=-a;
+      }
+      if (magnetic) for (let i = 0; i < 8; i++) {
+        const a = i / 8 * Math.PI * 2;
+        for (const s of [-1, 1]) {
+          const pole = box(g, .031, .027, .009, [Math.sin(a) * radius * .80, Math.cos(a) * radius * .80, s * (width / 2 + .003)], mat.metal, name + '.magnetic-pole-' + s + '-' + i, .002); pole.rotation.z = -a;
+        }
+      }
+      return g;
+    }
+
+    let pod, body, adhesionLED, dimensions,tetherMount=null;
+    if (type === 'wheel') {
+      body = assembly(group, [0, 0, 0], 'body');
+      box(body, .92, .095, .51, [0, .245, 0], mat.navy, 'load-bearing-chassis', .035);
+      box(body, .91, .20, .52, [0, .365, 0], mat.white, 'sealed-body', .04);
+      for (const z of [-.263, .263]) box(body, .79, .045, .022, [0, .315, z], mat.blue, 'side-rub-rail-' + z, .009);
+      for (const x of [-.482, .482]) box(body, .065, .092, .51, [x, .285, 0], mat.rubber, 'bumper-' + x, .025);
+      const hood = assembly(body, [0, .475, 0], 'removable-cover');
+      box(hood, .84, .018, .47, [0, -.012, 0], mat.navy, 'lid-seal', .02);
+      box(hood, .84, .046, .47, [0, .017, 0], mat.light, 'lid-edge', .025);
+      box(hood, .76, .018, .40, [0, .046, 0], mat.white, 'lid-face', .012); lifting(hood, .475, .19);
+      for (const x of [-.34, .34]) for (const z of [-.17, .17]) bolt(hood, [x, .058, z], 'lid-fastener-' + x + '-' + z);
+      battery(body, [-.15, .442, 0], .32, .30, 'power'); controller(body, [.21, .43, 0], .21, .31, 'drive-control');
+      for (const x of [-.34, .34]) for (const z of [-.32, .32]) {
+        const s = Math.sign(z); beam(body, [x - .055, .255, s * .20], [x, .17, z], .024, mat.metal, 'suspension-arm-' + x + '-' + z);
+        beam(body, [x + .075, .30, s * .215], [x + .02, .184, s * .282], .012, mat.steel, 'damper-rod-' + x + '-' + z);
+        beam(body, [x + .075, .30, s * .215], [x + .043, .233, s * .25], .023, mat.light, 'damper-barrel-' + x + '-' + z);
+        cyl(body, .031, .17, [x, .17, s * .25], mat.metal, 'drive-axle-' + x + '-' + z, 'z');
+        makeWheel(body, [x, .17, z], .17, .106, 'wheel-' + x + '-' + z);
+      }
+      for (const z of [-.263, .263]) for (let i = 0; i < 6; i++) box(body, .032, .018, .006, [-.14 + i * .052, .397, z], mat.navy, 'sealed-cooling-fin-' + z + '-' + i, .003);
+      box(body, .011, .11, .20, [-.459, .36, 0], mat.light, 'rear-service-cover', .009);
+      cyl(body, .03, .014, [-.473, .36, .055], mat.navy, 'rear-charge-socket', 'x');
+      cyl(body, .020, .016, [-.482, .36, .055], mat.black, 'charge-socket-cap', 'x');
+      lamp(body, [.518, .30, -.17], 'front-left-light'); lamp(body, [.518, .30, .17], 'front-right-light');
+      const mast = assembly(body, [.17, .50, 0], 'camera-mast');
+      box(mast, .22, .035, .19, [0, .025, 0], mat.blue, 'mast-base', .012);
+      for (const x of [-.07, .07]) for (const z of [-.055, .055]) bolt(mast, [x, .046, z], 'mast-mount-' + x + '-' + z, 'y', .007);
+      cyl(mast, .041, .24, [0, .165, 0], mat.light, 'mast-outer');
+      cyl(mast, .032, .22, [0, .31, 0], mat.metal, 'mast-inner');
+      cyl(mast, .047, .028, [0, .285, 0], mat.navy, 'mast-lock-collar');
+      box(mast, .031, .028, .065, [.032, .285, 0], mat.blue, 'mast-lock-clamp', .007);
+      pod = cameraPod(mast, [0, .415, 0], 'inspection-camera', 1); lifting(mast, .50, .19);
+      lidar(hood, [-.21, .077, 0], 'navigation-lidar', .078);
+      cyl(hood, .028, .018, [-.30, .066, .125], mat.navy, 'emergency-stop-seat');
+      cyl(hood, .023, .023, [-.30, .085, .125], mat.red, 'emergency-stop');
+      dimensions = {length:1.03, width:.77, height:1.19, wheelRadius:.17, track:.64, wheelbase:.68};
+    }
+
+    if (type === 'dog') {
+      body = assembly(group, [0, 0, 0], 'body');
+      box(body, .80, .125, .38, [0, .565, 0], mat.navy, 'spine-frame', .045);
+      box(body, .83, .125, .405, [0, .617, 0], mat.white, 'sealed-body', .048);
+      const hood = assembly(body, [0, .686, 0], 'removable-cover');
+      box(hood, .70, .014, .36, [0, -.009, 0], mat.navy, 'cover-seal', .018);
+      box(hood, .70, .030, .36, [0, .012, 0], mat.light, 'top-cover', .020); lifting(hood, .686, .16);
+      for (const x of [-.28, .28]) for (const z of [-.13, .13]) bolt(hood, [x, .03, z], 'cover-bolt-' + x + '-' + z, 'y', .007);
+      for (const z of [-.209, .209]) {
+        box(body, .52, .045, .025, [0, .60, z], mat.blue, 'side-protection-' + z, .009);
+        for (let i = 0; i < 6; i++) box(body, .026, .025, .005, [-.13 + i * .049, .642, z], mat.navy, 'cooling-port-' + z + '-' + i, .003);
+      }
+      box(body, .025, .10, .29, [-.417, .60, 0], mat.light, 'battery-rear-hatch', .012);
+      for (const z of [-.065, .065]) beam(body, [-.438, .59, z], [-.464, .59, z], .011, mat.steel, 'battery-handle-standoff-' + z);
+      beam(body, [-.464, .59, -.065], [-.464, .59, .065], .013, mat.navy, 'battery-handle');
+      box(body, .026, .10, .32, [.424, .61, 0], mat.navy, 'front-sensor-face', .015);
+      lens(body, [.449, .625, -.085], .032, 'front-depth-left'); lens(body, [.449, .625, .085], .032, 'front-depth-right');
+      lamp(body, [.448, .581, -.13], 'front-left-lamp', .015); lamp(body, [.448, .581, .13], 'front-right-lamp', .015);
+      battery(body, [-.12, .655, 0], .29, .25, 'power'); controller(body, [.20, .65, 0], .19, .25, 'locomotion-control');
+      pod = cameraPod(hood, [.20, .037, 0], 'inspection-camera', .78);
+      lidar(hood, [-.18, .042, 0], 'navigation-lidar', .057);
+      cyl(hood, .022, .018, [-.27, .044, .10], mat.navy, 'emergency-stop-seat'); cyl(hood, .018, .016, [-.27, .059, .10], mat.red, 'emergency-stop');
+      const hips = [[.29, .535, -.245], [.29, .535, .245], [-.29, .535, -.245], [-.29, .535, .245]];
+      hips.forEach((hip, i) => {
+        const side = Math.sign(hip[2]), g = assembly(group, [0, 0, 0], 'leg-' + i), n = 'leg-' + i;
+        cyl(body, .069, .10, [hip[0], hip[1], side * .20], mat.light, n + '.abduction-drive', 'z');
+        cyl(body, .052, .017, [hip[0], hip[1], side * .258], mat.blue, n + '.abduction-cap', 'z');
+        for (let j = 0; j < 6; j++) { const a = j / 6 * Math.PI * 2; cyl(body, .0045, .012, [hip[0] + .038 * Math.cos(a), hip[1] + .038 * Math.sin(a), side * .270], mat.metal, n + '.abduction-bolt-' + j, 'z', 6); }
+        const upper = beam(g, hip, [hip[0], .30, hip[2]], .036, mat.white, n + '.upper-leg');
+        const upperTrim = beam(g, hip, [hip[0], .30, hip[2]], .014, mat.blue, n + '.upper-reinforcement');
+        const knee = assembly(g, [0, 0, 0], n + '.knee');
+        cyl(knee, .052, .083, [0, 0, 0], mat.light, n + '.knee-drive', 'z');
+        cyl(knee, .039, .012, [0, 0, side * .049], mat.navy, n + '.knee-cover', 'z');
+        cyl(knee, .014, .016, [0, 0, side * .058], mat.blue, n + '.knee-axle', 'z');
+        for (let j = 0; j < 5; j++) { const a = j * Math.PI * 2 / 5; cyl(knee, .004, .008, [.028 * Math.cos(a), .028 * Math.sin(a), side * .058], mat.metal, n + '.knee-bolt-' + j, 'z', 6); }
+        const lower = beam(g, [hip[0], .30, hip[2]], [hip[0], .04, hip[2]], .021, mat.navy, n + '.lower-leg');
+        const lowerFairing = beam(g, [hip[0], .30, hip[2]], [hip[0], .15, hip[2]], .030, mat.light, n + '.shin-cover');
+        const ankle = sphere(g, .026, [0, 0, 0], mat.metal, n + '.ankle');
+        const foot = assembly(g, [0, 0, 0], n + '.foot');
+        box(foot, .084, .048, .074, [0, .024, 0], mat.rubber, n + '.rubber-foot', .016);
+        for (let j = 0; j < 3; j++) box(foot, .067, .004, .012, [0, .002, (j - 1) * .021], mat.tread, n + '.sole-grip-' + j, .001);
+        legs.push({g, hip, upper, upperTrim, knee, lower, lowerFairing, ankle, foot, phase:[0,.5,.75,.25][i], bend:hip[0] > 0 ? -1 : 1, lastFoot:null, error:0});
+      });
+      dimensions = {length:1.02, width:.67, height:.91, upperLeg:.27, lowerLeg:.29, hipHeight:.535};
+    }
+
+    if (type === 'crawler') {
+      body = assembly(group, [0, 0, 0], 'body');
+      box(body, .65, .075, .37, [0, .125, 0], mat.navy, 'sealed-drive-frame', .025);
+      box(body, .60, .10, .37, [0, .193, 0], mat.white, 'shell-side', .028);
+      const hood = assembly(body, [0, .249, 0], 'removable-cover');
+      box(hood, .54, .013, .335, [0, -.009, 0], mat.navy, 'lid-seal', .012);
+      box(hood, .54, .025, .335, [0, .01, 0], mat.light, 'lid-face', .016); lifting(hood, .249, .14);
+      for (const x of [-.21, .21]) for (const z of [-.12, .12]) bolt(hood, [x, .026, z], 'lid-bolt-' + x + '-' + z, 'y', .006);
+      for (const z of [-.192, .192]) box(body, .51, .035, .018, [0, .185, z], mat.blue, 'side-rub-rail-' + z, .007);
+      battery(body, [-.13, .219, 0], .21, .25, 'power'); controller(body, [.13, .21, 0], .18, .25, 'magnetic-drive-controller');
+      for (const x of [-.235, .235]) for (const z of [-.255, .255]) {
+        const s = Math.sign(z);
+        box(body, .14, .065, .065, [x, .128, s * .195], mat.light, 'axle-mount-' + x + '-' + z, .012);
+        cyl(body, .041, .10, [x, .105, s * .185], mat.navy, 'geared-motor-' + x + '-' + z, 'z');
+        cyl(body, .021, .15, [x, .105, s * .22], mat.metal, 'wheel-axle-' + x + '-' + z, 'z');
+        makeWheel(body, [x, .105, z], .105, .093, 'magnetic-wheel-' + x + '-' + z, true);
+      }
+      for (const x of [-.35, .35]) {
+        for (const z of [-.13, .13]) beam(body, [x * .87, .14, z], [x, .14, z], .008, mat.steel, 'bumper-support-' + x + '-' + z);
+        beam(body, [x, .14, -.17], [x, .14, .17], .017, mat.rubber, 'touch-bumper-' + x);
+      }
+      box(hood, .14, .018, .16, [-.175, .035, 0], mat.blue, 'tether-anchor-plate', .005);
+      for (const x of [-.219, -.131]) for (const z of [-.052, .052]) bolt(hood, [x, .048, z], 'anchor-bolt-' + x + '-' + z, 'y', .006);
+      ring(hood, .035, .009, [-.175, .076, 0], mat.metal, 'tether-eye', 'z');
+      tetherMount=assembly(hood,[-.140,.076,0],'tether-attachment');
+      pod = cameraPod(hood, [.17, .028, 0], 'inspection-camera', .62);
+      cyl(body, .024, .013, [-.312, .195, -.09], mat.black, 'power-connector', 'x');
+      cyl(body, .017, .015, [-.315, .195, .09], mat.metal, 'signal-connector', 'x');
+      adhesionLED = cyl(hood, .011, .008, [-.03, .029, .12], mat.led, 'adhesion-status-light');
+      dimensions = {length:.72, width:.62, height:.43, wheelRadius:.105, track:.51, wheelbase:.47};
+    }
+
+    const pose = {travel:0, time:0, moving:false, exploded:0, adhesion:true};
+    let lastTime = null, motionBlend = 0, terrainAt = () => 0;
+    const torso = {ready:false,worldY:0,pitch:0,lastTravel:0};
+    function solveLeg(leg, foot) {
+      body.updateMatrix();
+      const hip = V(leg.hip).applyMatrix4(body.matrix).toArray(), ankle = [foot[0], foot[1] + .048, foot[2]];
+      const dx = ankle[0] - hip[0], dy = ankle[1] - hip[1], dz = ankle[2] - hip[2];
+      const rawDistance = Math.hypot(dx, dy, dz), d = clamp(rawDistance, .020001, .27 + .29 - .0001);
+      const dir = V([dx, dy, dz]).normalize(), a = (.27 * .27 - .29 * .29 + d * d) / (2 * d), h = Math.sqrt(Math.max(0, .27 * .27 - a * a));
+      let perpendicular = new T.Vector3(-dir.y, dir.x, 0); if (perpendicular.lengthSq() < .0001) perpendicular.set(1, 0, 0); perpendicular.normalize().multiplyScalar(h * leg.bend);
+      const k = V(hip).add(dir.clone().multiplyScalar(a)).add(perpendicular).toArray();
+      fit(leg.upper, hip, k); const side = Math.sign(hip[2]); fit(leg.upperTrim, [hip[0], hip[1], hip[2] + side * .029], [k[0], k[1], k[2] + side * .029]);
+      leg.knee.position.set(...k); fit(leg.lower, k, ankle);
+      const end = k.map((v, i) => v + (ankle[i] - v) * .58); fit(leg.lowerFairing, k, end);
+      leg.ankle.position.set(...ankle); leg.foot.position.set(...foot); leg.lastFoot = foot.slice();
+      leg.error = Math.max(Math.abs(V(k).distanceTo(V(hip)) - .27), Math.abs(V(k).distanceTo(V(ankle)) - .29));
+    }
+    function setPose(next = {}) {
+      if(next.reset){lastTime=null;motionBlend=0;torso.ready=false;torso.pitch=0;}
+      for(const [key,value] of Object.entries(next))if(key!=='groundAt'&&key!=='feet')pose[key]=value;
+      if(typeof next.groundAt==='function')terrainAt=next.groundAt;
+      else if(next.groundAt===null)terrainAt=()=>0;
+      pose.travel = Number.isFinite(+pose.travel) ? +pose.travel : 0; pose.time = Number.isFinite(+pose.time) ? +pose.time : 0;
+      const e = clamp(+pose.exploded || 0, 0, 1), dt = lastTime === null ? 1 / 60 : clamp(pose.time - lastTime, 0, .1); lastTime = pose.time;
+      motionBlend += ((pose.moving ? 1 : 0) - motionBlend) * (1 - Math.exp(-dt * 12));
+      if (!pose.moving && (pose.reducedMotion || motionBlend < .003)) motionBlend = 0;
+      for (const item of explode) item.g.position.y = item.baseY + e * item.lift;
+      for(const part of internals)part.visible=e>.02;
+      for (const wheel of wheels) wheel.g.rotation.z = -pose.travel / wheel.radius;
+      if (type === 'dog') {
+        const ground = terrainAt;
+        const finiteGround = (x,z) => { const y = +ground(x,z); return Number.isFinite(y) ? y : 0; };
+        const rearGround = finiteGround(-.33, 0), frontGround = finiteGround(.33, 0), terrain = Math.abs(frontGround - rearGround) > .025;
+        const tilt = clamp(Math.atan2(frontGround - rearGround, .66), -.58, .58), centerGround = (frontGround + rearGround) / 2;
+        const bob = .006 * Math.cos(pose.travel / (.32 / .72) * Math.PI * 4) * motionBlend;
+        const discontinuous=!torso.ready||Math.abs(pose.travel-torso.lastTravel)>.20,settle=discontinuous||!pose.moving&&motionBlend<.03?1:1-Math.exp(-dt*11);
+        torso.pitch+=(tilt-torso.pitch)*settle;
+        const desiredWorldY=group.position.y+centerGround+(terrain?-.045:0)+bob+.535*(1-Math.cos(torso.pitch));
+        const verticalDelta=(desiredWorldY-torso.worldY)*settle;
+        torso.worldY+=settle===1?verticalDelta:clamp(verticalDelta,-dt*.65,dt*.65);
+        torso.ready=true;torso.lastTravel=pose.travel;
+        // The root may advance abruptly to the next tread height. Smooth the
+        // torso in world Y, then subtract that root height so the visible body
+        // stays continuous while each foot follows its own contact surface.
+        body.rotation.z=torso.pitch;body.position.x=Math.sin(torso.pitch)*.535;body.position.y=torso.worldY-group.position.y;
+        const targets = legs.map((leg, i) => {
+          let foot;
+          if (Array.isArray(next.feet) && next.feet[i]) {
+            const f = next.feet[i]; foot = Array.isArray(f) ? f.slice(0, 3) : [f.x, f.y, f.z];
+          } else {
+            const q = ((pose.travel / (.32 / .72) + leg.phase) % 1 + 1) % 1;
+            let x, lift;
+            if (q < .72) { x = .16 - .32 * q / .72; lift = 0; }
+            else {
+              const s = (q - .72) / .28, h=clamp((s-.22)/.56,0,1), ease=h*h*(3-2*h);
+              // Keep the foot still in world X while lifting, then move it to the
+              // next contact and lower it. Subtract the root's continuing travel.
+              x = -.16 - (.32/.72)*.28*s + (.32/.72)*ease; lift = 0;
+            }
+            const fx = leg.hip[0] + x * motionBlend;
+            let floor = finiteGround(fx, leg.hip[2]);
+            if (q >= .72 && motionBlend > .01) {
+              // Raise a swinging foot before a riser, instead of snapping it upward
+              // when its sample point first crosses the stair edge.
+              const s = (q-.72)/.28, takeoffX=leg.hip[0]-.16-(q-.72)*(.32/.72), landingX=leg.hip[0]+.16+(1-q)*(.32/.72);
+              const takeoff=finiteGround(takeoffX,leg.hip[2]),landing=finiteGround(landingX,leg.hip[2]);
+              let clearance=Math.max(takeoff,landing)+.075;
+              for(let j=1;j<8;j++)clearance=Math.max(clearance,finiteGround(takeoffX+(landingX-takeoffX)*j/8,leg.hip[2])+.065);
+              const rise=clamp(s/.22,0,1),fall=clamp((s-.78)/.22,0,1),smooth=v=>v*v*(3-2*v);
+              const swingY=s<.22?takeoff+(clearance-takeoff)*smooth(rise):s>.78?clearance+(landing-clearance)*smooth(fall):clearance;
+              floor=Math.max(floor,swingY);
+            }
+            foot = [fx, floor + lift * motionBlend, leg.hip[2]];
+          }
+          return foot;
+        });
+        // A short-legged platform crouches until every planted leg is within reach.
+        // Hip pitch follows the stair rise, so its front and rear mounts remain attached.
+        body.updateMatrix(); let permittedDrop = 0;
+        legs.forEach((leg, i) => { const h = V(leg.hip).applyMatrix4(body.matrix), f = targets[i], sideways = (f[0]-h.x)**2 + (f[2]-h.z)**2;
+          const verticalReach = Math.sqrt(Math.max(.01, .553**2 - sideways));
+          permittedDrop = Math.min(permittedDrop, f[1] + .048 + verticalReach - h.y);
+        });
+        body.position.y += permittedDrop;
+        torso.worldY+=permittedDrop;
+        legs.forEach((leg,i) => solveLeg(leg,targets[i]));
+      }
+      if (adhesionLED) { adhesionLED.material.color.set(pose.adhesion === false ? '#ca9b64' : '#67bad8'); adhesionLED.material.emissiveIntensity = pose.adhesion === false ? .08 : .5; }
+      if (Number.isFinite(next.cameraPitch)) pod.head.rotation.z = next.cameraPitch;
+      if (Number.isFinite(next.cameraYaw)) pod.yaw.rotation.y = next.cameraYaw;
+    }
+    function aimAt(worldTarget) {
+      const target = worldTarget?.isVector3 ? worldTarget.clone() : V(worldTarget);
+      group.updateMatrixWorld(true);
+      // First rotate the physical fork about its vertical yaw bearing.
+      const local = pod.g.worldToLocal(target.clone()), base = pod.yaw.position;
+      pod.yaw.rotation.y = Math.atan2(-(local.z-base.z), local.x-base.x);
+      group.updateMatrixWorld(true);
+      const pitched = pod.yaw.worldToLocal(target.clone()), pivot = pod.head.position;
+      pod.head.rotation.z = Math.atan2(pitched.y-pivot.y, pitched.x-pivot.x);
+      group.updateMatrixWorld(true);
+    }
+    setPose({});
+    function stats({precise=false}={}) {
+      group.updateMatrixWorld(true); const box = new T.Box3().setFromObject(group,precise), size = box.getSize(new T.Vector3());
+      return {type, meshCount:parts.length, geometryCount:cache.size, dimensions:{...dimensions}, worldBounds:{min:box.min.toArray(), max:box.max.toArray(), size:size.toArray()},
+        cameraPosition:pod.cameraMount.getWorldPosition(new T.Vector3()).toArray(), bodyPosition:body.getWorldPosition(new T.Vector3()).toArray(),bodyPitch:body.rotation.z,wheelAngles:wheels.map(w => w.g.rotation.z),
+        feet:legs.map(leg => ({local:leg.lastFoot.slice(),world:group.localToWorld(V(leg.lastFoot)).toArray(),ikError:leg.error})), maxIKError:Math.max(0,...legs.map(l => l.error)),
+        unnamed:parts.filter(p => !p.name).length, finite:parts.every(p => p.matrixWorld.elements.every(Number.isFinite)), motionBlend, pose:{...pose}};
+    }
+    return {group, setPose, aimAt, cameraMount:pod.cameraMount,tetherMount, stats, dimensions:{...dimensions},
+      needsSettle() { return !pose.moving && motionBlend > .003; },
+      dispose() { for (const g of cache.values()) g.dispose(); for (const m of disposables) m.dispose(); }};
+  };
+})();
+
+/* One connected bridge, three physical vehicles, two cameras in the same world. */
+(()=>{
+const clamp=(v,a,b)=>Math.max(a,Math.min(b,v)),lerp=(a,b,t)=>a+(b-a)*t;
+window.createPatrolScene=function(host,callbacks={}){
+ const T=window.THREE,reduce=matchMedia('(prefers-reduced-motion: reduce)');
+ let renderer;
+ try{if(!T||/no-?webgl/.test(location.search))throw Error('WebGL unavailable');renderer=new T.WebGLRenderer({antialias:true,alpha:true,preserveDrawingBuffer:true,powerPreference:'high-performance'});}catch(e){host.innerHTML='<div class="fallback"><b>三维现场暂时无法开启</b><p>当前浏览器没有提供 WebGL。请使用支持硬件加速的浏览器重新打开本地页面。</p><p>仍可查看任务与已有记录；本轮不会生成模拟的三维采集证据。</p></div>';return{update(){},setView(){},setTheme(){},explode(){},highlightPart(){},capture(){return null},metrics(){return null},stats(){return{webgl:false}},dispose(){}};}
+ renderer.setPixelRatio(Math.min(devicePixelRatio||1,1.5));renderer.outputColorSpace=T.SRGBColorSpace;renderer.toneMapping=T.ACESFilmicToneMapping;renderer.toneMappingExposure=1.12;renderer.shadowMap.enabled=true;renderer.shadowMap.type=T.PCFSoftShadowMap;renderer.shadowMap.autoUpdate=false;
+ const canvas=renderer.domElement;canvas.tabIndex=0;canvas.setAttribute('aria-label','桥梁巡检三维现场：拖动旋转、滚轮缩放，方向键旋转，Home恢复全桥');host.appendChild(canvas);
+ const scene=new T.Scene(),camera=new T.PerspectiveCamera(38,1,.05,180),inspectionCamera=new T.PerspectiveCamera(58,1.6,.015,90);
+ scene.fog=new T.Fog(0xeaf0f3,65,120);
+ const hemi=new T.HemisphereLight(0xe4f3ff,0xb1a891,2.0);scene.add(hemi);
+ const sun=new T.DirectionalLight(0xffefd8,3.05);sun.position.set(-12,25,17);sun.castShadow=true;sun.shadow.mapSize.set(2048,2048);Object.assign(sun.shadow.camera,{left:-24,right:24,top:20,bottom:-20,near:.5,far:75});sun.shadow.bias=-.00015;sun.shadow.normalBias=.035;sun.shadow.radius=3;scene.add(sun);
+ const fill=new T.DirectionalLight(0xc9e4ff,1.25);fill.position.set(16,12,-8);scene.add(fill);
+ const world=window.createBridgeWorld(T);scene.add(world.group);
+ const fleet={};for(const kind of ['wheel','dog','crawler']){fleet[kind]=window.createInspectionRobot(T,kind);scene.add(fleet[kind].group);}
+ const lamp=new T.SpotLight(0xfff5de,0,7,Math.PI/4,.6,1);scene.add(lamp,lamp.target);
+ const ropeMat=new T.MeshStandardMaterial({color:0xe9b253,roughness:.85}),ropeGeo=new T.CylinderGeometry(.014,.014,1,8);
+ const ropeParts=Array.from({length:16},()=>{const m=new T.Mesh(ropeGeo,ropeMat);m.castShadow=true;scene.add(m);return m});
+ const anchorMat=new T.MeshStandardMaterial({color:0xb5c5ca,metalness:.7,roughness:.28});
+ const anchorPlate=new T.Mesh(new T.BoxGeometry(.22,.03,.16),anchorMat);anchorPlate.position.set(3.7,4.85,3.3);anchorPlate.name='independent-tether-anchor-base';anchorPlate.castShadow=true;scene.add(anchorPlate);
+ const anchorEye=new T.Mesh(new T.TorusGeometry(.055,.012,8,20),anchorMat);anchorEye.position.set(3.7,4.912,3.3);anchorEye.name='independent-tether-anchor-eye';anchorEye.castShadow=true;scene.add(anchorEye);
+ for(const x of [-.08,.08])for(const z of [-.05,.05]){const bolt=new T.Mesh(new T.CylinderGeometry(.012,.012,.018,6),anchorMat);bolt.position.set(3.7+x,4.874,3.3+z);bolt.name='tether-base-fixing';scene.add(bolt);}
+ const routeMat=new T.MeshBasicMaterial({color:0x2679bf,transparent:true,opacity:.36,depthWrite:false});const route=new T.Group();scene.add(route);
+ const ringMat=new T.MeshBasicMaterial({color:0x2194cc,transparent:true,opacity:.72,side:T.DoubleSide,depthWrite:false});
+ const targetRing=new T.Mesh(new T.RingGeometry(.35,.38,64),ringMat);scene.add(targetRing);
+ const pinNodes={};for(const id of ['road','stairs','wall']){const b=document.createElement('button');b.className='world-pin';b.dataset.point=id;b.title='选择'+({road:'桥面排水口',stairs:'桥台侧面',wall:'钢梁检查面'}[id]);b.innerHTML='<span>'+({road:'A',stairs:'B',wall:'C'}[id])+'</span>';b.onclick=()=>callbacks.onPick?.(id);host.appendChild(b);pinNodes[id]=b;}
+ const targetData={road:{point:[-2,4.80,2.65],normal:[0,1,0],size:.85},stairs:{point:[-8.3,3.85,3.52],normal:[0,0,1],size:.75},wall:{point:[3,3.9,3.21],normal:[0,0,1],size:.48}};
+ let state=null,lastMission=null,lastRobot=null,view='overview',exploded=false,explosion=0,visible=true,destroyed=false,raf=0,last=0,elapsed=0,dirty=true,lastPreview=0,cameraMetrics=null,theme='light';
+ const highlighted=[];
+ function clearHighlight(){for(const {mesh,original,material} of highlighted){mesh.material=original;material.dispose();}highlighted.length=0;}
+ function highlightPart(tokens=[]){clearHighlight();if(state&&tokens.length)fleet[state.robot].group.traverse(mesh=>{if(!mesh.isMesh||!tokens.some(token=>mesh.name.startsWith(state.robot+'.'+token)))return;const original=mesh.material,material=original.clone();material.emissive.setHex(0xf5a623);material.emissiveIntensity=.75;mesh.material=material;highlighted.push({mesh,original,material});});request();}
+ let orbit={az:.57,el:.48,r:34,tx:-.3,ty:2.2,tz:1.8},goal={...orbit};
+ const preview=document.createElement('canvas');preview.width=640;preview.height=400;const pctx=preview.getContext('2d',{willReadFrequently:true});
+ const renderTarget=new T.WebGLRenderTarget(640,400),pixels=new Uint8Array(640*400*4),imageData=pctx.createImageData(640,400);renderTarget.texture.colorSpace=T.SRGBColorSpace;
+ const ray=new T.Raycaster(),v=new T.Vector3(),camPosition=new T.Vector3(),targetPosition=new T.Vector3(),up=new T.Vector3(0,1,0);
+ function groundAt(x){return x<-15?.15:x>=-9?3.39:.15+(Math.floor((x+15)/.5)+1)*.27;}
+ function poseAt(id,p,kind){
+  if(id==='stairs'&&kind&&kind!=='dog')return{x:lerp(-16.8,-15.7,Math.min(1,p/.15)),y:.15,z:5.5,yaw:0};
+  if(id==='wall'&&kind&&kind!=='crawler')return{x:3,y:.15,z:lerp(6.3,4.4,Math.min(1,p/.15)),yaw:Math.PI/2};
+  if(id==='road')return{x:lerp(-11,-3.45,p),y:4.71,z:lerp(2.35,2.55,p),yaw:0};
+  if(id==='stairs'){
+   if(p<.82){const x=lerp(-15.65,-8.45,p/.82);return{x,y:.15+clamp((x+15+.25)/6,0,1)*3.24,z:5.5,yaw:0};}
+   return{x:-8.45,y:3.39,z:lerp(5.5,5.05,(p-.82)/.18),yaw:Math.PI/2};
+  }
+  return{x:3,y:lerp(2.52,3.28,p),z:3.18,yaw:0};
+ }
+ function setRobot(kind,id,p,moving,dt,reset=false){
+  const rig=fleet[kind],o=poseAt(id,p,kind);rig.group.position.set(o.x,o.y,o.z);rig.group.rotation.set(0,o.yaw,0);
+  if(id==='wall'&&kind==='crawler')rig.group.quaternion.setFromRotationMatrix(new T.Matrix4().makeBasis(new T.Vector3(0,1,0),new T.Vector3(0,0,1),new T.Vector3(1,0,0)));
+  const ground=id==='stairs'&&kind==='dog'&&o.yaw===0?(x,z)=>groundAt(o.x+x)-o.y:undefined;
+  rig.setPose({travel:id==='stairs'?(p<.82?p/.82*7.2:7.2+(p-.82)/.18*.45):p*(id==='road'?Math.hypot(7.55,.2):.76),time:elapsed,moving,reducedMotion:reduce.matches,adhesion:state?.entries.wall.magnet,exploded:state?.robot===kind?explosion:0,groundAt:ground??null,reset});
+  return o;
+ }
+ function buildRoute(){while(route.children.length)route.remove(route.children[0]);if(!state)return;for(let i=0;i<27;i++){const p=poseAt(state.mission,i/26),m=new T.Mesh(new T.SphereGeometry(.035,6,4),routeMat);m.position.set(p.x,p.y+.045,p.z);if(state.mission==='wall')m.position.z+=.02;route.add(m);}}
+ function updateRope(){const e=state.entries.wall,show=e.tether&&state.robot==='crawler'&&state.mission==='wall';for(const m of ropeParts)m.visible=show;if(!show)return;const end=fleet.crawler.tetherMount.getWorldPosition(new T.Vector3()),start=new T.Vector3(3.7,4.965,3.3);const points=[start,new T.Vector3(3.7,4.94,3.6),new T.Vector3(3.65,4.35,3.73),new T.Vector3(3.56,end.y+.12,3.8),end];const curve=new T.CatmullRomCurve3(points);for(let i=0;i<16;i++){const a=curve.getPoint(i/16),b=curve.getPoint((i+1)/16),m=ropeParts[i],delta=b.clone().sub(a);m.position.copy(a).add(b).multiplyScalar(.5);m.scale.set(1,delta.length(),1);m.quaternion.setFromUnitVectors(up,delta.normalize());}}
+ function cameraTarget(){if(!state)return;const td=targetData[state.mission],rig=fleet[state.robot];rig.group.updateMatrixWorld(true);rig.cameraMount.getWorldPosition(camPosition);targetPosition.fromArray(td.point);
+  const direction=targetPosition.clone().sub(camPosition).normalize(),right=new T.Vector3().crossVectors(direction,up).normalize(),camUp=new T.Vector3().crossVectors(right,direction).normalize();
+  const yaw=(state.camera.yaw||0)*Math.PI/180,pitch=(state.camera.pitch||0)*Math.PI/180;
+  direction.applyAxisAngle(up,yaw).applyAxisAngle(right,pitch);const look=camPosition.clone().addScaledVector(direction,2);
+  rig.aimAt?.(look);rig.group.updateMatrixWorld(true);rig.cameraMount.getWorldPosition(camPosition);
+  const optical=new T.Vector3(1,0,0).applyQuaternion(rig.cameraMount.getWorldQuaternion(new T.Quaternion())).normalize(),opticalTarget=camPosition.clone().add(optical);
+  inspectionCamera.position.copy(camPosition);inspectionCamera.up.copy(up);inspectionCamera.lookAt(opticalTarget);inspectionCamera.fov=(state.camera.mode==='detail'?(state.mission==='wall'?55:state.mission==='stairs'?45:42):(state.mission==='wall'?88:72))/(state.camera.zoom||1);inspectionCamera.updateProjectionMatrix();inspectionCamera.updateMatrixWorld(true);
+  lamp.position.copy(camPosition);lamp.target.position.copy(opticalTarget);lamp.intensity=state.camera.lamp?1.2:0;
+  const projected=targetPosition.clone().project(inspectionCamera),distance=camPosition.distanceTo(targetPosition),normal=new T.Vector3(...td.normal),towards=camPosition.clone().sub(targetPosition).normalize(),incidence=Math.acos(clamp(normal.dot(towards),-1,1))*180/Math.PI;
+  ray.set(camPosition,targetPosition.clone().sub(camPosition).normalize());ray.far=Math.max(0,distance-.08);const hit=ray.intersectObject(world.group,true).filter(h=>{let visible=h.object.visible;for(let p=h.object.parent;p;p=p.parent)visible=visible&&p.visible;return visible&&h.object.material?.visible!==false&&h.object.material?.opacity!==0&&!h.object.userData.ignoreCameraOcclusion&&!h.object.userData.inspectionTarget;});
+  const visibleTarget=hit.length===0;
+  const exposure=state.mission==='road'?.9:state.camera.lamp?.86:.34;
+  cameraMetrics={centered:Math.abs(projected.x)<.62&&Math.abs(projected.y)<.62&&projected.z<1,visible:visibleTarget,exposure,incidence,distance,coverage:td.size/(2*distance*Math.tan(inspectionCamera.fov*Math.PI/360)),position:camPosition.toArray().map(n=>+n.toFixed(4)),target:td.point,view:state.camera.mode,yaw:state.camera.yaw,pitch:state.camera.pitch,zoom:state.camera.zoom,lamp:state.camera.lamp,occluder:hit[0]?.object.name||null};
+  return cameraMetrics;
+ }
+ function captureExposure(){return state.mission==='road'?1.05:state.camera.lamp?1.1:.37;}
+ function renderPreview(){if(!state||!cameraMetrics)return;
+  const oldExposure=renderer.toneMappingExposure;renderer.toneMappingExposure=captureExposure();
+  const oldRing=targetRing.visible,oldRoute=route.visible;targetRing.visible=false;route.visible=false;
+  for(const item of highlighted)item.mesh.material=item.original;
+  renderer.setRenderTarget(renderTarget);renderer.render(scene,inspectionCamera);renderer.readRenderTargetPixels(renderTarget,0,0,640,400,pixels);renderer.setRenderTarget(null);renderer.toneMappingExposure=oldExposure;targetRing.visible=oldRing;route.visible=oldRoute;
+  for(const item of highlighted)item.mesh.material=item.material;
+  for(let y=0;y<400;y++)imageData.data.set(pixels.subarray((399-y)*640*4,(400-y)*640*4),y*640*4);pctx.putImageData(imageData,0,0);
+  if(state.entries[state.mission].moving){const temp=document.createElement('canvas');temp.width=640;temp.height=400;temp.getContext('2d').drawImage(preview,0,0);pctx.globalAlpha=.25;for(let i=1;i<=4;i++)pctx.drawImage(temp,i*4,0);pctx.globalAlpha=1;}
+  callbacks.onPreview?.(preview,cameraMetrics);
+ }
+ function settling(){return Object.values(fleet).some(r=>r.needsSettle?.());}
+ function updateWorld(dt,reset=false){if(!state)return;elapsed+=dt;const targetExplosion=exploded?1:0;explosion+=(targetExplosion-explosion)*(reduce.matches?1:1-Math.exp(-dt*7));if(Math.abs(explosion-targetExplosion)<.001)explosion=targetExplosion;if(dirty||reset||state.entries[state.mission].moving||settling()||explosion!==targetExplosion)renderer.shadowMap.needsUpdate=true;
+  // Only the selected platform is deployed. Parked rigs must not share its route,
+  // cast shadows onto it, or appear in the inspection camera after a switch.
+  for(const [kind,rig] of Object.entries(fleet)){rig.group.visible=kind===state.robot;const id=kind==='wheel'?'road':kind==='dog'?'stairs':'wall',e=state.entries[id];if(kind===state.robot)setRobot(kind,state.mission,state.entries[state.mission].progress,state.entries[state.mission].moving,dt,reset);else setRobot(kind,id,e.robot===kind?e.progress:0,false,dt,reset);}
+  scene.updateMatrixWorld(true);updateRope();cameraTarget();
+  world.setState?.({roadCleared:!!state.entries.road.follow||!!state.entries.road.serviceDone,wallMaterial:'steel',wet:true});
+  const td=targetData[state.mission];targetRing.position.set(...td.point);targetRing.position.addScaledVector(new T.Vector3(...td.normal),.018);targetRing.quaternion.setFromUnitVectors(new T.Vector3(0,0,1),new T.Vector3(...td.normal));targetRing.visible=view!=='robot'&&state.stage!=='capture';route.visible=state.stage==='survey'||state.stage==='travel';
+  if(view==='follow'||view==='robot'){const p=fleet[state.robot].group.position;goal.tx=p.x;goal.ty=p.y+(state.robot==='crawler'?.15:state.robot==='dog'?.4:.65);goal.tz=p.z;}
+ }
+ function setView(name){view=name;if(!state)return;const id=state.mission,p=poseAt(id,state.entries[id].progress,state.robot),td=targetData[id];
+  if(name==='overview')goal={az:.57,el:.48,r:34,tx:-.3,ty:2.2,tz:1.8};
+  else if(name==='follow')goal={az:id==='wall'?.25:id==='road'?-2.0:-1.25,el:id==='wall'?.15:id==='road'?.45:.55,r:state.robot==='crawler'?3.1:state.robot==='dog'?4.3:4.4,tx:p.x,ty:p.y+.6,tz:p.z};
+  else if(name==='robot')goal={az:state.robot==='crawler'?(exploded?.95:.2):state.robot==='dog'?-1.4:-2,el:state.robot==='dog'?.48:exploded?.42:.28,r:state.robot==='wheel'?2.6:state.robot==='dog'?2.9:exploded?2.65:2.15,tx:p.x,ty:p.y+(state.robot==='crawler'?.1:.48),tz:p.z};
+  else if(name==='target')goal={az:id==='road'?-.45:.05,el:id==='road'?1.05:.12,r:id==='road'?3.35:2.6,tx:td.point[0],ty:td.point[1],tz:td.point[2]};
+  else if(name==='camera')goal={...orbit};
+  if(reduce.matches)orbit={...goal};callbacks.onView?.(name);request();
+ }
+ function placeCamera(dt){const ease=reduce.matches?1:1-Math.exp(-dt*8);let moving=false;for(const k of Object.keys(goal)){if(Math.abs(goal[k]-orbit[k])>.0001)moving=true;orbit[k]+= (goal[k]-orbit[k])*ease;}
+  camera.position.set(orbit.tx+Math.sin(orbit.az)*Math.cos(orbit.el)*orbit.r,orbit.ty+Math.sin(orbit.el)*orbit.r,orbit.tz+Math.cos(orbit.az)*Math.cos(orbit.el)*orbit.r);camera.lookAt(orbit.tx,orbit.ty,orbit.tz);camera.updateMatrixWorld();return moving;
+ }
+ function pins(){for(const[id,b]of Object.entries(pinNodes)){v.fromArray(targetData[id].point);v.y+=.5;v.project(camera);b.hidden=view!=='overview'||Math.abs(v.x)>1||Math.abs(v.y)>1||v.z>1;b.style.left=(v.x*.5+.5)*host.clientWidth+'px';b.style.top=(-v.y*.5+.5)*host.clientHeight+'px';b.classList.toggle('selected',state?.mission===id);}}
+ function drawMain(){const size=renderer.getSize(new T.Vector2());renderer.setRenderTarget(null);renderer.setViewport(0,0,size.x,size.y);if(view==='camera'){renderer.clear();const h=Math.min(size.y,size.x/1.6),w=h*1.6;renderer.setViewport((size.x-w)/2,(size.y-h)/2,w,h);renderer.autoClear=false;const exposure=renderer.toneMappingExposure;renderer.toneMappingExposure=captureExposure();renderer.render(scene,inspectionCamera);renderer.toneMappingExposure=exposure;renderer.autoClear=true;}else renderer.render(scene,camera);}
+ function frame(now){raf=0;if(destroyed||!active()||document.hidden)return;const dt=Math.min(.08,last?(now-last)/1000:.016);last=now;const moving=state?.entries[state.mission].moving;
+  if(moving)callbacks.onTick?.(dt);updateWorld(dt);const easing=placeCamera(dt);
+  if(state?.stage==='capture'&&(now-lastPreview>160||dirty)){renderPreview();lastPreview=now;}
+  if(visible){drawMain();pins();}dirty=false;
+  if(moving||settling()||(easing||Math.abs(explosion-(exploded?1:0))>.001)&&visible)raf=requestAnimationFrame(frame);
+ }
+ function active(){return visible||state?.entries[state.mission].moving||settling()||state?.stage==='capture';}
+ function request(){dirty=true;if(!raf&&active()&&!document.hidden&&!destroyed)raf=requestAnimationFrame(frame);}
+ function resize(){const r=host.getBoundingClientRect();if(r.width<2||r.height<2)return;renderer.setSize(r.width,r.height,false);camera.aspect=r.width/r.height;camera.updateProjectionMatrix();request();}
+ const ro=new ResizeObserver(resize);ro.observe(host);const io=new IntersectionObserver(es=>{visible=es[0]?.isIntersecting;last=0;if(active())request();else if(raf){cancelAnimationFrame(raf);raf=0;}});io.observe(host);
+ const onVisibility=()=>{last=0;if(!document.hidden)request();};document.addEventListener('visibilitychange',onVisibility);
+ let drag=null;canvas.addEventListener('pointerdown',e=>{drag={id:e.pointerId,x:e.clientX,y:e.clientY,moved:0};canvas.setPointerCapture(e.pointerId);canvas.focus();});
+ canvas.addEventListener('pointermove',e=>{if(!drag)return;const dx=e.clientX-drag.x,dy=e.clientY-drag.y;drag.moved+=Math.abs(dx)+Math.abs(dy);goal.az-=dx*.006;goal.el=clamp(goal.el+dy*.004,-.12,1.35);drag.x=e.clientX;drag.y=e.clientY;view='free';callbacks.onView?.(view);request();});
+ canvas.addEventListener('pointerup',e=>{if(drag?.moved<5){const r=canvas.getBoundingClientRect();ray.setFromCamera({x:(e.clientX-r.left)/r.width*2-1,y:1-(e.clientY-r.top)/r.height*2},camera);ray.far=100;const hits=ray.intersectObjects(world.pickables||[],true);if(hits[0])callbacks.onPick?.(hits[0].object.userData.mission||hits[0].object.userData.station||hits[0].object.userData.id);}drag=null;});canvas.addEventListener('pointercancel',()=>drag=null);
+ canvas.addEventListener('wheel',e=>{e.preventDefault();goal.r=clamp(goal.r*Math.exp(e.deltaY*.001),.7,55);request();},{passive:false});
+ canvas.addEventListener('keydown',e=>{if(e.key==='Home'){setView('overview');e.preventDefault();return;}if(['ArrowLeft','ArrowRight','ArrowUp','ArrowDown','+','-','='].includes(e.key)){e.preventDefault();if(e.key==='ArrowLeft')goal.az-=.12;if(e.key==='ArrowRight')goal.az+=.12;if(e.key==='ArrowUp')goal.el=clamp(goal.el+.08,-.12,1.35);if(e.key==='ArrowDown')goal.el=clamp(goal.el-.08,-.12,1.35);if(e.key==='+'||e.key==='=')goal.r*=.9;if(e.key==='-')goal.r*=1.1;request();}});
+ return{
+  update(s){const changed=lastMission!==s.mission,switched=changed||lastRobot!==s.robot||state!==s;state=s;if(switched){lastRobot=s.robot;exploded=false;explosion=0;clearHighlight();}if(changed){lastMission=s.mission;buildRoute();}updateWorld(0,switched);request();},
+  setView,setTheme(t){theme=t;scene.fog.color.setHex(t==='dark'?0x1d3040:0xeaf0f3);renderer.toneMappingExposure=t==='dark'?.88:1.12;request();},
+  explode(value){exploded=value;setView('robot');request();},highlightPart,
+  capture(){if(!state)return null;updateWorld(0);renderPreview();if(visible)drawMain();return{image:preview.toDataURL('image/jpeg',.88),metrics:JSON.parse(JSON.stringify(cameraMetrics)),mode:state.camera.mode,mission:state.mission,condition:state.mission==='road'&&(state.entries.road.serviceDone||state.entries.road.follow)?'after-maintenance':'initial',capturedAt:new Date().toISOString()};},
+  metrics(){return cameraMetrics},preview,resize,
+  stats(){let meshes=0,triangles=0;scene.traverse(o=>{if(o.isMesh){meshes++;triangles+=(o.geometry.index?.count||o.geometry.attributes.position.count)/3;}});return{webgl:true,meshes,triangles,world:world.stats?.(),robots:Object.fromEntries(Object.entries(fleet).map(([k,r])=>[k,r.stats()])),view,orbit:{...orbit},metrics:cameraMetrics};},
+  inspect(){return{scene,camera,inspectionCamera,fleet,world,poseAt,groundAt}},
+  dispose(){destroyed=true;clearHighlight();cancelAnimationFrame(raf);ro.disconnect();io.disconnect();document.removeEventListener('visibilitychange',onVisibility);renderer.dispose();renderTarget.dispose();}
+ };
+};
+})();
+
+(()=>{
+const $=id=>document.getElementById(id),esc=s=>String(s??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+let state=M.createState(),scene,exploded=false,feedback='',feedbackKind='',followMode=false,lastTickUI=0,holding=false,theme=document.documentElement.dataset.theme;
+const stages=['survey','travel','capture','record'],mission=()=>M.MISSIONS.find(m=>m.id===state.mission),entry=()=>state.entries[state.mission];
+let partsOpen=false,selectedPart=0,partsRobot=null;
+const commonParts=[
+ {name:'巡检相机与云台',tokens:['inspection-camera.'],description:'云台调整镜头方向，相机保存检查点的全景与近景。'},
+ {name:'电池与控制板',tokens:['power.','drive-control.','locomotion-control.','magnetic-drive-controller.'],internal:true,description:'电池提供电源，控制板协调驱动与采集。已展开上盖，可查看内部安装关系。'}
+];
+const robotParts={
+ wheel:[commonParts[0],{name:'轮胎与轮毂',tokens:['wheel-'],description:'四个轮胎接触桥面，轮毂与轮轴传递驱动力。'}, {name:'悬架与减振器',tokens:['suspension-arm-','damper-'],description:'悬架连接底盘与车轮，减振器缓和路面起伏带来的振动。'}, {name:'导航激光雷达',tokens:['navigation-lidar.'],description:'雷达用于感知周围环境，安装在机体上盖。'},commonParts[1]],
+ dog:[commonParts[0],{name:'髋关节与膝关节',tokens:['leg-0.abduction-','leg-0.knee-','leg-1.abduction-','leg-1.knee-','leg-2.abduction-','leg-2.knee-','leg-3.abduction-','leg-3.knee-'],description:'四条腿的关节配合运动，让脚交替抬起并落在踏步上。'}, {name:'腿杆与橡胶足垫',tokens:['leg-0.upper-','leg-0.lower-','leg-0.rubber-foot','leg-1.upper-','leg-1.lower-','leg-1.rubber-foot','leg-2.upper-','leg-2.lower-','leg-2.rubber-foot','leg-3.upper-','leg-3.lower-','leg-3.rubber-foot'],description:'腿杆连接关节，足垫与地面接触，提供支撑。'}, {name:'前置深度相机',tokens:['front-depth-'],description:'前方两只深度相机用于观察近处障碍和地形。'},commonParts[1]],
+ crawler:[commonParts[0],{name:'磁吸轮',tokens:['magnetic-wheel-'],description:'磁轮与可磁吸钢面接触，兼顾附着和沿表面移动。'}, {name:'减速电机与轮轴',tokens:['geared-motor-','wheel-axle-'],description:'减速电机经轮轴驱动磁轮，控制沿钢面行进。'}, {name:'独立系绳连接点',tokens:['tether-eye','tether-anchor-plate','anchor-bolt-'],description:'吊环与加强板连接防坠系绳；作业前仍需单独确认系绳已连接。'},commonParts[1]]
+};
+function setExploded(value){exploded=value;if(value){holding=false;entry().moving=false;scene.update(state);syncTravel();}const b=$('explodeButton');b.setAttribute('aria-pressed',value);b.textContent=value?'合拢机体':'拆开机体';scene.explode(value);}
+function syncParts(){const supported=!!$('viewport').querySelector('canvas');$('partsButton').disabled=!supported;$('partsButton').title=supported?'查看当前机器人的主要部件':'三维场景不可用，无法展示模型部件';$('partsButton').setAttribute('aria-pressed',partsOpen);$('partsButton').setAttribute('aria-expanded',partsOpen);$('partsButton').textContent=partsOpen?'收起相关部件':'展示相关部件';$('partsPanel').hidden=!partsOpen;if(!partsOpen)return;if(partsRobot!==state.robot){partsRobot=state.robot;selectedPart=0;}const parts=robotParts[state.robot];$('partsTitle').textContent=M.ROBOTS.find(r=>r.id===state.robot).short+' · 主要部件';$('partsList').innerHTML=parts.map((p,i)=>`<button data-part="${i}" aria-pressed="${i===selectedPart}" aria-describedby="partDescription"><span>${String(i+1).padStart(2,'0')}</span>${p.name}${p.internal?'<small>内部</small>':''}</button>`).join('');$('partDescription').textContent=parts[selectedPart].description;scene.highlightPart(parts[selectedPart].tokens);}
+function showParts(value){partsOpen=value;if(value){holding=false;entry().moving=false;scene.update(state);syncTravel();scene.setView('robot');}else scene.highlightPart();syncParts();}
+function selectPart(index){const part=robotParts[state.robot][index];if(!part)return;selectedPart=index;setExploded(!!part.internal);syncParts();}
+const icons={wheel:'<path d="M12 22h40l4 6v8H8V26z" fill="#2878b9"/><rect x="19" y="18" width="28" height="8" rx="3" fill="#c7dced"/><path d="M34 18V7h10" fill="none" stroke="#7897ad" stroke-width="3"/><rect x="39" y="3" width="13" height="9" rx="3" fill="#28516d"/><circle cx="17" cy="35" r="7" fill="#2b4354"/><circle cx="48" cy="35" r="7" fill="#2b4354"/><circle cx="17" cy="35" r="3" fill="#b5c9d7"/><circle cx="48" cy="35" r="3" fill="#b5c9d7"/>',dog:'<rect x="13" y="12" width="38" height="13" rx="5" fill="#2878b9"/><rect x="19" y="10" width="25" height="7" rx="3" fill="#d6e5ee"/><path d="M18 23l-5 8 5 9m27-17 7 8-4 9M23 23l4 10-2 7m14-17-4 10 3 7" fill="none" stroke="#31556e" stroke-width="4" stroke-linecap="round"/><rect x="44" y="5" width="12" height="8" rx="3" fill="#254962"/>',crawler:'<rect x="17" y="9" width="31" height="27" rx="6" fill="#2878b9"/><rect x="23" y="12" width="19" height="18" rx="4" fill="#d5e4ed"/><g fill="#2e485b"><rect x="9" y="6" width="9" height="14" rx="4"/><rect x="9" y="26" width="9" height="14" rx="4"/><rect x="47" y="6" width="9" height="14" rx="4"/><rect x="47" y="26" width="9" height="14" rx="4"/></g><circle cx="32" cy="20" r="5" fill="#28516d"/><path d="M32 9V2" stroke="#b6914c" stroke-width="2"/>'};
+const wrongObservations={road:'排水设施永久失效，桥梁已不安全',stairs:'已确定为结构裂缝造成的渗漏',wall:'已确定钢梁开裂，结构不安全'};
+const wrongDispositions={road:'只保存照片，不需要处理或复查',stairs:'水迹不大，直接关闭记录',wall:'仅凭照片判为正常并关闭记录'};
+function note(text,kind=''){feedback=text;feedbackKind=kind;$('feedback').textContent=text;$('feedback').dataset.kind=kind;}
+function toast(text){$('sceneToast').textContent=text;$('sceneToast').hidden=false;clearTimeout(toast.timer);toast.timer=setTimeout(()=>$('sceneToast').hidden=true,4500);}
+function fit(){const scale=Math.min((document.getElementById('c7-content')?.clientWidth||innerWidth)/1600,(document.getElementById('c7-content')?.clientHeight||innerHeight)/900);document.documentElement.style.setProperty('--scale',scale);scene?.resize?.();}
+function photoButton(photo,label){return photo?`<button class="photo-item" data-photo="${photo.id}"><img alt="${esc(label)}，照片${photo.id}" src="${photo.image}"><span>${esc(label)} · ${photo.id}<em>${photo.valid?'可用':'需重拍'}</em></span></button>`:`<div class="photo-placeholder">${esc(label)} · 待拍</div>`;}
+function photosFor(e,record=false){const valid=e.photos.filter(p=>p.valid);return record&&e.record?[e.photos.find(p=>p.id===e.record.photoIDs.wide),e.photos.find(p=>p.id===e.record.photoIDs.detail)]:[valid.filter(p=>p.mode==='wide').at(-1),valid.filter(p=>p.mode==='detail').at(-1)];}
+function changeStage(stage){showParts(false);M.setStage(state,stage);if(stage!=='travel'&&stage!=='capture')entry().moving=false;exploded=false;scene.explode(false);render();scene.setView(stage==='survey'?'overview':stage==='record'?'target':'follow');}
+function chooseMission(id){if(!id||!state.entries[id])return;showParts(false);holding=false;M.selectMission(state,id);followMode=false;exploded=false;scene.explode(false);feedback='';render();scene.setView(state.stage==='survey'?'overview':'follow');}
+function render(){const m=mission(),e=entry(),summary=M.summary(state),captured=photosFor(e);const texts={survey:['01 / SITE INSPECTION','巡检，要把问题带回来。','沿桥面、检修楼梯与钢梁表面，完成三处检查。','先明确要检查什么'],travel:['02 / REACH THE SITE','先走得到，再谈看得清。','让平台经过实际地形，观察轮、腿与吸附机构如何工作。','把机器人送到检查点'],capture:['03 / CAPTURE EVIDENCE','这张照片，能说明什么？','全景交代位置，近景保留现象；相机看到的就是现场。',followMode?'回到原位置，再拍一次':'把位置和细节一起留下'],record:['04 / RECORD & FOLLOW UP','看到问题，还要交代后续。','分清可见现象与推断，把证据交给下一位管养人员。','形成可交接的巡检记录']}[state.stage];
+ $('eyebrow').textContent=texts[0];$('sceneTitle').textContent=texts[1];$('sceneDescription').textContent=texts[2];$('panelTitle').textContent=texts[3];$('panelTag').textContent=m.code+' / '+m.name;$('panelStatus').textContent=e.follow?e.follow.label:e.record?'待复查':e.arrived?'已到位':'进行中';$('cameraViewButton').hidden=state.stage!=='capture';$('explodeButton').setAttribute('aria-pressed',exploded);$('explodeButton').textContent=exploded?'合拢机体':'拆开机体';document.querySelector('.controls').dataset.stage=state.stage;document.querySelector('.controls').dataset.mission=m.id;
+ document.querySelectorAll('[data-stage]').forEach(b=>{b.setAttribute('aria-pressed',b.dataset.stage===state.stage);b.classList.toggle('done',b.dataset.stage==='survey'||b.dataset.stage==='travel'&&e.arrived||b.dataset.stage==='capture'&&captured.every(Boolean)||b.dataset.stage==='record'&&!!e.follow);});
+ $('pointList').innerHTML=M.MISSIONS.map((p,i)=>{const en=state.entries[p.id];return`<button data-mission="${p.id}" aria-pressed="${p.id===state.mission}"><b class="point-letter">${'ABC'[i]}</b><span class="point-text"><strong>${p.name}</strong><small>${en.follow?en.follow.label:en.record?'等待复查':en.arrived?'已到位 · 待取证':['桥面道路 / 轮式','检修楼梯 / 四足','竖直钢面 / 爬壁'][i]}</small></span><span class="point-check ${en.follow?'complete':''}">${en.follow?'✓':'○'}</span></button>`;}).join('');
+ $('progressText').textContent=`已完成 ${summary.completed} / 3 处`;$('progressDots').innerHTML=summary.items.map(i=>`<i class="${i.completed?'done':''}"></i>`).join('');$('evidenceCount').textContent=M.MISSIONS.reduce((n,p)=>n+state.entries[p.id].photos.filter(x=>x.valid).length,0)+' 张可用照片';
+ $('lessonTitle').textContent=state.stage==='record'?'完成巡检，不等于消除了所有问题。':state.stage==='capture'?'照片必须回答：在哪里，看到什么。':state.stage==='travel'?'地形决定平台，检查任务决定传感器。':'巡检的交付物，是可追溯的问题记录。';$('lessonText').textContent=state.stage==='record'?m.principle:state.stage==='capture'?'拍摄后调整镜头不会改变已经保存的照片；重拍会产生新的证据编号。':state.stage==='travel'?'轮式适合平顺路面，四足应对台阶，爬壁平台还依赖表面与附着条件。':'到达现场 → 看清现象 → 留下证据 → 安排处理 → 复查反馈。';
+ $('nextButton').textContent={survey:'进入选机 →',travel:'打开取景器 →',capture:'整理记录 →',record:summary.allComplete?'查看本轮结果 →':'下一个检查点 →'}[state.stage];
+ if(state.stage==='survey')$('controlPanel').innerHTML=`<p class="brief">${m.brief}</p><div class="mission-card"><h3>雨后巡查委托</h3><p>检查可见外观与排水状况，形成有位置、有照片、有后续安排的记录。</p><dl><dt>检查点</dt><dd>${m.code} · ${m.name}</dd><dt>路径</dt><dd>${{road:'桥面行车道旁 → 排水口',stairs:'地面检修入口 → 楼梯 → 桥台',wall:'钢梁起始面 → 磁吸爬升 → 检查部位'}[m.id]}</dd><dt>关注</dt><dd>${{road:'杂物、积水与排水口的位置',stairs:'水迹的范围与接缝、排水设施的关系',wall:'涂层异常的位置、方向与表面状态'}[m.id]}</dd></dl></div><div class="two-buttons"><button data-view="target">看看检查部位</button><button data-view="robot">看看这台机器人</button></div><p class="micro">在左侧切换 A / B / C，先建立三个检查点在同一座桥上的空间关系。</p><button class="primary wide push" data-action="travel">开始选机与到达 →</button>`;
+ if(state.stage==='travel')$('controlPanel').innerHTML=`<p class="brief">${{road:'沿平顺桥面巡查。可试试不同平台，再观察哪些能力真正用得上。',stairs:'前面是检修台阶。试着让轮式平台通过，再换四足观察脚如何落在踏步上。',wall:'这是磁吸爬壁机。先核对钢面和附着状态，再连接独立防坠系绳。'}[m.id]}</p><div><div class="section-label">选择出发平台</div><div class="robot-options">${M.ROBOTS.map(r=>`<button data-robot="${r.id}" aria-pressed="${r.id===state.robot}"><svg viewBox="0 0 65 45" aria-hidden="true">${icons[r.id]}</svg>${r.short}<small>${{wheel:'轮胎滚动',dog:'关节迈步',crawler:'磁吸附着'}[r.id]}</small></button>`).join('')}</div><p class="robot-description">${M.ROBOTS.find(r=>r.id===state.robot).role}。</p></div>${m.id==='wall'?`<div class="preflight"><strong>当前表面：可磁吸钢梁（教学设定）</strong><label class="check-row"><input id="magnetCheck" type="checkbox" ${e.magnet?'checked':''}>核对表面并检查磁吸轮附着</label><label class="check-row"><input id="tetherCheck" type="checkbox" ${e.tether?'checked':''}>连接独立防坠系绳</label></div>`:''}<div class="route-meter"><div><span>抵达进度</span><span id="routePercent">${Math.round(e.progress*100)}%</span></div><div class="meter"><i id="routeFill" style="width:${e.progress*100}%"></i></div><small id="routeStatus">${e.arrived?'已到达 · 停稳':e.blocked||'在起点准备出发'}</small></div><div class="two-buttons"><button id="driveHold">按住前进</button><button id="autoDrive">${e.moving?'暂停行进':'沿路线行进'}</button></div><div class="two-buttons"><button data-view="follow">跟随观察</button><button data-view="robot">机构近看</button></div><button class="primary wide push" data-action="capture">打开取景器 →</button>`;
+ if(state.stage==='capture')$('controlPanel').innerHTML=`<div class="camera-view"><canvas id="cameraPreview" width="640" height="400" aria-label="来自机器人实际相机的实时取景"></canvas><span class="reticle"></span><span class="camera-badge">${m.code} / LIVE CAMERA ${followMode?'· 复查':''}</span><div class="camera-quality"><b id="cameraQuality">取景中</b><span id="cameraDistance"></span></div></div><div class="mode-row"><button data-camera-mode="wide" aria-pressed="${state.camera.mode==='wide'}">全景 · 交代位置</button><button data-camera-mode="detail" aria-pressed="${state.camera.mode==='detail'}">近景 · 看清现象</button></div><div class="range-group"><label><span>水平转向<output id="yawValue">${state.camera.yaw}°</output></span><input aria-label="相机水平转向" id="cameraYaw" type="range" min="-35" max="35" step="1" value="${state.camera.yaw}"></label><label><span>镜头俯仰<output id="pitchValue">${state.camera.pitch}°</output></span><input aria-label="相机俯仰" id="cameraPitch" type="range" min="-25" max="25" step="1" value="${state.camera.pitch}"></label></div><div class="camera-actions"><button id="lampButton" aria-pressed="${state.camera.lamp}">${state.camera.lamp?'关闭补光':'打开补光'}</button><button id="alignButton">回到点位中心</button></div><div class="photo-counts"><span class="${captured[0]?'done':''}">${captured[0]?'✓':'○'} 定位全景</span><span class="${captured[1]?'done':''}">${captured[1]?'✓':'○'} 异常近景</span><button class="inline-link" id="albumButton">照片 ${e.photos.length} 张</button></div><button class="primary wide" id="shutterButton">◎ ${followMode?'拍摄本次复查照片':'保存当前照片'}</button><p class="micro">${followMode?'把这次复拍与原记录的近景关联；仍存在的问题继续跟踪。':'取景器来自现场中的相机。先停稳、对准目标，再保存照片。'}</p>`;
+ if(state.stage==='record'){
+ const pair=photosFor(e,true);$('controlPanel').innerHTML=`<div class="photo-strip">${photoButton(pair[0],'定位全景')+photoButton(pair[1],'异常近景')}</div>${e.record?`<div class="record-state"><strong>✓ 已建立记录 ${e.record.id}</strong>${esc(e.record.observation)}<br><span class="micro">${esc(e.record.disposition)}</span></div>${e.follow?`<div class="record-state"><strong>${e.follow.label}</strong>${e.follow.conclusion}</div><button class="wide" id="compareButton">查看前后照片对比</button>`:`<p class="brief">${m.id==='road'?'模拟管养人员完成清理后，机器人回到原点复查。':'回到同一点重新取景，确认异常是否仍在；把待办交给后续人员。'}</p><button class="primary wide" id="beginFollowButton">${m.id==='road'?'模拟清理完成，回去复查':'同点复拍，登记后续状态'} →</button>`}<button class="wide push" id="openReportInline">查看本轮交接记录</button>`:`<label class="record-field"><span>① 照片直接支持什么现象？</span><select id="observation"><option value="">选择可见现象</option><option value="${esc(m.observation)}">${m.observation}</option><option value="${esc(wrongObservations[m.id])}">${wrongObservations[m.id]}</option></select></label><label class="record-field"><span>② 下一步怎么安排？</span><select id="disposition"><option value="">选择处置方式</option><option value="${esc(wrongDispositions[m.id])}">${wrongDispositions[m.id]}</option><option value="${esc(m.disposition)}">${m.disposition}</option></select></label><p class="micro">记录自动关联点位 ${m.code} 与两张照片的编号。可见现象、原因判断和安全结论需要分清。</p><button class="primary wide push" id="saveRecordButton">登记问题与处置</button><button class="wide" data-action="capture">返回相机补拍</button>`}`;
+ }
+ if(!feedback)feedback={survey:'点选桥上的检查点，观察路线和部位。',travel:'选择平台后开始行进。也可以换错一次，看看它会在哪里停下。',capture:followMode?'对照原检查位置，保存本次复查照片。':'先拍全景，再切近景；暗处记得补光。',record:'先把照片能证明的现象写清，再安排后续处理。'}[state.stage];note(feedback,feedbackKind);scene?.update(state);syncTravel();syncParts();
+}
+function syncTravel(){const e=entry();if($('routePercent'))$('routePercent').textContent=Math.round(e.progress*100)+'%';if($('routeFill'))$('routeFill').style.width=e.progress*100+'%';if($('routeStatus'))$('routeStatus').textContent=e.arrived?'已到达 · 停稳':e.blocked||(e.moving?'正在通过这段地形':'已暂停，可继续前进');if($('autoDrive'))$('autoDrive').textContent=e.moving?'暂停行进':'沿路线行进';$('liveReadout').textContent=e.arrived?'到位 / '+mission().code:e.moving?'行进中 / '+Math.round(e.progress*100)+'%':'待出发 / '+mission().code;$('sceneLive').textContent=M.ROBOTS.find(r=>r.id===state.robot).name+' / '+mission().code;}
+function drive(value){if(value&&exploded){note('先合拢机体，再开始行进。','warn');return;}const e=entry();if(e.arrived){note('已到达检查点，可以打开取景器。','success');return;}e.moving=value;e.blocked='';const check=M.access(state);if(value&&!check.ok&&check.code!=='platform'){e.moving=false;note(check.reason,'warn');toast(check.reason);}else if(value)note('观察运动机构与地形的关系。松开前进按钮可停下。');scene.update(state);syncTravel();}
+function capture(){if(exploded){note('先合拢机体，再恢复巡检拍摄。','warn');return;}const raw=scene.capture();if(!raw){note('当前没有可用的三维相机画面。','warn');return;}const saved=M.addPhoto(state,raw);if(followMode&&saved.valid){const r=M.followup(state,saved.photo);if(r.ok){followMode=false;feedback=r.reason;feedbackKind='success';changeStage('record');toast('复查照片已关联原记录');return;}note(r.reason,'warn');return;}feedback=saved.valid?`${saved.photo.id} 已保存：${state.camera.mode==='wide'?'定位全景':'异常近景'}。${state.camera.mode==='wide'?'再切近景拍下现象。':'可整理本点记录。'}`:`${saved.photo.id} 已保留，但需要重拍。${saved.reason}`;feedbackKind=saved.valid?'success':'warn';render();toast(saved.valid?'照片已保存 · '+saved.photo.id:'照片需重拍 · '+saved.photo.id);}
+function showPhoto(id){const p=M.MISSIONS.flatMap(m=>state.entries[m.id].photos).find(p=>p.id===id);if(!p)return;$('photoContent').innerHTML=`<h2>${p.code} · ${p.mode==='wide'?'定位全景':'异常近景'} ${p.id}</h2><img src="${p.image}" alt="已保存的巡检照片${p.id}"><p>${esc(p.reason)}</p><p>拍摄位置：${p.metrics.position?.join(' / ')} m　|　镜头水平 ${p.camera.yaw}°，俯仰 ${p.camera.pitch}°　|　${p.camera.lamp?'补光开启':'补光关闭'}</p>`;$('photoDialog').showModal();}
+function openAlbum(){const e=entry();$('photoContent').innerHTML=`<h2>${mission().code} · 本点照片册</h2><div class="photo-strip">${e.photos.map(p=>photoButton(p,p.mode==='wide'?'定位全景':'异常近景')).join('')||'<p>尚未拍摄照片。</p>'}</div><p>不合格照片也会保留；每次重拍产生新的编号，不会覆盖旧证据。</p>`;$('photoDialog').showModal();}
+function reportMarkup(){return M.MISSIONS.map(m=>{const e=state.entries[m.id],p=photosFor(e,true),f=e.photos.find(p=>p.id===e.follow?.photoID);return`<article class="report-entry"><h3>${m.code} · ${m.name}<small>${e.follow?.label|| (e.record?'待复查':'未形成记录')}</small></h3>${e.record?`<p><b>可见现象：</b>${esc(e.record.observation)}<br><b>处置安排：</b>${esc(e.record.disposition)}</p><div class="photo-strip">${photoButton(p[0],'原全景')+photoButton(p[1],'原近景')+(f?photoButton(f,'复查近景'):'')}</div><p>${e.follow?esc(e.follow.conclusion):'仍需回到同点复拍。'}</p><p class="micro">记录 ${e.record.id} · 原照片 ${e.record.photos.join(' / ')}${f?' · 复查 '+f.id:''}</p>`:'<p>本点还没有完整的照片与处置记录。</p>'}</article>`;}).join('');}
+function showReport(){const s=M.summary(state);$('reportSummary').textContent=`已完成 ${s.completed} / ${s.total} 处巡检流程，已闭环 ${s.resolved} 处，${s.pending} 处仍需后续处理。完成巡检流程不等于所有问题已经消除。`;$('reportContent').innerHTML=reportMarkup();$('reportDialog').showModal();}
+function exportReport(){const s=M.summary(state),html=`<!doctype html><html lang="zh-CN"><meta charset="utf-8"><title>青溪桥巡检记录</title><style>body{font:14px/1.8 'Microsoft YaHei',sans-serif;max-width:1000px;margin:40px auto;padding:0 25px;color:#203e55}h1{font-size:26px}h3{display:flex;justify-content:space-between}h3 small{font-size:12px;font-weight:400}.report-entry{border-top:1px solid #ccd9e2;padding:20px 0}.photo-strip{display:flex;gap:15px}.photo-item{border:1px solid #ccd9e2;padding:0;background:white;width:31%}.photo-item img{width:100%;display:block}.photo-item span{display:block;font-size:11px;padding:7px}.photo-item em{font-style:normal;margin-left:12px}.micro{font-size:11px;color:#728692}</style><h1>青溪桥 · 雨后巡查交接记录</h1><p>教学模拟 · ${new Date().toLocaleString('zh-CN')}<br>流程完成 ${s.completed}/3；已闭环 ${s.resolved}；仍需后续处理 ${s.pending}。</p>${reportMarkup()}<p>本记录仅用于教学。外观影像不能代替专业检测和结构安全判断。</p></html>`;const url=URL.createObjectURL(new Blob([html],{type:'text/html;charset=utf-8'})),a=document.createElement('a');a.href=url;a.download='青溪桥_巡检交接记录.html';a.click();setTimeout(()=>URL.revokeObjectURL(url),30000);note('已导出包含原照片、复查照片和待办状态的离线记录。','success');}
+function onClick(e){const b=e.target.closest('button');if(!b)return;if(b.dataset.part!==undefined){selectPart(+b.dataset.part);return;}if(b.dataset.close){$(b.dataset.close).close();return;}if(b.dataset.photo){if($('photoDialog').open)$('photoDialog').close();showPhoto(b.dataset.photo);return;}if(b.dataset.stage){feedback='';followMode=false;changeStage(b.dataset.stage);return;}if(b.dataset.mission){chooseMission(b.dataset.mission);return;}if(b.dataset.view){showParts(false);scene.setView(b.dataset.view);return;}if(b.dataset.robot){holding=false;const changed=state.robot!==b.dataset.robot;M.selectRobot(state,b.dataset.robot);if(changed){exploded=false;scene.explode(false);}feedback='';render();scene.setView(partsOpen?'robot':'follow');return;}if(b.dataset.action){feedback='';changeStage(b.dataset.action);return;}if(b.dataset.cameraMode){state.camera.mode=b.dataset.cameraMode;feedback='';render();return;}
+ switch(b.id){case'partsButton':showParts(!partsOpen);break;case'closePartsButton':showParts(false);$('partsButton').focus();break;case'autoDrive':drive(!entry().moving);break;case'explodeButton':setExploded(!exploded);if(exploded)note('已暂停行进，展开机体用于观察内部机构。');break;case'lampButton':state.camera.lamp=!state.camera.lamp;render();break;case'alignButton':state.camera.yaw=state.camera.pitch=0;render();break;case'shutterButton':capture();break;case'albumButton':openAlbum();break;case'saveRecordButton':{const r=M.saveRecord(state,$('observation').value,$('disposition').value);feedback=r.reason;feedbackKind=r.ok?'success':'warn';if(r.ok)render();else note(r.reason,'warn');break;}case'beginFollowButton':{followMode=true;entry().serviceDone=true;state.camera={mode:'detail',yaw:0,pitch:0,zoom:1,lamp:state.mission!=='road'};feedback=state.mission==='road'?'模拟管养人员已完成清理。对照排水口原位置重新拍摄。':'在原位置复拍，观察异常是否仍在。';feedbackKind='';changeStage('capture');break;}case'compareButton':{const en=entry(),before=en.photos.find(p=>p.id===en.follow.originalPhotoID),after=en.photos.find(p=>p.id===en.follow.photoID);$('photoContent').innerHTML=`<h2>${mission().code} · 同点前后对比</h2><div class="photo-strip">${photoButton(before,'原始记录')+photoButton(after,'本次复查')}</div><p>${en.follow.conclusion}</p>`;$('photoDialog').showModal();break;}case'nextButton':{const i=stages.indexOf(state.stage);if(i<3){feedback='';changeStage(stages[i+1]);}else{const next=M.MISSIONS.find(m=>!state.entries[m.id].follow&&m.id!==state.mission);if(next)chooseMission(next.id);else showReport();}break;}case'openReportInline':case'reportButton':showReport();break;case'exportButton':exportReport();break;case'helpButton':$('helpDialog').showModal();break;case'fullButton':if(document.fullscreenElement)document.exitFullscreen?.();else document.documentElement.requestFullscreen?.().catch(()=>{});break;case'resetButton':showParts(false);holding=false;state=M.createState();followMode=false;exploded=false;feedback='';feedbackKind='';scene.explode(false);render();scene.setView('overview');break;}
+}
+document.addEventListener('click',onClick);document.addEventListener('input',e=>{if(e.target.id==='cameraYaw'||e.target.id==='cameraPitch'){const axis=e.target.id==='cameraYaw'?'yaw':'pitch';state.camera[axis]=+e.target.value;$(axis+'Value').textContent=e.target.value+'°';scene.update(state);}});document.addEventListener('change',e=>{if(e.target.id==='magnetCheck'||e.target.id==='tetherCheck'){entry()[e.target.id==='magnetCheck'?'magnet':'tether']=e.target.checked;scene.update(state);note(M.access(state).reason);}});
+document.addEventListener('pointerdown',e=>{if(e.target.closest('#driveHold')){e.preventDefault();holding=true;drive(true);}});document.addEventListener('pointerup',()=>{if(holding){holding=false;drive(false);}});document.addEventListener('pointercancel',()=>{if(holding){holding=false;drive(false);}});addEventListener('blur',()=>{if(holding){holding=false;drive(false);}});document.addEventListener('keydown',e=>{if(e.target.id==='driveHold'&&(e.code==='Space'||e.code==='Enter')){e.preventDefault();holding=true;drive(true);}});document.addEventListener('keyup',e=>{if(holding&&(e.code==='Space'||e.code==='Enter')){e.preventDefault();holding=false;drive(false);}});
+scene=window.createPatrolScene($('viewport'),{onPick:chooseMission,onView(name){document.querySelectorAll('[data-view]').forEach(b=>b.setAttribute('aria-pressed',b.dataset.view===name));},onTick(dt){const was=entry().moving,r=M.advance(state,dt);lastTickUI+=dt;if(lastTickUI>.1){syncTravel();lastTickUI=0;}if(was&&!entry().moving){feedback=r.reason;feedbackKind=r.arrived?'success':'warn';render();toast(r.reason);}},onPreview(source,metrics){const target=$('cameraPreview');if(target)target.getContext('2d').drawImage(source,0,0,640,400);const q=M.photoQuality(state,metrics),status=$('cameraQuality');if(status){status.textContent=q.valid?'可保存为有效证据':q.reasons[0];status.className=q.valid?'good':'bad';$('cameraDistance').textContent=metrics.distance.toFixed(2)+' m';}}});
+document.addEventListener('visibilitychange',()=>{if(document.hidden&&holding){holding=false;drive(false);}});
+window.inspectionLab={get state(){return state},model:M,scene,render,chooseMission,changeStage,capture,showReport,reset(){showParts(false);holding=false;exploded=false;state=M.createState();followMode=false;scene.explode(false);render();scene.setView('overview');},exportReport};
+CourseTheme.register(value => { theme=value; scene.setTheme(value); });
+addEventListener('resize',fit);fit();render();scene.setTheme(theme);scene.setView('overview');
+})();
+</script></body></html>

@@ -3,7 +3,7 @@ const {chromium}=require('playwright');
 const assert=require('node:assert/strict'),fs=require('node:fs'),path=require('node:path'),{pathToFileURL,fileURLToPath}=require('node:url');
 const args=process.argv.slice(2),arg=(name,fallback)=>args.includes(name)?args[args.indexOf(name)+1]:fallback;
 const packaged=args.includes('--packaged'),smoke=args.includes('--smoke'),root=path.resolve(arg('--site',path.join(__dirname,'..'))),shots=arg('--screenshots',null);
-const routes=packaged?{entry:'index.html',patrol:'lessons/patrol.html',uav:'lessons/uav.html'}:{entry:'第七章_巡检与数据复核/index.html',patrol:'任务7-1_巡检机器人_轮式_四足与爬壁/index.html',uav:'任务7-2_无人机巡检_病害检测与数据复核/index.html'};
+const routes=packaged?{entry:'index.html',patrol:'lessons/patrol.html',uav:'lessons/uav.html'}:{entry:'course/chapters/07/overview/index.html',patrol:'course/chapters/07/tasks/7-1/index.html',uav:'course/chapters/07/tasks/7-2/index.html'};
 const url=name=>pathToFileURL(path.join(root,routes[name])).href;
 (async()=>{const browser=await chromium.launch({headless:true,channel:process.env.CHAPTER7_BROWSER||undefined}),checks=[],errors=[],external=[];
 try{const page=await browser.newPage({viewport:{width:1600,height:900},reducedMotion:'reduce'});page.setDefaultTimeout(15000);page.on('pageerror',e=>errors.push({url:page.url(),message:e.message}));page.on('request',r=>{if(/^https?:/.test(r.url()))external.push(r.url());});

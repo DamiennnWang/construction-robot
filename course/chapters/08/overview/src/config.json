@@ -1,0 +1,45 @@
+{
+  "mode": "overview",
+  "layout": "chapter-cover",
+  "chapterNumber": "08",
+  "heading": ["安全操作", "与维护"],
+  "headerSteps": ["看风险", "核条件", "留记录"],
+  "coverNote": ["风险处置", "维护复核"],
+  "exhibitTitle": "第八章 · 安全与维护展台",
+  "footerFlow": "识别危险 → 核对条件 → 处理复查 → 记录移交",
+  "guideTitle": "先看清条件，再处理与复查。",
+  "footerLink": "course/chapters/07/overview/index.html",
+  "footerLinkLabel": "← 上一章 · 巡检与数据复核",
+  "motionEnabled": false,
+  "viewScale": 0.8,
+  "motionDescription": "安全与维护主题静态展品。拖动旋转、滚轮缩放；点击展品预览任务。",
+  "title": "第8章 · 安全操作与维护",
+  "kicker": "CHAPTER 08 · SAFETY & MAINTENANCE",
+  "lead": "从识别现场危险，到核对维护条件，\n用复查与记录说明处理结果。",
+  "boundary": "原创教学概念展品 · 不表示现场安全条件或设备放行",
+  "help": "安全用品与发动机点检展品分别对应两项任务。先查看学习目标，再进入独立案例；封面不执行设备控制，也不表示设备已具备维护条件。",
+  "items": [
+    {
+      "id": "8-1",
+      "machine": "safety-exhibit",
+      "title": "安全操作",
+      "exhibitLabel": "安全操作 · 安全与警戒",
+      "entryLabel": "进入安全推演",
+      "kind": "互动推演",
+      "description": "暂停现场，发现危险；处理后复查，区分复位与重新启动。",
+      "entry": "course/chapters/08/tasks/8-1/index.html"
+    },
+    {
+      "id": "8-2",
+      "machine": "engine",
+      "title": "保养排查",
+      "exhibitLabel": "保养排查 · 发动机点检",
+      "entryLabel": "进入维护工坊",
+      "kind": "互动工坊",
+      "description": "在喷涂、泵车、发动机与轴承工位核对条件、处理复查，保留待办与移交记录。",
+      "entry": "course/chapters/08/tasks/8-2/index.html"
+    }
+  ],
+  "summary": "<h3>8-1 安全操作：先暂停，再看清风险</h3>在同一现场识别临时用电、回转碰撞、夹挤、吊物、洞口与残余压力等危险。处理后仍需复查；急停复位不会自动重新启动。<h3>8-2 保养排查：先核对条件，再决定怎样处理</h3>分别进入喷涂、泵车、发动机与轴承工位，核对案例资料、停用与隔离状态、残余能量和材料条件；未解决问题可以移交，并保留记录。<h3>本章学习成果</h3>说明发现了什么、依据什么处理、复查结果如何，以及哪些事项仍待解决。两项任务可独立进入，课堂记录不构成真实设备放行或维修许可。",
+  "chapterTitle": "第八章 · 安全操作与维护"
+}
