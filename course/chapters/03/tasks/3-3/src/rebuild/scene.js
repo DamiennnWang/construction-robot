@@ -5,11 +5,11 @@ class BenchScene{
   this.renderer=new THREE.WebGLRenderer({antialias:true,alpha:true,powerPreference:'high-performance'});this.renderer.setPixelRatio(Math.min(devicePixelRatio,1.5));this.renderer.shadowMap.enabled=true;this.renderer.shadowMap.type=THREE.PCFSoftShadowMap;this.renderer.outputColorSpace=THREE.SRGBColorSpace;host.append(this.renderer.domElement);
   this.scene=new THREE.Scene();this.scene.add(new THREE.HemisphereLight(0xffffff,0x687b98,2.0));
   const key=new THREE.DirectionalLight(0xffffff,2.4);key.position.set(-100,-140,260);key.castShadow=true;key.shadow.mapSize.set(2048,2048);Object.assign(key.shadow.camera,{left:-180,right:180,top:180,bottom:-180,near:1,far:700});key.shadow.bias=-.0005;key.shadow.normalBias=.15;this.scene.add(key);const fill=new THREE.DirectionalLight(0xdceaff,.9);fill.position.set(160,100,120);this.scene.add(fill);
-  this.camera=new THREE.OrthographicCamera(-150,150,100,-100,1,1200);this.camera.up.set(0,0,1);this.mat={};for(const name of ['base','lo','mid','hi','lit','rubber','ink','target','input','output','white','steel'])this.mat[name]=new THREE.MeshStandardMaterial({roughness:name==='rubber'?.95:name==='output'?.38:.48,metalness:name==='rubber'?0:name==='steel'?.6:.22});this.highlightMat={};
+  this.camera=new THREE.OrthographicCamera(-150,150,100,-100,1,1200);this.camera.up.set(0,0,1);this.mat={};for(const name of ['base','lo','mid','hi','lit','rubber','ink','target','input','output','white','steel','brick'])this.mat[name]=new THREE.MeshStandardMaterial({roughness:name==='rubber'?.95:name==='output'?.38:.48,metalness:name==='rubber'?0:name==='steel'?.6:.22});this.highlightMat={};
   this.edgeMat=new THREE.LineBasicMaterial({color:0x303a3e,transparent:true,opacity:.17});this.floor=new THREE.Mesh(new THREE.PlaneGeometry(1200,1200),new THREE.ShadowMaterial({opacity:.12}));this.floor.position.z=-12;this.floor.receiveShadow=true;this.scene.add(this.floor);
   this.ray=new THREE.Raycaster();this.pointer=new THREE.Vector2();this.bind();new ResizeObserver(()=>this.resize()).observe(host);this.theme(false);
  }
- theme(dark){this.dark=dark;const c=dark?{base:0x25364d,lo:0x405876,mid:0x849bb8,hi:0xcbd8eb,lit:0x95bcff,rubber:0x111a29,ink:0x14253b,target:0xa8caff,input:0x74a7ff,output:0x69cdb2,white:0xf3f7ff,steel:0x8ca5c8}:{base:0xcbd6e3,lo:0x768ca6,mid:0x9fb1c5,hi:0xdde5ee,lit:0x387be7,rubber:0x273c55,ink:0x273c55,target:0x2469ed,input:0x387be7,output:0x36a88c,white:0xf7fbff,steel:0x9fb1c5};for(const k in c){this.mat[k].color.setHex(c[k]);if(this.highlightMat[k]){this.highlightMat[k].color.setHex(c[k]);this.highlightMat[k].emissive.setHex(dark?0x183d75:0x123264)}}this.floor.material.opacity=dark?.28:.12;this.draw();}
+ theme(dark){this.dark=dark;const c=dark?{base:0x25364d,lo:0x405876,mid:0x849bb8,hi:0xcbd8eb,lit:0x95bcff,rubber:0x111a29,ink:0x14253b,target:0xa8caff,input:0x74a7ff,output:0x69cdb2,white:0xf3f7ff,steel:0x8ca5c8,brick:0xb06a4a}:{base:0xcbd6e3,lo:0x768ca6,mid:0x9fb1c5,hi:0xdde5ee,lit:0x387be7,rubber:0x273c55,ink:0x273c55,target:0x2469ed,input:0x387be7,output:0x36a88c,white:0xf7fbff,steel:0x9fb1c5,brick:0xc97b55};for(const k in c){this.mat[k].color.setHex(c[k]);if(this.highlightMat[k]){this.highlightMat[k].color.setHex(c[k]);this.highlightMat[k].emissive.setHex(dark?0x183d75:0x123264)}}this.floor.material.opacity=dark?.28:.12;this.draw();}
  bind(){let dragging=false,lastX=0,lastY=0,dist=0,driving=false;
   this.host.addEventListener('pointerdown',e=>{if(e.button!==0)return;dragging=true;dist=0;lastX=e.clientX;lastY=e.clientY;driving=this.roleAt(e)==='input';this.host.setPointerCapture(e.pointerId)});
   this.host.addEventListener('pointermove',e=>{if(!dragging)return;const dx=e.clientX-lastX,dy=e.clientY-lastY;dist+=Math.abs(dx)+Math.abs(dy);if(driving&&this.onTurn)this.onTurn(dx*.04);else{this.yaw-=dx*.007;this.pitch=clamp(this.pitch+dy*.006,.15,1.55)}lastX=e.clientX;lastY=e.clientY;this.draw()});
@@ -126,7 +126,29 @@ class BenchScene{
    const r=setting;g.input.position.set(-55,0,34);this.cyl(12,31,-55,0,1,'lo');this.cyl(5,5,0,0,-3,'hi',g.input,'input');this.cyl(r+5,3,0,0,0,'mid',g.input,'input');this.annulus(r+3,r+5,1,0,0,3,'hi',g.input,'input');this.box(r,5,2,r/2,0,3,'lit',g.input,'input');this.cyl(3,6,r,0,3,'hi',g.input,'input');this.bolt(r,0,9,g.input,1.5);this.wheel(g.input,0,0,12,'z',9);
    g.link=this.group(this.root,'rod');this.box(70,6,3,35,0,0,'hi',g.link,'rod');this.annulus(3,5.5,3,0,0,0,'mid',g.link,'rod');this.annulus(3,5.5,3,70,0,0,'mid',g.link,'rod');this.cyl(3,9,0,0,36,'hi',g.carriage,'output');this.bolt(0,0,45,g.carriage,1.5);this.box(85,71,2,-38,0,54,'lo',this.cover);
   }
+  this.scenery(mode,setting);
   this.cover.visible=false;this.targetMarker.position.x=mode==='crank'?-55+70+setting:-40+SPECS[mode].target;
+ }
+ /* 机器人应用场景：机构不变，只在滑台上装工具或工件，并在台面上放上工作对象 */
+ scenery(mode){const g=this.groups,c=g.carriage;
+  if(mode==='screw'){
+   // 钻孔单元：电机、夹头、钻头装在螺母滑台上，钻头对着后面的墙板
+   this.box(12,12,14,0,23,30,'mid',c,'output');this.cyl(7,2,0,12,51,'lo',c,'output','y');this.cyl(6.5,22,0,14,51,'hi',c,'output','y');for(const y of[19,25,31])this.cyl(6.9,1.2,0,y,51,'lo',c,'output','y');
+   this.cyl(3.6,7,0,36,51,'steel',c,'output','y');this.cyl(1.3,9,0,43,51,'lit',c,'output','y');
+   // 墙板与孔位：每 16 mm 一个孔位，目标孔加圈
+   this.box(176,12,4,0,57,.8,'mid');this.box(170,6,54,0,57,4.8,'hi');for(const x of[-82,82])for(const y of[53,61])this.bolt(x,y,4.8,this.root,1.1);
+   for(let i=0;i<6;i++){const x=-40+i*16;this.cyl(1.8,.6,x,53.4,51,'ink',this.root,'','y')}
+   this.annulus(3,4.4,.6,-40+32,53.3,51,'target',this.root,'','y');
+  }else if(mode==='rack'){
+   // 送料滑台：托盘上码两块砖，送到机器人抓取位
+   this.box(34,16,2,0,18,30,'lo',c,'output');for(const x of[-12,12])this.bolt(x,18,32,c,1);
+   this.box(24,11.5,6.5,-1,18,32,'brick',c,'output',.5);this.box(24,11.5,6.5,1,18,38.9,'brick',c,'output',.5);this.box(24.2,11.7,.4,0,18,38.5,'white',c,'output',0);
+  }else if(mode==='crank'){
+   // 往复锯：锯架装在滑块上，锯条在砌块的锯缝里来回拉
+   this.box(6,6,10,0,26,30,'mid',c,'rod');this.box(6,19,3,0,33.5,40,'hi',c,'rod');this.box(106,4,3,0,42,40,'mid',c,'rod');
+   for(const x of[-50,50])this.box(3,3,18,x,42,22,'mid',c,'rod');this.box(100,1.2,7,0,42,23,'lit',c,'rod',0);this.box(100,1.4,1,0,42,22,'ink',c,'rod',0);
+   this.box(22,16,19,15,42,.8,'brick');this.box(22,6.8,16,15,37.4,19.8,'brick');this.box(22,6.8,16,15,46.6,19.8,'brick');for(const x of[2,28])this.box(3,20,10,x,42,.8,'mid');
+  }
  }
  highlight(role){this.selected=role;for(const o of this.objects){let p=o;while(p&&!p.userData.role)p=p.parent;const own=p?.userData.role,key=o.userData.original||'mid';if(own===role){if(!this.highlightMat[key]){this.highlightMat[key]=this.mat[key].clone();this.highlightMat[key].emissive.setHex(this.dark?0x183d75:0x123264);this.highlightMat[key].emissiveIntensity=.28}o.material=this.highlightMat[key]}else o.material=this.mat[key]}this.draw()}
  inspect(){const g=this.groups,v=sample(this.mode,this.theta,this.setting),angle=o=>o?.rotation.z??0;return{mode:this.mode,input:angle(g.input||g.wave),output:angle(g.output||g.carriage),carrier:angle(g.carrier),fixed:angle(g.ring),ratio:v.ratio,parts:this.partCount,markers:this.showMarkers,coverVisible:this.cover.visible,apart:this.apart,teeth:{sun:g.sunGear?.userData.teeth,planet:g.planets?.map(p=>p.children.find(x=>x.userData.teeth)?.userData.teeth),ring:g.ringGear?.userData.teeth,flex:g.teeth?.count},planets:g.planets?.map((p,i)=>({x:p.position.x,y:p.position.y,orbit:Math.atan2(p.position.y,p.position.x),spin:p.rotation.z,materialAngle:p.rotation.z,expectedSpin:v.planetAngles?.[i]})),flexMarker:this.mode==='harmonic'?{base:Math.atan2(flexPoint(this.theta,0,0).y,flexPoint(this.theta,0,0).x),rim:Math.atan2(flexPoint(this.theta,0,1).y,flexPoint(this.theta,0,1).x)}:null}}
