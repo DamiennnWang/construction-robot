@@ -53,3 +53,8 @@
 .c3-pendant .jog-rows { grid-template-rows:none !important; grid-auto-rows:auto !important; height:auto !important; min-height:0 !important; max-height:none !important; flex:none !important; overflow:visible !important; }
 .c3-pendant { align-items:start; }
 .c3-pd-frames, .c3-pd-side { align-self:stretch; }
+.c3-pendant { grid-template-columns:minmax(0,1fr) auto !important; }
+.c2-panel .frame-tabs { display:flex; gap:3px; padding:3px; margin:0 !important; border-radius:11px; background:var(--surface-2); border:1px solid var(--hair); }
+.c2-panel .frame-tabs button { flex:1; height:34px; border:0; border-radius:8px; background:none; color:var(--course-muted); font-size:14px; white-space:nowrap; cursor:pointer; }
+.c2-panel .frame-tabs button.active { background:var(--course-surface); color:var(--course-accent); font-weight:700; box-shadow:0 1px 4px rgba(18,44,78,.14); }
+.c2-panel .frame-description { margin:0 !important; padding:7px 10px; border-radius:10px; background:var(--blue-soft); color:var(--course-ink); font-size:13px; line-height:1.5; }

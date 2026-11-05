@@ -14,7 +14,6 @@
     teach: $('.teach-workspace'),
     challenge: $('.challenge-workspace'),
   };
-  EL.frameText?.setAttribute('hidden', '');
   $('.control-panel .keyboard-note')?.setAttribute('hidden', '');
   EL.notice?.setAttribute('hidden', '');
 
@@ -30,9 +29,8 @@
    * 右：参照系（关节 / 基坐标 / 工具坐标，决定左边六格各控制什么），再右是点动方式、速度、停止。 */
   function pendant(c) {
     const box = c.h('div', 'c3-pendant');
-    const left = c.h('div', 'c3-pd-frames'); left.append(c.h('span', 'c3-pd-title', '参照系'), EL.frames);
     const right = c.h('div', 'c3-pd-side'); right.append(...[EL.jogMode, EL.speed, EL.stop].filter(Boolean));
-    box.append(EL.rows, left, right);
+    box.append(EL.rows, right);
     c.stripAdopt(box);
   }
 
@@ -41,7 +39,7 @@
 
   const STATIONS = [
     {
-      id: 'axes', name: '认识六轴', lead: '一次只转一个关节，看哪些部分跟着动。下方是示教器：右边选参照系，左边拖滑轨或按 −/+。',
+      id: 'axes', name: '认识六轴', lead: '一次只转一个关节，看哪些部分跟着动。先在右边选参照系，再用下方示教器拖滑轨或按 −/+。',
       build(c) {
         const g = c.section('六个关节');
         c.adopt(EL.axisCards, g);
@@ -68,7 +66,7 @@
             result: '基坐标固定在底座上，+Z 永远竖直向上。'},
           {id: 'tool', icon: '↗', title: '沿工具 +Z 走一次', hint: '按“沿工具 +Z 走 40 mm”', check: () => flags.tool,
             result: '工具坐标跟着工具走，工具斜着，+Z 就斜着。'},
-          {id: 'toolFrame', icon: '🧭', title: '用工具坐标点动', hint: '示教器右边选“工具坐标”', check: s => s.frame === 'tool' && s.moved,
+          {id: 'toolFrame', icon: '🧭', title: '用工具坐标点动', hint: '右边参照系选“工具坐标”', check: s => s.frame === 'tool' && s.moved,
             result: '对准工件时用工具坐标更顺手：前后左右都按工具自己的方向。'},
           {id: 'rotate', icon: '🔄', title: '工具点不动，只改朝向', hint: '试“保持 TCP 改朝向”', check: () => flags.rotate,
             result: '六个关节一起配合，可以只改工具朝向，而工作点停在原处。'},
@@ -76,32 +74,21 @@
       },
     },
     {
-      id: 'teach', name: '示教与回放', lead: '你带它走一遍，记下几个点，它就能自己再走一遍。',
+      id: 'teach', name: '示教与搬运', lead: '先带它走一遍、记下几个点；再用点动和夹爪把工件搬到落料区。',
       build(c) {
-        const g = c.section('记录与回放');
+        const g = c.section('示教：记录与回放');
         c.adopt(EL.teach, g);
+        const g2 = c.section('搬运：工件与落料区');
+        c.adopt([EL.challenge, EL.tool], g2);
         c.challenges([
-          {id: 'one', icon: '📍', title: '记下第一个点', hint: '点动后按“记录当前点”', check: s => s.points.length >= 1,
+          {id: 'one', icon: '📍', title: '记下示教点', hint: '点动后按“记录当前点”', check: s => s.points.length >= 2,
             result: '示教点记下的是六个关节的角度，还有工具和夹爪的状态。'},
-          {id: 'three', icon: '📌', title: '记满 3 个点', hint: '每次换一个姿态再记', check: s => s.points.length >= 3,
-            result: '点越多，回放的动作越接近你想要的路线。'},
           {id: 'play', icon: '▶', title: '让它自己回放', hint: '按“回放”', check: s => flags.played && s.moving,
             result: 'PTP 回放是关节一起转到下一个点，工具走的不一定是直线。'},
-        ]);
-      },
-    },
-    {
-      id: 'challenge', name: '搬运挑战', lead: '靠近工件 → 合上夹爪 → 搬到落料区 → 张开夹爪。',
-      build(c) {
-        const g = c.section('挑战：工件与落料区');
-        c.adopt([EL.challenge, EL.tool], g);
-        c.challenges([
-          {id: 'start', icon: '🚩', title: '开始挑战', hint: '按“开始挑战”', check: s => s.challenge.active,
-            result: '工件和落料区都标出来了。慢一点，先靠近。'},
-          {id: 'grab', icon: '✊', title: '抓起工件', hint: '离工件 18 mm 内合上夹爪', check: s => s.holding,
+          {id: 'grab', icon: '✊', title: '抓起工件', hint: '先开始挑战，离工件 18 mm 内合上夹爪', check: s => s.holding,
             result: '抓住了！移动时工件跟着夹爪走。'},
           {id: 'place', icon: '📦', title: '放到落料区', hint: '低位对准中心，再张开', check: s => s.challenge.score >= 1,
-            result: '放好了。用工具坐标微调，对位会更准。'},
+            result: '放好了。把这几个姿态记成示教点，下次它就能自己搬。'},
         ]);
       },
     },
@@ -112,8 +99,9 @@
     task: '3-2', title: '六轴机械臂与点动示教',
     stage: EL.stage,
     stations: STATIONS,
-    current: () => $('.learning-nav .active')?.dataset.activity,
-    select: id => $(`.learning-nav [data-activity="${id}"]`)?.click(),
+    // 原页面的“示教与回放”“搬运挑战”合成一个工位，用搬运挑战的场景（有工件和落料区）
+    current: () => { const a = $('.learning-nav .active')?.dataset.activity; return a === 'challenge' ? 'teach' : a; },
+    select: id => $(`.learning-nav [data-activity="${id === 'teach' ? 'challenge' : id}"]`)?.click(),
     reset: () => $('#home')?.click(),
     poll() {
       const s = lab().getState();
@@ -122,6 +110,10 @@
       return {...s, moved};
     },
     build(c) {
+      // 参照系很重要：每个工位都放在面板最上面，下方六格跟着它变成 J1–J6 或 X/Y/Z/Rx/Ry/Rz
+      const g = c.section('参照系：下方六格按什么方向动');
+      c.adopt([EL.frames, EL.frameText], g);
+      c.body.prepend(g);
       pendant(c);
       const notice = EL.notice?.textContent.trim() || '';
       lastNotice = notice;
