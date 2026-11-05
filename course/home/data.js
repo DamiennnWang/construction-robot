@@ -39,7 +39,7 @@ window.COURSE = {
       "nav": "动力与工作机构",
       "description": "看动力如何产生、传递，再变成施工需要的动作。",
       "entry": "course/chapters/02/overview/index.html",
-      "kind": "交互课堂",
+      "kind": "交互工位",
       "tasks": [
         {
           "id": "2-1",
@@ -47,40 +47,48 @@ window.COURSE = {
           "entries": [
             {
               "title": "直流电机",
-              "file": "course/chapters/02/tasks/2-1/index.html"
+              "file": "course/chapters/02/tasks/2-1/index.html#motor"
             },
             {
               "title": "柴油机",
-              "file": "course/chapters/02/tasks/2-1/diesel.html"
+              "file": "course/chapters/02/tasks/2-1/index.html#diesel"
             }
           ],
-          "kind": "交互课堂"
+          "kind": "交互工位"
         },
         {
           "id": "2-2",
           "title": "动力的传递与变换",
           "entries": [
             {
-              "title": "进入学习",
-              "file": "course/chapters/02/tasks/2-2/index.html"
+              "title": "齿轮 · 皮带 · 链条",
+              "file": "course/chapters/02/tasks/2-2/index.html#gear"
+            },
+            {
+              "title": "液压缸",
+              "file": "course/chapters/02/tasks/2-2/index.html#hyd"
+            },
+            {
+              "title": "气缸",
+              "file": "course/chapters/02/tasks/2-2/index.html#air"
             }
           ],
-          "kind": "交互课堂"
+          "kind": "交互工位"
         },
         {
           "id": "2-3",
           "title": "工作机构与施工动作",
           "entries": [
             {
-              "title": "工作机构",
-              "file": "course/chapters/02/tasks/2-3/index.html"
+              "title": "液压缸 · 动臂",
+              "file": "course/chapters/02/tasks/2-3/index.html#boom"
             },
             {
-              "title": "四杆扩展",
-              "file": "course/chapters/02/tasks/2-3/fourbar.html"
+              "title": "丝杠 · 升降台",
+              "file": "course/chapters/02/tasks/2-3/index.html#screw"
             }
           ],
-          "kind": "交互课堂"
+          "kind": "交互工位"
         }
       ]
     },

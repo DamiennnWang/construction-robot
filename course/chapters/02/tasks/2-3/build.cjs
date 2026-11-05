@@ -16,7 +16,7 @@ const directory=path.resolve(__dirname,'../../../../../artifacts/builds/2-3');
 fs.mkdirSync(directory,{recursive:true});
 const destination=path.join(directory,'mechanism-classroom.html');
 fs.writeFileSync(destination,integrate(html,'mechanisms','../../'),'utf8');
-fs.writeFileSync(path.join(__dirname,'index.html'),integrate(html.replaceAll('fourbar-linkage.html','fourbar.html'),'mechanisms','../'),'utf8');
+fs.writeFileSync(path.join(__dirname,'mechanisms.html'),integrate(html.replaceAll('fourbar-linkage.html','fourbar.html'),'mechanisms','../'),'utf8');
 console.log('Built '+destination+' ('+Buffer.byteLength(html)+' bytes)');
 const fourbar=read('src/fourbar.template.html')
  .replace('/*__FOURBAR_CSS__*/',()=>read('src/fourbar.css'))
@@ -24,5 +24,5 @@ const fourbar=read('src/fourbar.template.html')
  .replace('/*__KINEMATICS__*/',()=>read('src/fourbar-kinematics.js'))
  .replace('/*__FOURBAR_APP__*/',()=>read('src/fourbar-app.js').replace('/*__TEACHING__*/',()=>read('src/fourbar-teaching.js')));
 fs.writeFileSync(path.join(directory,'fourbar-linkage.html'),integrate(fourbar,'fourbar','../../'),'utf8');
-fs.writeFileSync(path.join(__dirname,'fourbar.html'),integrate(fourbar.replaceAll('mechanism-classroom.html','index.html'),'fourbar','../'),'utf8');
+fs.writeFileSync(path.join(__dirname,'fourbar.html'),integrate(fourbar.replaceAll('mechanism-classroom.html','mechanisms.html'),'fourbar','../'),'utf8');
 console.log('Built fourbar-linkage.html ('+Buffer.byteLength(fourbar)+' bytes)');

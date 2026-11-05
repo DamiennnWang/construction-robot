@@ -61,10 +61,10 @@ for (const [token, file] of scripts) {
 }
 const distribution=path.resolve(root,"../../../../../artifacts/builds/2-2");
 fs.mkdirSync(distribution, { recursive: true });
-fs.writeFileSync(path.join(root, "index.html"), integrate(addNotice(development), "transmission", "../"));
+fs.writeFileSync(path.join(root, "transmission.html"), integrate(addNotice(development), "transmission", "../"));
 fs.writeFileSync(
   path.join(distribution, "机械动力实验室.html"),
   integrate(addNotice(standalone), "transmission", "../../"),
 );
-console.log("Generated index.html (editable source entry)");
+console.log("Generated transmission.html (original lab, embedded by index.html)");
 console.log("Generated dist/机械动力实验室.html (offline standalone)");

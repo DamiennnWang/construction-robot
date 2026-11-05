@@ -15,6 +15,6 @@ const diesel = read('diesel-source/index.html')
   .replace('<link rel="stylesheet" href="src/style.css">', () => '<style>' + read('diesel-source/src/style.css') + '</style>')
   .replace('<script src="src/three.js"></script>', '<script src="../../../../../shared/vendor/three-13767d3750.js"></script>')
   .replace('<script src="src/engine-lab.js"></script>', () => inline(read('diesel-source/src/engine-lab.js')));
-fs.writeFileSync(path.join(__dirname, 'index.html'), finish(motor, 'motor'), 'utf8');
+fs.writeFileSync(path.join(__dirname, 'motor.html'), finish(motor, 'motor'), 'utf8');
 fs.writeFileSync(path.join(__dirname, 'diesel.html'), finish(diesel, 'diesel'), 'utf8');
 console.log('Built motor and diesel lessons using their original model engines');

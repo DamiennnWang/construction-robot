@@ -15,7 +15,7 @@
   const tabs = document.createElement('nav');
   tabs.className = 'power-tabs';
   tabs.setAttribute('aria-label', '动力装置');
-  tabs.innerHTML = '<a href="index.html"><small>01</small>直流电机</a><a href="diesel.html#diesel-single"><small>02</small>单缸柴油机</a><a href="diesel.html#diesel-four"><small>03</small>四缸柴油机</a>';
+  tabs.innerHTML = '<a href="motor.html"><small>01</small>直流电机</a><a href="diesel.html#diesel-single"><small>02</small>单缸柴油机</a><a href="diesel.html#diesel-four"><small>03</small>四缸柴油机</a>';
   header.after(tabs);
 
   const stage = $(motor ? '#motorPanel' : '.workspace');

@@ -3,17 +3,16 @@
   const $ = id => document.getElementById(id);
   const copy = {
     '2-1': {tag:'POWER SOURCE',note:'看电机和柴油机怎样让轴转起来。',label:'认识动力装置'},
-    '2-2': {tag:'TRANSMISSION',note:'比较机械、液压与气压传动，追踪输入和输出。',label:'动力传动实验室'},
-    '2-3': {tag:'MECHANISM & ACTION',note:'让动力变成动臂、升降、振动与夹持动作。'},
+    '2-2': {tag:'TRANSMISSION',note:'齿轮、皮带、链条、液压与气压：传过去以后，变了多少？',label:'传递与变换'},
+    '2-3': {tag:'MECHANISM & ACTION',note:'伸缩变转动、转动变直线：动力变成施工动作。',label:'工作机构'},
   };
   const tasks = window.ChapterTasks.map(task=>({id:task.id,name:task.title,...copy[task.id],
     links:(task.demos||[{title:copy[task.id].label,file:task.demo}]).map(({title,file})=>[title,courseHref(file)])}));
   const exhibits = [
     {id:'motor',task:'2-1',title:'电流与磁场，让转子动起来。',description:'播放动作，分辨固定磁铁、转子和输出轴，了解机器人关节的动力从哪里来。',link:tasks[0].links[0]},
     {id:'diesel',task:'2-1',title:'四个冲程，接续输出动力。',description:'对比单缸和四缸，观察活塞怎样通过连杆带动曲轴。',link:tasks[0].links[1]},
-    {id:'transmission',task:'2-2',title:'输入改变，输出怎样响应？',description:'切换齿轮、带与链传动，交换输入轴；再比较液压与气压推动，验证速度、力与运动方向。',link:tasks[1].links[0]},
-    {id:'mechanisms',task:'2-3',title:'把动力，变成施工需要的动作。',description:'操纵液压缸与动臂，改变丝杠导程、相对转速与偏心条件，观察轨迹、升降和振动。',link:tasks[2].links[0]},
-    {id:'fourbar',task:'2-3',title:'四根杆件，约束出一条轨迹。',description:'拖动曲柄，调整杆长与装配分支，追踪连杆点的轨迹，对照传动角、受力和夹爪动作。',link:tasks[2].links[1]}
+    {id:'transmission',task:'2-2',title:'输入改变，输出怎样响应？',description:'换齿轮、皮带、链条，再比比液压缸和气缸：传过去以后，快慢、方向和力气变了多少？',link:tasks[1].links[0]},
+    {id:'mechanisms',task:'2-3',title:'把动力，变成施工需要的动作。',description:'液压缸一伸一缩，动臂和连杆就转；丝杠一圈圈转，滑台就直走。',link:tasks[2].links[0]}
   ];
   let selected=null,timer=null,paused=matchMedia('(prefers-reduced-motion: reduce)').matches;
   $('task-cards').innerHTML=tasks.map(t=>`<article class="task-card" data-task="${t.id}"><div class="task-top"><span>任务 ${t.id}</span><small>${t.tag}</small></div><button class="task-select">${t.name}</button><p>${t.note}</p><div class="task-links">${t.links.map(([name,url])=>`<a href="${url}">${name} <span>↗</span></a>`).join('')}</div></article>`).join('');
@@ -23,7 +22,7 @@
     window.CourseScene?.focus(selected);
     $('story-label').textContent=e?`任务 ${e.task} / ${tasks.find(t=>t.id===e.task).tag}`:'三项任务 · 一条动力链';
     $('story-title').textContent=e?.title||'看见动力，理解动作。';
-    $('story-description').textContent=e?.description||'观察电机、柴油机与传动机构，亲手改变条件，追踪动力如何变成转动、升降与夹持。';
+    $('story-description').textContent=e?.description||'观察电机、柴油机与传动机构，亲手改变条件，追踪动力如何变成转动和升降。';
     const [label,url]=e?.link||['从动力源开始探索',tasks[0].links[0][1]];
     $('story-actions').innerHTML=`<a class="entry-primary" href="${url}">${e?'进入'+label:label} <span>↗</span></a><button id="overview" class="entry-secondary">全部展品</button>`;
     $('overview').onclick=()=>{stopTour();select(null);window.CourseScene?.resetView();};

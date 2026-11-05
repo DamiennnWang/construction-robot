@@ -53,13 +53,13 @@
       "source_url": "https://my.feishu.cn/wiki/W80iwtlYwiQL80kP8zWcgt48nyg#CdK8dZKRlovcodxLQcVcpj2vnNb",
       "source_block_id": "CdK8dZKRlovcodxLQcVcpj2vnNb",
       "directory": "course/chapters/02/tasks/2-1",
-      "status": "已有演示",
+      "status": "已实现交互工位",
       "demo": "course/chapters/02/tasks/2-1/index.html",
       "demos": [
-        { "title": "直流电机", "file": "course/chapters/02/tasks/2-1/index.html" },
-        { "title": "柴油机", "file": "course/chapters/02/tasks/2-1/diesel.html" }
+        { "title": "直流电机", "file": "course/chapters/02/tasks/2-1/index.html#motor" },
+        { "title": "柴油机", "file": "course/chapters/02/tasks/2-1/index.html#diesel" }
       ],
-      "kind": "交互课堂"
+      "kind": "交互工位"
     },
     {
       "id": "2-2",
@@ -71,9 +71,14 @@
       "source_url": "https://my.feishu.cn/wiki/W80iwtlYwiQL80kP8zWcgt48nyg#COrVdAmDUotUZbxp5LWcLqtEnmd",
       "source_block_id": "COrVdAmDUotUZbxp5LWcLqtEnmd",
       "directory": "course/chapters/02/tasks/2-2",
-      "status": "已有演示",
+      "status": "已实现交互工位",
       "demo": "course/chapters/02/tasks/2-2/index.html",
-      "kind": "交互课堂"
+      "demos": [
+        { "title": "齿轮 · 皮带 · 链条", "file": "course/chapters/02/tasks/2-2/index.html#gear" },
+        { "title": "液压缸", "file": "course/chapters/02/tasks/2-2/index.html#hyd" },
+        { "title": "气缸", "file": "course/chapters/02/tasks/2-2/index.html#air" }
+      ],
+      "kind": "交互工位"
     },
     {
       "id": "2-3",
@@ -85,19 +90,13 @@
       "source_url": "https://my.feishu.cn/wiki/W80iwtlYwiQL80kP8zWcgt48nyg#Oq3Ndd4jsoqH91xKA5BclpgDnlf",
       "source_block_id": "Oq3Ndd4jsoqH91xKA5BclpgDnlf",
       "directory": "course/chapters/02/tasks/2-3",
-      "status": "已有演示",
+      "status": "已实现交互工位",
       "demo": "course/chapters/02/tasks/2-3/index.html",
       "demos": [
-        {
-          "title": "工作机构",
-          "file": "course/chapters/02/tasks/2-3/index.html"
-        },
-        {
-          "title": "四杆扩展",
-          "file": "course/chapters/02/tasks/2-3/fourbar.html"
-        }
+        { "title": "液压缸 · 动臂", "file": "course/chapters/02/tasks/2-3/index.html#boom" },
+        { "title": "丝杠 · 升降台", "file": "course/chapters/02/tasks/2-3/index.html#screw" }
       ],
-      "kind": "交互课堂"
+      "kind": "交互工位"
     },
     {
       "id": "3-1",
