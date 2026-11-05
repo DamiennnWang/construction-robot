@@ -1,5 +1,5 @@
 /* 3-1：三维区上方的“连接”选择，和构型选择占同一位置 */
-.c2-stage-top .constraint-cards { display:grid !important; grid-template-columns:repeat(4, minmax(150px, 1fr)); gap:8px; width:100%; height:auto !important; min-height:0 !important; margin:0 !important; }
+.c2-stage-top .constraint-cards:not([hidden]) { display:grid !important; grid-template-columns:repeat(4, minmax(150px, 1fr)); gap:8px; width:100%; height:auto !important; min-height:0 !important; margin:0 !important; }
 .c2-stage-top .constraint-cards button {
   display:grid !important; grid-template-columns:auto 1fr; grid-template-rows:auto auto; align-items:center; gap:0 10px;
   min-height:0 !important; height:auto !important; aspect-ratio:auto !important; padding:7px 12px !important; text-align:left;
