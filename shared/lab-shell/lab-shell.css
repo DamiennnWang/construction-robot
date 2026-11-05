@@ -287,6 +287,19 @@ html[data-theme="dark"] .c2-banner { background:#3b2d16; border-color:#6b5124; c
 .c2-feedback.warn .c2-toast-icon { background:var(--warn); color:#fff; }
 .c2-feedback .c2-next { margin:0 0 0 4px; flex:0 0 auto; height:32px; }
 
+/* 外壳布局写死：放进第三章等已有页面时，不受页面里 main / aside / header / section 等通用规则影响 */
+html.lab-shell body > .c2-top { grid-row:1; position:static; width:auto; max-width:none; margin:0; }
+html.lab-shell body > .c2-bar { grid-row:2; position:static; width:auto; max-width:none; margin:0; }
+html.lab-shell body > .c2-main {
+  grid-row:3; grid-template-rows:minmax(0,1fr); grid-template-areas:none; grid-auto-flow:row;
+  position:static; width:auto; max-width:none; height:auto; max-height:none; margin:0;
+}
+html.lab-shell .c2-main > :is(.c2-stage, .c2-panel) {
+  grid-row:1; grid-area:auto; position:relative; width:auto; height:auto; max-height:none; min-width:0; margin:0; float:none;
+}
+html.lab-shell .c2-main > .c2-stage { grid-column:1; }
+html.lab-shell .c2-main > .c2-panel { grid-column:2; }
+
 /* 较矮的 16:9 窗口（如 1366×640）：压缩间距，保证整页不滚动 */
 @media (max-height:720px) and (min-width:901px) {
   .c2-top { height:44px; }

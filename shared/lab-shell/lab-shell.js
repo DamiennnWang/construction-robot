@@ -1,6 +1,8 @@
-/* 第二章任务页外壳：页头（本章任务）→ 工位条 → 三维区 + 操作面板。
- * 三维区放原版实验页（iframe，嵌入模式只显示三维视图）；面板由各工位自由设计，通过消息驱动原模型。
- * 菜单只有两层；面板里没有标签页，也没有“学习目标/学习任务”。
+/* 课程任务页外壳（第二章起使用）：页头（本章任务）→ 工位条 → 三维区 + 操作面板。
+ * 两种用法：
+ *   LabShell.embedded(cfg)  三维区放原版实验页（iframe，嵌入模式只显示三维视图），面板通过 postMessage 驱动原模型。（第二章）
+ *   LabShell.native(cfg)    页面自己的三维区与原有控件直接搬进外壳，面板里重新编排，状态由 cfg.poll() 读取。（第三章）
+ * 菜单只有两层；面板里没有标签页，也没有“学习目标/学习任务”。设计规范见 course/设计规范.md。
  */
 (() => {
   'use strict';
@@ -9,9 +11,11 @@
   const fmt = (v, n = 0) => (Number.isFinite(v) ? (Math.abs(v) < Math.pow(10, -n) / 2 ? 0 : v).toFixed(n) : '—');
 
   function start(cfg) {
+    const native = Boolean(cfg.native);
     document.title = `${cfg.task} ${cfg.title}｜智能建筑机械与机器人`;
     document.documentElement.dataset.c2Lab = cfg.task;
-    const store = 'c2-progress-' + cfg.task;
+    document.documentElement.classList.add('lab-shell', native ? 'lab-native' : 'lab-embedded');
+    const store = 'c2-progress-' + (cfg.progressKey || cfg.task);
     let progress = {};
     try { progress = JSON.parse(localStorage.getItem(store) || '{}') || {}; } catch {}
     const save = () => { try { localStorage.setItem(store, JSON.stringify(progress)); } catch {} };
@@ -21,8 +25,8 @@
     const back = h('a', 'c2-back', '← ' + cfg.chapter.title); back.href = href(cfg.chapter.href);
     const tasks = h('nav', 'c2-tasks'); tasks.setAttribute('aria-label', '本章任务');
     for (const t of cfg.tasks) {
-      const a = h('a', '', `${t.id} ${t.short || t.title}`); a.href = href(t.href);
-      if (t.id === cfg.task) a.setAttribute('aria-current', 'page');
+      const a = h('a', '', `${t.label || t.id} ${t.short || t.title}`); a.href = href(t.href);
+      if (t.id === (cfg.taskNav || cfg.task)) a.setAttribute('aria-current', 'page');
       tasks.append(a);
     }
     top.append(back, tasks);
@@ -60,7 +64,15 @@
     view.append(feedback);
     let toastTimer = 0;
     main.append(stageBox, panel);
-    document.body.append(top, bar, main);
+    /* 原页面里暂时不用的控件停放处（仍在文档里，原有程序照常工作） */
+    const parking = h('div', 'c2-parking'); parking.hidden = true;
+    document.body.append(top, bar, main, parking);
+    if (native) {
+      loading.hidden = true;
+      if (cfg.stage) { cfg.stage.classList.add('c2-native-stage'); view.prepend(cfg.stage); }
+      if (cfg.stageTop) { const topRow = h('div', 'c2-stage-top'); topRow.append(...[].concat(cfg.stageTop).filter(Boolean)); stageBox.prepend(topRow); }
+      if (cfg.redo === false) redo.hidden = true;
+    }
 
     let current = -1, ctx = null, frame = null, cleanup = [];
     const tabButtons = cfg.stations.map((s, i) => {
@@ -80,7 +92,7 @@
       b.classList.toggle('done', Boolean(progress[cfg.stations[i].id]));
     });
 
-    /* 与原版实验页通信（只用 postMessage，file:// 打开也能用） */
+    /* 嵌入模式：与原版实验页通信（只用 postMessage，file:// 打开也能用） */
     window.addEventListener('message', e => {
       const d = e.data;
       if (!d || d.c2 !== 'lab' || !frame || e.source !== frame.contentWindow) return;
@@ -90,7 +102,9 @@
     const sendTheme = () => frame?.contentWindow?.postMessage({c2: 'cmd', op: 'theme', value: window.CourseTheme?.get?.() || 'light'}, '*');
     window.addEventListener('course-theme-change', sendTheme);
 
-    function select(i, fromHash) {
+    function parkAll() { body.querySelectorAll('[data-c2-adopted]').forEach(n => parking.append(n)); }
+
+    function select(i, fromHash, fromPage) {
       if (i === current) return;
       cleanup.forEach(f => f()); cleanup = [];
       current = i;
@@ -99,30 +113,41 @@
       const ht = h('div', 'c2-head-row'), name = h('div', 'c2-head-name');
       name.append(h('span', 'c2-head-num', String(i + 1)), h('h2', '', s.name));
       ht.append(name, redo);
-      head.replaceChildren(ht, h('p', '', s.lead));
+      head.replaceChildren(ht, h('p', '', s.lead || ''));
+      parkAll();
       body.replaceChildren(); clearTimeout(toastTimer); feedback.textContent = ''; feedback.className = 'c2-feedback';
       transportBox.replaceChildren(); readBox.replaceChildren(); tools.replaceChildren(); card.hidden = true;
-      hint.textContent = (s.note ? s.note + '　' : '') + (s.hint || '拖动旋转 · 滚轮缩放');
-      frame?.remove();
-      frame = h('iframe', 'c2-frame'); frame.title = s.name + '三维模型';
-      frame.src = s.src; loading.hidden = false;
-      view.prepend(frame);
-      ctx = makeContext(s);
-      s.build(ctx);
+      hint.textContent = (s.note ? s.note + '　' : '') + (s.hint ?? cfg.hint ?? '拖动旋转 · 滚轮缩放');
+      hint.hidden = !hint.textContent;
+      if (native) {
+        if (!fromPage) cfg.select?.(s.id);
+      } else {
+        frame?.remove();
+        frame = h('iframe', 'c2-frame'); frame.title = s.name + '三维模型';
+        frame.src = s.src; loading.hidden = false;
+        view.prepend(frame);
+      }
+      ctx = makeContext(s, i);
+      cfg.build?.(ctx, s);
+      s.build?.(ctx, s);
+      if (native) ctx._ready();
       syncTabs();
+      // 原页面的渲染器按容器尺寸重新取景；布局稳定后再通知一次
+      dispatchEvent(new Event('resize'));
+      if (native) for (const t of [60, 300, 900]) setTimeout(() => dispatchEvent(new Event('resize')), t);
     }
-    redo.addEventListener('click', () => { const i = current; current = -1; select(i); });
+    redo.addEventListener('click', () => { const i = current; current = -1; cfg.reset?.(cfg.stations[i].id); select(i); });
     next.addEventListener('click', () => select(Math.min(current + 1, cfg.stations.length - 1)));
 
-    function makeContext(s) {
+    function makeContext(s, index) {
       const stateFns = new Set(), readyFns = new Set();
       let latest = null, ready = false;
       const send = msg => frame?.contentWindow?.postMessage({c2: 'cmd', ...msg}, '*');
       const c = {
-        h, fmt, station: s, body,
+        h, fmt, station: s, index, body, native,
         /* —— 原模型 —— */
         lab: {
-          click: (sel, index = 0) => send({op: 'click', sel, index}),
+          click: (sel, i = 0) => send({op: 'click', sel, index: i}),
           clickText: (sel, text) => send({op: 'clickText', sel, text}),
           set: (sel, value) => send({op: 'set', sel, value}),
           call: (path, ...args) => send({op: 'call', path, args}),
@@ -132,10 +157,16 @@
           onState(fn) { stateFns.add(fn); if (latest) fn(latest); },
           onReady(fn) { readyFns.add(fn); if (ready) fn(); },
         },
-        _state(data) { latest = data; stateFns.forEach(f => f(data)); },
+        _state(data) { latest = data; stateFns.forEach(f => { try { f(data); } catch (err) { console.warn(err); } }); },
         _ready() { if (ready) return; ready = true; readyFns.forEach(f => f()); },
+        /** 把原页面里的一个控件（或一组）搬进面板；换工位时自动放回停放处。 */
+        adopt(nodes, into) {
+          const list = (Array.isArray(nodes) ? nodes : [nodes]).map(n => (typeof n === 'string' ? document.querySelector(n) : n)).filter(Boolean);
+          list.forEach(n => { n.dataset.c2Adopted = '1'; n.hidden = false; (into || body).append(n); });
+          return list[0];
+        },
         /* —— 反馈 —— */
-        /** 反馈以提示条形式出现在三维区下方，几秒后自动收起，不挤占面板。 */
+        /** 反馈以提示条形式出现在三维区上方，几秒后自动收起，不挤占面板。 */
         feedback(text, kind = 'info', keep = false) {
           clearTimeout(toastTimer);
           feedback.replaceChildren();
@@ -207,7 +238,7 @@
             b.addEventListener('click', () => { buttons.forEach(x => x.setAttribute('aria-pressed', String(x === b))); onPick(it); });
             wrap.append(b); return b;
           });
-          return {el: wrap, clear: () => buttons.forEach(x => x.setAttribute('aria-pressed', 'false'))};
+          return {el: wrap, buttons, clear: () => buttons.forEach(x => x.setAttribute('aria-pressed', 'false'))};
         },
         /** 小问题：只用在“看过结果之后”。 */
         choice({prompt, options, answer, onRight, wrong}) {
@@ -241,9 +272,9 @@
           return {el: box, input};
         },
         /** 试一试：几张挑战卡，不分先后；模型状态满足条件就自动打勾。 */
-        challenges(list, titleText = '试一试') {
+        challenges(list, titleText = '试一试', into = body) {
           const counter = h('span', 'c2-count');
-          const sec = c.section(titleText, counter);
+          const sec = c.section(titleText, counter, into);
           const bar = h('div', 'c2-progress'); const fill = h('span'); bar.append(fill);
           const grid = h('div', 'c2-challenges'); sec.append(bar, grid);
           const done = new Set();
@@ -273,6 +304,7 @@
             if (done.size === list.length) {
               progress[s.id] = true; save(); syncTabs();
               setTimeout(() => {
+                if (ctx !== c) return;
                 c.feedback(current < cfg.stations.length - 1 ? '这一站的挑战都完成了！' : '本任务的挑战都完成了！还可以接着随便调一调。', 'ok', current < cfg.stations.length - 1);
                 if (current < cfg.stations.length - 1) feedback.append(next);
               }, 2600);
@@ -305,6 +337,8 @@
           if (extra) transportBox.append(extra);
           return {setPlaying: set, setSpeed: v => speedSeg?.set(v)};
         },
+        /** 把原页面的元素放进三维区底部一栏。 */
+        stripAdopt(nodes) { const list = (Array.isArray(nodes) ? nodes : [nodes]).map(n => (typeof n === 'string' ? document.querySelector(n) : n)).filter(Boolean); list.forEach(n => { n.dataset.c2Adopted = '1'; readBox.append(n); }); },
         readouts(defs) {
           const cells = {};
           readBox.replaceChildren();
@@ -325,14 +359,29 @@
       return c;
     }
 
+    /* 原地模式：定时读原页面状态；原页面自己切换了活动时，工位条跟着变 */
+    if (native) {
+      setInterval(() => {
+        let st = null;
+        try { st = cfg.poll?.(); } catch (err) { /* 页面尚未就绪 */ }
+        if (st && ctx) ctx._state(st);
+        const pageStation = cfg.current?.();
+        if (pageStation) { const j = cfg.stations.findIndex(s => s.id === pageStation); if (j >= 0 && j !== current) select(j, false, true); }
+      }, 200);
+    }
+
     const fromHash = () => {
       const id = location.hash.slice(1), i = cfg.stations.findIndex(s => s.id === id);
-      return i < 0 ? 0 : i;
+      return i >= 0 ? i : 0;
     };
     window.addEventListener('hashchange', () => select(fromHash(), true));
     select(fromHash(), true);
-    window.c2Lab = {select, get ctx() { return ctx; }, get frame() { return frame; }};
+    window.c2Lab = {select, get ctx() { return ctx; }, get frame() { return frame; }, get current() { return current; }};
   }
 
+  window.LabShell = {
+    embedded: start,
+    native: cfg => start({...cfg, native: true}),
+  };
   window.C2Lab = {start};
 })();

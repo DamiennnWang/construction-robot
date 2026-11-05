@@ -11,30 +11,535 @@ body{height:100vh;height:100dvh;display:grid;grid-template-rows:48px minmax(0,1f
 .lock svg{display:block;width:14px;height:17px;margin:auto;stroke:currentColor;stroke-width:1.25;fill:none;stroke-linecap:round;stroke-linejoin:round}.fixed-message{display:grid;place-content:center;text-align:center;padding:18px;font-size:14px;line-height:2;color:var(--blue)}.fixed-message small{font-size:10px;color:var(--muted)}
 #fallback{display:block;overflow:hidden;padding:0}#fallback>svg{width:100%;height:100%;display:block}#fallback>span{position:absolute;bottom:10px;left:12px;right:12px;background:var(--surface);border:1px solid var(--line);border-radius:7px;font-size:9px;line-height:1.8;padding:9px}
 @media(prefers-reduced-motion:reduce){*,*::before,*::after{transition:none!important;scroll-behavior:auto!important}}
-</style><style data-chapter-layout>/* One 1600 × 900 teaching screen. Canvas sizing remains in logical CSS pixels. */
-html:has(#chapter-shell),html:has(#chapter-shell) body{width:100%;height:100%;min-height:0!important;max-height:100%;overflow:hidden!important;margin:0;padding:0;background:#dce6f0;display:block!important;overscroll-behavior:none}
-#chapter-shell{--bg:#f1f6fc;--paper:#fff;--surface:#fff;--panel:#fff;--stage:#f6faff;--soft:#eef4fc;--ink:#193550;--muted:#617b93;--line:#d4e1ef;--blue:#286dde;--blue-soft:#e7f0ff;--accent:#286dde;--accent-soft:#e7f0ff;--green:#268d7c;--good:#268d7c;--teal:#268d7c;--danger:#ca5366;--red:#ca5366;--output:#268d7c;--shadow:0 8px 28px #18456e08;position:absolute;left:50%;top:50%;width:1600px;height:900px;transform-origin:center center;background:var(--bg);color:var(--ink);font:15px/1.5 "Microsoft YaHei","PingFang SC","Segoe UI",sans-serif;display:grid;grid-template-rows:64px 94px 66px minmax(0,1fr) 38px;gap:0;padding:0 24px;overflow:hidden;isolation:isolate}
-#chapter-shell[data-theme=dark]{--bg:#0e1c2d;--paper:#15283e;--surface:#15283e;--panel:#15283e;--stage:#172c45;--soft:#1c3350;--ink:#e2edfa;--muted:#a1b5cc;--line:#304a68;--blue:#76a9ff;--blue-soft:#203f66;--accent:#76a9ff;--accent-soft:#203f66;--green:#60c6af;--good:#60c6af;--output:#60c6af;--danger:#ff8c9e}
-#chapter-shell *{box-sizing:border-box}#chapter-shell [hidden],#chapter-shell [data-inactive=true]{display:none!important}#chapter-shell button,#chapter-shell input,#chapter-shell select{font-family:inherit}#chapter-shell button{font-size:14px;line-height:1.3;min-height:32px;border-radius:7px}#chapter-shell button:focus-visible,#chapter-shell a:focus-visible,#chapter-shell input:focus-visible,#chapter-shell select:focus-visible{outline:3px solid #edb353;outline-offset:2px}#chapter-shell input[type=range]{height:16px;accent-color:var(--blue)}#chapter-shell select{font-size:14px;min-height:32px;color:var(--ink);background:var(--paper)}#chapter-shell p{font-size:14px;line-height:1.65}#chapter-shell small{font-size:12px}#chapter-shell .primary,#chapter-shell button.active:not(.chip):not([data-activity]):not([data-type]):not([data-tab]){background:var(--blue);border-color:var(--blue);color:#fff}#chapter-shell .text-button,#chapter-shell .text-link{font-size:13px;min-height:28px}#chapter-shell .c-header{display:flex;align-items:center;gap:18px;padding:0!important;height:64px;background:none;border-bottom:1px solid var(--line);font-size:14px}#chapter-shell .c-home{display:flex;gap:12px;align-items:center;flex-shrink:0;text-decoration:none;color:var(--ink);font-size:16px;font-weight:700}#chapter-shell .c-logo{display:grid;place-items:center;background:#244e75;color:#fff;width:38px;height:38px;font-size:30px;border-radius:7px 14px 7px 7px}#chapter-shell .c-home small{display:block;font-size:10px;letter-spacing:1px;color:var(--muted);margin-top:3px;font-weight:400}#chapter-shell .c-chapters{display:flex;align-items:center;gap:5px;margin:0 0 0 auto}#chapter-shell .c-chapters a{font-size:13px;text-decoration:none;padding:8px 10px;border:1px solid transparent;border-radius:7px;color:var(--muted);white-space:nowrap}#chapter-shell .c-chapters a small{font:12px Consolas,monospace;margin-right:6px}#chapter-shell .c-chapters a[aria-current]{color:var(--blue);border-color:#bed4f0;background:var(--blue-soft)}#chapter-shell .c-chapters a:hover{color:var(--blue);background:var(--soft)}#chapter-shell .c-tools{display:flex;gap:6px;margin-left:5px}#chapter-shell .c-tools button{width:31px;height:31px;min-height:31px;padding:0;border:1px solid var(--line);background:var(--paper);color:var(--muted);font-size:19px;border-radius:50%}#chapter-shell .c-title{display:flex;align-items:center;gap:15px;min-width:0}#chapter-shell .c-title-number{width:57px;height:57px;display:grid;place-content:center;border:1px solid #bcd4ee;border-radius:10px;color:var(--blue);font:25px Consolas,monospace;background:var(--blue-soft);flex-shrink:0}#chapter-shell .c-eyebrow{font:10px Consolas,monospace;letter-spacing:1.6px;color:var(--muted);margin-bottom:2px}#chapter-shell .c-title h1{font-size:30px;font-weight:700;line-height:1.3;letter-spacing:.2px;margin:0}#chapter-shell .c-title p{font-size:13px;line-height:1.5;color:var(--muted);margin:3px 0 0}#chapter-shell .c-title-actions{margin-left:auto;display:flex;align-items:center;gap:12px}#chapter-shell .c-title-actions>button{min-height:38px;padding:8px 15px;font-size:14px}#chapter-shell .c-activities{display:block;min-height:0;margin:0;padding:0 0 12px}#chapter-shell .c-activities>div,#chapter-shell .c-activities>nav{height:54px;display:flex;gap:10px;padding:0;margin:0;border:0;background:none}#chapter-shell .c-activities button{position:relative;display:flex;flex:1;align-items:center;justify-content:flex-start;gap:15px;border:1px solid var(--line);border-radius:9px;background:var(--paper);color:var(--muted);padding:0 22px;height:54px;min-height:54px;font-size:19px;font-weight:650;text-align:left;letter-spacing:0;box-shadow:none}#chapter-shell .c-activities button::after{display:none}#chapter-shell .c-activities button>small,#chapter-shell .c-activities button>span:first-child:not(:last-child){font-size:14px;font-weight:400}#chapter-shell .c-activities button span:not(.step-no){font-size:19px;font-weight:650}#chapter-shell .c-activities button small:not(:first-child){display:none}#chapter-shell .c-activities button small:first-child{color:var(--blue)}#chapter-shell .c-activities button.active{background:#265eab;border-color:#265eab;color:white;box-shadow:0 4px 10px #1e59a517}#chapter-shell .c-activities button.active small{color:#c8dcff}#chapter-shell .c-activities .step-check{margin-left:auto}#chapter-shell .c-activities .tabs button>small{display:none}#chapter-shell .c-activities .modules{width:100%}
-#chapter-shell .c-workspace{display:grid;grid-template-columns:minmax(0,1fr) 440px;gap:18px;min-height:0;padding:0;overflow:hidden}#chapter-shell .c-left{display:flex;flex-direction:column;gap:12px;min-width:0;min-height:0}#chapter-shell .c-right{min-width:0;min-height:0;display:flex;flex-direction:column;background:var(--paper);border:1px solid var(--line);border-radius:12px;overflow:hidden}#chapter-shell .c-footer{display:flex!important;align-items:center;gap:20px;padding:0;background:none;border:0;font-size:11px;color:var(--muted);height:38px;min-height:0}#chapter-shell .c-footer>span:first-child{display:flex;gap:10px;align-items:center;white-space:nowrap}#chapter-shell .c-footer b{font-weight:400;color:#8ea9be}#chapter-shell .c-footer i{width:6px;height:6px;border-radius:50%;background:var(--green)}#chapter-shell .c-footer>a{margin-left:auto;font-size:12px;white-space:nowrap;color:var(--blue);text-decoration:none}#chapter-shell .c-footer .concept,#chapter-shell .c-footer .concept-note{display:none}#chapter-shell .c-footer>span:nth-child(2){margin-left:auto;font-size:11px}
-#chapter-shell .c-deck{display:flex;flex-direction:column;min-height:0;flex:1;gap:0;overflow:hidden}#chapter-shell .c-deck-tabs{display:flex;gap:4px;padding:10px 12px 9px;background:var(--soft);border-bottom:1px solid var(--line);flex-shrink:0}#chapter-shell .c-deck-tabs button{flex:1;min-height:34px;font-size:15px;border:1px solid transparent;background:none;color:var(--muted);padding:6px 8px;white-space:nowrap}#chapter-shell .c-deck-tabs button[aria-selected=true]{background:var(--paper);border-color:var(--line);color:var(--blue);font-weight:700;box-shadow:0 2px 6px #25466b08}#chapter-shell .c-deck-pane{display:flex;flex-direction:column;gap:12px;padding:16px;flex:1;min-height:0;overflow:hidden}#chapter-shell .c-deck-pane>.c-deck{margin:0}#chapter-shell .c-deck-pane .c-deck-tabs{padding:5px;border:1px solid var(--line);border-radius:7px;background:var(--soft)}#chapter-shell .c-deck-pane .c-deck-tabs button{font-size:14px;min-height:30px}#chapter-shell .c-deck-pane .c-deck-pane{padding:12px 0 0;gap:10px}#chapter-shell .c-right>.control-panel,#chapter-shell .c-right>.panel{width:100%;height:100%;padding:16px;border:0;box-shadow:none;border-radius:0;min-height:0;max-height:none;display:flex;flex-direction:column;gap:10px;overflow:hidden;background:var(--paper)}
-#chapter-shell .c-left>.stage,#chapter-shell .c-left>.stage-card{position:relative;flex:1;min-height:0;height:auto;grid-area:auto;border:1px solid var(--line);background:var(--paper);border-radius:12px;box-shadow:none;overflow:hidden}#chapter-shell .stage-bar{padding:11px 16px;min-height:48px;height:48px;font-size:12px}#chapter-shell .stage-bar .fig,#chapter-shell .stage-bar .fig-index{font-size:12px}#chapter-shell .stage-bar b,#chapter-shell .stage-bar strong,#chapter-shell .stage-bar .fig-index span{font-size:14px;color:var(--ink)}#chapter-shell .stage-bar button{font-size:13px;min-height:29px;padding:4px 10px}#chapter-shell .stage-bar .fig-index{letter-spacing:.5px}#chapter-shell .stage-bar .views,#chapter-shell .stage-bar .view-buttons{display:flex;gap:3px;pointer-events:auto}#chapter-shell #viewport{min-height:0}#chapter-shell #viewport canvas{width:100%!important;height:100%!important}#chapter-shell .stage-state,#chapter-shell .stage-topline{font-size:12px;top:60px;left:18px;right:18px}#chapter-shell .stage-state small,#chapter-shell .stage-topline .model-label{font-size:11px}#chapter-shell .joint-card,#chapter-shell .joint-detail{top:88px;left:18px;max-width:280px;padding:10px;gap:10px}#chapter-shell .joint-card strong,#chapter-shell .joint-detail strong{font-size:14px}#chapter-shell .joint-card p,#chapter-shell .joint-detail p{font-size:12px;max-width:195px;margin:4px 0 0;line-height:1.5}#chapter-shell .joint-card>span,#chapter-shell .joint-badge{font-size:18px}#chapter-shell .stage-toggles,#chapter-shell .stage-controls{left:18px;bottom:122px;gap:7px;display:flex}#chapter-shell .chip{font-size:13px;padding:6px 10px;min-height:32px}#chapter-shell .stage-hint,#chapter-shell .canvas-corner{left:18px;right:18px;bottom:99px;font-size:11px}#chapter-shell .readouts,#chapter-shell .tcp-strip{height:82px;min-height:82px;padding:12px 18px;gap:22px;flex-wrap:nowrap;flex-shrink:0;border-top:1px solid var(--line);background:var(--paper)}#chapter-shell .readouts label,#chapter-shell .readouts small,#chapter-shell .tcp-strip label,#chapter-shell .tcp-strip small{font-size:12px}#chapter-shell .readouts output,#chapter-shell .readouts strong,#chapter-shell .tcp-strip output{font-size:23px;line-height:1.3}#chapter-shell .readouts .dof-readout strong{font-size:31px}#chapter-shell .tcp-strip .orientation{display:block}#chapter-shell .tcp-strip .orientation output{font-size:17px}#chapter-shell .tcp-strip .tcp-label{width:auto;display:block}#chapter-shell .tcp-strip .tcp-label strong{font-size:13px}#chapter-shell .readouts small{margin-top:4px}#chapter-shell .readouts .collision-readout strong{font-size:18px}
-#chapter-shell[data-task="3-1"] #viewport,#chapter-shell[data-task="3-2"] #viewport{position:absolute;inset:48px 0 82px}#chapter-shell .c-model-picker{display:grid;grid-template-columns:repeat(5,minmax(0,1fr));gap:8px;grid-area:auto;height:72px;min-height:72px}#chapter-shell .type-card{padding:10px;gap:9px}#chapter-shell .type-card svg{width:34px;height:34px;display:block}#chapter-shell .type-card strong{font-size:15px}#chapter-shell .type-card small{font-size:10px;margin-top:3px}#chapter-shell .type-card em{display:none}
-#chapter-shell .pendant,#chapter-shell[data-task="3-2"] .control-panel{display:flex;flex-direction:column;gap:10px;height:100%;min-height:0;border:0;padding:0;background:none;box-shadow:none;grid-area:auto;overflow:hidden}#chapter-shell .panel-title,#chapter-shell .panel-heading{display:flex;align-items:center;justify-content:space-between;min-height:28px;margin:0;padding:0;border:0}#chapter-shell .panel-title h2,#chapter-shell .panel-heading h2,#chapter-shell .c-right h2{font-size:19px;margin:0;font-weight:700}#chapter-shell .panel-title>span{font-size:11px;color:var(--muted)}#chapter-shell .c-control-deck{flex:1}#chapter-shell .joint-top{font-size:13px;margin:0;flex-shrink:0}#chapter-shell .joint-rows{display:flex;flex-direction:column;gap:5px;min-height:0;flex:1;max-height:310px}#chapter-shell .joint-row{display:grid;grid-template-columns:51px minmax(0,1fr) 30px 30px 27px;gap:5px;min-height:44px;flex:1;padding:4px 6px;align-items:center}#chapter-shell .joint-label{padding:2px;min-height:34px;text-align:left}#chapter-shell .joint-label b{font-size:16px}#chapter-shell .joint-label small{font-size:10px;margin-top:2px}#chapter-shell .joint-value output{font-size:15px}#chapter-shell .joint-row input{height:12px;margin:0}#chapter-shell .joint-row .jog{font-size:22px;width:30px;height:30px;min-height:30px;padding:0}#chapter-shell .joint-row .lock{width:27px;height:30px;min-height:30px;padding:4px}#chapter-shell .range-control{padding:8px 0 0;margin:0;flex-shrink:0}#chapter-shell .range-control label{font-size:13px}#chapter-shell .range-control p{font-size:11px;margin:2px 0 0}#chapter-shell .range-control output{font-size:13px}#chapter-shell .notice,#chapter-shell .panel-status{font-size:13px;min-height:38px;line-height:1.5;margin:0;padding:8px 0 0;flex-shrink:0}#chapter-shell .stop,#chapter-shell .stop-button{min-height:36px;padding:8px 12px;font-size:15px;margin:0;flex-shrink:0}#chapter-shell .keyboard,#chapter-shell .keyboard-note{font-size:11px;margin:0;flex-shrink:0}#chapter-shell .target-panel{padding:14px;max-height:none;display:flex;flex-direction:column;gap:18px}#chapter-shell .target-panel strong{font-size:18px}#chapter-shell .target-inputs{gap:10px}#chapter-shell .target-inputs label{font-size:14px}#chapter-shell .target-inputs input{height:42px;font-size:17px;width:100%}#chapter-shell .target-buttons{flex-wrap:wrap}#chapter-shell .target-panel p{font-size:14px}
-#chapter-shell .learning,#chapter-shell .learning-section{display:flex;flex-direction:column;height:100%;min-height:0;padding:0;margin:0;grid-area:auto;border:0;background:none}#chapter-shell .activity,#chapter-shell .activity-content{display:flex;flex-direction:column;gap:18px;min-height:0;height:auto;padding:0;border:0;overflow:visible}#chapter-shell .lesson-heading,#chapter-shell .lesson-intro{width:auto;min-width:0;max-width:none;margin:0;padding:0}#chapter-shell .lesson-heading h2,#chapter-shell .lesson-intro h2{font-size:24px;margin:6px 0 8px;line-height:1.4}#chapter-shell .lesson-heading p,#chapter-shell .lesson-intro p,#chapter-shell .explanation p{font-size:14px;line-height:1.75}#chapter-shell .eyebrow{font-size:10px;letter-spacing:1.5px}#chapter-shell .explanation{max-width:none;padding:14px;background:var(--soft);border-radius:8px;font-size:14px;line-height:1.7}#chapter-shell .explanation strong{font-size:17px}#chapter-shell .capability{gap:8px;flex-wrap:wrap;font-size:13px}#chapter-shell .connection-key{display:flex;flex-wrap:wrap;gap:12px;padding:8px 0;max-width:none;font-size:13px}#chapter-shell .connection-key small{font-size:12px}#chapter-shell .constraint-cards{display:grid;grid-template-columns:1fr 1fr;gap:12px}#chapter-shell .constraint-cards button{padding:17px;min-height:132px}#chapter-shell .constraint-cards b{font-size:34px}#chapter-shell .constraint-cards strong{font-size:17px}#chapter-shell .constraint-cards small{font-size:12px}#chapter-shell .space-info,#chapter-shell .space-warning{font-size:14px;padding:14px;background:var(--soft);border-radius:8px}#chapter-shell .space-info strong,#chapter-shell .space-warning strong{font-size:18px}#chapter-shell .space-info p,#chapter-shell .space-warning p{font-size:14px}#chapter-shell .path-controls{width:auto}#chapter-shell .path-results{display:flex;flex-direction:column;gap:6px;font-size:14px}#chapter-shell .path-buttons{flex-wrap:wrap;gap:7px}#chapter-shell .path-controls p{font-size:13px}#chapter-shell .obstacle-editor{width:auto;grid-template-columns:1fr;gap:12px}#chapter-shell .obstacle-editor label{font-size:13px}#chapter-shell .obstacle-editor label input{width:230px}
-#chapter-shell .frame-tabs{height:39px;flex:none;margin:0;padding:3px}#chapter-shell .frame-tabs button{font-size:15px;min-height:30px;padding:5px 0}#chapter-shell .frame-description{margin:0;min-height:52px;flex:none}#chapter-shell .frame-description strong{font-size:14px}#chapter-shell .frame-description p{font-size:12px;margin:4px 0 0;line-height:1.5}#chapter-shell .jog-setting{margin:0;min-height:32px;flex:none}#chapter-shell .jog-setting button{font-size:13px;padding:5px 10px;min-height:29px}#chapter-shell .jog-setting>span{font-size:12px}#chapter-shell .jog-rows{display:grid;grid-template-rows:repeat(6,minmax(0,1fr));gap:5px;flex:1;min-height:260px;max-height:306px}#chapter-shell .jog-row{display:grid;grid-template-columns:60px minmax(0,1fr) 36px 36px;gap:7px;min-height:0;padding:5px 8px;align-items:center}#chapter-shell .jog-row output{font-size:15px}#chapter-shell .jog-label{font-size:16px;padding:0;min-height:32px}#chapter-shell .jog-label span{font-size:10px}#chapter-shell .jog-button{font-size:23px;width:36px;height:32px;min-height:32px;padding:0}#chapter-shell .jog-row input{margin:1px 0 0;height:12px}#chapter-shell .c-settings{display:flex;flex-direction:column;gap:30px;padding:12px}#chapter-shell .speed-control,#chapter-shell .tool-control{margin:0;padding:14px 0;font-size:16px}#chapter-shell .speed-control label,#chapter-shell .tool-control label{font-size:16px}#chapter-shell .speed-control output{font-size:19px}#chapter-shell .scale-text{font-size:12px}#chapter-shell .tool-control{flex-wrap:wrap;gap:10px}#chapter-shell .axis-cards{display:grid;grid-template-columns:repeat(2,1fr);gap:10px;height:auto}#chapter-shell .axis-card{min-height:100px;padding:14px;text-align:left}#chapter-shell .axis-card i{font-size:21px}#chapter-shell .axis-card strong{font-size:15px;margin:8px 0 3px}#chapter-shell .axis-card p{display:block;font-size:12px}#chapter-shell .comparison,#chapter-shell .teach-workspace,#chapter-shell .challenge-workspace{width:auto;min-width:0;flex:none}#chapter-shell .compare-buttons,#chapter-shell .teach-toolbar,#chapter-shell .challenge-actions{display:flex;flex-wrap:wrap;gap:10px}#chapter-shell .frame-legend{display:flex;flex-wrap:wrap;gap:15px;font-size:14px}#chapter-shell .frame-legend small{font-size:12px;line-height:1.7}#chapter-shell .point-list{display:grid;grid-template-columns:repeat(4,1fr);gap:6px;max-height:none;overflow:visible;margin:14px 0}#chapter-shell .point-list .empty{grid-column:1/-1;font-size:14px;line-height:1.7}#chapter-shell .point-list button{font-size:13px;min-width:0;padding:7px}#chapter-shell .caption{font-size:13px}#chapter-shell .challenge-top{font-size:16px;display:flex;gap:12px;flex-wrap:wrap}#chapter-shell .challenge-progress{font-size:13px;gap:8px;margin:18px 0}
-#chapter-shell[data-task="3-3"] .c-left>.main{display:flex;flex-direction:column;gap:0;flex:1;min-height:0;overflow:hidden;border:1px solid var(--line);border-radius:12px;background:var(--paper)}#chapter-shell[data-task="3-3"] .figure{flex:1;min-height:0;height:auto;border:0;border-radius:0}#chapter-shell[data-task="3-3"] .viewport{display:block!important;position:absolute;inset:0;width:100%;height:100%;min-height:0}#chapter-shell .fighead{top:16px;left:18px;font-size:12px}#chapter-shell .fighead b{font-size:15px}#chapter-shell .viewtools{top:48px;left:18px;right:auto;gap:6px}#chapter-shell .viewtools button{font-size:13px;min-height:30px}#chapter-shell .figbottom{bottom:12px;left:18px;right:18px}#chapter-shell .figbottom .hint,#chapter-shell .orbit-hint{font-size:12px}#chapter-shell .parttag strong{font-size:15px}#chapter-shell .parttag small{font-size:12px}#chapter-shell .scene-note{font-size:12px}#chapter-shell[data-task="3-3"] .readouts{display:grid;grid-template-columns:1fr 1fr 1fr;height:86px;min-height:86px}#chapter-shell[data-task="3-3"] .readout{padding:0 10px}#chapter-shell .readout output{font-size:25px}#chapter-shell .readout em{font-size:13px}#chapter-shell .readout .detail{font-size:11px}#chapter-shell .transport{min-height:61px;padding:10px 16px;gap:10px;flex-shrink:0}#chapter-shell .transport button,#chapter-shell .transport select{font-size:14px;min-height:36px}#chapter-shell .transport .speed-label{font-size:12px;gap:7px}#chapter-shell .observation,#chapter-shell .experiment,#chapter-shell .legend{padding:0;border:0;flex:none}#chapter-shell .sidehead{padding:0}#chapter-shell .motion-summary{font-size:13px;margin:7px 0;line-height:1.6}#chapter-shell .dial-pair{margin:8px 0;gap:12px}#chapter-shell .motion-dial{height:64px;width:100px}#chapter-shell .dial-card{padding:5px}#chapter-shell .dial-card>span{font-size:12px}#chapter-shell .input-progress{margin:8px 0}#chapter-shell .input-progress label{font-size:13px}#chapter-shell .input-progress label span{display:inline;font-size:11px;margin-left:10px}#chapter-shell .input-progress output{font-size:14px}#chapter-shell .motion-row{min-height:31px;padding:4px 0;font-size:13px}#chapter-shell .motion-row output{font-size:14px}#chapter-shell .motion-row small{font-size:11px}#chapter-shell .equation{font-size:14px;line-height:1.5;padding:8px 10px;margin-top:6px}#chapter-shell .equation small{font-size:11px}#chapter-shell .experiment{padding-top:4px}#chapter-shell .section-label{font-size:13px;margin-bottom:6px}#chapter-shell .experiment-controls button,#chapter-shell .experiment-controls select{font-size:13px;min-height:32px;height:32px}#chapter-shell .legend-title{font-size:13px;margin-bottom:6px}#chapter-shell .legend-buttons{gap:5px}#chapter-shell .legend-buttons button{font-size:12px;min-height:29px;padding:5px 9px}#chapter-shell .lesson-note{font-size:12px;line-height:1.6;margin:8px 0 0}#chapter-shell .dial-note{font-size:11px;line-height:1.5;margin:5px 0}#chapter-shell .challenge-details{display:block;border:0;margin:0;flex:1}#chapter-shell .challenge-details>summary{display:none}#chapter-shell .missiontabs{padding:0;gap:8px;display:flex;margin:0 0 20px}#chapter-shell .missiontabs button{flex:1;font-size:14px;padding:9px 6px}#chapter-shell .mission{padding:0}#chapter-shell .mission h3{font-size:24px;margin:12px 0}#chapter-shell .mission p{font-size:16px;line-height:1.8}#chapter-shell .choices{display:flex;flex-direction:column;gap:10px}#chapter-shell .choices button{font-size:16px;min-height:45px;padding:10px}#chapter-shell .check{font-size:16px;min-height:42px;margin:20px 0 0}#chapter-shell .feedback{font-size:15px;line-height:1.8;margin-top:18px}#chapter-shell .level{font-size:12px}#chapter-shell .topnav{margin:0;gap:8px}#chapter-shell .topnav a{font-size:14px}
-#chapter-shell .c-tool-workspace{display:grid;grid-template-columns:170px minmax(0,1fr);gap:12px;min-height:0;height:100%;flex:1}#chapter-shell .tool-cabinet{min-height:0;grid-area:auto;padding:14px 10px;border:1px solid var(--line);border-radius:12px;background:var(--paper);display:flex;flex-direction:column}#chapter-shell .cabinet-heading b{font-size:17px}#chapter-shell .cabinet-heading span{font-size:10px}#chapter-shell .cabinet-hint{font-size:11px;margin:7px 0 12px}#chapter-shell .tool-list{display:grid;grid-template-rows:repeat(6,minmax(0,1fr));gap:7px;flex:1;min-height:0}#chapter-shell .tool-card{padding:6px;min-height:0;display:flex;align-items:center;gap:5px}#chapter-shell .tool-card img{width:54px;height:60px;object-fit:contain}#chapter-shell .tool-card b{font-size:12px}#chapter-shell .tool-card small{font-size:10px;letter-spacing:0;margin-top:3px}#chapter-shell .cabinet-footer{font-size:10px;padding:12px 0 0;white-space:normal}#chapter-shell .lab-centre{display:flex;flex-direction:column;grid-area:auto;min-height:0;gap:12px}#chapter-shell .lab-centre>.stage{min-height:0;height:auto;flex:1;position:relative;overflow:hidden;border:1px solid var(--line);border-radius:12px;display:flex;flex-direction:column}#chapter-shell .lab-centre #viewport{position:relative;inset:auto;min-height:0;flex:1}#chapter-shell .stage-caption{font-size:11px;padding:6px 12px}#chapter-shell .floating-key{right:12px;top:50px;font-size:11px;gap:6px}#chapter-shell .stage-tools{left:12px;bottom:12px;display:flex;gap:5px}#chapter-shell .stage-tools button{font-size:12px;padding:7px 8px}#chapter-shell .lab-centre .stage-topline{position:absolute;top:12px;left:12px;font-size:11px}#chapter-shell .lab-centre .readouts{height:77px;min-height:77px;padding:10px 12px;gap:13px}#chapter-shell .lab-centre .readouts output{font-size:20px}#chapter-shell .lab-centre .readout-title{font-size:12px}#chapter-shell .lab-centre .readout-title small{font-size:10px}#chapter-shell .insight-card{min-height:92px;height:92px;flex:none;display:flex;align-items:center;gap:13px;padding:12px 15px}#chapter-shell .insight-card h2{font-size:16px;margin:4px 0}#chapter-shell .insight-card p{font-size:12px;line-height:1.5}#chapter-shell .insight-card .insight-mark{font-size:29px}#chapter-shell .insight-card button{font-size:12px;max-width:115px}#chapter-shell[data-task="3-4"] .control-panel{padding:16px 18px;gap:8px}#chapter-shell[data-task="3-4"] .panel-heading{display:block;padding:0 0 9px;flex:none}#chapter-shell[data-task="3-4"] .panel-heading .eyebrow{font-size:10px}#chapter-shell[data-task="3-4"] .panel-heading h2{font-size:21px;margin-top:4px}#chapter-shell .panel-section{display:flex;flex-direction:column;gap:10px;padding:0;flex:1;min-height:0;overflow:hidden;max-height:none}#chapter-shell .panel-footer{padding:8px 0 0;flex-shrink:0;display:flex;flex-direction:column;gap:6px;border-top:1px solid var(--line)}#chapter-shell .panel-footer #stop{font-size:15px;min-height:34px;padding:7px}#chapter-shell .panel-footer #notice{font-size:12px;line-height:1.45;min-height:34px}#chapter-shell .equipped-heading h3{font-size:20px}#chapter-shell .equipped-heading span{font-size:12px}#chapter-shell .point-card{padding:11px 13px}#chapter-shell .point-card strong{font-size:20px;margin:5px 0}#chapter-shell .point-card p{font-size:12px}#chapter-shell .offset-card{font-size:13px}#chapter-shell .offset-values span{font-size:13px;padding:7px}#chapter-shell .offset-values b{font-size:17px}#chapter-shell .connection-state{font-size:12px}#chapter-shell .microcopy{font-size:12px;line-height:1.5}#chapter-shell .lesson-next{font-size:14px;padding:10px;margin-top:auto}#chapter-shell .divider-label{font-size:12px;margin:0}#chapter-shell .panel-section .intro{font-size:14px;min-height:0;margin:0}#chapter-shell .segmented button{font-size:14px;min-height:40px;padding:7px}#chapter-shell .segmented button small{font-size:11px}#chapter-shell .angle-control{padding:8px 0}#chapter-shell .motion-metrics{padding:10px;font-size:13px}#chapter-shell .motion-metrics b{font-size:20px}#chapter-shell .motion-metrics small{font-size:11px}#chapter-shell .panel-section .explanation{padding:9px 11px;font-size:12px;line-height:1.5}#chapter-shell .field-label{font-size:13px}#chapter-shell .range-ends{font-size:11px}#chapter-shell .cal-points{gap:7px}#chapter-shell .cal-points button{min-height:38px;font-size:13px;padding:5px}#chapter-shell .cal-distance{font-size:14px;padding:7px 10px}#chapter-shell .cal-distance b{font-size:22px}#chapter-shell .cal-adjust{gap:8px}#chapter-shell .cal-adjust label{font-size:13px}#chapter-shell .cal-adjust input{height:14px}#chapter-shell .button-pair{gap:8px}#chapter-shell .button-pair button{font-size:13px;min-height:33px;padding:7px 6px}#chapter-shell #solve{min-height:35px;padding:7px}#chapter-shell .c-detail-button{font-size:13px;min-height:30px;padding:5px;color:var(--blue);border:1px solid var(--line);background:var(--soft)}#chapter-shell .challenge-title{font-size:22px;line-height:1.5}#chapter-shell .quiz-answers button{font-size:14px;min-height:40px}#chapter-shell .tip-note{font-size:13px;padding:10px}#chapter-shell .tip-note p{font-size:13px}#chapter-shell .progress-badge{display:flex;font-size:13px}#chapter-shell .progress-badge small{font-size:11px}
-#chapter-shell .c-mobile-selectors{min-height:76px;height:76px}#chapter-shell .c-mobile-selectors .platform-picker{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;height:100%}#chapter-shell .c-mobile-selectors button{padding:10px 15px;font-size:17px;text-align:left;display:block;min-height:0}#chapter-shell .c-mobile-selectors small{font-size:12px;display:block;margin-top:4px}#chapter-shell .mechanism-icon{width:58px;float:left;margin-right:12px}#chapter-shell .mechanism-icon svg{width:58px;height:36px}#chapter-shell[data-task="3-5"] .c-right>.panel{padding:16px;gap:10px}#chapter-shell[data-task="3-5"] .panel>section{display:flex;flex:1;min-height:0;gap:0;overflow:hidden}#chapter-shell[data-task="3-5"] .panel h2{font-size:19px}#chapter-shell[data-task="3-5"] .panel>.spacer{display:none}#chapter-shell[data-task="3-5"] .panel>.notice{font-size:12px;min-height:36px}#chapter-shell[data-task="3-5"] .c-deck-pane{padding:13px 0 0;gap:12px}#chapter-shell .learning-intro{padding:0;flex:none}#chapter-shell .learning-intro p{font-size:14px;line-height:1.7}#chapter-shell .learning-card{padding:14px;gap:12px;border-radius:9px;flex:none}#chapter-shell .card-heading{margin-bottom:12px;gap:9px}#chapter-shell .card-heading h3{font-size:17px;margin:0}#chapter-shell .card-tag,#chapter-shell .section-number{font-size:11px}#chapter-shell .slider{grid-template-columns:80px 1fr 65px;gap:8px;font-size:13px;margin:13px 0}#chapter-shell .slider output{font-size:13px}#chapter-shell .motion-presets button{font-size:13px;min-height:35px;padding:7px}#chapter-shell .motion-monitor{margin-top:13px;padding:12px}#chapter-shell .motion-values b{font-size:22px}#chapter-shell .motion-values small{font-size:11px}#chapter-shell .motion-monitor p{font-size:13px;line-height:1.65}#chapter-shell .prediction-card h4{font-size:20px;margin:12px 0}#chapter-shell .input-recipe{font-size:14px;line-height:1.8;margin:10px 0}#chapter-shell .prediction-choices{display:flex;flex-direction:column;gap:9px}#chapter-shell .prediction-choices button{font-size:15px;min-height:42px;padding:10px}#chapter-shell .prediction-actions{margin-top:18px}#chapter-shell .prediction-actions button{font-size:15px;min-height:39px}#chapter-shell .experiment-feedback{font-size:14px;margin:13px 0 0}#chapter-shell .manual-controls{display:block;border:0;padding:0}#chapter-shell .manual-controls>summary,#chapter-shell .route-details>summary{display:none}#chapter-shell .jogpad{display:grid;grid-template-columns:repeat(3,1fr);gap:9px;margin:10px 0}#chapter-shell .jogpad button{min-height:58px;font-size:17px;touch-action:none}#chapter-shell .joystick-hint{font-size:14px;line-height:1.8}#chapter-shell .lesson-link{font-size:14px;min-height:42px;padding:10px;margin-top:12px}#chapter-shell .phase-diagram{min-height:118px;height:118px}#chapter-shell .phase-label{font-size:14px}#chapter-shell .phase-label output{font-size:16px}#chapter-shell .phase-stops button{font-size:13px;min-height:33px}#chapter-shell .timeline-controls{display:flex;flex-wrap:wrap;gap:7px;margin-top:12px}#chapter-shell .timeline-controls button{font-size:13px;min-height:34px;padding:7px}#chapter-shell .terrain-facts{font-size:14px;gap:10px}#chapter-shell .terrain-facts b{font-size:18px}#chapter-shell .evidence-card p{font-size:14px;line-height:1.7}#chapter-shell .learning-note{font-size:13px;line-height:1.8;padding:10px}#chapter-shell .learning-note span{display:block}#chapter-shell .campaign-summary{font-size:13px;padding:5px 0}#chapter-shell .chapter-picker{display:grid;grid-template-columns:repeat(4,1fr);gap:6px}#chapter-shell .chapter-picker button{font-size:12px;padding:7px 3px;min-height:43px}#chapter-shell .chapter-picker small{font-size:10px}#chapter-shell .level-picker{display:grid;grid-template-columns:repeat(3,1fr);gap:7px}#chapter-shell .level-picker button{min-height:57px;padding:7px;font-size:13px}#chapter-shell .level-picker small{font-size:11px}#chapter-shell[data-task="3-5"] .mission h3{font-size:19px;margin:4px 0}#chapter-shell[data-task="3-5"] .mission p{font-size:13px;line-height:1.6}#chapter-shell .game-actions{gap:8px;flex-wrap:wrap}#chapter-shell .game-actions button{font-size:14px;min-height:35px;padding:7px}#chapter-shell .mission-checks{font-size:12px;gap:6px}#chapter-shell .mission-checks span{padding:6px}#chapter-shell .control-label{font-size:14px;display:flex;align-items:center;justify-content:space-between}#chapter-shell .control-label button{font-size:12px;min-height:29px;padding:5px}#chapter-shell .game-pad button{min-height:49px;font-size:15px}#chapter-shell .callout{font-size:13px;padding:10px;line-height:1.6}#chapter-shell .docking-monitor b{font-size:20px}#chapter-shell .docking-monitor small{font-size:12px}#chapter-shell .route-details{font-size:15px;line-height:1.8;border:0;padding:0}#chapter-shell .route-details ol{font-size:15px;line-height:1.8;margin:0;padding-left:23px;max-height:none;overflow:visible}#chapter-shell .route-details p{font-size:13px}#chapter-shell .game-record{font-size:13px;margin-top:auto}#chapter-shell .scene-tools{display:flex;gap:7px;padding:8px 14px;height:50px;min-height:50px;align-items:center}#chapter-shell .scene-tools button{font-size:13px;padding:6px 10px;min-height:32px}#chapter-shell .scene-caption{font-size:13px}#chapter-shell .scene-compass{font-size:11px}#chapter-shell .stage-status{font-size:12px;bottom:15px}#chapter-shell .stage-status b{font-size:13px}
-#chapter-shell .c-header .c-chapters a{display:block!important}#chapter-shell[data-task="3-2"] .control-panel{gap:7px}#chapter-shell[data-task="3-2"] .jog-rows{min-height:236px}#chapter-shell[data-task="3-4"] .panel-section{gap:8px}#chapter-shell[data-task="3-4"] .c-activities small{display:none}#chapter-shell .joint-rows{height:auto;max-height:none;flex:none;overflow:visible}#chapter-shell .joint-row{height:45px;min-height:45px;flex:none}#chapter-shell .c-control-deck>.c-deck-pane{overflow:hidden}#chapter-shell #enterPivot{display:none}#chapter-shell[data-task="3-4"] .panel-section .c-deck-tabs{padding:4px;border:1px solid var(--line);border-radius:7px}#chapter-shell[data-task="3-4"] .panel-section .c-deck-tabs button{font-size:14px;min-height:30px}#chapter-shell[data-task="3-4"] .panel-section .c-deck-pane{padding:12px 0 0;gap:10px}#chapter-shell[data-task="3-4"] .motion-metrics{padding:8px}#chapter-shell[data-task="3-4"] .angle-control{padding:4px 0}
-body:has(#chapter-shell)>dialog{max-width:900px;max-height:82vh;font-family:"Microsoft YaHei",sans-serif;font-size:16px;border:1px solid #c8dbea;border-radius:14px;background:#f8fbff;color:#193550;padding:30px}body:has(#chapter-shell)>dialog h2{font-size:26px}body:has(#chapter-shell)>dialog p{font-size:15px;line-height:1.8}body:has(#chapter-shell)>dialog::backdrop{background:#122b4870;backdrop-filter:blur(5px)}.c-detail-dialog .cal-details>summary{display:none}.c-detail-dialog .cal-details{display:block;font-size:16px;padding:20px 0 0}.c-detail-close{float:right;padding:8px 12px}.c-legacy{display:none!important}
-@media print{html:has(#chapter-shell),html:has(#chapter-shell) body{width:1600px;height:900px}#chapter-shell{left:0;top:0;transform:none!important}@page{size:1600px 900px;margin:0}}
+</style><style data-lab-shell>/* 第二章任务页：一屏放下（16:9 屏幕不出现纵向滚动），菜单两层，蓝白配色。 */
+:root {
+  --course-bg:#edf4fc; --course-surface:#fff; --course-ink:#193550; --course-muted:#57718b;
+  --course-line:#cbdbea; --course-accent:#2467c9; --blue-soft:#e6f0ff;
+  --accent-2:#1c55ad; --surface-2:#f5f8fd; --hair:#e1eaf4;
+  --ok:#1f8a5b; --ok-soft:#e5f6ee; --ok-line:#a8dcc2; --warn:#c77a12; --warn-soft:#fdf2e1; --bad:#c2413b; --bad-soft:#fbe7e5;
+  --focus:#f0a020;
+  --shadow-sm:0 1px 2px rgba(18,44,78,.06);
+  --shadow:0 1px 2px rgba(18,44,78,.05), 0 6px 22px rgba(18,44,78,.08);
+  --shadow-lg:0 10px 34px rgba(18,44,78,.18);
+  --page-bg:linear-gradient(180deg,#eef4fc 0%,#e7eff9 100%);
+}
+html[data-theme="dark"] {
+  --accent-2:#b5d3ff; --surface-2:#1d324b; --hair:#2b4562;
+  --ok:#5cc597; --ok-soft:#173a2d; --ok-line:#2f6b51; --warn:#f0b35a; --warn-soft:#3b2d16; --bad:#f08079; --bad-soft:#3d1f1f;
+  --shadow-sm:0 1px 2px rgba(0,0,0,.25); --shadow:0 1px 2px rgba(0,0,0,.25), 0 8px 24px rgba(0,0,0,.28); --shadow-lg:0 12px 34px rgba(0,0,0,.45);
+  --page-bg:linear-gradient(180deg,#112035 0%,#0d1a2b 100%);
+}
+* { box-sizing:border-box; }
+[hidden] { display:none !important; }
+html, body { margin:0; height:100%; }
+body {
+  display:grid; grid-template-rows:auto auto minmax(0,1fr); height:100vh; height:100dvh; overflow:hidden;
+  background:var(--page-bg); color:var(--course-ink);
+  font:14px/1.5 "Microsoft YaHei","PingFang SC","Hiragino Sans GB","Segoe UI",sans-serif;
+  -webkit-font-smoothing:antialiased;
+}
+button, input, select { font:inherit; color:inherit; }
+button { cursor:pointer; transition:background .15s, border-color .15s, color .15s, box-shadow .15s, transform .15s; }
+:focus-visible { outline:3px solid color-mix(in srgb, var(--course-accent) 60%, transparent); outline-offset:2px; }
 
-#chapter-shell .c-observation{min-height:25px;font-size:12px;padding:2px 8px;color:var(--blue);background:transparent;border:1px solid var(--line)}.c-observation-dialog .concept,.c-observation-dialog .concept-note{display:block;max-width:720px;padding:18px;font-size:18px;line-height:1.9;color:#193550;background:#edf4fc;border-radius:8px}
+/* —— 页头：本章任务 —— */
+.c2-top {
+  display:flex; align-items:center; gap:14px; height:50px; padding:0 18px;
+  background:var(--course-surface); border-bottom:1px solid var(--hair); box-shadow:var(--shadow-sm);
+}
+.c2-back {
+  display:inline-flex; align-items:center; gap:6px; height:32px; padding:0 12px 0 10px; border-radius:16px;
+  color:var(--course-ink); text-decoration:none; font-weight:700; white-space:nowrap; font-size:14px; background:var(--surface-2);
+}
+.c2-back:hover { color:var(--course-accent); background:var(--blue-soft); }
+.c2-tasks { display:flex; gap:2px; margin:0 auto; padding:3px; border-radius:12px; background:var(--surface-2); overflow-x:auto; }
+.c2-tasks a { padding:5px 16px; border-radius:9px; color:var(--course-muted); text-decoration:none; white-space:nowrap; font-size:14px; }
+.c2-tasks a:hover { color:var(--course-accent); }
+.c2-tasks a[aria-current="page"] { background:var(--course-surface); color:var(--course-accent); font-weight:700; box-shadow:var(--shadow-sm); }
+.c2-top .course-theme-toggle { margin-left:0 !important; height:32px !important; min-height:32px !important; border-radius:16px !important; }
 
-#chapter-shell .c-activities button.active>.step-no{color:#c8dcff}
+/* —— 工位条 —— */
+.c2-bar { display:flex; align-items:center; gap:20px; padding:12px 18px 10px; }
+.c2-title { display:flex; align-items:center; gap:10px; min-width:0; }
+.c2-task-id {
+  display:inline-flex; align-items:center; height:26px; padding:0 10px; border-radius:13px;
+  background:var(--course-accent); color:#fff; font-weight:700; font-size:13px; white-space:nowrap;
+}
+html[data-theme="dark"] .c2-task-id { color:#0f1d2e; }
+.c2-title h1 { margin:0; font-size:22px; line-height:1.2; font-weight:800; letter-spacing:.5px; white-space:nowrap; }
+.c2-stations { display:flex; gap:8px; margin-left:auto; }
+.c2-station {
+  display:flex; align-items:center; gap:9px; height:42px; padding:0 16px 0 7px;
+  border:1px solid var(--hair); border-radius:12px; background:var(--course-surface); box-shadow:var(--shadow-sm);
+  color:var(--course-ink); font-size:15px; white-space:nowrap;
+}
+.c2-station:hover { border-color:var(--course-accent); transform:translateY(-1px); }
+.c2-station[aria-selected="true"] {
+  background:linear-gradient(135deg,#3a82e4,#1f5bbd); border-color:transparent; color:#fff; font-weight:700;
+  box-shadow:0 6px 16px rgba(36,103,201,.32);
+}
+html[data-theme="dark"] .c2-station[aria-selected="true"] { background:linear-gradient(135deg,#8abaff,#5f97ea); color:#0f1d2e; }
+.c2-num { display:grid; place-items:center; width:28px; height:28px; border-radius:9px; background:var(--blue-soft); color:var(--course-accent); font-size:14px; font-weight:800; }
+.c2-station[aria-selected="true"] .c2-num { background:rgba(255,255,255,.22); color:inherit; }
+.c2-check { display:none; width:18px; height:18px; border-radius:50%; background:var(--ok); color:#fff; font-size:11px; font-weight:800; place-items:center; }
+.c2-station.done .c2-check { display:grid; }
+.c2-station[aria-selected="true"].done .c2-check { background:#fff; color:var(--ok); }
 
-#chapter-shell .c-footer{width:100%;margin:0;justify-content:flex-start}#chapter-shell .jog-row{padding:2px 8px}#chapter-shell .c-activities #modules button.active{background:#265eab;border-color:#265eab;color:white}#chapter-shell .c-activities .learning-nav button>span{font:14px Consolas,monospace;color:var(--blue)}#chapter-shell .c-activities .learning-nav button.active>span{color:#c8dcff}
+/* —— 主体：三维区 + 面板 —— */
+.c2-main { display:grid; grid-template-columns:minmax(0,1fr) clamp(340px,25vw,410px); gap:14px; padding:0 18px 16px; min-height:0; }
+.c2-stage {
+  display:flex; flex-direction:column; min-height:0; overflow:hidden; border-radius:16px;
+  border:1px solid var(--hair); background:var(--course-surface); box-shadow:var(--shadow);
+}
+.c2-view { position:relative; flex:1 1 auto; min-height:0; background:var(--course-bg); }
+.c2-frame { position:absolute; inset:0; width:100%; height:100%; border:0; display:block; background:transparent; }
+.c2-loading {
+  position:absolute; inset:0; display:flex; flex-direction:column; align-items:center; justify-content:center; gap:12px;
+  color:var(--course-muted); font-size:15px; background:var(--course-bg); pointer-events:none; z-index:1;
+}
+.c2-spinner { width:30px; height:30px; border-radius:50%; border:3px solid var(--blue-soft); border-top-color:var(--course-accent); animation:c2-spin .8s linear infinite; }
+@keyframes c2-spin { to { transform:rotate(360deg); } }
+.c2-tools { position:absolute; left:12px; top:12px; display:flex; gap:6px; flex-wrap:wrap; max-width:64%; z-index:2; }
+.c2-tool {
+  height:32px; padding:0 12px; border-radius:10px; border:1px solid color-mix(in srgb, var(--hair) 70%, transparent);
+  background:color-mix(in srgb, var(--course-surface) 88%, transparent); backdrop-filter:blur(8px);
+  color:var(--course-ink); font-size:13px; white-space:nowrap; box-shadow:var(--shadow-sm);
+}
+.c2-tool:hover { border-color:var(--course-accent); color:var(--course-accent); }
+.c2-tool[aria-pressed="true"] { background:var(--blue-soft); border-color:color-mix(in srgb, var(--course-accent) 55%, transparent); color:var(--course-accent); font-weight:700; }
+.c2-toolseg {
+  padding:3px; border-color:color-mix(in srgb, var(--hair) 70%, transparent) !important;
+  background:color-mix(in srgb, var(--course-surface) 88%, transparent) !important; backdrop-filter:blur(8px); box-shadow:var(--shadow-sm);
+}
+.c2-toolseg button { height:26px; font-size:13px; padding:0 10px; }
+.c2-hint {
+  position:absolute; right:12px; bottom:10px; color:var(--course-muted); font-size:12px; pointer-events:none; z-index:2;
+  max-width:60%; white-space:nowrap; overflow:hidden; text-overflow:ellipsis;
+  background:color-mix(in srgb, var(--course-surface) 72%, transparent); padding:2px 10px; border-radius:10px;
+}
+.c2-part {
+  position:absolute; right:12px; top:12px; z-index:3; width:min(300px,42%); padding:11px 34px 11px 13px; border-radius:12px;
+  background:var(--course-surface); border:1px solid var(--hair); border-left:4px solid var(--focus);
+  box-shadow:var(--shadow-lg); display:flex; flex-direction:column; gap:3px;
+}
+.c2-part strong { font-size:15px; }
+.c2-part span { color:var(--course-muted); font-size:13px; line-height:1.5; }
+.c2-x { position:absolute; right:6px; top:4px; border:0; background:none; font-size:18px; color:var(--course-muted); }
+
+/* 三维区底部：运行控制 + 读数（不压在模型上） */
+.c2-strip {
+  flex:0 0 auto; display:flex; align-items:stretch; gap:10px; padding:8px 10px;
+  border-top:1px solid var(--hair); background:var(--course-surface);
+}
+.c2-strip:has(.c2-transport:empty):has(.c2-readouts:empty) { display:none; }
+.c2-transport { display:flex; align-items:center; gap:6px; flex:0 0 auto; padding-right:4px; }
+.c2-transport:empty { display:none; }
+.c2-transport .c2-tool { box-shadow:none; background:var(--surface-2); border-color:transparent; backdrop-filter:none; height:34px; }
+.c2-transport .c2-tool:hover { background:var(--blue-soft); }
+.c2-play {
+  height:38px; min-width:96px; padding:0 16px; border-radius:11px; border:0;
+  background:linear-gradient(135deg,#3a82e4,#1f5bbd); color:#fff; font-weight:700; font-size:14.5px;
+  box-shadow:0 4px 12px rgba(36,103,201,.3);
+}
+.c2-play:hover { transform:translateY(-1px); box-shadow:0 6px 16px rgba(36,103,201,.36); }
+.c2-play[aria-pressed="true"] { background:linear-gradient(135deg,#4c5f78,#33465e); box-shadow:0 4px 12px rgba(30,45,65,.25); }
+html[data-theme="dark"] .c2-play { background:linear-gradient(135deg,#8abaff,#5f97ea); color:#0f1d2e; }
+.c2-readouts { display:flex; gap:6px; flex:1 1 auto; min-width:0; }
+.c2-read {
+  flex:1 1 0; min-width:84px; display:flex; flex-direction:column; justify-content:center; padding:4px 12px;
+  border-radius:11px; background:var(--surface-2);
+}
+.c2-read-label { color:var(--course-muted); font-size:12px; white-space:nowrap; }
+.c2-val { display:flex; align-items:baseline; gap:4px; white-space:nowrap; overflow:hidden; }
+.c2-val b { font-size:21px; line-height:1.2; font-weight:800; font-variant-numeric:tabular-nums; color:var(--course-ink); }
+.c2-val small { color:var(--course-muted); font-size:12px; }
+
+/* —— 操作面板 —— */
+.c2-panel {
+  display:flex; flex-direction:column; gap:12px; min-height:0; overflow:auto; padding:16px 16px 14px;
+  border-radius:16px; border:1px solid var(--hair); background:var(--course-surface); box-shadow:var(--shadow); scrollbar-width:thin;
+}
+.c2-head-row { display:flex; align-items:center; justify-content:space-between; gap:8px; }
+.c2-head-name { display:flex; align-items:center; gap:9px; min-width:0; }
+.c2-head-num {
+  flex:0 0 30px; height:30px; border-radius:10px; display:grid; place-items:center; font-weight:800; font-size:15px; color:#fff;
+  background:linear-gradient(135deg,#3a82e4,#1f5bbd); box-shadow:0 3px 8px rgba(36,103,201,.3);
+}
+html[data-theme="dark"] .c2-head-num { color:#0f1d2e; background:linear-gradient(135deg,#8abaff,#5f97ea); }
+.c2-panel-head h2 { margin:0; font-size:19px; font-weight:800; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; }
+.c2-panel-head p { margin:6px 0 0; color:var(--course-muted); font-size:13.5px; line-height:1.55; }
+.c2-redo { height:30px; padding:0 11px; border-radius:15px; border:1px solid var(--hair); background:var(--surface-2); color:var(--course-muted); font-size:12.5px; white-space:nowrap; }
+.c2-redo:hover { color:var(--course-accent); border-color:var(--course-accent); }
+.c2-panel-body { display:flex; flex-direction:column; gap:14px; }
+.c2-group { display:flex; flex-direction:column; gap:8px; }
+.c2-group h3 { margin:0; font-size:13px; color:var(--accent-2); font-weight:700; display:flex; justify-content:space-between; align-items:center; gap:8px; }
+.c2-h3-text { display:flex; align-items:center; gap:7px; }
+.c2-h3-text::before { content:""; width:4px; height:14px; border-radius:2px; background:var(--course-accent); }
+.c2-row { display:flex; gap:6px; align-items:center; flex-wrap:wrap; }
+.c2-grid2 { display:grid; grid-template-columns:1fr 1fr; gap:8px 14px; }
+.c2-btn {
+  height:36px; padding:0 14px; border-radius:10px; border:1px solid var(--hair);
+  background:var(--course-surface); color:var(--course-ink); white-space:nowrap; box-shadow:var(--shadow-sm);
+}
+.c2-btn:hover:not(:disabled) { border-color:var(--course-accent); color:var(--course-accent); }
+.c2-btn:disabled { opacity:.45; cursor:not-allowed; }
+.c2-btn.c2-primary { background:linear-gradient(135deg,#3a82e4,#1f5bbd); border-color:transparent; color:#fff; font-weight:700; box-shadow:0 4px 12px rgba(36,103,201,.28); }
+.c2-btn.c2-primary:hover:not(:disabled) { color:#fff; transform:translateY(-1px); }
+html[data-theme="dark"] .c2-btn.c2-primary { background:linear-gradient(135deg,#8abaff,#5f97ea); color:#0f1d2e; }
+.c2-btn.c2-small { height:32px; padding:0 12px; }
+.c2-btn[aria-pressed="true"] { background:var(--blue-soft); border-color:var(--course-accent); color:var(--course-accent); font-weight:700; }
+.c2-seg { display:flex; padding:3px; gap:3px; border-radius:11px; background:var(--surface-2); border:1px solid var(--hair); }
+.c2-seg button { flex:1; height:32px; padding:0 8px; border:0; border-radius:8px; background:none; color:var(--course-muted); white-space:nowrap; }
+.c2-seg button:hover { color:var(--course-accent); }
+.c2-seg button[aria-checked="true"] { background:var(--course-surface); color:var(--course-accent); font-weight:700; box-shadow:0 1px 4px rgba(18,44,78,.14); }
+.c2-speed { padding:2px; border-radius:10px; }
+.c2-speed button { height:30px; padding:0 10px; font-size:13px; }
+
+/* 滑块：已走过的一段用主色填充 */
+.c2-slider { display:flex; flex-direction:column; gap:3px; min-width:0; }
+.c2-slider-top { display:flex; justify-content:space-between; align-items:center; gap:8px; font-size:13.5px; }
+.c2-slider output {
+  font-weight:700; color:var(--course-accent); font-variant-numeric:tabular-nums; white-space:nowrap;
+  background:var(--blue-soft); padding:0 8px; border-radius:8px; font-size:13px; line-height:22px;
+}
+.c2-slider input[type="range"] {
+  -webkit-appearance:none; appearance:none; width:100%; height:22px; margin:0; background:transparent; cursor:pointer; --p:50%;
+}
+.c2-slider input[type="range"]::-webkit-slider-runnable-track {
+  height:6px; border-radius:3px; background:linear-gradient(to right, var(--course-accent) var(--p), var(--hair) var(--p));
+}
+.c2-slider input[type="range"]::-moz-range-track { height:6px; border-radius:3px; background:var(--hair); }
+.c2-slider input[type="range"]::-moz-range-progress { height:6px; border-radius:3px; background:var(--course-accent); }
+.c2-slider input[type="range"]::-webkit-slider-thumb {
+  -webkit-appearance:none; width:18px; height:18px; margin-top:-6px; border-radius:50%;
+  background:#fff; border:3px solid var(--course-accent); box-shadow:0 2px 6px rgba(18,44,78,.25);
+}
+.c2-slider input[type="range"]::-moz-range-thumb { width:14px; height:14px; border-radius:50%; background:#fff; border:3px solid var(--course-accent); }
+.c2-slider input[type="range"]:hover::-webkit-slider-thumb { transform:scale(1.12); }
+
+.c2-switch {
+  display:inline-flex; align-items:center; gap:7px; height:32px; padding:0 10px 0 6px; border-radius:10px;
+  border:1px solid var(--hair); background:var(--course-surface); font-size:13.5px; white-space:nowrap;
+}
+.c2-knob { position:relative; width:30px; height:18px; border-radius:10px; background:var(--course-line); transition:background .15s; }
+.c2-knob::after { content:""; position:absolute; left:2px; top:2px; width:14px; height:14px; border-radius:50%; background:#fff; transition:transform .15s; box-shadow:0 1px 2px rgba(0,0,0,.25); }
+.c2-switch[aria-checked="true"] .c2-knob { background:var(--course-accent); }
+.c2-switch[aria-checked="true"] .c2-knob::after { transform:translateX(12px); }
+.c2-chips { display:flex; flex-wrap:wrap; gap:6px; }
+.c2-chip { height:30px; padding:0 12px; border-radius:15px; border:1px solid var(--hair); background:var(--course-surface); font-size:13px; white-space:nowrap; box-shadow:var(--shadow-sm); }
+.c2-chip:hover { border-color:var(--course-accent); color:var(--course-accent); }
+.c2-chip[aria-pressed="true"] { background:var(--focus); border-color:var(--focus); color:#2b1a00; font-weight:700; }
+.c2-chip.done { background:var(--ok-soft); border-color:var(--ok-line); color:var(--ok); font-weight:700; }
+
+/* 试一试：挑战卡 */
+.c2-count { font-weight:800; color:var(--course-accent); font-size:13px; font-variant-numeric:tabular-nums; }
+.c2-progress { height:5px; border-radius:3px; background:var(--hair); overflow:hidden; }
+.c2-progress span { display:block; height:100%; width:0; border-radius:3px; background:linear-gradient(90deg,#3fb27f,#1f8a5b); transition:width .4s ease; }
+.c2-challenges { display:grid; grid-template-columns:1fr 1fr; gap:8px; }
+.c2-challenge {
+  display:flex; gap:9px; align-items:flex-start; padding:9px 10px; border-radius:12px; min-width:0;
+  border:1px solid var(--hair); background:var(--course-surface); box-shadow:var(--shadow-sm);
+  transition:border-color .2s, background .2s, transform .2s;
+}
+.c2-mark {
+  flex:0 0 30px; height:30px; border-radius:9px; display:grid; place-items:center; font-size:16px; line-height:1;
+  background:linear-gradient(135deg,#eaf2ff,#d9e8ff); color:var(--course-accent); font-weight:800;
+}
+html[data-theme="dark"] .c2-mark { background:var(--blue-soft); }
+.c2-ch-text { display:flex; flex-direction:column; gap:1px; min-width:0; }
+.c2-ch-text b { font-size:13.5px; line-height:1.35; font-weight:700; }
+.c2-ch-text span { color:var(--course-muted); font-size:12px; line-height:1.4; display:-webkit-box; -webkit-line-clamp:2; -webkit-box-orient:vertical; overflow:hidden; }
+.c2-ch-go {
+  align-self:flex-start; margin-top:5px; height:26px; padding:0 10px; border-radius:13px; border:0;
+  background:var(--course-accent); color:#fff; font-size:12.5px; font-weight:700;
+}
+html[data-theme="dark"] .c2-ch-go { color:#0f1d2e; }
+.c2-challenge.done { background:var(--ok-soft); border-color:var(--ok-line); }
+.c2-challenge.done .c2-mark { background:var(--ok); color:#fff; animation:c2-pop .45s ease; }
+.c2-challenge.done .c2-ch-text span { color:var(--ok); font-weight:700; }
+.c2-challenge.done .c2-ch-go { display:none; }
+@keyframes c2-pop { 0% { transform:scale(.6); } 60% { transform:scale(1.18); } 100% { transform:scale(1); } }
+
+.c2-choice, .c2-predict { display:flex; flex-direction:column; gap:6px; padding:10px 12px; border-radius:12px; background:var(--surface-2); border:1px solid var(--hair); }
+.c2-prompt { margin:0; font-weight:700; font-size:14px; }
+.c2-options { display:flex; gap:6px; flex-wrap:wrap; }
+.c2-opt { flex:1 1 auto; min-height:34px; padding:4px 12px; border-radius:9px; border:1px solid var(--hair); background:var(--course-surface); }
+.c2-opt:hover:not(:disabled) { border-color:var(--course-accent); }
+.c2-opt.right { background:var(--ok-soft); border-color:var(--ok); color:var(--ok); font-weight:700; }
+.c2-opt.wrong { background:var(--bad-soft); border-color:var(--bad); color:var(--bad); text-decoration:line-through; }
+.c2-opt:disabled:not(.right):not(.wrong) { opacity:.5; }
+.c2-predict.c2-inline { flex-direction:row; align-items:center; justify-content:space-between; flex-wrap:wrap; padding:8px 12px; }
+.c2-predict.c2-inline .c2-row { flex-wrap:nowrap; }
+.c2-predict.c2-inline input { width:72px; }
+.c2-predict input { width:100px; height:34px; padding:0 10px; border-radius:9px; border:1px solid var(--hair); background:var(--course-surface); font-size:16px; font-weight:700; }
+.c2-predict input.right { border-color:var(--ok); background:var(--ok-soft); }
+.c2-predict input.wrong { border-color:var(--bad); background:var(--bad-soft); }
+.c2-unit { color:var(--course-muted); }
+.c2-note { margin:0; color:var(--course-muted); font-size:12.5px; line-height:1.45; }
+.c2-big { font-size:15px; font-weight:700; }
+.c2-banner {
+  display:flex; align-items:center; justify-content:space-between; gap:8px; padding:9px 12px; border-radius:12px;
+  background:linear-gradient(135deg,#fff4dc,#ffe9bf); border:1px solid #f3cf87; color:#6b4300; font-size:13px; font-weight:700;
+}
+html[data-theme="dark"] .c2-banner { background:#3b2d16; border-color:#6b5124; color:#f6d38f; }
+.c2-quiet { color:var(--course-muted); }
+
+/* 提示条：在三维区下方弹出，几秒后收起 */
+.c2-feedback {
+  position:absolute; left:50%; top:56px; transform:translateX(-50%); z-index:4; max-width:min(640px,80%);
+  display:flex; align-items:center; gap:10px; font-size:14px; line-height:1.55; border-radius:14px;
+}
+.c2-feedback:empty { display:none; }
+.c2-feedback:not(:empty) {
+  padding:10px 14px 10px 10px; background:var(--course-surface); color:var(--course-ink);
+  border:1px solid var(--hair); box-shadow:var(--shadow-lg); animation:c2-rise .25s ease;
+}
+@keyframes c2-rise { from { opacity:0; transform:translate(-50%,-8px); } to { opacity:1; transform:translate(-50%,0); } }
+.c2-toast-icon { flex:0 0 26px; height:26px; border-radius:50%; display:grid; place-items:center; font-weight:800; font-size:14px; background:var(--blue-soft); color:var(--course-accent); }
+.c2-feedback.ok .c2-toast-icon { background:var(--ok); color:#fff; }
+.c2-feedback.warn .c2-toast-icon { background:var(--warn); color:#fff; }
+.c2-feedback .c2-next { margin:0 0 0 4px; flex:0 0 auto; height:32px; }
+
+/* 外壳布局写死：放进第三章等已有页面时，不受页面里 main / aside / header / section 等通用规则影响 */
+html.lab-shell body > .c2-top { grid-row:1; position:static; width:auto; max-width:none; margin:0; }
+html.lab-shell body > .c2-bar { grid-row:2; position:static; width:auto; max-width:none; margin:0; }
+html.lab-shell body > .c2-main {
+  grid-row:3; grid-template-rows:minmax(0,1fr); grid-template-areas:none; grid-auto-flow:row;
+  position:static; width:auto; max-width:none; height:auto; max-height:none; margin:0;
+}
+html.lab-shell .c2-main > :is(.c2-stage, .c2-panel) {
+  grid-row:1; grid-area:auto; position:relative; width:auto; height:auto; max-height:none; min-width:0; margin:0; float:none;
+}
+html.lab-shell .c2-main > .c2-stage { grid-column:1; }
+html.lab-shell .c2-main > .c2-panel { grid-column:2; }
+
+/* 较矮的 16:9 窗口（如 1366×640）：压缩间距，保证整页不滚动 */
+@media (max-height:720px) and (min-width:901px) {
+  .c2-top { height:44px; }
+  .c2-bar { padding:8px 18px 7px; }
+  .c2-title h1 { font-size:20px; }
+  .c2-station { height:38px; font-size:14px; }
+  .c2-num { width:26px; height:26px; }
+  .c2-main { padding-bottom:12px; gap:12px; }
+  .c2-panel { gap:9px; padding:12px 13px 11px; }
+  .c2-panel-head p { margin-top:3px; }
+  .c2-panel-body { gap:10px; }
+  .c2-group { gap:6px; }
+  .c2-challenge { padding:7px 8px; }
+  .c2-mark { flex-basis:26px; height:26px; font-size:14px; }
+  .c2-panel-head p { display:-webkit-box; -webkit-line-clamp:1; -webkit-box-orient:vertical; overflow:hidden; }
+  .c2-ch-text span { -webkit-line-clamp:1; }
+  .c2-ch-go { margin-top:3px; height:22px; font-size:12px; }
+  .c2-head-num { flex-basis:26px; height:26px; font-size:14px; }
+  .c2-panel-head h2 { font-size:18px; }
+  .c2-panel { gap:8px; padding:10px 12px 10px; }
+  .c2-panel-body { gap:8px; }
+  .c2-group { gap:5px; }
+  .c2-seg button { height:29px; }
+  .c2-challenges { gap:6px; }
+  .c2-slider input[type="range"] { height:20px; }
+  .c2-val b { font-size:19px; }
+  .c2-btn, .c2-play { height:34px; }
+  .c2-strip { padding:6px 8px; }
+  .c2-read { padding:3px 10px; }
+}
+
+/* 窄屏：上下排列，允许整页滚动 */
+@media (max-width:900px) {
+  body { display:block; height:auto; overflow:auto; }
+  .c2-top { flex-wrap:wrap; height:auto; padding:8px 12px; gap:6px; }
+  .c2-tasks { margin:0; order:3; width:100%; }
+  .c2-bar { flex-direction:column; align-items:stretch; gap:8px; padding:10px 12px; }
+  .c2-title h1 { white-space:normal; }
+  .c2-stations { margin:0; overflow-x:auto; }
+  .c2-station { flex:1 0 auto; }
+  .c2-main { display:flex; flex-direction:column; padding:0 12px 16px; }
+  .c2-stage { height:64vh; min-height:380px; }
+  .c2-panel { overflow:visible; }
+  .c2-strip { flex-wrap:wrap; }
+  .c2-readouts { flex-wrap:wrap; }
+  .c2-read { flex:1 1 40%; }
+  .c2-hint { display:none; }
+}
+@media (prefers-reduced-motion:reduce) { * { transition:none !important; animation:none !important; } }
+
+/* 第三章：原页面元素放进统一外壳后的补充样式。外壳本身的样式在 shared/lab-shell/lab-shell.css。 */
+
+/* 原页面的三维区铺满外壳三维区 */
+html.lab-native .c2-native-stage {
+  position:absolute !important; inset:0 !important; width:100% !important; height:100% !important;
+  max-width:none !important; max-height:none !important; min-height:0 !important;
+  margin:0 !important; border:0 !important; border-radius:0 !important; box-shadow:none !important;
+}
+html.lab-native .c2-view { background:transparent; }
+
+/* 三维区上方一排：模型选择 */
+.c2-stage-top {
+  flex:0 0 auto; display:flex; align-items:stretch; gap:8px; padding:8px 10px;
+  border-bottom:1px solid var(--hair); background:var(--course-surface); overflow-x:auto; scrollbar-width:thin;
+}
+.c2-stage-top:empty, .c2-stage-top:not(:has(> :not([hidden]))) { display:none; }
+.c2-stage-top > * { margin:0 !important; }
+
+/* 面板里的原有控件：统一字体与圆角，去掉原来的卡片外框 */
+html.lab-native .c2-panel :is(button, input, select) { font-family:inherit; }
+html.lab-native .c2-panel [data-c2-adopted] { margin-left:0; margin-right:0; max-width:100%; }
+html.lab-native .c2-group > [data-c2-adopted]:is(section, div, aside) { box-shadow:none; }
+html.lab-native .c2-panel .c3-note { margin:0; color:var(--course-muted); font-size:12.5px; line-height:1.5; }
+
+/* 停止按钮：始终醒目 */
+html.lab-native .c2-panel .c3-stop { width:100%; }
+
+/* 3-1：关节点动行在较矮窗口里收紧 */
+@media (max-height:720px) {
+  html.lab-native .c2-panel .joint-row { min-height:0 !important; padding-top:1px !important; padding-bottom:1px !important; }
+  html.lab-native .c2-panel .constraint-cards button { padding-top:4px !important; padding-bottom:4px !important; }
+}
+
+/* ===== 统一控件样式：搬进面板和底栏的原控件，与第二章同一套外观 ===== */
+html.lab-native :is(.c2-panel, .c2-strip) :is(button.primary, button.outline, button.text-button, .compare-buttons button, .path-buttons button, .target-buttons button, .teach-toolbar button, .challenge-actions button) {
+  height:34px; padding:0 14px; border-radius:10px; font-size:13.5px; font-weight:600; white-space:nowrap;
+  display:inline-flex; align-items:center; justify-content:center; gap:4px; margin:0; cursor:pointer;
+  transition:background .15s, border-color .15s, color .15s, box-shadow .15s, transform .15s;
+}
+html.lab-native :is(.c2-panel, .c2-strip) button.primary {
+  border:0; color:#fff; background:linear-gradient(135deg,#3a82e4,#1f5bbd); box-shadow:0 4px 12px rgba(36,103,201,.28);
+}
+html.lab-native :is(.c2-panel, .c2-strip) button.primary:hover:not(:disabled) { transform:translateY(-1px); }
+html[data-theme="dark"].lab-native :is(.c2-panel, .c2-strip) button.primary { background:linear-gradient(135deg,#8abaff,#5f97ea); color:#0f1d2e; }
+html.lab-native :is(.c2-panel, .c2-strip) button.outline {
+  border:1px solid var(--hair); background:var(--course-surface); color:var(--course-ink); box-shadow:var(--shadow-sm);
+}
+html.lab-native :is(.c2-panel, .c2-strip) button.outline:hover:not(:disabled) { border-color:var(--course-accent); color:var(--course-accent); }
+html.lab-native :is(.c2-panel, .c2-strip) button.text-button {
+  height:30px; padding:0 10px; border:0; background:var(--surface-2); color:var(--course-accent); box-shadow:none; font-weight:600;
+}
+html.lab-native :is(.c2-panel, .c2-strip) button.text-button:hover:not(:disabled) { background:var(--blue-soft); }
+html.lab-native :is(.c2-panel, .c2-strip) button:disabled { opacity:.45; cursor:not-allowed; transform:none; }
+html.lab-native :is(.c2-panel, .c2-strip) :is(.compare-buttons, .path-buttons, .target-buttons, .teach-toolbar, .challenge-actions) {
+  display:flex; flex-wrap:wrap; gap:6px; margin:0;
+}
+
+/* 停止：所有页面同一种红色按钮 */
+html.lab-native :is(.c2-panel, .c2-strip) :is(button.stop, button.stop-button, .c3-stop) {
+  height:36px; padding:0 14px; border-radius:10px; border:1px solid #f1b8b4; background:var(--bad-soft); color:var(--bad);
+  font-size:14px; font-weight:700; display:flex; align-items:center; justify-content:center; gap:8px; box-shadow:none; cursor:pointer;
+}
+html.lab-native :is(.c2-panel, .c2-strip) :is(button.stop, button.stop-button):hover { background:var(--bad); color:#fff; }
+html.lab-native :is(.c2-panel, .c2-strip) :is(button.stop, button.stop-button) kbd {
+  font:600 10.5px/1 "Segoe UI",sans-serif; padding:3px 5px; border-radius:5px; border:1px solid currentColor; opacity:.7; background:none;
+}
+html[data-theme="dark"].lab-native :is(.c2-panel, .c2-strip) :is(button.stop, button.stop-button) { border-color:#6b3434; }
+
+/* 滑轨：已走过的一段填主色（--p 由 chapter3-shell.js 跟随数值更新） */
+html.lab-native :is(.c2-panel, .c2-strip) input[type="range"] {
+  -webkit-appearance:none; appearance:none; height:22px; margin:0; background:transparent; cursor:pointer; --p:50%; min-width:0;
+}
+html.lab-native :is(.c2-panel, .c2-strip) input[type="range"]::-webkit-slider-runnable-track {
+  height:6px; border-radius:3px; background:linear-gradient(to right, var(--course-accent) var(--p), var(--hair) var(--p));
+}
+html.lab-native :is(.c2-panel, .c2-strip) input[type="range"]::-moz-range-track { height:6px; border-radius:3px; background:var(--hair); }
+html.lab-native :is(.c2-panel, .c2-strip) input[type="range"]::-moz-range-progress { height:6px; border-radius:3px; background:var(--course-accent); }
+html.lab-native :is(.c2-panel, .c2-strip) input[type="range"]::-webkit-slider-thumb {
+  -webkit-appearance:none; width:16px; height:16px; margin-top:-5px; border-radius:50%;
+  background:#fff; border:3px solid var(--course-accent); box-shadow:0 2px 5px rgba(18,44,78,.25);
+}
+html.lab-native :is(.c2-panel, .c2-strip) input[type="range"]::-moz-range-thumb { width:12px; height:12px; border-radius:50%; background:#fff; border:3px solid var(--course-accent); }
+
+/* 输入框、下拉框、读数 */
+html.lab-native :is(.c2-panel, .c2-strip) :is(select, input[type="number"], input[type="text"]) {
+  height:32px; padding:0 8px; border-radius:9px; border:1px solid var(--hair); background:var(--course-surface); color:var(--course-ink); font-size:13.5px; min-width:0;
+}
+html.lab-native :is(.c2-panel, .c2-strip) :is(select, input[type="number"], input[type="text"]):focus { outline:none; border-color:var(--course-accent); box-shadow:0 0 0 3px var(--blue-soft); }
+html.lab-native :is(.c2-panel, .c2-strip) input[type="checkbox"] { width:16px; height:16px; accent-color:var(--course-accent); }
+html.lab-native :is(.c2-panel, .c2-strip) output { font-weight:700; color:var(--course-accent); font-variant-numeric:tabular-nums; }
+
+/* 小号原地切换（如“按住连续 / 单步点动”） */
+html.lab-native :is(.c2-panel, .c2-strip) .segmented { display:flex; gap:3px; padding:3px; border-radius:10px; background:var(--surface-2); border:1px solid var(--hair); }
+html.lab-native :is(.c2-panel, .c2-strip) .segmented button { flex:1; height:26px; padding:0 10px; border:0; border-radius:7px; background:none; color:var(--course-muted); font-size:13px; white-space:nowrap; cursor:pointer; }
+html.lab-native :is(.c2-panel, .c2-strip) .segmented button.active { background:var(--course-surface); color:var(--course-accent); font-weight:700; box-shadow:0 1px 3px rgba(18,44,78,.14); }
+
+/* 点动行（3-1 关节行；3-2 在底栏另有排法） */
+html.lab-native .c2-panel .joint-rows { display:flex; flex-direction:column; gap:5px; }
+html.lab-native .c2-panel .joint-row {
+  border-radius:10px !important; background:var(--surface-2) !important; border:1px solid transparent !important; box-shadow:none !important;
+}
+html.lab-native .c2-panel .joint-row:is(.active, .selected) { border-color:var(--course-accent) !important; background:var(--blue-soft) !important; }
+html.lab-native :is(.c2-panel, .c2-strip) :is(.jog, .jog-button) {
+  border-radius:8px; border:1px solid var(--hair); background:var(--course-surface); color:var(--course-ink); box-shadow:var(--shadow-sm); cursor:pointer;
+}
+html.lab-native :is(.c2-panel, .c2-strip) :is(.jog, .jog-button):hover { border-color:var(--course-accent); color:var(--course-accent); }
+html.lab-native :is(.c2-panel, .c2-strip) :is(.jog, .jog-button):active { background:var(--course-accent); color:#fff; }
+html.lab-native .c2-panel .joint-top { display:flex; justify-content:space-between; align-items:center; font-size:12px; color:var(--course-muted); }
+
+/* 卡片式选择（约束连接、六轴卡片）：与挑战卡同一种卡片 */
+html.lab-native .c2-panel :is(.constraint-cards, .axis-cards) button {
+  border-radius:12px !important; border:1px solid var(--hair) !important; background:var(--course-surface) !important; box-shadow:var(--shadow-sm) !important; cursor:pointer;
+}
+html.lab-native .c2-panel :is(.constraint-cards, .axis-cards) button.active { border-color:var(--course-accent) !important; background:var(--blue-soft) !important; box-shadow:0 0 0 1px var(--course-accent) inset !important; }
+html.lab-native .c2-panel .constraint-cards { display:grid; grid-template-columns:1fr 1fr; gap:6px; }
+html.lab-native .c2-panel .constraint-cards button { display:grid; grid-template-columns:auto 1fr; align-items:center; gap:0 8px; padding:6px 9px; text-align:left; }
+html.lab-native .c2-panel .constraint-cards b { grid-row:1 / span 2; font-size:20px; font-weight:800; color:var(--course-accent); }
+html.lab-native .c2-panel .constraint-cards small { color:var(--course-muted); font-size:11.5px; }
+
+/* 区间控件、目标点、障碍编辑 */
+html.lab-native .c2-panel .range-control label { display:flex; justify-content:space-between; font-size:13.5px; }
+html.lab-native .c2-panel .range-control input { width:100%; }
+html.lab-native .c2-panel .range-control p { margin:0; font-size:12px; color:var(--course-muted); }
+html.lab-native .c2-panel .target-inputs { display:grid; grid-template-columns:repeat(3,1fr); gap:6px; }
+html.lab-native .c2-panel .target-inputs label { display:flex; align-items:center; gap:4px; font-weight:700; font-size:13px; color:var(--course-muted); }
+html.lab-native .c2-panel .target-inputs input { width:100%; }
+html.lab-native .c2-panel .target-panel { display:flex; flex-direction:column; gap:6px; }
+html.lab-native .c2-panel :is(#targetInfo, #pathInfo) { margin:0; font-size:12px; color:var(--course-muted); }
+html.lab-native .c2-panel .path-results { display:flex; flex-wrap:wrap; gap:4px 10px; font-size:12.5px; }
+html.lab-native .c2-panel .path-results span { padding:2px 8px; border-radius:8px; background:var(--surface-2); }
+html.lab-native .c2-panel .path-controls { display:flex; flex-direction:column; gap:6px; }
+html.lab-native .c2-panel .obstacle-editor { display:flex; flex-direction:column; gap:4px; }
+html.lab-native .c2-panel .obstacle-editor > div { display:flex; align-items:center; gap:8px; font-size:13px; }
+html.lab-native .c2-panel .obstacle-editor label { display:grid; grid-template-columns:22px 1fr 40px; align-items:center; gap:6px; font-size:13px; font-weight:700; color:var(--course-muted); }
+html.lab-native .c2-panel .obstacle-editor label input { width:100%; }
+
+/* 原卡片自带的高度、比例在面板里取消 */
+html.lab-native .c2-panel .constraint-cards button { min-height:0 !important; height:auto !important; aspect-ratio:auto !important; padding:6px 9px !important; display:grid !important; grid-template-columns:auto 1fr !important; grid-template-rows:auto auto !important; text-align:left !important; }
+html.lab-native .c2-panel .constraint-cards strong { font-size:13px; line-height:1.3; }
+html.lab-native .c2-panel .constraint-cards small { display:block; line-height:1.3; }
+html.lab-native .c2-panel :is(.target-buttons, .path-buttons, .compare-buttons, .teach-toolbar, .challenge-actions) button { padding:0 10px; }
+html.lab-native .c2-panel .target-buttons { flex-wrap:nowrap; }
+@media (max-height:720px) {
+  html.lab-native .c2-panel .range-control p { display:none; }
+  html.lab-native .c2-panel :is(button.primary, button.outline) { height:32px; }
+  html.lab-native .c2-panel button.text-button { height:28px; }
+  html.lab-native .c2-panel :is(button.stop, button.stop-button) { height:32px; }
+  html.lab-native .c2-panel :is(select, input[type="number"], input[type="text"]) { height:30px; }
+}
+html.lab-native .c2-panel .constraint-cards { height:auto !important; min-height:0 !important; max-height:none !important; flex:none !important; grid-template-rows:none !important; grid-auto-rows:auto !important; align-content:start !important; }
+
+/* 3-1：三维区上方的“连接”选择，和构型选择占同一位置 */
+.c2-stage-top .constraint-cards { display:grid !important; grid-template-columns:repeat(4, minmax(150px, 1fr)); gap:8px; width:100%; height:auto !important; min-height:0 !important; margin:0 !important; }
+.c2-stage-top .constraint-cards button {
+  display:grid !important; grid-template-columns:auto 1fr; grid-template-rows:auto auto; align-items:center; gap:0 10px;
+  min-height:0 !important; height:auto !important; aspect-ratio:auto !important; padding:7px 12px !important; text-align:left;
+  border-radius:12px; border:1px solid var(--hair); background:var(--course-surface); box-shadow:var(--shadow-sm); cursor:pointer;
+}
+.c2-stage-top .constraint-cards button.active { border-color:var(--course-accent); background:var(--blue-soft); box-shadow:0 0 0 1px var(--course-accent) inset; }
+.c2-stage-top .constraint-cards b { grid-row:1 / span 2; font-size:22px; font-weight:800; color:var(--course-accent); line-height:1; }
+.c2-stage-top .constraint-cards strong { font-size:14px; }
+.c2-stage-top .constraint-cards small { font-size:12px; color:var(--course-muted); }
+
+/* 3-1：关节行——数值放在滑轨右边，一行一个关节 */
+.c2-panel .joint-row { padding:2px 6px !important; align-items:center; }
+.c2-panel .joint-value { display:flex !important; flex-direction:row-reverse; align-items:center; gap:6px; min-width:0; }
+.c2-panel .joint-value output { flex:0 0 auto; min-width:64px; text-align:right; font-size:12.5px; }
+.c2-panel .joint-value input { flex:1 1 auto; width:auto; min-width:0; }
+.c2-panel .joint-label { display:flex; flex-direction:column; align-items:flex-start; line-height:1.15; }
+.c2-panel .joint-label small { font-size:10.5px; color:var(--course-muted); }
+
+/* 3-1：两个范围滑轨并排时，标题收短 */
+.c2-panel .c2-grid2 .range-control label { font-size:12.5px; }
+@media (max-height:720px) {
+  .c2-panel #pathInfo { display:none; }
+  .c2-panel .obstacle-editor label { line-height:1.2; }
+}
 </style><script data-course-navigation src="../../../../../shared/navigation.js"></script><link data-course-theme rel="stylesheet" href="../../../../../shared/styles/theme.css"><script data-course-theme src="../../../../../shared/theme.js"></script></head><body>
 <header><a class="brand" href="../../../../home/index.html#chapter-3"><b>⌘</b><span>智能建造<small>INTERACTIVE LABORATORY</small></span></a><span class="header-line"></span><span class="course">机器人构型与运动 <i>第三章 · 任务 3-1</i></span><nav><a href="../3-2/index.html">六轴点动 3-2 ↗</a><div class="theme-picker"><button data-theme="light" class="active">☀ 浅色</button><button data-theme="dark">☾ 深色</button></div><button id="help" class="help" aria-label="使用说明">?</button></nav></header>
 <main>
@@ -50,80 +555,7 @@ body:has(#chapter-shell)>dialog{max-width:900px;max-height:82vh;font-family:"Mic
 </section><div class="concept"><span>观察提示</span><p id="conceptText">自由度看可独立改变的变量；关节数量、位置方向数、姿态方向数不能简单混为一谈。</p></div>
 </main><footer><span>智能建造 · 机器人构型与工作空间实验室</span><span>教学自定义尺寸与限位 / 连杆胶囊包络＋障碍长方体 / 位置采样非完整可达性证明</span><button id="about" class="text-button">模型与使用说明 ↗</button></footer>
 <dialog id="helpDialog"><button class="dialog-close" aria-label="关闭">×</button><div class="eyebrow">FROM JOINTS TO WORKSPACE</div><h2>先看什么能动，再看能去哪里。</h2><div class="help-grid"><div><b>01 / 操作与锁轴</b><p>选择构型，拖动滑条或按住 + / −。P 为平移变量，R 为转角。锁住一轴后，这个变量固定，右侧计数和空间采样随之更新。限位缩小仍不等于少一个独立变量。若锁的是工具自转轴，位置点云可能不变，朝向调节仍会受限。</p></div><div><b>02 / 同一刚体，不同约束</b><p>自由度实验提供自由刚体、合页门、导轨抽屉、固定连接。每个连接单独定义允许的独立运动。自由刚体为不计重力的理想模型。</p></div><div><b>03 / 目标与空间</b><p>蓝色点云来自当前行程、工具长度和锁轴条件下的合法关节配置。输入目标后另用运动学检查位置可达性；六轴未找到解时不宣称数学上绝对不可达。本页不求解任意目标姿态。</p></div><div><b>04 / 中途的身体也会碰撞</b><p>载入路径对照，检查同一起终点的关节直连与预置绕行。沿连续关节插值逐帧检测，碰到障碍时暂停并标出部位。移动障碍后结果会重新计算，绕行样例也可能失效。</p></div></div><div class="model-note"><strong>模型范围</strong><p>五种模型均为教学自定义几何、尺寸与限位。SCARA 为四轴，Delta 为三平移并联型；Delta 以等长杆闭链求解，共用平台由平行四边形保持方向。可独立调节轴数不等于任意姿态都能实现相同的任务空间运动。</p><p>碰撞使用连杆胶囊包络与轴对齐障碍长方体；未计柔性线缆、负载变形与全部固定机架干涉。预置绕行仅为给定样例，不是通用自动避障规划，也不输出真机程序。</p><a href="https://robodk.com/doc/en/Collision-Avoidance.html" target="_blank" rel="noopener">参照阅读：RoboDK · Collision Detection ↗</a></div></dialog><div id="toast" role="status" aria-live="polite"></div>
-<script>window.CHAPTER_LAYOUT={task:"3-1",page:""};(()=>{'use strict';
-const config=window.CHAPTER_LAYOUT,task=config.task,$=s=>document.querySelector(s),all=s=>[...document.querySelectorAll(s)],home='../../../course/chapters/03/overview/index.html';
-const links=[['3-1','构型与空间','course/chapters/03/tasks/3-1/index.html'],['3-2','六轴点动','course/chapters/03/tasks/3-2/index.html'],['3-3a','减速器','course/chapters/03/tasks/3-3/reducers.html'],['3-3b','运动转换','course/chapters/03/tasks/3-3/conversion.html'],['3-4','末端与 TCP','course/chapters/03/tasks/3-4/index.html'],['3-5','移动底盘','course/chapters/03/tasks/3-5/index.html']];
-const titles={'3-1':['机器人构型与工作空间','看连接、数运动，理解能到哪里、能否通过。'],'3-2':['六轴机械臂与点动示教','选择参照系，控制位置与姿态，让每一步移动都有依据。'],'3-3':['关节传动 · '+(config.page==='conversion'?'运动转换':'减速器'),'找到输入、固定件与输出，用运动验证传动关系。'],'3-4':['末端执行器与 TCP','换装工具，理解工作点，完成标定与参数复核。'],'3-5':['移动底盘与行走机构','观察轮组与接地方式，把运动规律用在驾驶任务中。']};
-function el(tag,cls,html=''){const e=document.createElement(tag);e.className=cls;if(html)e.innerHTML=html;return e;}
-const legacy=el('div','c-legacy');legacy.hidden=true;
-const original=[...document.body.children].filter(e=>!['SCRIPT','DIALOG','STYLE'].includes(e.tagName)&&e.id!=='toast');
-original.forEach(e=>legacy.append(e));document.body.append(legacy);
-const shell=el('div','chapter-shell');shell.id='chapter-shell';shell.dataset.task=task;shell.dataset.page=config.page;document.body.prepend(shell);
-const active=task==='3-3'?(config.page==='conversion'?'3-3b':'3-3a'):task;
-const head=el('header','c-header',`<a class="c-home" href="${home}" aria-label="返回第三章总入口"><span class="c-logo">⌘</span><span>机器人结构与运动<small>智能建筑机械与机器人 · 第三章</small></span></a><nav class="c-chapters" aria-label="第三章案例导航">${links.map(([id,name,url])=>`<a href="../${url}" ${id===active?'aria-current="page"':''}><small>${id.replace('a','A').replace('b','B')}</small>${name}</a>`).join('')}</nav><div class="c-tools"><button id="c-help" aria-label="操作说明">?</button><button id="c-theme" aria-label="切换明暗主题">◐</button><button id="c-full" aria-label="全屏展示">⛶</button></div>`);
-const title=el('section','c-title',`<div class="c-title-number">${task}</div><div><div class="c-eyebrow">CHAPTER 03 / INTERACTIVE ROBOTICS LAB</div><h1>${titles[task][0]}</h1><p>${titles[task][1]}</p></div><div class="c-title-actions"></div>`);
-const tabs=el('nav','c-activities');tabs.setAttribute('aria-label','学习活动');
-const workspace=el('div','c-workspace'),left=el('div','c-left'),right=el('aside','c-right');right.setAttribute('aria-label','操作与任务引导');workspace.append(left,right);
-const foot=el('footer','c-footer',`<span><i></i> 观察结构 <b>→</b> 动手操作 <b>→</b> 验证结果</span><span id="c-footnote">教学仿真 · 三维交互 · 离线可用</span><a href="${home}">返回第三章总览 ↗</a>`);shell.append(head,title,tabs,workspace,foot);
-function move(node,to){if(typeof node==='string')node=$(node);if(node)to.append(node);return node;}
-function deck(host,definitions,cls=''){const box=el('div','c-deck '+cls),nav=el('div','c-deck-tabs');nav.setAttribute('role','tablist');const panes=[];box.append(nav);definitions.forEach(([name,nodes],i)=>{const b=el('button','',name);b.type='button';b.setAttribute('role','tab');b.setAttribute('aria-selected',String(i===0));nav.append(b);const pane=el('div','c-deck-pane');pane.dataset.inactive=String(i!==0);nodes.filter(Boolean).forEach(n=>move(n,pane));box.append(pane);panes.push(pane);b.onclick=()=>select(i);});function select(i){panes.forEach((p,j)=>{p.dataset.inactive=String(j!==i);nav.children[j].setAttribute('aria-selected',String(j===i));});window.dispatchEvent(new Event('resize'));}host.append(box);return {box,panes,select};}
-let activityGuide;
-if(task==='3-1'){
- move('.learning-tabs',tabs);move('#typePicker',left).classList.add('c-model-picker');move('.stage',left);
- const control=$('.pendant'),guide=$('.learning');
- const range=all('.pendant .range-control'),target=$('.target-panel'),rows=$('#jointRows'),jointTop=$('.joint-top');
- const insert=$('.pendant .panel-title');const inner=deck(control,[['关节点动',[jointTop,rows]],['行程与工具',range],['空间目标',[target]]],'c-control-deck');insert.after(inner.box);
- activityGuide=deck(right,[['操作控制',[control]],['学习任务',[guide]]]);
- move('.heading-actions #reset',$('.c-title-actions'));const text=$('#conceptText');if(text)move($('.concept'),foot);
-}else if(task==='3-2'){
- move('.learning-nav',tabs);move('.stage-card',left);
- const control=$('.control-panel'),guide=$('.learning-section');
- const settings=el('div','c-settings');move('.speed-control',settings);move('.tool-control',settings);
- activityGuide=deck(right,[['点动控制',[control]],['学习任务',[guide]],['速度与工具',[settings]]]);
- move('.heading-actions #home',$('.c-title-actions'));move($('.concept-note'),foot);
-}else if(task==='3-3'){
- move('#modules',tabs);move('.workspace > .main',left);
- const observation=$('.observation'),experiment=$('.experiment'),legend=$('.legend'),challenge=$('#challengeDetails');challenge.open=true;
- const guide=deck(right,[['运动观察',[observation]],['实验与零件',[experiment,legend]],['动手挑战',[challenge]]]);
- const observer=new MutationObserver(()=>{if(challenge.open===false)challenge.open=true;});observer.observe(challenge,{attributes:true,attributeFilter:['open']});
- move($('.topnav'),$('.c-title-actions'));
-}else if(task==='3-4'){
- move('.mission-tabs',tabs);const area=el('div','c-tool-workspace');left.append(area);move('.tool-cabinet',area);move('.lab-centre',area);move('.control-panel',right);
- move($('.progress-badge'),$('.c-title-actions'));
- const pivot=$('#pivotPanel');
- deck(pivot,[['姿态对照',[$('#pivotPanel .intro'),$('.pivot-switch'),$('.angle-control'),$('#playPivot'),$('.motion-metrics')]],['工具参数',[$('#pivotExplanation'),$('#pivotPanel .divider-label'),$('#pivotPanel .field-label'),$('#parameterTool'),$('#correctParam'),$('#pivotPanel .microcopy')]]]);
- const cal=$('#calibratePanel');
- const captureButtons=$('#capture').closest('.button-pair'),validationButtons=$('#validate').closest('.button-pair');
- const calibration=deck(cal,[['采集四个姿态',[$('#calibratePanel .intro'),$('#poseButtons'),$('.cal-distance'),$('#calAdjust'),captureButtons]],['计算与复核',[$('#solve'),$('#calResult'),validationButtons,$('#validationResult'),$('.cal-details'),$('#calibratePanel .microcopy')]]]);
- cal.addEventListener('click',e=>{if(e.target.closest('#capture')&&window.toolLab?.getState().samples?.filter(Boolean).length===4)calibration.select(1);});
-}else if(task==='3-5'){
- move('nav.tabs',tabs);move('.workspace > .stage',left);const panel=$('.workspace > .panel');move(panel,right);
- const drive=$('#drivePanel'),terrain=$('#terrainPanel'),game=$('#gamePanel');
- const drivePicker=$('#drivePanel .platform-picker'),terrainPicker=$('#terrainPanel .platform-picker');
- const selectors=el('div','c-mobile-selectors');left.prepend(selectors);move(drivePicker,selectors);move(terrainPicker,selectors);
- const d=deck(drive,[['运动操纵',[$('#drivePanel .learning-intro'),$('#drivePanel .control-card')]],['预测验证',[$('#drivePanel .prediction-card')]],['自由驾驶',[$('#drivePanel .manual-controls'),$('#enterGame')]]]);
- const manual=$('.manual-controls');manual.open=true;
- deck(terrain,[['动作分解',[$('#terrainPanel .learning-intro'),$('#terrainPanel .timeline-card')]],['接地观察',[$('#terrainPanel .evidence-card'),$('#terrainPanel .learning-note'),$('#backToWheels')]]]);
- const gameSetup=[$('.campaign-summary'),$('.chapter-picker'),$('.level-picker'),$('#gamePanel .mission'),$('.game-actions')];
- const gameDrive=[$('.mission-checks'),$('.control-label'),$('.game-pad'),$('#gameSteering'),$('#gameFeedback'),$('.docking-monitor')];
- const gameInfo=[$('.route-details'),$('.game-record')];$('.route-details').open=true;
- const gameDeck=deck(game,[['选择关卡',gameSetup],['驾驶控制',gameDrive],['路线与记录',gameInfo]]);$('#startGame').addEventListener('click',()=>gameDeck.select(1));$('#retryGame').addEventListener('click',()=>gameDeck.select(1));
- function sync(){const mode=document.body.dataset.activity||'drive';selectors.hidden=mode==='game';drivePicker.hidden=mode!=='drive';terrainPicker.hidden=mode!=='terrain';}
- new MutationObserver(sync).observe(document.body,{attributes:true,attributeFilter:['data-activity']});sync();
-}
-if(activityGuide){tabs.addEventListener('click',e=>{if(e.target.closest('[data-activity]'))activityGuide.select(1);});}
-// Native dialogs keep supplementary explanations out of the working screen.
-all('#chapter-shell .cal-details').forEach(details=>{const launch=el('button','c-detail-button','对点记录与错误示例 ↗'),dialog=el('dialog','c-detail-dialog'),close=el('button','c-detail-close','返回操作台 ×');details.before(launch);dialog.append(close,details);details.open=true;document.body.append(dialog);launch.onclick=()=>dialog.showModal();close.onclick=()=>dialog.close();});
-const concept=foot.querySelector('.concept,.concept-note');
-if(concept){const launch=el('button','c-observation','观察提示 ↗'),dialog=el('dialog','c-observation-dialog'),close=el('button','c-detail-close','返回操作台 ×'),heading=el('h2','','观察提示');foot.insertBefore(launch,$('#c-footnote'));dialog.append(close,heading,concept);document.body.append(dialog);launch.onclick=()=>dialog.showModal();close.onclick=()=>dialog.close();}
-all('.c-deck-tabs').forEach((nav,n)=>{const buttons=[...nav.children],panes=[...nav.parentElement.children].filter(e=>e.classList.contains('c-deck-pane'));buttons.forEach((b,i)=>{b.id=`c-tab-${n}-${i}`;panes[i].id=`c-pane-${n}-${i}`;b.setAttribute('aria-controls',panes[i].id);panes[i].setAttribute('role','tabpanel');panes[i].setAttribute('aria-labelledby',b.id);});const sync=()=>buttons.forEach(b=>b.tabIndex=b.getAttribute('aria-selected')==='true'?0:-1);sync();nav.addEventListener('click',sync);new MutationObserver(sync).observe(nav,{subtree:true,attributes:true,attributeFilter:['aria-selected']});nav.addEventListener('keydown',e=>{const i=buttons.indexOf(document.activeElement);if(i<0||!['ArrowLeft','ArrowRight','Home','End'].includes(e.key))return;e.preventDefault();e.stopPropagation();const j=e.key==='Home'?0:e.key==='End'?buttons.length-1:(i+(e.key==='ArrowRight'?1:-1)+buttons.length)%buttons.length;buttons[j].click();buttons[j].focus();});});
-$('#c-help').onclick=()=>$('#help')?.click();
-$('#c-full').onclick=()=>{if(document.fullscreenElement)document.exitFullscreen?.();else document.documentElement.requestFullscreen?.().catch(()=>{});};
-function fit(){const s=Math.min(innerWidth/1600,innerHeight/900);shell.style.transform=`translate(-50%,-50%) scale(${s})`;document.documentElement.style.setProperty('--chapter-scale',s);}
-addEventListener('resize',fit);fit();
-window.ChapterShell={task,fit,guide:activityGuide,diagnostics:()=>({task,logical:[shell.offsetWidth,shell.offsetHeight],screen:[shell.getBoundingClientRect().width,shell.getBoundingClientRect().height],document:[document.documentElement.scrollWidth,document.documentElement.scrollHeight],viewport:[innerWidth,innerHeight]})};
-})();
-</script><script></script><script src="../../../../../shared/vendor/three-r160.min.js"></script><script>
+<script></script><script src="../../../../../shared/vendor/three-r160.min.js"></script><script>
 </script><script>/* Pure six-axis teaching model. Length: mm. Angles at the API: degrees.
    Right-handed base, Z up; J1 Z, J2/J3 Y, J4 X, J5 Y, J6 X.
    This is an educational geometry, not a manufacturer's controller model. */
@@ -472,5 +904,577 @@ window.ChapterShell={task,fit,guide:activityGuide,diagnostics:()=>({task,logical
  document.addEventListener('keydown',e=>{if(e.ctrlKey||e.metaKey||e.altKey||/INPUT|SELECT|TEXTAREA/.test(e.target.tagName)||$('helpDialog').open)return;if(e.code==='Space'){e.preventDefault();stop('运动已停止。');}else if(/^[1-6]$/.test(e.key)&&+e.key<=state.q.length){stop();selected(+e.key-1);}else if((e.key==='ArrowLeft'||e.key==='ArrowRight')&&!e.repeat){e.preventDefault();stop();if(!state.locks[state.axis])held={axis:state.axis,dir:e.key==='ArrowRight'?1:-1};}});document.addEventListener('keyup',e=>{if(e.key==='ArrowLeft'||e.key==='ArrowRight')held=null;});window.addEventListener('blur',()=>stop());document.addEventListener('visibilitychange',()=>{last=0;if(document.hidden)stop();else dirty=true;});new IntersectionObserver(e=>{visible=e[0].isIntersecting;if(!visible)stop();else dirty=true;}).observe($('viewport'));
  setType('cartesian');if(!view.renderer){$('fallback').hidden=false;$$('.jog,[data-joint],#demoAxis,#tour,#tryTarget,#randomTarget,#playDirect,#playDetour').forEach(b=>b.disabled=true);}requestAnimationFrame(tick);
  window.configLab={getState:()=>({id:state.id,rig:state.rig,activity:state.activity,q:state.q.slice(),locks:state.locks.slice(),dof:state.q.length-state.locks.filter(Boolean).length,scale:state.scale,length:state.length,tcp:fk()?.p,hits:hits(),moving:!!(run||held),workspace:state.workspace,samples:state.sample?.configs.length||0,obstacles:JSON.parse(JSON.stringify(state.obstacles)),route:route?{direct:{invalid:route.direct.invalid,hit:route.direct.firstHit},detour:{invalid:route.detour.invalid,hit:route.detour.firstHit}}:null}),selectType:setType,selectRig:mode=>{setActivity('constraints');setRig(mode);},selectActivity:setActivity,toggleLock,stop:()=>stop(),setJoints:q=>{stop();return apply(q);},playPath,diagnostics:()=>view.diagnostics(),model:M};
+})();
+</script><script data-lab-shell>window.CHAPTER_LAYOUT={"task":"3-1","page":""};
+/* 课程任务页外壳（第二章起使用）：页头（本章任务）→ 工位条 → 三维区 + 操作面板。
+ * 两种用法：
+ *   LabShell.embedded(cfg)  三维区放原版实验页（iframe，嵌入模式只显示三维视图），面板通过 postMessage 驱动原模型。（第二章）
+ *   LabShell.native(cfg)    页面自己的三维区与原有控件直接搬进外壳，面板里重新编排，状态由 cfg.poll() 读取。（第三章）
+ * 菜单只有两层；面板里没有标签页，也没有“学习目标/学习任务”。设计规范见 course/设计规范.md。
+ */
+(() => {
+  'use strict';
+  const h = (tag, cls, text) => { const e = document.createElement(tag); if (cls) e.className = cls; if (text != null) e.textContent = text; return e; };
+  const href = p => (window.courseHref ? window.courseHref(p) : p);
+  const fmt = (v, n = 0) => (Number.isFinite(v) ? (Math.abs(v) < Math.pow(10, -n) / 2 ? 0 : v).toFixed(n) : '—');
+
+  function start(cfg) {
+    const native = Boolean(cfg.native);
+    document.title = `${cfg.task} ${cfg.title}｜智能建筑机械与机器人`;
+    document.documentElement.dataset.c2Lab = cfg.task;
+    document.documentElement.classList.add('lab-shell', native ? 'lab-native' : 'lab-embedded');
+    const store = 'c2-progress-' + (cfg.progressKey || cfg.task);
+    let progress = {};
+    try { progress = JSON.parse(localStorage.getItem(store) || '{}') || {}; } catch {}
+    const save = () => { try { localStorage.setItem(store, JSON.stringify(progress)); } catch {} };
+
+    /* 页头 */
+    const top = h('header', 'c2-top course-nav');
+    const back = h('a', 'c2-back', '← ' + cfg.chapter.title); back.href = href(cfg.chapter.href);
+    const tasks = h('nav', 'c2-tasks'); tasks.setAttribute('aria-label', '本章任务');
+    for (const t of cfg.tasks) {
+      const a = h('a', '', `${t.label || t.id} ${t.short || t.title}`); a.href = href(t.href);
+      if (t.id === (cfg.taskNav || cfg.task)) a.setAttribute('aria-current', 'page');
+      tasks.append(a);
+    }
+    top.append(back, tasks);
+
+    /* 工位条 */
+    const bar = h('div', 'c2-bar');
+    const title = h('div', 'c2-title');
+    title.append(h('span', 'c2-task-id', '任务 ' + cfg.task), h('h1', '', cfg.title));
+    const tabs = h('div', 'c2-stations'); tabs.setAttribute('role', 'tablist'); tabs.setAttribute('aria-label', '工位');
+    bar.append(title, tabs);
+
+    /* 三维区 */
+    const main = h('main', 'c2-main');
+    const stageBox = h('section', 'c2-stage'); stageBox.setAttribute('aria-label', '三维模型');
+    const view = h('div', 'c2-view');
+    const loading = h('div', 'c2-loading'); loading.append(h('span', 'c2-spinner'), h('span', '', '正在载入三维模型…'));
+    const tools = h('div', 'c2-tools');
+    const card = h('div', 'c2-part'); card.hidden = true; card.setAttribute('role', 'status');
+    const hint = h('div', 'c2-hint');
+    view.append(loading, tools, card, hint);
+    const strip = h('div', 'c2-strip');
+    const transportBox = h('div', 'c2-transport');
+    const readBox = h('div', 'c2-readouts');
+    strip.append(transportBox, readBox);
+    stageBox.append(view, strip);
+
+    /* 面板 */
+    const panel = h('aside', 'c2-panel'); panel.setAttribute('aria-label', '操作面板');
+    const head = h('div', 'c2-panel-head');
+    const body = h('div', 'c2-panel-body');
+    const feedback = h('div', 'c2-feedback'); feedback.setAttribute('role', 'status'); feedback.setAttribute('aria-live', 'polite');
+    const redo = h('button', 'c2-redo', '↺ 重来'); redo.type = 'button'; redo.title = '把这个工位恢复到开始的样子';
+    const next = h('button', 'c2-btn c2-primary c2-next', '去下一站 →'); next.type = 'button';
+    panel.append(head, body);
+    view.append(feedback);
+    let toastTimer = 0;
+    main.append(stageBox, panel);
+    /* 原页面里暂时不用的控件停放处（仍在文档里，原有程序照常工作） */
+    const parking = h('div', 'c2-parking'); parking.hidden = true;
+    document.body.append(top, bar, main, parking);
+    if (native) {
+      loading.hidden = true;
+      if (cfg.stage) { cfg.stage.classList.add('c2-native-stage'); view.prepend(cfg.stage); }
+      if (cfg.stageTop) { const topRow = h('div', 'c2-stage-top'); topRow.append(...[].concat(cfg.stageTop).filter(Boolean)); stageBox.prepend(topRow); }
+      if (cfg.redo === false) redo.hidden = true;
+    }
+
+    let current = -1, ctx = null, frame = null, cleanup = [];
+    const tabButtons = cfg.stations.map((s, i) => {
+      const b = h('button', 'c2-station'); b.type = 'button'; b.setAttribute('role', 'tab');
+      b.append(h('span', 'c2-num', String(i + 1)), h('span', 'c2-name', s.name), h('span', 'c2-check', '✓'));
+      b.addEventListener('click', () => select(i));
+      b.addEventListener('keydown', e => {
+        if (e.key !== 'ArrowRight' && e.key !== 'ArrowLeft') return;
+        e.preventDefault(); const j = (i + (e.key === 'ArrowRight' ? 1 : -1) + cfg.stations.length) % cfg.stations.length;
+        select(j); tabButtons[j].focus();
+      });
+      tabs.append(b);
+      return b;
+    });
+    const syncTabs = () => tabButtons.forEach((b, i) => {
+      b.setAttribute('aria-selected', String(i === current)); b.tabIndex = i === current ? 0 : -1;
+      b.classList.toggle('done', Boolean(progress[cfg.stations[i].id]));
+    });
+
+    /* 嵌入模式：与原版实验页通信（只用 postMessage，file:// 打开也能用） */
+    window.addEventListener('message', e => {
+      const d = e.data;
+      if (!d || d.c2 !== 'lab' || !frame || e.source !== frame.contentWindow) return;
+      if (d.type === 'ready' || (d.type === 'state' && ctx && !ctx.lab.ready)) { loading.hidden = true; sendTheme(); ctx?._ready(); }
+      if (d.type === 'state') ctx?._state(d.data);
+    });
+    const sendTheme = () => frame?.contentWindow?.postMessage({c2: 'cmd', op: 'theme', value: window.CourseTheme?.get?.() || 'light'}, '*');
+    window.addEventListener('course-theme-change', sendTheme);
+
+    function parkAll() { body.querySelectorAll('[data-c2-adopted]').forEach(n => parking.append(n)); }
+
+    function select(i, fromHash, fromPage) {
+      if (i === current) return;
+      cleanup.forEach(f => f()); cleanup = [];
+      current = i;
+      const s = cfg.stations[i];
+      if (!fromHash) history.replaceState(null, '', '#' + s.id);
+      const ht = h('div', 'c2-head-row'), name = h('div', 'c2-head-name');
+      name.append(h('span', 'c2-head-num', String(i + 1)), h('h2', '', s.name));
+      ht.append(name, redo);
+      head.replaceChildren(ht, h('p', '', s.lead || ''));
+      parkAll();
+      body.replaceChildren(); clearTimeout(toastTimer); feedback.textContent = ''; feedback.className = 'c2-feedback';
+      transportBox.replaceChildren(); readBox.replaceChildren(); tools.replaceChildren(); card.hidden = true;
+      hint.textContent = (s.note ? s.note + '　' : '') + (s.hint ?? cfg.hint ?? '拖动旋转 · 滚轮缩放');
+      hint.hidden = !hint.textContent;
+      if (native) {
+        if (!fromPage) cfg.select?.(s.id);
+      } else {
+        frame?.remove();
+        frame = h('iframe', 'c2-frame'); frame.title = s.name + '三维模型';
+        frame.src = s.src; loading.hidden = false;
+        view.prepend(frame);
+      }
+      ctx = makeContext(s, i);
+      cfg.build?.(ctx, s);
+      s.build?.(ctx, s);
+      if (native) ctx._ready();
+      syncTabs();
+      // 原页面的渲染器按容器尺寸重新取景；布局稳定后再通知一次
+      dispatchEvent(new Event('resize'));
+      if (native) for (const t of [60, 300, 900]) setTimeout(() => dispatchEvent(new Event('resize')), t);
+    }
+    redo.addEventListener('click', () => { const i = current; current = -1; cfg.reset?.(cfg.stations[i].id); select(i); });
+    next.addEventListener('click', () => select(Math.min(current + 1, cfg.stations.length - 1)));
+
+    function makeContext(s, index) {
+      const stateFns = new Set(), readyFns = new Set();
+      let latest = null, ready = false;
+      const send = msg => frame?.contentWindow?.postMessage({c2: 'cmd', ...msg}, '*');
+      const c = {
+        h, fmt, station: s, index, body, native,
+        /* —— 原模型 —— */
+        lab: {
+          click: (sel, i = 0) => send({op: 'click', sel, index: i}),
+          clickText: (sel, text) => send({op: 'clickText', sel, text}),
+          set: (sel, value) => send({op: 'set', sel, value}),
+          call: (path, ...args) => send({op: 'call', path, args}),
+          event: name => send({op: 'event', name}),
+          get state() { return latest; },
+          get ready() { return ready; },
+          onState(fn) { stateFns.add(fn); if (latest) fn(latest); },
+          onReady(fn) { readyFns.add(fn); if (ready) fn(); },
+        },
+        _state(data) { latest = data; stateFns.forEach(f => { try { f(data); } catch (err) { console.warn(err); } }); },
+        _ready() { if (ready) return; ready = true; readyFns.forEach(f => f()); },
+        /** 把原页面里的一个控件（或一组）搬进面板；换工位时自动放回停放处。 */
+        adopt(nodes, into) {
+          const list = (Array.isArray(nodes) ? nodes : [nodes]).map(n => (typeof n === 'string' ? document.querySelector(n) : n)).filter(Boolean);
+          list.forEach(n => { n.dataset.c2Adopted = '1'; n.hidden = false; (into || body).append(n); });
+          return list[0];
+        },
+        /* —— 反馈 —— */
+        /** 反馈以提示条形式出现在三维区上方，几秒后自动收起，不挤占面板。 */
+        feedback(text, kind = 'info', keep = false) {
+          clearTimeout(toastTimer);
+          feedback.replaceChildren();
+          if (text) feedback.append(h('span', 'c2-toast-icon', kind === 'ok' ? '✓' : kind === 'warn' ? '!' : 'i'), h('span', 'c2-toast-text', text));
+          feedback.className = 'c2-feedback ' + kind;
+          if (!keep && text) toastTimer = setTimeout(() => { feedback.textContent = ''; feedback.className = 'c2-feedback'; }, kind === 'warn' ? 5000 : 7000);
+        },
+        showPart(name, desc) {
+          if (!name) { card.hidden = true; return; }
+          card.replaceChildren(h('strong', '', name), h('span', '', desc || ''));
+          const x = h('button', 'c2-x', '×'); x.type = 'button'; x.setAttribute('aria-label', '关闭'); x.onclick = () => { card.hidden = true; };
+          card.append(x); card.hidden = false;
+        },
+        /* —— 面板控件 —— */
+        section(titleText, extra, into = body) {
+          const sec = h('section', 'c2-group');
+          if (titleText) { const t = h('h3', ''); t.append(h('span', 'c2-h3-text', titleText)); if (extra) t.append(extra); sec.append(t); }
+          into.append(sec); return sec;
+        },
+        button(text, fn, opts = {}) {
+          const b = h('button', 'c2-btn' + (opts.primary ? ' c2-primary' : '') + (opts.small ? ' c2-small' : ''), text);
+          b.type = 'button'; b.addEventListener('click', fn); if (opts.title) b.title = opts.title; return b;
+        },
+        row(...items) { const r = h('div', 'c2-row'); r.append(...items); return r; },
+        segmented(options, value, onChange, label) {
+          const wrap = h('div', 'c2-seg'); wrap.setAttribute('role', 'radiogroup'); if (label) wrap.setAttribute('aria-label', label);
+          let currentValue = value;
+          const buttons = options.map(o => {
+            const b = h('button', '', o.label); b.type = 'button'; b.setAttribute('role', 'radio'); if (o.title) b.title = o.title;
+            b.addEventListener('click', () => { set(o.value); onChange(o.value); });
+            wrap.append(b); return [o.value, b];
+          });
+          const set = v => { currentValue = v; buttons.forEach(([val, b]) => b.setAttribute('aria-checked', String(val === v))); };
+          set(value);
+          return {el: wrap, set, get: () => currentValue};
+        },
+        slider({label, min, max, step = 1, value, unit = '', format, onInput}) {
+          const wrap = h('label', 'c2-slider');
+          const t = h('span', 'c2-slider-top'), name = h('span', '', label), out = h('output', '');
+          t.append(name, out);
+          const input = h('input'); input.type = 'range'; Object.assign(input, {min, max, step, value});
+          const show = v => {
+            out.textContent = (format ? format(+v) : v) + (unit ? ' ' + unit : '');
+            input.style.setProperty('--p', ((+v - min) / (max - min || 1) * 100).toFixed(1) + '%');
+          };
+          let touching = 0;
+          input.addEventListener('input', () => { touching = performance.now(); show(input.value); onInput(+input.value); });
+          show(value); wrap.append(t, input);
+          return {
+            el: wrap, input,
+            /** 跟随模型同步显示；用户正在拖动时不打断。 */
+            sync(v) { if (performance.now() - touching < 700 || !Number.isFinite(v)) return; if (Math.abs(+input.value - v) > 1e-9) { input.value = v; show(input.value); } },
+            set(v) { input.value = v; show(v); }, get: () => +input.value,
+          };
+        },
+        toggle(label, value, onChange) {
+          const b = h('button', 'c2-switch'); b.type = 'button'; b.setAttribute('role', 'switch');
+          b.append(h('span', 'c2-knob'), h('span', '', label));
+          const set = v => b.setAttribute('aria-checked', String(Boolean(v)));
+          b.addEventListener('click', () => { const v = b.getAttribute('aria-checked') !== 'true'; set(v); onChange(v); });
+          set(value);
+          return {el: b, set};
+        },
+        /** 部件快捷：点一下镜头飞过去。 */
+        chips(items, onPick) {
+          const wrap = h('div', 'c2-chips');
+          const buttons = items.map(it => {
+            const b = h('button', 'c2-chip', it.label); b.type = 'button';
+            b.addEventListener('click', () => { buttons.forEach(x => x.setAttribute('aria-pressed', String(x === b))); onPick(it); });
+            wrap.append(b); return b;
+          });
+          return {el: wrap, buttons, clear: () => buttons.forEach(x => x.setAttribute('aria-pressed', 'false'))};
+        },
+        /** 小问题：只用在“看过结果之后”。 */
+        choice({prompt, options, answer, onRight, wrong}) {
+          const box = h('div', 'c2-choice');
+          if (prompt) box.append(h('p', 'c2-prompt', prompt));
+          const row = h('div', 'c2-options');
+          options.forEach((o, i) => {
+            const b = h('button', 'c2-opt', o); b.type = 'button';
+            b.addEventListener('click', () => {
+              if (box.dataset.solved) return;
+              if (i === answer) { b.classList.add('right'); box.dataset.solved = '1'; [...row.children].forEach(x => { x.disabled = x !== b; }); onRight?.(); }
+              else { b.classList.add('wrong'); b.disabled = true; c.feedback(typeof wrong === 'function' ? wrong(i) : (wrong || '再看看模型，再选一次。'), 'warn'); }
+            });
+            row.append(b);
+          });
+          box.append(row);
+          return box;
+        },
+        /** 先猜一个数，再让模型跑给你看。onGuess 返回 true/false/undefined。 */
+        predict({prompt, unit, onGuess, inline}) {
+          const box = h('div', 'c2-predict' + (inline ? ' c2-inline' : ''));
+          box.append(h('p', 'c2-prompt', prompt));
+          const r = h('div', 'c2-row'), input = h('input'); input.type = 'number'; input.inputMode = 'decimal'; input.setAttribute('aria-label', prompt);
+          const go = c.button('试试看', () => {
+            const v = parseFloat(input.value);
+            if (!Number.isFinite(v)) { c.feedback('先填一个数。', 'warn'); return; }
+            const ok = onGuess(v); input.classList.toggle('right', ok === true); input.classList.toggle('wrong', ok === false);
+          }, {small: true});
+          input.addEventListener('keydown', e => { if (e.key === 'Enter') go.click(); });
+          r.append(input, h('span', 'c2-unit', unit || ''), go); box.append(r);
+          return {el: box, input};
+        },
+        /** 试一试：几张挑战卡，不分先后；模型状态满足条件就自动打勾。 */
+        challenges(list, titleText = '试一试', into = body) {
+          const counter = h('span', 'c2-count');
+          const sec = c.section(titleText, counter, into);
+          const bar = h('div', 'c2-progress'); const fill = h('span'); bar.append(fill);
+          const grid = h('div', 'c2-challenges'); sec.append(bar, grid);
+          const done = new Set();
+          const items = list.map(ch => {
+            const li = h('div', 'c2-challenge');
+            const mark = h('span', 'c2-mark', ch.icon || '★');
+            const txt = h('div', 'c2-ch-text');
+            txt.append(h('b', '', ch.title));
+            const sub = h('span', '', ch.hint || ''); txt.append(sub);
+            li.append(mark, txt);
+            if (ch.action) {
+              const go = h('button', 'c2-ch-go', ch.action.label); go.type = 'button';
+              go.addEventListener('click', e => { e.stopPropagation(); ch.action.fn(); });
+              txt.append(go);
+            }
+            grid.append(li);
+            return {ch, li, sub, mark};
+          });
+          const update = () => { counter.textContent = `${done.size} / ${list.length}`; fill.style.width = (done.size / list.length * 100) + '%'; };
+          const complete = id => {
+            if (done.has(id)) return;
+            const it = items.find(x => x.ch.id === id); if (!it) return;
+            done.add(id); it.li.classList.add('done'); it.mark.textContent = '✓';
+            if (it.ch.result) c.feedback(it.ch.title + '：' + it.ch.result, 'ok');
+            it.sub.textContent = '完成';
+            update();
+            if (done.size === list.length) {
+              progress[s.id] = true; save(); syncTabs();
+              setTimeout(() => {
+                if (ctx !== c) return;
+                c.feedback(current < cfg.stations.length - 1 ? '这一站的挑战都完成了！' : '本任务的挑战都完成了！还可以接着随便调一调。', 'ok', current < cfg.stations.length - 1);
+                if (current < cfg.stations.length - 1) feedback.append(next);
+              }, 2600);
+            }
+          };
+          c.lab.onState(st => { for (const it of items) if (!done.has(it.ch.id)) { try { if (it.ch.check?.(st)) complete(it.ch.id); } catch {} } });
+          update();
+          return {complete, isDone: id => done.has(id), section: sec};
+        },
+        /* —— 三维区：工具、播放、读数 —— */
+        view(text, fn, titleText) { const b = h('button', 'c2-tool', text); b.type = 'button'; if (titleText) b.title = titleText; b.addEventListener('click', fn); tools.append(b); return b; },
+        /** 三维区左上角的一组单选（如 剖开 / 完整 / 去掉外壳）。 */
+        toolSeg(options, value, onChange, label) {
+          const seg = c.segmented(options, value, onChange, label); seg.el.classList.add('c2-toolseg'); tools.append(seg.el); return seg;
+        },
+        tool(text, onToggle, pressed = false) {
+          const b = h('button', 'c2-tool', text); b.type = 'button'; b.setAttribute('aria-pressed', String(pressed));
+          b.addEventListener('click', () => { const p = b.getAttribute('aria-pressed') !== 'true'; b.setAttribute('aria-pressed', String(p)); onToggle(p); });
+          tools.append(b); return {el: b, set: p => b.setAttribute('aria-pressed', String(Boolean(p)))};
+        },
+        transport({onToggle, onStep, onReset, stepText = '单步', extra, speeds, onSpeed, speed}) {
+          const play = h('button', 'c2-play', ''); play.type = 'button';
+          const set = p => { play.textContent = p ? '❚❚ 暂停' : '▶ 运行'; play.setAttribute('aria-pressed', String(Boolean(p))); };
+          play.addEventListener('click', () => { const p = play.getAttribute('aria-pressed') !== 'true'; set(p); onToggle(p); });
+          set(false); transportBox.append(play);
+          if (onStep) { const st = h('button', 'c2-tool', stepText); st.type = 'button'; st.addEventListener('click', onStep); transportBox.append(st); }
+          if (onReset) { const rs = h('button', 'c2-tool', '复位'); rs.type = 'button'; rs.addEventListener('click', onReset); transportBox.append(rs); }
+          let speedSeg = null;
+          if (speeds) { speedSeg = c.segmented(speeds.map(([v, l]) => ({value: v, label: l})), speed ?? speeds[0][0], onSpeed, '快慢'); speedSeg.el.classList.add('c2-speed'); transportBox.append(speedSeg.el); }
+          if (extra) transportBox.append(extra);
+          return {setPlaying: set, setSpeed: v => speedSeg?.set(v)};
+        },
+        /** 把原页面的元素放进三维区底部一栏。 */
+        stripAdopt(nodes) { const list = (Array.isArray(nodes) ? nodes : [nodes]).map(n => (typeof n === 'string' ? document.querySelector(n) : n)).filter(Boolean); list.forEach(n => { n.dataset.c2Adopted = '1'; readBox.append(n); }); },
+        readouts(defs) {
+          const cells = {};
+          readBox.replaceChildren();
+          for (const d of defs) {
+            const cell = h('div', 'c2-read'), v = h('b', '', '—'), u = h('small', '', d.unit || '');
+            const val = h('span', 'c2-val'); val.append(v, u);
+            cell.append(h('span', 'c2-read-label', d.label), val);
+            readBox.append(cell); cells[d.id] = {v, u, cell};
+          }
+          return (id, value, unit) => {
+            const x = cells[id]; if (!x) return;
+            if (x.v.textContent !== String(value)) x.v.textContent = value;
+            if (unit != null && x.u.textContent !== unit) x.u.textContent = unit;
+          };
+        },
+        onCleanup(fn) { cleanup.push(fn); },
+      };
+      return c;
+    }
+
+    /* 原地模式：定时读原页面状态；原页面自己切换了活动时，工位条跟着变 */
+    if (native) {
+      setInterval(() => {
+        let st = null;
+        try { st = cfg.poll?.(); } catch (err) { /* 页面尚未就绪 */ }
+        if (st && ctx) ctx._state(st);
+        const pageStation = cfg.current?.();
+        if (pageStation) { const j = cfg.stations.findIndex(s => s.id === pageStation); if (j >= 0 && j !== current) select(j, false, true); }
+      }, 200);
+    }
+
+    const fromHash = () => {
+      const id = location.hash.slice(1), i = cfg.stations.findIndex(s => s.id === id);
+      return i >= 0 ? i : 0;
+    };
+    window.addEventListener('hashchange', () => select(fromHash(), true));
+    select(fromHash(), true);
+    window.c2Lab = {select, get ctx() { return ctx; }, get frame() { return frame; }, get current() { return current; }};
+  }
+
+  window.LabShell = {
+    embedded: start,
+    native: cfg => start({...cfg, native: true}),
+  };
+  window.C2Lab = {start};
+})();
+
+/* 第三章：把原页面装进统一任务页外壳（shared/lab-shell/lab-shell.js 的原地模式）。
+ * 原页面的全部元素先移入一个隐藏容器（仍在文档里，原有程序照常工作），
+ * 各任务的 src/stations.js 再把需要的三维区和控件搬进外壳。
+ */
+(() => {
+  'use strict';
+  const TASKS = [
+    {id: '3-1', label: '3-1', short: '构型与空间', href: 'course/chapters/03/tasks/3-1/index.html'},
+    {id: '3-2', label: '3-2', short: '六轴点动', href: 'course/chapters/03/tasks/3-2/index.html'},
+    {id: '3-3a', label: '3-3', short: '减速器', href: 'course/chapters/03/tasks/3-3/reducers.html'},
+    {id: '3-3b', label: '3-3', short: '运动转换', href: 'course/chapters/03/tasks/3-3/conversion.html'},
+    {id: '3-4', label: '3-4', short: '末端与 TCP', href: 'course/chapters/03/tasks/3-4/index.html'},
+    {id: '3-5', label: '3-5', short: '移动底盘', href: 'course/chapters/03/tasks/3-5/index.html'},
+  ];
+  const $ = s => document.querySelector(s);
+  const all = s => [...document.querySelectorAll(s)];
+
+  // 外壳里的原有滑轨：已走过的一段用主色填充，跟随拖动和程序改值
+  const fill = input => {
+    const min = +input.min || 0, max = input.max === '' ? 100 : +input.max, v = +input.value;
+    input.style.setProperty('--p', (((v - min) / ((max - min) || 1)) * 100).toFixed(1) + '%');
+  };
+  document.addEventListener('input', e => { if (e.target.matches?.('input[type="range"]')) fill(e.target); }, true);
+  setInterval(() => document.querySelectorAll('.c2-panel input[type="range"], .c2-strip input[type="range"]').forEach(fill), 250);
+
+  window.C3Shell = {
+    $, all,
+    start(cfg) {
+      const layout = window.CHAPTER_LAYOUT || {};
+      const legacy = document.createElement('div');
+      legacy.className = 'c3-legacy'; legacy.hidden = true;
+      [...document.body.children]
+        .filter(e => !['SCRIPT', 'STYLE', 'DIALOG', 'TEMPLATE'].includes(e.tagName) && e.id !== 'toast' && !e.matches('.course-theme-toggle'))
+        .forEach(e => legacy.append(e));
+      document.body.append(legacy);
+      document.documentElement.dataset.c3Task = layout.task || '';
+      const taskNav = layout.task === '3-3' ? (layout.page === 'conversion' ? '3-3b' : '3-3a') : layout.task;
+      LabShell.native({
+        chapter: {title: '第三章 · 机器人结构与运动', href: 'course/chapters/03/overview/index.html'},
+        tasks: TASKS, taskNav, hint: '', progressKey: taskNav,
+        ...cfg,
+      });
+    },
+  };
+})();
+
+/* 任务 3-1 机器人构型与工作空间 —— 原页面的三维与控件保持不变，搬进统一外壳；四个活动成为四个工位。 */
+(() => {
+  'use strict';
+  const {$, all} = C3Shell;
+  const lab = () => window.configLab;
+  // 换工位时控件会被放回停放处，所以先把要用的元素一次取好
+  const EL = {
+    jointTop: $('.pendant .joint-top'), rows: $('#jointRows'), tour: $('#tour'), stop: $('#stop'),
+    ranges: all('.pendant .range-control'), target: $('.target-panel'), space: $('.space-info'),
+    rigs: $('.constraint-cards'), paths: $('.path-controls'), obstacles: $('.obstacle-editor'),
+  };
+  // 面板里已有小标题，原控件里重复的标题收起来
+  EL.target?.firstElementChild?.setAttribute('hidden', '');
+  $('#spaceType')?.setAttribute('hidden', '');
+  const seen = {types: new Set(), rigs: new Set()};
+  let toured = false, directPlayed = false, detourPlayed = false;
+  EL.tour?.addEventListener('click', () => { toured = true; });
+  $('#playDirect')?.addEventListener('click', () => { directPlayed = true; });
+  $('#playDetour')?.addEventListener('click', () => { detourPlayed = true; });
+  // 原页面换构型时会自动回到“构型与连接”；在“空间边界”“路径与障碍”里换构型时留在原工位
+  $('#typePicker')?.addEventListener('click', e => {
+    if (!e.target.closest('[data-type]')) return;
+    const keep = lab()?.getState().activity;
+    if (keep === 'space' || keep === 'paths') setTimeout(() => lab()?.selectActivity(keep), 0);
+  }, true);
+
+  function stopRow(c, group) {
+    const stop = c.adopt(EL.stop, group); stop?.classList.add('c3-stop');
+  }
+
+  const STATIONS = [
+    {
+      id: 'constraints', name: '自由度实验', lead: '在上方选一种连接，再拖动刚体，数一数它还剩几种运动方式。',
+      build(c) {
+        const g = c.section('拖动试试：它还能怎样动');
+        c.adopt(EL.rows, g);
+        c.challenges([
+          {id: 'free', icon: '🧊', title: '自由刚体', hint: '不加任何约束', check: s => seen.rigs.has('free'),
+            result: '空中的刚体能沿三个方向平移、绕三个轴转动：6 个自由度。'},
+          {id: 'hinge', icon: '🚪', title: '合页门', hint: '只剩下什么运动？', check: s => seen.rigs.has('hinge'),
+            result: '合页只允许绕合页轴转动：1 个自由度。'},
+          {id: 'slide', icon: '🗄', title: '导轨抽屉', hint: '它往哪个方向走？', check: s => seen.rigs.has('slide'),
+            result: '导轨只允许沿导轨平移：1 个自由度。'},
+          {id: 'fixed', icon: '🔩', title: '固定连接', hint: '还能动吗？', check: s => seen.rigs.has('fixed'),
+            result: '固定连接与支座相对静止：0 个自由度。底座固定，不等于关节没有自由度。'},
+        ]);
+      },
+    },
+    {
+      id: 'anatomy', name: '构型与连接', lead: '在上方选一种构型，一个关节一个关节地动，看它靠哪种关节运动。',
+      build(c) {
+        const g = c.section('点动关节');
+        c.adopt([EL.jointTop, EL.rows], g);
+        const tour = c.adopt(EL.tour, g);
+        if (tour) tour.textContent = '▷ 逐轴运动演示';
+        stopRow(c, g);
+        c.challenges([
+          {id: 'types', icon: '🔁', title: '换 3 种构型看看', hint: '在画面上方选构型', check: s => seen.types.size >= 3,
+            result: '直线关节让部件平移，转动关节让部件绕轴转：连接方式不同，动起来就不同。'},
+          {id: 'tour', icon: '▶', title: '看一遍逐轴演示', hint: '一次只动一个关节', check: () => toured,
+            result: '每个关节只负责一个运动量：P 是沿导轨平移，R 是绕轴线转动。'},
+          {id: 'lock', icon: '🔒', title: '锁住一个关节', hint: '点关节行右边的锁', check: s => s.locks.some(Boolean),
+            result: '锁住一轴，能独立调节的量就少了一个。'},
+          {id: 'six', icon: '⑥', title: '点动一下关节型六轴', hint: '选“关节型六轴”，拖一个关节', check: s => s.id === 'articulated' && s.moved,
+            result: '关节型六轴全是转动关节，六个量合起来才能同时定位置和姿态。'},
+        ]);
+      },
+    },
+    {
+      id: 'space', name: '空间边界', lead: '机器人能到的地方有边界。打开画面里的“工作空间”，再缩行程、换工具、试目标点。',
+      build(c) {
+        const g = c.section('行程与工具');
+        const pair = c.h('div', 'c2-grid2'); g.append(pair);
+        c.adopt(EL.ranges, pair);
+        const g2 = c.section('试一个目标点：能不能到？');
+        c.adopt(EL.target, g2);
+        c.challenges([
+          {id: 'shrink', icon: '📏', title: '行程缩到 60% 以下', hint: '拖“行程”滑块', check: s => s.scale <= 0.6,
+            result: '行程变小，能到的范围跟着缩小。'},
+          {id: 'tool', icon: '🔧', title: '换一个更长的工具', hint: '工具长度调到 120 以上', check: s => s.length >= 120,
+            result: '工具变长，工作点跟着外移，边界也就变了。'},
+          {id: 'out', icon: '🎯', title: '试一个够不着的点', hint: '按“超出范围”或自己填', check: s => s.reachMiss,
+            result: '目标点在边界外，关节怎么转都到不了。'},
+        ]);
+      },
+    },
+    {
+      id: 'paths', name: '路径与障碍', lead: '能到终点，不等于能走过去。同一起终点，比一比直连和绕行。',
+      build(c) {
+        const g = c.section('起点到终点');
+        c.adopt(EL.paths, g);
+        const g2 = c.section('挪动障碍');
+        c.adopt(EL.obstacles, g2);
+        c.challenges([
+          {id: 'load', icon: '📥', title: '载入对照', hint: '先载入起点和终点', check: s => s.route != null,
+            result: '起点、终点都能到——这只说明“能到”，还没说明“能过去”。'},
+          {id: 'direct', icon: '⛔', title: '看直连撞上障碍', hint: '播放直接运动', check: s => s.directBlocked,
+            result: '关节直接插值时，连杆或工具扫过了障碍，运动被叫停。'},
+          {id: 'detour', icon: '✅', title: '让它绕过去', hint: '播放绕行样例', check: s => s.detourOk,
+            result: '换一条路线，整台机器人都没碰到障碍，才算真正能通过。'},
+          {id: 'move', icon: '🧱', title: '挪动障碍再试', hint: '改障碍的位置或高度', check: s => s.obstacleMoved,
+            result: '障碍一变，原来能过的路线可能就不行了——每次都要重新检查。'},
+        ]);
+      },
+    },
+  ];
+
+  let q0 = null, obstacle0 = null;
+  C3Shell.start({
+    task: '3-1', title: '机器人构型与工作空间',
+    stage: $('section.stage'),
+    stageTop: [$('#typePicker'), EL.rigs],
+    stations: STATIONS,
+    current: () => lab()?.getState().activity,
+    select: id => lab()?.selectActivity(id),
+    reset: () => $('#reset')?.click(),
+    poll() {
+      const s = lab().getState();
+      seen.types.add(s.id); if (s.rig) seen.rigs.add(s.rig);
+      if (!q0 || q0.id !== s.id) q0 = {id: s.id, q: s.q.slice()};
+      const moved = s.q.some((v, i) => Math.abs(v - q0.q[i]) > 1);
+      const key = JSON.stringify(s.obstacles.map(o => [o.enabled, o.c, o.size]));
+      if (obstacle0 == null) obstacle0 = key;
+      const result = $('.path-results')?.textContent || '';
+      const directBlocked = directPlayed && /直连[：:][^绕]*(受阻|碰撞|干涉)/.test(result) && !s.moving;
+      const detourOk = detourPlayed && /绕行[：:][^直]*通过/.test(result) && !s.moving;
+      const targetText = ($('#targetInfo')?.textContent || '') + ($('#toast')?.textContent || '');
+      return {...s, moved, directBlocked, detourOk, obstacleMoved: key !== obstacle0, reachMiss: /不可达|够不着|超出|无法到达|不能到达|范围外|没有符合|位置解|无解/.test(targetText)};
+    },
+    build(c) {
+      // 三维区上方：自由度实验选“连接”，其余工位选“构型”（选中的构型在三个工位之间保持不变）
+      const picker = $('#typePicker');
+      if (picker) picker.hidden = c.station.id === 'constraints';
+      if (EL.rigs) EL.rigs.hidden = c.station.id !== 'constraints';
+    },
+  });
 })();
 </script></body></html>

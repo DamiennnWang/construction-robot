@@ -25,7 +25,6 @@ export function buildTaskPage(srcUrl, taskId, scripts = ['src/stations.js']) {
     chapter: {title: '第二章 · 动力与工作机构', href: 'course/chapters/02/overview/index.html'},
     tasks: chapter.map(t => ({id: t.id, title: t.title, short: SHORT[t.id] || t.title, href: t.demo})),
   };
-  const shared = 'shared/动力与工作机构/';
   const html = `<!doctype html>
 <html lang="zh-CN">
 <head>
@@ -33,12 +32,12 @@ export function buildTaskPage(srcUrl, taskId, scripts = ['src/stations.js']) {
 <meta name="viewport" content="width=device-width,initial-scale=1">
 <meta name="color-scheme" content="light dark">
 <title>${taskId} ${task.title}｜智能建筑机械与机器人</title>
-<link rel="stylesheet" href="${rel(shared + 'lab-shell.css')}">
+<link rel="stylesheet" href="${rel('shared/lab-shell/lab-shell.css')}">
 </head>
 <body>
 <noscript>此页面需要 JavaScript。请在浏览器中启用脚本后打开。</noscript>
 <script>window.C2Page=${JSON.stringify(page)};</script>
-<script src="${rel(shared + 'lab-shell.js')}"></script>
+<script src="${rel('shared/lab-shell/lab-shell.js')}"></script>
 ${scripts.map(s => `<script src="${local(s)}"></script>`).join('\n')}
 </body>
 </html>
