@@ -1625,7 +1625,7 @@ html.lab-native .c2-panel .constraint-cards { height:auto !important; min-height
   /* 示教器放在三维区底栏，像真的示教器一样分三块：
    * 左：六个轴，每个都有滑轨和 −/+ 点动；
    * 右：参照系（关节 / 基坐标 / 工具坐标，决定左边六格各控制什么），再右是点动方式、速度、停止。 */
-  /* 三维区底栏：左边（认识六轴时）六个关节卡片排一行，右边始终是速度和停止 */
+  /* 三维区底栏：三个工位一样——左边六个关节卡片排一行，右边速度和停止 */
   function strip(c, withAxes) {
     const box = c.h('div', 'c3-strip-row');
     const left = c.h('div', 'c3-strip-axes');
@@ -1640,7 +1640,7 @@ html.lab-native .c2-panel .constraint-cards { height:auto !important; min-height
 
   const STATIONS = [
     {
-      id: 'axes', name: '认识六轴', lead: '一次只转一个关节，看哪些部分跟着动。在右边选参照系、点动关节；下方是六个关节的介绍。',
+      id: 'axes', name: '认识六轴', lead: '一次只转一个关节，看哪些部分跟着动。在右边选参照系、点动关节；下方是六个关节。',
       build(c) {
         c.challenges([
           {id: 'tour', icon: '▶', title: '看一遍六轴巡回演示', hint: '六个关节依次转', check: () => flags.tour,
@@ -1715,7 +1715,7 @@ html.lab-native .c2-panel .constraint-cards { height:auto !important; min-height
       const pad = c.h('div', 'c3-pendant c3-in-panel'); g2.append(pad);
       c.adopt([EL.jogMode, EL.rows], pad);
       c.body.prepend(g, g2);
-      strip(c, c.station.id === 'axes');
+      strip(c, true);
       const notice = EL.notice?.textContent.trim() || '';
       lastNotice = notice;
       c.lab.onState(() => {
