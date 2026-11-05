@@ -40,3 +40,11 @@
 .c2-panel .motion-rows { display:grid !important; grid-template-columns:1fr 1fr; gap:6px; }
 .c2-panel .motion-rows > * { margin:0 !important; padding:5px 8px !important; border-radius:9px; background:var(--surface-2); border:0 !important; min-width:0; }
 .c2-panel .equation { margin:0; padding:7px 10px; border-radius:10px; background:var(--blue-soft); font-size:12.5px; }
+/* 运动转换：三种机构的选型对比，当前机构高亮 */
+.c3-pick { display:grid; gap:4px; }
+.c3-pick-row { display:grid; grid-template-columns:40px 1fr; column-gap:8px; row-gap:1px; align-items:baseline; padding:6px 9px; border-radius:9px; border:1px solid transparent; color:var(--muted, #667); font-size:12px; }
+.c3-pick-row b { color:var(--ink, inherit); font-size:13px; }
+.c3-pick-row em { grid-column:2; font-style:normal; font-size:11px; opacity:.85; }
+.c3-pick-row em::before { content:'用在：'; }
+.c3-pick-row.on { border-color:var(--course-accent); background:var(--blue-soft); color:var(--ink, inherit); }
+.c3-pick-row.on b, .c3-pick-row.on em { color:var(--course-accent); }

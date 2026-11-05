@@ -21,9 +21,15 @@
   const MODES = page === 'reducers'
     ? [{id: 'planet', name: '行星减速器', lead: '太阳轮转进去，行星架慢慢转出来。找出谁固定、谁输出、转一圈剩多少。'},
        {id: 'harmonic', name: '谐波减速器', lead: '波发生器转一圈，柔轮只退后两齿——减速比可以非常大。'}]
-    : [{id: 'screw', name: '丝杠螺母', lead: '丝杠转动，螺母带着滑台直线走。'},
-       {id: 'rack', name: '齿轮齿条', lead: '齿轮转动，齿条直线移动。'},
-       {id: 'crank', name: '曲柄滑块', lead: '曲柄转一圈，滑块来回走一趟。'}];
+    : [{id: 'screw', name: '丝杠 · 钻孔定位', lead: '钻孔机器人：丝杠转，螺母带着钻头一点点走，对准墙板上的孔位。'},
+       {id: 'rack', name: '齿条 · 送料滑台', lead: '送料滑台：齿轮转，齿条托着砖走得又快又远，送到机器人抓取位。'},
+       {id: 'crank', name: '曲柄 · 往复锯', lead: '往复锯：电机一直同向转，锯条在砌块的锯缝里来回拉。'}];
+  // 机器人里怎么选：三种转换机构放在一起比，当前这一种高亮
+  const PICK = [
+    {id: 'screw', name: '丝杠', good: '一圈走得少，停得准，推不回去', use: '钻孔进给、升降轴'},
+    {id: 'rack', name: '齿条', good: '一圈走得多，行程可以很长', use: '送料滑台、机器人地轨'},
+    {id: 'crank', name: '曲柄', good: '电机不用反转，自己来回', use: '往复锯、推料、泵'},
+  ];
   const TITLES = {
     planet: ['谁被固定住了？', '转一圈，会剩多少？', '停到目标位置'],
     harmonic: ['谁被固定住了？', '找到“退后两齿”', '停到目标位置'],
@@ -55,6 +61,15 @@
       c.adopt([EL.rows, EL.equation], g2);
       const g3 = c.section('做实验');
       c.adopt(EL.experiment, g3);
+      if (page === 'conversion') {
+        const gp = c.section('机器人里为什么选它');
+        const t = c.h('div', 'c3-pick'); gp.append(t);
+        for (const p of PICK) {
+          const row = c.h('div', 'c3-pick-row' + (p.id === m.id ? ' on' : ''));
+          row.innerHTML = `<b>${p.name}</b><span>${p.good}</span><em>${p.use}</em>`;
+          t.append(row);
+        }
+      }
       const g4 = c.section('零件：点名称看位置');
       c.adopt(EL.legend, g4);
       // 当前关卡的卡片加框

@@ -855,6 +855,14 @@ html.lab-native .c2-panel .constraint-cards { height:auto !important; min-height
 .c2-panel .motion-rows { display:grid !important; grid-template-columns:1fr 1fr; gap:6px; }
 .c2-panel .motion-rows > * { margin:0 !important; padding:5px 8px !important; border-radius:9px; background:var(--surface-2); border:0 !important; min-width:0; }
 .c2-panel .equation { margin:0; padding:7px 10px; border-radius:10px; background:var(--blue-soft); font-size:12.5px; }
+/* 运动转换：三种机构的选型对比，当前机构高亮 */
+.c3-pick { display:grid; gap:4px; }
+.c3-pick-row { display:grid; grid-template-columns:40px 1fr; column-gap:8px; row-gap:1px; align-items:baseline; padding:6px 9px; border-radius:9px; border:1px solid transparent; color:var(--muted, #667); font-size:12px; }
+.c3-pick-row b { color:var(--ink, inherit); font-size:13px; }
+.c3-pick-row em { grid-column:2; font-style:normal; font-size:11px; opacity:.85; }
+.c3-pick-row em::before { content:'用在：'; }
+.c3-pick-row.on { border-color:var(--course-accent); background:var(--blue-soft); color:var(--ink, inherit); }
+.c3-pick-row.on b, .c3-pick-row.on em { color:var(--course-accent); }
 </style><script data-course-navigation src="../../../../../shared/navigation.js"></script><link data-course-theme rel="stylesheet" href="../../../../../shared/styles/theme.css"><script data-course-theme src="../../../../../shared/theme.js"></script></head>
 <body data-theme="light" data-page="conversion">
 <div class="app" data-mobile="model">
@@ -918,7 +926,7 @@ html.lab-native .c2-panel .constraint-cards { height:auto !important; min-height
 <script>const PAGE='conversion';const TAU=Math.PI*2;
 const clamp=(v,a,b)=>Math.max(a,Math.min(b,v));
 const wrap=a=>((a+Math.PI)%TAU+TAU)%TAU-Math.PI;
-const SPECS={planet:{title:'行星减速器',tag:'PLANETARY / 01',hint:'太阳轮转得快，行星架为什么转得慢？',input:'太阳轮',fixed:'内齿圈',output:'行星架',teeth:[18,18,54],ratio:4,target:90},harmonic:{title:'谐波减速器',tag:'STRAIN WAVE / 02',hint:'变形在转，柔轮却只退后一点点。',input:'波发生器',fixed:'刚轮',output:'柔轮',teeth:[200,202],ratio:-100,target:-7.2},screw:{title:'丝杠与螺母',tag:'LEAD SCREW / 01',hint:'同样转一圈，滑台能走多远？',input:'丝杠',fixed:'导轨',output:'螺母滑台',target:32},rack:{title:'齿轮与齿条',tag:'RACK & PINION / 02',hint:'齿轮转过的弧长，变成滑台的路程。',input:'齿轮',fixed:'导轨',output:'齿条滑台',target:48},crank:{title:'曲柄与连杆',tag:'SLIDER CRANK / 03',hint:'一直向同一方向转，滑块却来回运动。',input:'曲柄',fixed:'导轨',output:'滑块',target:50}};
+const SPECS={planet:{title:'行星减速器',tag:'PLANETARY / 01',hint:'太阳轮转得快，行星架为什么转得慢？',input:'太阳轮',fixed:'内齿圈',output:'行星架',teeth:[18,18,54],ratio:4,target:90},harmonic:{title:'谐波减速器',tag:'STRAIN WAVE / 02',hint:'变形在转，柔轮却只退后一点点。',input:'波发生器',fixed:'刚轮',output:'柔轮',teeth:[200,202],ratio:-100,target:-7.2},screw:{title:'丝杠与螺母',tag:'LEAD SCREW / 01',hint:'钻孔机器人：丝杠把钻头一点点送到孔位，停得准。',input:'丝杠',fixed:'导轨',output:'螺母滑台',target:32},rack:{title:'齿轮与齿条',tag:'RACK & PINION / 02',hint:'送料滑台：齿轮转一圈走得远，把砖送到机器人抓取位。',input:'齿轮',fixed:'导轨',output:'齿条滑台',target:48},crank:{title:'曲柄与连杆',tag:'SLIDER CRANK / 03',hint:'往复锯：电机一直朝一个方向转，锯条却来回拉。',input:'曲柄',fixed:'导轨',output:'滑块',target:50}};
 // Unshifted, common-module teeth; three equally spaced planets satisfy
 // Zr=Zs+2Zp and (Zs+Zr)/3=24. Phases assume a tooth tip at local angle zero.
 const PLANETARY=Object.freeze({sunTeeth:18,planetTeeth:18,ringTeeth:54,planetCount:3,module:2,sunPitchRadius:18,planetPitchRadius:18,ringPitchRadius:54,orbitRadius:36,ratio:4,sunPhase:0,ringPhase:0,planetPhase:Math.PI/18,planetPhases:Object.freeze([Math.PI/18,Math.PI/18,Math.PI/18]),initialOrbits:Object.freeze([0,TAU/3,2*TAU/3])});
@@ -1001,11 +1009,11 @@ class BenchScene{
   this.renderer=new THREE.WebGLRenderer({antialias:true,alpha:true,powerPreference:'high-performance'});this.renderer.setPixelRatio(Math.min(devicePixelRatio,1.5));this.renderer.shadowMap.enabled=true;this.renderer.shadowMap.type=THREE.PCFSoftShadowMap;this.renderer.outputColorSpace=THREE.SRGBColorSpace;host.append(this.renderer.domElement);
   this.scene=new THREE.Scene();this.scene.add(new THREE.HemisphereLight(0xffffff,0x687b98,2.0));
   const key=new THREE.DirectionalLight(0xffffff,2.4);key.position.set(-100,-140,260);key.castShadow=true;key.shadow.mapSize.set(2048,2048);Object.assign(key.shadow.camera,{left:-180,right:180,top:180,bottom:-180,near:1,far:700});key.shadow.bias=-.0005;key.shadow.normalBias=.15;this.scene.add(key);const fill=new THREE.DirectionalLight(0xdceaff,.9);fill.position.set(160,100,120);this.scene.add(fill);
-  this.camera=new THREE.OrthographicCamera(-150,150,100,-100,1,1200);this.camera.up.set(0,0,1);this.mat={};for(const name of ['base','lo','mid','hi','lit','rubber','ink','target','input','output','white','steel'])this.mat[name]=new THREE.MeshStandardMaterial({roughness:name==='rubber'?.95:name==='output'?.38:.48,metalness:name==='rubber'?0:name==='steel'?.6:.22});this.highlightMat={};
+  this.camera=new THREE.OrthographicCamera(-150,150,100,-100,1,1200);this.camera.up.set(0,0,1);this.mat={};for(const name of ['base','lo','mid','hi','lit','rubber','ink','target','input','output','white','steel','brick'])this.mat[name]=new THREE.MeshStandardMaterial({roughness:name==='rubber'?.95:name==='output'?.38:.48,metalness:name==='rubber'?0:name==='steel'?.6:.22});this.highlightMat={};
   this.edgeMat=new THREE.LineBasicMaterial({color:0x303a3e,transparent:true,opacity:.17});this.floor=new THREE.Mesh(new THREE.PlaneGeometry(1200,1200),new THREE.ShadowMaterial({opacity:.12}));this.floor.position.z=-12;this.floor.receiveShadow=true;this.scene.add(this.floor);
   this.ray=new THREE.Raycaster();this.pointer=new THREE.Vector2();this.bind();new ResizeObserver(()=>this.resize()).observe(host);this.theme(false);
  }
- theme(dark){this.dark=dark;const c=dark?{base:0x25364d,lo:0x405876,mid:0x849bb8,hi:0xcbd8eb,lit:0x95bcff,rubber:0x111a29,ink:0x14253b,target:0xa8caff,input:0x74a7ff,output:0x69cdb2,white:0xf3f7ff,steel:0x8ca5c8}:{base:0xcbd6e3,lo:0x768ca6,mid:0x9fb1c5,hi:0xdde5ee,lit:0x387be7,rubber:0x273c55,ink:0x273c55,target:0x2469ed,input:0x387be7,output:0x36a88c,white:0xf7fbff,steel:0x9fb1c5};for(const k in c){this.mat[k].color.setHex(c[k]);if(this.highlightMat[k]){this.highlightMat[k].color.setHex(c[k]);this.highlightMat[k].emissive.setHex(dark?0x183d75:0x123264)}}this.floor.material.opacity=dark?.28:.12;this.draw();}
+ theme(dark){this.dark=dark;const c=dark?{base:0x25364d,lo:0x405876,mid:0x849bb8,hi:0xcbd8eb,lit:0x95bcff,rubber:0x111a29,ink:0x14253b,target:0xa8caff,input:0x74a7ff,output:0x69cdb2,white:0xf3f7ff,steel:0x8ca5c8,brick:0xb06a4a}:{base:0xcbd6e3,lo:0x768ca6,mid:0x9fb1c5,hi:0xdde5ee,lit:0x387be7,rubber:0x273c55,ink:0x273c55,target:0x2469ed,input:0x387be7,output:0x36a88c,white:0xf7fbff,steel:0x9fb1c5,brick:0xc97b55};for(const k in c){this.mat[k].color.setHex(c[k]);if(this.highlightMat[k]){this.highlightMat[k].color.setHex(c[k]);this.highlightMat[k].emissive.setHex(dark?0x183d75:0x123264)}}this.floor.material.opacity=dark?.28:.12;this.draw();}
  bind(){let dragging=false,lastX=0,lastY=0,dist=0,driving=false;
   this.host.addEventListener('pointerdown',e=>{if(e.button!==0)return;dragging=true;dist=0;lastX=e.clientX;lastY=e.clientY;driving=this.roleAt(e)==='input';this.host.setPointerCapture(e.pointerId)});
   this.host.addEventListener('pointermove',e=>{if(!dragging)return;const dx=e.clientX-lastX,dy=e.clientY-lastY;dist+=Math.abs(dx)+Math.abs(dy);if(driving&&this.onTurn)this.onTurn(dx*.04);else{this.yaw-=dx*.007;this.pitch=clamp(this.pitch+dy*.006,.15,1.55)}lastX=e.clientX;lastY=e.clientY;this.draw()});
@@ -1122,7 +1130,29 @@ class BenchScene{
    const r=setting;g.input.position.set(-55,0,34);this.cyl(12,31,-55,0,1,'lo');this.cyl(5,5,0,0,-3,'hi',g.input,'input');this.cyl(r+5,3,0,0,0,'mid',g.input,'input');this.annulus(r+3,r+5,1,0,0,3,'hi',g.input,'input');this.box(r,5,2,r/2,0,3,'lit',g.input,'input');this.cyl(3,6,r,0,3,'hi',g.input,'input');this.bolt(r,0,9,g.input,1.5);this.wheel(g.input,0,0,12,'z',9);
    g.link=this.group(this.root,'rod');this.box(70,6,3,35,0,0,'hi',g.link,'rod');this.annulus(3,5.5,3,0,0,0,'mid',g.link,'rod');this.annulus(3,5.5,3,70,0,0,'mid',g.link,'rod');this.cyl(3,9,0,0,36,'hi',g.carriage,'output');this.bolt(0,0,45,g.carriage,1.5);this.box(85,71,2,-38,0,54,'lo',this.cover);
   }
+  this.scenery(mode,setting);
   this.cover.visible=false;this.targetMarker.position.x=mode==='crank'?-55+70+setting:-40+SPECS[mode].target;
+ }
+ /* 机器人应用场景：机构不变，只在滑台上装工具或工件，并在台面上放上工作对象 */
+ scenery(mode){const g=this.groups,c=g.carriage;
+  if(mode==='screw'){
+   // 钻孔单元：电机、夹头、钻头装在螺母滑台上，钻头对着后面的墙板
+   this.box(12,12,14,0,23,30,'mid',c,'output');this.cyl(7,2,0,12,51,'lo',c,'output','y');this.cyl(6.5,22,0,14,51,'hi',c,'output','y');for(const y of[19,25,31])this.cyl(6.9,1.2,0,y,51,'lo',c,'output','y');
+   this.cyl(3.6,7,0,36,51,'steel',c,'output','y');this.cyl(1.3,9,0,43,51,'lit',c,'output','y');
+   // 墙板与孔位：每 16 mm 一个孔位，目标孔加圈
+   this.box(176,12,4,0,57,.8,'mid');this.box(170,6,54,0,57,4.8,'hi');for(const x of[-82,82])for(const y of[53,61])this.bolt(x,y,4.8,this.root,1.1);
+   for(let i=0;i<6;i++){const x=-40+i*16;this.cyl(1.8,.6,x,53.4,51,'ink',this.root,'','y')}
+   this.annulus(3,4.4,.6,-40+32,53.3,51,'target',this.root,'','y');
+  }else if(mode==='rack'){
+   // 送料滑台：托盘上码两块砖，送到机器人抓取位
+   this.box(34,16,2,0,18,30,'lo',c,'output');for(const x of[-12,12])this.bolt(x,18,32,c,1);
+   this.box(24,11.5,6.5,-1,18,32,'brick',c,'output',.5);this.box(24,11.5,6.5,1,18,38.9,'brick',c,'output',.5);this.box(24.2,11.7,.4,0,18,38.5,'white',c,'output',0);
+  }else if(mode==='crank'){
+   // 往复锯：锯架装在滑块上，锯条在砌块的锯缝里来回拉
+   this.box(6,6,10,0,26,30,'mid',c,'rod');this.box(6,19,3,0,33.5,40,'hi',c,'rod');this.box(106,4,3,0,42,40,'mid',c,'rod');
+   for(const x of[-50,50])this.box(3,3,18,x,42,22,'mid',c,'rod');this.box(100,1.2,7,0,42,23,'lit',c,'rod',0);this.box(100,1.4,1,0,42,22,'ink',c,'rod',0);
+   this.box(22,16,19,15,42,.8,'brick');this.box(22,6.8,16,15,37.4,19.8,'brick');this.box(22,6.8,16,15,46.6,19.8,'brick');for(const x of[2,28])this.box(3,20,10,x,42,.8,'mid');
+  }
  }
  highlight(role){this.selected=role;for(const o of this.objects){let p=o;while(p&&!p.userData.role)p=p.parent;const own=p?.userData.role,key=o.userData.original||'mid';if(own===role){if(!this.highlightMat[key]){this.highlightMat[key]=this.mat[key].clone();this.highlightMat[key].emissive.setHex(this.dark?0x183d75:0x123264);this.highlightMat[key].emissiveIntensity=.28}o.material=this.highlightMat[key]}else o.material=this.mat[key]}this.draw()}
  inspect(){const g=this.groups,v=sample(this.mode,this.theta,this.setting),angle=o=>o?.rotation.z??0;return{mode:this.mode,input:angle(g.input||g.wave),output:angle(g.output||g.carriage),carrier:angle(g.carrier),fixed:angle(g.ring),ratio:v.ratio,parts:this.partCount,markers:this.showMarkers,coverVisible:this.cover.visible,apart:this.apart,teeth:{sun:g.sunGear?.userData.teeth,planet:g.planets?.map(p=>p.children.find(x=>x.userData.teeth)?.userData.teeth),ring:g.ringGear?.userData.teeth,flex:g.teeth?.count},planets:g.planets?.map((p,i)=>({x:p.position.x,y:p.position.y,orbit:Math.atan2(p.position.y,p.position.x),spin:p.rotation.z,materialAngle:p.rotation.z,expectedSpin:v.planetAngles?.[i]})),flexMarker:this.mode==='harmonic'?{base:Math.atan2(flexPoint(this.theta,0,0).y,flexPoint(this.theta,0,0).x),rim:Math.atan2(flexPoint(this.theta,0,1).y,flexPoint(this.theta,0,1).x)}:null}}
@@ -1140,7 +1170,7 @@ let introTour=0;
 const savedKey='mechanism-lab-33-v2';let scores={};try{scores=JSON.parse(localStorage.getItem(savedKey)||'{}')}catch{}
 let bench=null;try{bench=new BenchScene($('viewport'),role=>pickPart(role))}catch(error){$('fallback').style.display='flex';$('viewport').style.display='none';$('sceneHint').textContent='静态备用图 · 按钮继续驱动读数';for(const b of document.querySelectorAll('.viewtools button'))b.disabled=true;console.warn('WebGL unavailable; static Anatomy fallback enabled.',error.message)}
 document.querySelector(`.topnav [data-page="${PAGE}"]`).classList.add('active');
-const INFO={planet:'内齿圈固定，太阳轮输入，行星架输出。18 / 18 / 54齿；输出同向，速度为输入的四分之一。',harmonic:'刚轮202齿固定，柔轮200齿输出；波发生器每转一圈，柔轮反向转3.6°，相当于退后两齿。杯口形变随输入转，材料标记随柔轮慢转。',screw:'螺母被滑台限制转动，丝杠旋转带动它沿导轨直线移动。此处观察导程，不模拟滚珠回流。',rack:'齿轮中心固定，齿条沿导轨移动。节圆半径12 mm，直线位移等于节圆滚过的弧长。',crank:'曲柄连续转动，连杆拉推滑块。连杆长度保持70 mm；滑块行程等于曲柄半径的两倍。'};
+const INFO={planet:'内齿圈固定，太阳轮输入，行星架输出。18 / 18 / 54齿；输出同向，速度为输入的四分之一。',harmonic:'刚轮202齿固定，柔轮200齿输出；波发生器每转一圈，柔轮反向转3.6°，相当于退后两齿。杯口形变随输入转，材料标记随柔轮慢转。',screw:'钻头装在螺母滑台上：丝杠转，螺母不能跟着转，只能带着钻头沿导轨走。一圈只走一个导程，所以能停得很准，推它也推不回去。',rack:'砖放在齿条滑台上：齿轮中心固定，齿条带着砖沿导轨走。节圆半径12 mm，一圈就走约75 mm，适合长距离送料。',crank:'锯架装在滑块上：曲柄一直同向转，连杆把锯架推出去、拉回来。连杆长70 mm，锯条行程等于曲柄半径的两倍，电机不用反转。'};
 
 const dialNodes={};
 function dialSVG(deform=false){
@@ -1190,13 +1220,13 @@ function feedback(s,pass=false){$('feedback').textContent=s;$('feedback').classL
 function saveWin(){const key=state.mode;scores[key]??=[false,false,false];scores[key][state.level]=true;try{localStorage.setItem(savedKey,JSON.stringify(scores))}catch{}stars();toast('挑战完成 · 再观察一次，说明为什么。')}
 function stars(){const ss=scores[state.mode]||[];$('stars').textContent=[0,1,2].map(i=>ss[i]?'●':'○').join(' ');$('stars').setAttribute('aria-label',`本机构已完成${ss.filter(Boolean).length}项挑战`)}
 function pickPart(role){const s=SPECS[state.mode],labels={input:s.input,fixed:s.fixed,output:s.output,planet:'行星轮',rod:'连杆'},desc={input:'输入件 · 由手轮驱动',fixed:'固定件 · 与机座连接',output:'输出件 · 观察实际位移',planet:'一边绕太阳轮公转，一边自转',rod:'长度不变，把曲柄运动传给滑块'};$('partName').textContent=labels[role]||'';$('partRole').textContent=desc[role]||'';bench?.highlight(role);if(state.level===0&&['input','fixed','output'].includes(role)){state.choice=role;paintChoices()}}
-function missionData(){const mode=state.mode,s=SPECS[mode];if(state.level===0)return{title:reducer?'谁被固定住了？':'谁负责直线输出？',text:reducer?'点击模型里的零件，或从下面选择。先找出连接机座、不跟随输入转动的那个部件。':'让机构动起来，再找出沿导轨运动的部件。可以直接点击模型，也可以选择下面的名称。',choices:[[s.input,'input'],[s.fixed,'fixed'],[s.output,'output']],answer:reducer?'fixed':'output'};
- if(state.level===1){if(mode==='planet')return{title:'转一圈，会剩多少？',text:'太阳轮转一整圈，行星架怎样转？先预测，再点击“输入一圈”亲眼验证。',choices:[['同向 90°','correct'],['同向 360°','wrong1'],['反向 90°','wrong2']],answer:'correct'};if(mode==='harmonic')return{title:'找到“退后两齿”',text:'波发生器转一圈，柔轮怎样运动？先选，再运行一圈，盯住底部输出标记。',choices:[['同向 3.6°','wrong1'],['反向 3.6°','correct'],['反向 360°','wrong2']],answer:'correct'};if(mode==='screw')return{title:'让一圈走 8 毫米',text:'选择合适的导程，再运行一整圈。不要只看手轮，要对照滑台和位移读数。',choices:[['一圈位移由导程决定','correct'],['只要转快，一圈就走得更远','wrong1']],answer:'correct'};if(mode==='rack')return{title:'一圈沿着哪里走？',text:'齿轮节圆半径12 mm。先选预测，再归零并运行一圈，观察滑台的路程。',choices:[['约 12 mm','wrong1'],['约 24 mm','wrong2'],['约 75.4 mm','correct']],answer:'correct'};return{title:'让往复行程达到 50 mm',text:'选择曲柄半径，再运行一圈。观察两端位置，而不是只看转得快不快。',choices:[['行程是曲柄半径的两倍','correct'],['行程等于连杆长度','wrong1']],answer:'correct'}}
- const target=mode==='crank'?state.setting*2:s.target,unit=reducer?'°':' mm';return{title:'停到目标位置',text:`把${s.output}停在 ${target}${unit}。播放接近目标，再暂停，用正反单步微调；停稳后检查。${mode==='harmonic'?'反向很慢是真实减速关系。':''}`,choices:[],answer:null};
+function missionData(){const mode=state.mode,s=SPECS[mode];if(state.level===0)return{title:reducer?'谁被固定住了？':{screw:'钻头跟着谁走？',rack:'砖跟着谁走？',crank:'锯架装在谁上？'}[mode],text:reducer?'点击模型里的零件，或从下面选择。先找出连接机座、不跟随输入转动的那个部件。':{screw:'让丝杠转起来，看钻头装在哪个零件上、跟着谁沿导轨走。',rack:'让齿轮转起来，看托盘和砖跟着哪个零件走。',crank:'让曲柄转起来，看锯架跟着哪个零件来回走。'}[mode]+'可以直接点击模型，也可以选下面的名称。',choices:[[s.input,'input'],[s.fixed,'fixed'],[s.output,'output']],answer:reducer?'fixed':'output'};
+ if(state.level===1){if(mode==='planet')return{title:'转一圈，会剩多少？',text:'太阳轮转一整圈，行星架怎样转？先预测，再点击“输入一圈”亲眼验证。',choices:[['同向 90°','correct'],['同向 360°','wrong1'],['反向 90°','wrong2']],answer:'correct'};if(mode==='harmonic')return{title:'找到“退后两齿”',text:'波发生器转一圈，柔轮怎样运动？先选，再运行一圈，盯住底部输出标记。',choices:[['同向 3.6°','wrong1'],['反向 3.6°','correct'],['反向 360°','wrong2']],answer:'correct'};if(mode==='screw')return{title:'两圈正好到下一孔',text:'墙板上的孔每 16 mm 一个。想让丝杠转两圈，钻头正好走到下一个孔，导程该选几毫米？选好后运行一圈验证。',choices:[['一圈走多远由导程决定','correct'],['转得快，一圈就走得远','wrong1']],answer:'correct'};if(mode==='rack')return{title:'送料一圈走多远？',text:'齿轮节圆半径12 mm。先猜托盘一圈能送多远，再归零运行一圈，看砖走了多少。',choices:[['约 12 mm','wrong1'],['约 24 mm','wrong2'],['约 75.4 mm','correct']],answer:'correct'};return{title:'锯条要来回拉 50 mm',text:'砌块要求锯条每次拉 50 mm。选曲柄半径，再运行一圈，看锯架两端停在哪里。',choices:[['行程是曲柄半径的两倍','correct'],['行程等于连杆长度','wrong1']],answer:'correct'}}
+ const target=mode==='crank'?state.setting*2:s.target,unit=reducer?'°':' mm';if(!reducer)return{title:{screw:'钻头对准目标孔',rack:'把砖送到抓取位',crank:'锯架停到最外端'}[mode],text:{screw:`把钻头停在 ${target} mm 处、加圈的那个孔位。播放接近，再暂停，用正反单步微调；停稳后检查。`,rack:`把托盘送到 ${target} mm 处的抓取位，机器人才抓得到砖。播放接近，再暂停，用单步微调。`,crank:`换锯条要把锯架停在最外端（${target} mm）。播放接近，再暂停，用单步微调。`}[mode],choices:[],answer:null};return{title:'停到目标位置',text:`把${s.output}停在 ${target}${unit}。播放接近目标，再暂停，用正反单步微调；停稳后检查。${mode==='harmonic'?'反向很慢是真实减速关系。':''}`,choices:[],answer:null};
 }
 function paintChoices(){document.querySelectorAll('#choices button').forEach(b=>b.classList.toggle('active',b.dataset.value===state.choice))}
 function mission(){const data=missionData();$('levelTag').textContent=`MISSION / 0${state.level+1}`;$('missionTitle').textContent=data.title;$('missionText').textContent=data.text;$('choices').innerHTML=data.choices.map(([name,v],i)=>`<button data-value="${v}"><span class="choice-index">0${i+1}</span>${name}</button>`).join('');document.querySelectorAll('#choices button').forEach(b=>b.onclick=()=>{state.choice=b.dataset.value;paintChoices();if(state.level===0)pickPart(state.choice)});$('targetMeter').hidden=state.level!==2;$('check').textContent=state.level===2?'检查到位':state.level===1?'核对实验':'检查选择';feedback(state.level===1?'先预测，再用“输入一圈”完成实验。':state.level===2?'目标窗口已标在模型与进度条上。':'选一个零件，看看它是否真的符合条件。');document.querySelectorAll('[data-level]').forEach(b=>b.classList.toggle('active',+b.dataset.level===state.level));paintChoices();renderReadouts()}
-function setMode(mode){clearTimeout(introTour);introTour=0;state.mode=mode;state.last=0;state.theta=0;state.setting=mode==='crank'?25:8;state.level=0;state.choice=null;state.playing=false;state.runTarget=null;state.trialDone=false;state.moved=false;state.apart=state.apartTarget=0;state.cut=true;bench?.load(mode,state.setting);$('view').classList.remove('active');$('explode').setAttribute('aria-pressed','false');$('cut').setAttribute('aria-pressed','true');$('sceneNote').classList.remove('show');$('subtitle').textContent=SPECS[mode].hint;$('figNumber').textContent=SPECS[mode].tag;$('figTitle').textContent=mode==='planet'?'太阳轮输入 → 行星架输出':mode==='harmonic'?'波发生器输入 → 柔轮输出':'旋转输入 → 直线输出';$('lessonNote').textContent=INFO[mode];$('modelBoundary').textContent=INFO[mode]+' 齿形、柔轮变形和装配间隙作了教学简化，不用于设备选型、受力或寿命计算。';$('legend').innerHTML=['input','fixed','output',...(mode==='planet'?['planet']:mode==='crank'?['rod']:[])].map(role=>`<button data-part="${role}">${{input:SPECS[mode].input,fixed:SPECS[mode].fixed,output:SPECS[mode].output,planet:'行星轮',rod:'连杆'}[role]}</button>`).join('');document.querySelectorAll('[data-part]').forEach(b=>b.onclick=()=>pickPart(b.dataset.part));document.querySelectorAll('[data-mode]').forEach(b=>b.classList.toggle('active',b.dataset.mode===mode));$('setting').hidden=!['screw','crank'].includes(mode);$('settingLabel').textContent=mode==='screw'?'丝杠导程':'曲柄半径';$('settingSelect').innerHTML=(mode==='screw'?[4,8,16]:[15,25,35]).map(v=>`<option value="${v}" ${v===state.setting?'selected':''}>${v} mm</option>`).join('');$('partName').textContent=SPECS[mode].title;$('partRole').textContent='点击零件，查看它的作用';motionPanel();stars();mission();renderReadouts();wake()}
+function setMode(mode){clearTimeout(introTour);introTour=0;state.mode=mode;state.last=0;state.theta=0;state.setting=mode==='crank'?25:8;state.level=0;state.choice=null;state.playing=false;state.runTarget=null;state.trialDone=false;state.moved=false;state.apart=state.apartTarget=0;state.cut=true;bench?.load(mode,state.setting);$('view').classList.remove('active');$('explode').setAttribute('aria-pressed','false');$('cut').setAttribute('aria-pressed','true');$('sceneNote').classList.remove('show');$('subtitle').textContent=SPECS[mode].hint;$('figNumber').textContent=SPECS[mode].tag;$('figTitle').textContent={planet:'太阳轮输入 → 行星架输出',harmonic:'波发生器输入 → 柔轮输出',screw:'丝杠 → 钻孔定位',rack:'齿轮齿条 → 送料滑台',crank:'曲柄滑块 → 往复锯'}[mode];$('lessonNote').textContent=INFO[mode];$('modelBoundary').textContent=INFO[mode]+' 齿形、柔轮变形和装配间隙作了教学简化，不用于设备选型、受力或寿命计算。';$('legend').innerHTML=['input','fixed','output',...(mode==='planet'?['planet']:mode==='crank'?['rod']:[])].map(role=>`<button data-part="${role}">${{input:SPECS[mode].input,fixed:SPECS[mode].fixed,output:SPECS[mode].output,planet:'行星轮',rod:'连杆'}[role]}</button>`).join('');document.querySelectorAll('[data-part]').forEach(b=>b.onclick=()=>pickPart(b.dataset.part));document.querySelectorAll('[data-mode]').forEach(b=>b.classList.toggle('active',b.dataset.mode===mode));$('setting').hidden=!['screw','crank'].includes(mode);$('settingLabel').textContent=mode==='screw'?'丝杠导程':'曲柄半径';$('settingSelect').innerHTML=(mode==='screw'?[4,8,16]:[15,25,35]).map(v=>`<option value="${v}" ${v===state.setting?'selected':''}>${v} mm</option>`).join('');$('partName').textContent=SPECS[mode].title;$('partRole').textContent='点击零件，查看它的作用';motionPanel();stars();mission();renderReadouts();wake()}
 function setAngle(theta){const t=limitAngle(state.mode,theta,state.setting);if(Math.abs(t-state.theta)>1e-5)state.moved=true;state.theta=t;bench?.update(t,state.apart);renderReadouts();return t}
 function pause(){clearTimeout(introTour);introTour=0;state.playing=false;state.runTarget=null;state.last=0;renderReadouts()}
 function reset(){pause();state.theta=0;state.trialDone=false;state.moved=false;setAngle(0);state.moved=false;feedback('输入与输出已归零。挑战记录保留。');wake()}
@@ -1684,9 +1714,15 @@ for(const event of ['pointerdown','keydown','wheel'])document.addEventListener(e
   const MODES = page === 'reducers'
     ? [{id: 'planet', name: '行星减速器', lead: '太阳轮转进去，行星架慢慢转出来。找出谁固定、谁输出、转一圈剩多少。'},
        {id: 'harmonic', name: '谐波减速器', lead: '波发生器转一圈，柔轮只退后两齿——减速比可以非常大。'}]
-    : [{id: 'screw', name: '丝杠螺母', lead: '丝杠转动，螺母带着滑台直线走。'},
-       {id: 'rack', name: '齿轮齿条', lead: '齿轮转动，齿条直线移动。'},
-       {id: 'crank', name: '曲柄滑块', lead: '曲柄转一圈，滑块来回走一趟。'}];
+    : [{id: 'screw', name: '丝杠 · 钻孔定位', lead: '钻孔机器人：丝杠转，螺母带着钻头一点点走，对准墙板上的孔位。'},
+       {id: 'rack', name: '齿条 · 送料滑台', lead: '送料滑台：齿轮转，齿条托着砖走得又快又远，送到机器人抓取位。'},
+       {id: 'crank', name: '曲柄 · 往复锯', lead: '往复锯：电机一直同向转，锯条在砌块的锯缝里来回拉。'}];
+  // 机器人里怎么选：三种转换机构放在一起比，当前这一种高亮
+  const PICK = [
+    {id: 'screw', name: '丝杠', good: '一圈走得少，停得准，推不回去', use: '钻孔进给、升降轴'},
+    {id: 'rack', name: '齿条', good: '一圈走得多，行程可以很长', use: '送料滑台、机器人地轨'},
+    {id: 'crank', name: '曲柄', good: '电机不用反转，自己来回', use: '往复锯、推料、泵'},
+  ];
   const TITLES = {
     planet: ['谁被固定住了？', '转一圈，会剩多少？', '停到目标位置'],
     harmonic: ['谁被固定住了？', '找到“退后两齿”', '停到目标位置'],
@@ -1718,6 +1754,15 @@ for(const event of ['pointerdown','keydown','wheel'])document.addEventListener(e
       c.adopt([EL.rows, EL.equation], g2);
       const g3 = c.section('做实验');
       c.adopt(EL.experiment, g3);
+      if (page === 'conversion') {
+        const gp = c.section('机器人里为什么选它');
+        const t = c.h('div', 'c3-pick'); gp.append(t);
+        for (const p of PICK) {
+          const row = c.h('div', 'c3-pick-row' + (p.id === m.id ? ' on' : ''));
+          row.innerHTML = `<b>${p.name}</b><span>${p.good}</span><em>${p.use}</em>`;
+          t.append(row);
+        }
+      }
       const g4 = c.section('零件：点名称看位置');
       c.adopt(EL.legend, g4);
       // 当前关卡的卡片加框
