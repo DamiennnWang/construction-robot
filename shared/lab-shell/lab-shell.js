@@ -102,7 +102,8 @@
     const sendTheme = () => frame?.contentWindow?.postMessage({c2: 'cmd', op: 'theme', value: window.CourseTheme?.get?.() || 'light'}, '*');
     window.addEventListener('course-theme-change', sendTheme);
 
-    function parkAll() { body.querySelectorAll('[data-c2-adopted]').forEach(n => parking.append(n)); }
+    // 原页面的控件始终留在文档里（原程序可能随时读写它们），换工位时先放回停放处
+    function parkAll() { for (const root of [body, readBox]) root.querySelectorAll('[data-c2-adopted]').forEach(n => parking.append(n)); }
 
     function select(i, fromHash, fromPage) {
       if (i === current) return;

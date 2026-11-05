@@ -58,3 +58,34 @@
 .c2-panel .frame-tabs button { flex:1; height:34px; border:0; border-radius:8px; background:none; color:var(--course-muted); font-size:14px; white-space:nowrap; cursor:pointer; }
 .c2-panel .frame-tabs button.active { background:var(--course-surface); color:var(--course-accent); font-weight:700; box-shadow:0 1px 4px rgba(18,44,78,.14); }
 .c2-panel .frame-description { margin:0 !important; padding:7px 10px; border-radius:10px; background:var(--blue-soft); color:var(--course-ink); font-size:13px; line-height:1.5; }
+
+/* —— 示教器搬进面板：参照系下面就是六格 —— */
+.c3-pendant.c3-in-panel { display:flex !important; flex-direction:column; gap:6px; }
+.c3-in-panel .jog-setting .segmented { flex:1; }
+.c3-in-panel #stepLabel { font-size:12px; color:var(--course-muted); white-space:nowrap; }
+.c3-in-panel .jog-rows { grid-template-columns:repeat(2, minmax(0,1fr)) !important; }
+
+/* —— 底栏：六个关节卡片一行 + 速度和停止 —— */
+.c3-strip-row { display:grid; grid-template-columns:minmax(0,1fr) auto; gap:10px; width:100%; align-items:center; }
+.c3-strip-axes { display:flex; align-items:center; gap:8px; min-width:0; }
+.c3-strip-axes:empty { display:none; }
+.c3-strip-axes .axis-cards { display:grid !important; grid-template-columns:repeat(6, minmax(0,1fr)); gap:6px; flex:1; min-width:0; }
+.c3-strip-axes .axis-card {
+  display:grid !important; grid-template-columns:auto 1fr; align-items:center; gap:0 6px; min-height:0 !important; height:auto !important;
+  padding:6px 8px !important; text-align:left; border-radius:10px; border:1px solid var(--hair); background:var(--course-surface); cursor:pointer;
+}
+.c3-strip-axes .axis-card.active { border-color:var(--course-accent); background:var(--blue-soft); }
+.c3-strip-axes .axis-card span { font-weight:800; color:var(--course-accent); }
+.c3-strip-axes .axis-card i { display:none; }
+.c3-strip-axes .axis-card strong { font-size:12.5px; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; }
+.c3-strip-axes .axis-card p { grid-column:1 / -1; margin:0; font-size:11px; color:var(--course-muted); white-space:nowrap; overflow:hidden; text-overflow:ellipsis; }
+.c3-strip-axes #tour { flex:0 0 auto; height:auto; align-self:stretch; padding:0 10px; border-radius:10px; border:0; background:var(--blue-soft); color:var(--course-accent); font-weight:700; white-space:normal; width:72px; line-height:1.3; }
+.c2-strip:has(.c3-strip-row) .c2-readouts { display:block; }
+.c3-strip-row .c3-pd-side { width:190px; }
+.c3-strip-row:has(.c3-strip-axes:empty) { grid-template-columns:1fr auto; }
+.c3-strip-row:has(.c3-strip-axes:empty) .c3-pd-side { flex-direction:row; align-items:center; width:auto; border-left:0; }
+.c3-strip-row:has(.c3-strip-axes:empty) .speed-control { min-width:220px; }
+.c3-strip-row:has(.c3-strip-axes:empty) .stop-button { width:auto; }
+.c3-strip-axes .axis-card { grid-template-columns:1fr !important; gap:1px !important; }
+.c3-strip-axes .axis-card strong { white-space:normal; overflow:visible; line-height:1.25; }
+.c3-strip-axes .axis-card p { display:none; }

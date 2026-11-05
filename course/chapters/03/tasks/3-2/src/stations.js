@@ -27,10 +27,13 @@
   /* 示教器放在三维区底栏，像真的示教器一样分三块：
    * 左：六个轴，每个都有滑轨和 −/+ 点动；
    * 右：参照系（关节 / 基坐标 / 工具坐标，决定左边六格各控制什么），再右是点动方式、速度、停止。 */
-  function pendant(c) {
-    const box = c.h('div', 'c3-pendant');
-    const right = c.h('div', 'c3-pd-side'); right.append(...[EL.jogMode, EL.speed, EL.stop].filter(Boolean));
-    box.append(EL.rows, right);
+  /* 三维区底栏：左边（认识六轴时）六个关节卡片排一行，右边始终是速度和停止 */
+  function strip(c, withAxes) {
+    const box = c.h('div', 'c3-strip-row');
+    const left = c.h('div', 'c3-strip-axes');
+    if (withAxes) { const tour = EL.tour; if (tour) tour.textContent = '▷ 六轴巡回演示'; left.append(...[EL.axisCards, tour].filter(Boolean)); }
+    const right = c.h('div', 'c3-pd-side'); right.append(...[EL.speed, EL.stop].filter(Boolean));
+    box.append(left, right);
     c.stripAdopt(box);
   }
 
@@ -39,11 +42,8 @@
 
   const STATIONS = [
     {
-      id: 'axes', name: '认识六轴', lead: '一次只转一个关节，看哪些部分跟着动。先在右边选参照系，再用下方示教器拖滑轨或按 −/+。',
+      id: 'axes', name: '认识六轴', lead: '一次只转一个关节，看哪些部分跟着动。在右边选参照系、点动关节；下方是六个关节的介绍。',
       build(c) {
-        const g = c.section('六个关节');
-        c.adopt(EL.axisCards, g);
-        const tour = c.adopt(EL.tour, g); if (tour) tour.textContent = '▷ 六轴巡回演示';
         c.challenges([
           {id: 'tour', icon: '▶', title: '看一遍六轴巡回演示', hint: '六个关节依次转', check: () => flags.tour,
             result: 'J1 带整臂转，J2、J3 摆动大臂小臂，J4—J6 在腕部调整工具朝向。'},
@@ -66,7 +66,7 @@
             result: '基坐标固定在底座上，+Z 永远竖直向上。'},
           {id: 'tool', icon: '↗', title: '沿工具 +Z 走一次', hint: '按“沿工具 +Z 走 40 mm”', check: () => flags.tool,
             result: '工具坐标跟着工具走，工具斜着，+Z 就斜着。'},
-          {id: 'toolFrame', icon: '🧭', title: '用工具坐标点动', hint: '右边参照系选“工具坐标”', check: s => s.frame === 'tool' && s.moved,
+          {id: 'toolFrame', icon: '🧭', title: '用工具坐标点动', hint: '参照系选“工具坐标”', check: s => s.frame === 'tool' && s.moved,
             result: '对准工件时用工具坐标更顺手：前后左右都按工具自己的方向。'},
           {id: 'rotate', icon: '🔄', title: '工具点不动，只改朝向', hint: '试“保持 TCP 改朝向”', check: () => flags.rotate,
             result: '六个关节一起配合，可以只改工具朝向，而工作点停在原处。'},
@@ -110,11 +110,14 @@
       return {...s, moved};
     },
     build(c) {
-      // 参照系很重要：每个工位都放在面板最上面，下方六格跟着它变成 J1–J6 或 X/Y/Z/Rx/Ry/Rz
-      const g = c.section('参照系：下方六格按什么方向动');
+      // 参照系很重要：放在面板最上面，紧接着就是它控制的六格（J1–J6 或 X/Y/Z/Rx/Ry/Rz）
+      const g = c.section('参照系：下面六格按什么方向动');
       c.adopt([EL.frames, EL.frameText], g);
-      c.body.prepend(g);
-      pendant(c);
+      const g2 = c.section('点动：拖滑轨或按 −/+');
+      const pad = c.h('div', 'c3-pendant c3-in-panel'); g2.append(pad);
+      c.adopt([EL.jogMode, EL.rows], pad);
+      c.body.prepend(g, g2);
+      strip(c, c.station.id === 'axes');
       const notice = EL.notice?.textContent.trim() || '';
       lastNotice = notice;
       c.lab.onState(() => {
