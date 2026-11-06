@@ -1,6 +1,7 @@
 import {readFileSync,writeFileSync} from 'node:fs';
 import {fileURLToPath} from 'node:url';
 import {integrateChapter6} from '../../../../../../shared/装饰装修施工/chapter-layout.mjs';
+import {labShell, hasStations} from '../../../../../../shared/lab-shell/native-layout.mjs';
 import * as Manual from './manual-model.mjs';
 import * as Robot from './robot-model.mjs';
 import * as Issues from './issues-model.mjs';
@@ -11,5 +12,6 @@ const kit=read('../../../../../../shared/anatomy/iso-kit.mjs').replace(/^export\
 const values={CSS:read('../../../../../../shared/anatomy/iso.css')+'\n'+read('./style.css'),SOURCES:read('./sources.html'),JS:'/* Three.js r160, MIT; Anatomy toolkit, MIT. Licenses in 公共资源. */\n'+read('../../../../../../shared/vendor/three-r160.min.js')+'\n'+`const AnatomyKit=(()=>{${kit};return {extrude,fitProjection,boxCorners,slabOf,solidSvg,depthOf,figureSvg,iso,dotsSvg};})();\n`+wrap('ManualModel','./manual-model.mjs',Manual)+'\n'+wrap('RobotModel','./robot-model.mjs',Robot)+'\n'+wrap('IssuesModel','./issues-model.mjs',Issues)+'\n'+read('./fallback.js')+'\n'+read('./scene3d.js')+'\n'+read('./manual-game.js')+'\n'+read('./app.js')};
 let html=read('./page.html').replace(/\{\{(CSS|JS|SOURCES)\}\}/g,(_,key)=>key==='JS'?values[key].replace(/<\/script/gi,'<\\/script'):values[key]);
 if(process.argv.includes('--dark'))html=html.replaceAll('data-theme="light"','data-theme="dark"');
-writeFileSync(file('../index.html'),integrateChapter6(html,'masonry'));
+// 有 stations.js 时用全课程统一的任务页外壳，不再套第六章原来的 1600×900 版式
+writeFileSync(file('../index.html'),hasStations('6-1')?labShell(html,'6-1'):integrateChapter6(html,'masonry'));
 console.log('Built 任务6-1: masonry game + rotatable 3D workstation + Anatomy SVG fallback');
