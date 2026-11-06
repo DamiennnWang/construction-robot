@@ -1,6 +1,7 @@
 import {readFileSync,writeFileSync} from 'node:fs';
 import {fileURLToPath} from 'node:url';
 import {integrateChapter7} from '../../../../../../shared/巡检与数据复核/chapter-layout.mjs';
+import {labShell,hasStations} from '../../../../../../shared/lab-shell/native-layout.mjs';
 import * as M from './inspection-model.mjs';
 const path=p=>fileURLToPath(new URL(p,import.meta.url));
 const read=p=>readFileSync(path(p),'utf8');
@@ -9,6 +10,7 @@ const sources=`<ul><li><a href="https://infotechnology.fhwa.dot.gov/high-resolut
 const css=read('./workbench.css');
 const js=model+'\n'+['world3d.js','robots3d.js','patrol-scene.js','workbench.js'].map(f=>read('./'+f)).join('\n');
 const html=read('./workbench.html').replace(/\{\{(CSS|THREE|JS|SOURCES)\}\}/g,(_,key)=>({CSS:css,THREE:read('../../../../../../shared/vendor/three-r160.min.js'),SOURCES:sources.replace(/^<ul>|<\/ul>$/g,''),JS:js.replace(/<\/script/gi,'<\\/script')}[key]));
-writeFileSync(path('../index.html'),integrateChapter7(html,'patrol'));
+// 有 stations.js 时使用全课程统一任务页外壳，不再套第七章原来的 1600×900 版式
+writeFileSync(path('../index.html'),hasStations('7-1')?labShell(html.replace('href="../README.md"','href="../../course/chapters/07/overview/index.html"'),'7-1'):integrateChapter7(html,'patrol'));
 console.log('Built task 7-1 · true 3D bridge workshop · offline HTML');
 if(process.argv.includes('--audit'))console.log('Three.js renderer: use qa/inspection-model.test.mjs and qa/rebuild-browser.mjs. SVG geometry audit does not apply.');
