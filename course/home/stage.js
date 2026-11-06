@@ -102,14 +102,35 @@
     const p = {group, top, side, ring}; pedestals.push(p); return p;
   }
 
-  /* 一件展品（主展品或任务展品）：底座 + 模型，挂在本章展岛下。 */
-  function exhibit(chapter, taskId, radius) {
-    const built = E.build(chapter, taskId), base = pedestal(radius, E.chapters[chapter].tint), holder = new T.Group();
-    built.root.position.y = .08;
-    holder.add(base.group, built.root);
+  /* 一件展品（主展品或任务展品）：先只放底座，模型排队、页面画出来以后再一件件建，建好时从台面上弹出。
+   * 这样直接打开 #chapter-N（含从任务页返回）时，文字与任务卡片立刻可见，不等模型。 */
+  const buildQueue = [], popping = [];
+  let frames = 0;
+  function exhibit(chapter, taskId, radius, urgent = false) {
+    const base = pedestal(radius, E.chapters[chapter].tint), holder = new T.Group();
+    holder.add(base.group);
     holder.userData.pick = {chapter, task: taskId};
-    return {chapter, task: taskId, holder, base, step: built.step, hover: 0, show: 0, label: null, materials: null};
+    const item = {chapter, task: taskId, holder, base, step() {}, model: null, pop: 0, hover: 0, show: 0};
+    if (urgent) buildQueue.unshift(item); else buildQueue.push(item);
+    return item;
   }
+  function load(item) {
+    if (item.model) return item;
+    const index = buildQueue.indexOf(item); if (index >= 0) buildQueue.splice(index, 1);
+    const built = E.build(item.chapter, item.task);
+    built.root.position.y = .08; built.root.scale.setScalar(reduce.matches ? 1 : .001);
+    item.holder.add(built.root); item.model = built.root; item.step = built.step; item.pop = reduce.matches ? 1 : 0;
+    if (!reduce.matches) popping.push(item);
+    const island = islands[item.chapter - 1];
+    if (island && item === island.hero) {
+      built.root.traverse(o => { if (o.isMesh && o.material) [].concat(o.material).forEach(m => { if (m.color && !island.mats.some(x => x.m === m)) island.mats.push({m, base: m.color.clone()}); }); });
+      island.applied = -1;
+    }
+    built.step(state.time); dirty = true;
+    return item;
+  }
+  /* 需要的展品排到队首：当前章的主展品与任务展品优先 */
+  function hurry(items) { for (const item of [...items].reverse()) { const i = buildQueue.indexOf(item); if (i > 0) { buildQueue.splice(i, 1); buildQueue.unshift(item); } } }
 
   const table = new T.Group(); scene.add(table);
   const islands = data.chapters.map((chapter, i) => {
@@ -120,7 +141,6 @@
     const hero = exhibit(chapter.id, spec.hero, 2.05);
     group.add(hero.holder);
     const mats = [];
-    hero.holder.children[1].traverse(o => { if (o.isMesh && o.material) [].concat(o.material).forEach(m => { if (m.color && !mats.some(x => x.m === m)) mats.push({m, base: m.color.clone()}); }); });
     return {id: chapter.id, chapter, angle, group, hero, mats, w: chapter.id === 1 ? 1 : 0, applied: -1, away: 0, tasks: null, order: chapter.tasks.map(t => t.id)};
   });
   paintTheme(window.CourseTheme?.get?.() || 'light');
@@ -153,7 +173,9 @@
         thumbRenderer.outputColorSpace = T.SRGBColorSpace; thumbRenderer.toneMapping = T.ACESFilmicToneMapping; thumbRenderer.toneMappingExposure = 1.1;
       } catch { return null; }
     }
-    const node = item.holder.children[1], parent = node.parent, hero = item === island.hero;
+    load(item);
+    const node = item.model, parent = node.parent, hero = item === island.hero, scale = node.scale.x;
+    node.scale.setScalar(1);
     const saved = hero ? island.mats.map(x => x.m.color.clone()) : null;
     if (hero) island.mats.forEach(x => x.m.color.copy(x.base));
     thumbScene.add(node); node.updateMatrixWorld(true);
@@ -163,7 +185,7 @@
     thumbCam.position.set(center.x, center.y + d * Math.sin(.3), center.z + d * Math.cos(.3)); thumbCam.lookAt(center);
     thumbRenderer.render(thumbScene, thumbCam);
     const url = thumbRenderer.domElement.toDataURL('image/png');
-    parent.add(node);
+    parent.add(node); node.scale.setScalar(scale);
     if (hero) island.mats.forEach((x, i) => x.m.color.copy(saved[i]));
     return url;
   }
@@ -238,7 +260,7 @@
 
   function focus(n, {instant = false} = {}) {
     const island = islands[n - 1]; if (!island) return;
-    state.focus = n; theme.tint = E.chapters[n].tint; paintGlow();
+    state.focus = n; theme.tint = E.chapters[n].tint; paintGlow(); hurry([island.hero]);
     state.rotTarget = state.rot + wrap(-island.angle - state.rot);
     if (instant || reduce.matches) state.rot = state.rotTarget;
     if (instant) islands.forEach(i => { i.w = i.id === n ? 1 : 0; });
@@ -252,7 +274,7 @@
     return new Promise(resolve => { if (instant || state.zoom === value) resolve(); else { resolveZoom?.(); resolveZoom = resolve; } });
   }
   function enter(n, {instant = false, arrive = false} = {}) {
-    focus(n, {instant}); state.chapter = n; ensureTasks(islands[n - 1]);
+    focus(n, {instant}); state.chapter = n; const tasks = ensureTasks(islands[n - 1]); hurry([islands[n - 1].hero, ...tasks]);
     state.arrive = arrive && !reduce.matches ? 1 : 0;
     return zoomTo(1, instant);
   }
@@ -345,6 +367,14 @@
     frameId = requestAnimationFrame(tick);
     const dt = Math.min((now - last) / 1000, .05); last = now;
     if (document.hidden) return;
+    /* 前两帧只画文字与底座；之后每帧建模型，约 8 毫秒一批，至少一件；建好的模型 0.45 秒弹出 */
+    if (++frames > 2 && buildQueue.length) { const t0 = performance.now(); do load(buildQueue[0]); while (buildQueue.length && performance.now() - t0 < 8); }
+    for (let i = popping.length - 1; i >= 0; i--) {
+      const item = popping[i]; item.pop = Math.min(1, item.pop + dt / .45);
+      const u = item.pop - 1, back = 1 + 2.2 * u * u * u + 1.2 * u * u;
+      item.model.scale.setScalar(Math.max(.001, back)); dirty = true;
+      if (item.pop >= 1) { item.model.scale.setScalar(1); popping.splice(i, 1); }
+    }
     const motion = !reduce.matches && !state.paused;
     if (motion) state.time += dt;
 
@@ -456,7 +486,7 @@
       if (!island?.tasks) return [];
       return island.tasks.map(item => ({task: item.task, ...anchor(item)}));
     },
-    state: () => ({focus: state.focus, chapter: state.chapter, zoom: Number(state.zoom.toFixed(3)), rotating: Math.abs(state.rotTarget - state.rot) > .01, camera: camera.position.toArray().map(v => Number(v.toFixed(2))), size: [width, height], calls: renderer.info.render.calls, time: state.time, built: islands.filter(i => i.tasks).map(i => i.id), reducedMotion: reduce.matches}),
+    state: () => ({focus: state.focus, chapter: state.chapter, zoom: Number(state.zoom.toFixed(3)), rotating: Math.abs(state.rotTarget - state.rot) > .01, camera: camera.position.toArray().map(v => Number(v.toFixed(2))), size: [width, height], calls: renderer.info.render.calls, time: state.time, built: islands.filter(i => i.tasks).map(i => i.id), reducedMotion: reduce.matches, pending: buildQueue.length}),
     targets() { return candidates().map(item => { const s = screenBox(item); return {chapter: item.chapter, task: item.task, x: (s.l + s.r) / 2, y: (s.t + s.b) / 2}; }); }
   };
 })();

@@ -41,7 +41,7 @@
     $('ov-enter').setAttribute('aria-label', `进入${ordinal(n)} ${c.title}`);
     $('ov-info').style.setProperty('--tint', tint(n));
     $('toc').querySelectorAll('.toc-ch').forEach(sec => { const on = Number(sec.dataset.chapter) === n; sec.classList.toggle('on', on); sec.querySelector('button').setAttribute('aria-current', on ? 'true' : 'false'); });
-    $('ov-info').classList.remove('swap'); void $('ov-info').offsetWidth; $('ov-info').classList.add('swap');
+    if (!body.classList.contains('boot')) { $('ov-info').classList.remove('swap'); void $('ov-info').offsetWidth; $('ov-info').classList.add('swap'); }
   }
   function go(n) {
     n = ((n - 1 + 8) % 8) + 1;
@@ -140,6 +140,7 @@
     const n = parse();
     if (n === shown && !initial) return;
     const my = ++token;
+    if (!initial) body.classList.add('anim');
     if (n) {
       const from = shown; shown = n;
       cameFromOverview = !initial && from === null;

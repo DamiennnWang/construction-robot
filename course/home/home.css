@@ -94,8 +94,8 @@ html body .home-tools #course-theme-toggle.course-theme-toggle:hover{border-colo
 .cv-side .edition{color:var(--tint)}
 .cv-title{margin:0;font-size:clamp(40px,3.6vw,64px);line-height:1.15;font-weight:800;letter-spacing:.04em;outline:0}
 .cv-side .book-intro{border-left-color:var(--tint)}
-.is-cover .cv-side{animation:rise .7s .2s both cubic-bezier(.2,.7,.2,1)}
-.is-cover .tasks{animation:rise .7s .4s both cubic-bezier(.2,.7,.2,1)}
+/* 只在页面里切换时淡入；直接打开（含从任务页返回）立刻显示 */
+.anim.is-cover .cv-side{animation:rise .55s .12s both cubic-bezier(.2,.7,.2,1)}
 @keyframes rise{from{opacity:0;transform:translateY(14px)}to{opacity:1;transform:none}}
 .chips{position:absolute;inset:0;pointer-events:none}
 .cv-nav{display:grid;grid-template-columns:1fr 1fr;gap:10px}

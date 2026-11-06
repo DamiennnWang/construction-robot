@@ -71,6 +71,18 @@ async function clickTarget(p, match) {
     await ctx.close();
   }
 
+  /* 直接打开（含从任务页返回）：文字与任务卡片 800 毫秒内完全可见，不等三维模型 */
+  {
+    const ctx = await context(browser, 1366, 640, 'light'), p = await page(ctx);
+    for (const [hash, sel, cards] of [['#chapter-3', '#cv-name', '.cover .task'], ['#chapter-8', '#cv-name', '.cover .task'], ['', '.book-title', '#toc .toc-ch']]) {
+      await p.goto('about:blank'); await p.goto(home(hash), {waitUntil: 'commit'});
+      const t = await p.waitForFunction(([s, c]) => { const vis = n => { for (let e = n; e && e !== document.body; e = e.parentElement) { const cs = getComputedStyle(e); if (cs.display === 'none' || cs.visibility === 'hidden' || Number(cs.opacity) < 1) return false; } return true; };
+        const el = document.querySelector(s), list = [...document.querySelectorAll(c)]; return el && el.textContent.trim() && vis(el) && list.length && list.every(vis) ? performance.now() : false; }, [sel, cards], {polling: 'raf', timeout: 800}).then(h => h.jsonValue(), () => null);
+      ok(t !== null && t <= 800, `direct load home${hash || ''}: text and cards fully visible within 800 ms`, t === null ? 'not within 800 ms' : Math.round(t) + ' ms');
+    }
+    await ctx.close();
+  }
+
   /* 全流程（1440×810 浅色） */
   {
     const ctx = await context(browser, 1440, 810, 'light'), p = await page(ctx);
