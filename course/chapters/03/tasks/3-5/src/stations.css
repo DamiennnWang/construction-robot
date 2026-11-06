@@ -29,3 +29,6 @@ html.lab-native .stage .stage-bar > span, html.lab-native .stage :is(#cameraBadg
 html.lab-native .stage .stage-bar { justify-content:flex-start; }
 html.lab-native .stage .stage-bar .view-controls button { font-size:13px; padding:5px 10px; }
 html.lab-native .stage .scene-compass { right:60px; }
+
+/* 选中的底盘卡片：副标题用正常的次要文字色（原来是浅色字压在浅蓝底上，看不见） */
+.c2-stage-top .platform-picker button.active small { color:var(--course-muted) !important; }

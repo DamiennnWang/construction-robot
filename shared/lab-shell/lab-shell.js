@@ -47,6 +47,9 @@
       tasks.append(a);
     }
     top.append(back, tasks);
+    /* 手机上导航横向滑动：把当前任务、当前工位滑到看得见的位置（只动导航条自己，不带动整页） */
+    const reveal = (bar, el) => { if (bar && el && bar.scrollWidth > bar.clientWidth + 2) bar.scrollLeft = el.offsetLeft - bar.offsetLeft - (bar.clientWidth - el.offsetWidth) / 2; };
+    requestAnimationFrame(() => reveal(tasks, tasks.querySelector('[aria-current]')));
 
     /* 工位条 */
     const bar = h('div', 'c2-bar');
@@ -139,6 +142,7 @@
     const syncTabs = () => tabButtons.forEach((b, i) => {
       b.setAttribute('aria-selected', String(i === current)); b.tabIndex = i === current ? 0 : -1;
       b.classList.toggle('done', Boolean(progress[cfg.stations[i].id]));
+      if (i === current) reveal(tabs, b);
     });
 
     /* 嵌入模式：与原版实验页通信（只用 postMessage，file:// 打开也能用） */
@@ -429,21 +433,31 @@
       return c;
     }
 
-    /* 字号下限（原地模式）：搬进外壳的原页面文字——面板、三维区里的浮层与 SVG 标注——不小于 12px，
-       面板里的段落不小于 13px。原页面按 1600×900 整页缩放设计，常有 7～11px 的小字，这里统一放大到可读、可投影的字号；
-       低价值的小字（英文小标、图号、重复的操作提示）由各任务 stations.css 直接隐藏。SVG 文字按屏幕上的实际大小计算。 */
-    const MIN_TEXT = 12, MIN_PARA = 13;
+    /* 字号下限与字体统一（原地模式）：搬进外壳的原页面文字——面板、三维区里的浮层与 SVG 标注。
+       电脑上不小于 13px、面板段落不小于 14px；手机（宽度 ≤ 900px）上各加 1px。SVG 标注按屏幕实际大小计，不小于 12px。
+       原页面按 1600×900 整页缩放设计，常有 7～11px 的小字，这里统一放大到可读、可投影的字号；
+       低价值的小字（英文小标、图号、重复的操作提示）由各任务 stations.css 直接隐藏。
+       字体：原页面各用各的（Consolas、Segoe UI、Arial、自带等宽字体……），这里统一成外壳的两种——
+       等宽字体写的数字、读数、编号换成 --font-num，其余换成正文字体。 */
+    const narrow = matchMedia('(max-width:900px)');
+    const MONO = /mono|consolas|cascadia|courier|menlo|sf mono/i, OURS = /^"?(PingFang SC|Microsoft YaHei|DIN Alternate)/i;
     const floorText = root => {
       if (!root?.querySelectorAll) return;
+      const MIN_TEXT = narrow.matches ? 14 : 13, MIN_PARA = narrow.matches ? 15 : 14;
       for (const el of [root, ...root.querySelectorAll('*')]) {
         if (el.closest('.c2-parking, .c3-legacy, script, style')) continue;
         if (![...el.childNodes].some(n => n.nodeType === 3 && n.textContent.trim())) continue;
         const cs = getComputedStyle(el);
         if (cs.display === 'none' || cs.position === 'absolute' && cs.clip !== 'auto' && /rect\(0/.test(cs.clip)) continue;
+        if (!OURS.test(cs.fontFamily) && !el.dataset.c2Font) {
+          el.dataset.c2Font = '1';
+          el.style.setProperty('font-family', MONO.test(cs.fontFamily) ? 'var(--font-num)' : 'var(--font-ui)', 'important');
+          if (MONO.test(cs.fontFamily)) el.style.fontVariantNumeric = 'tabular-nums';
+        }
         const size = parseFloat(cs.fontSize);
         if (el instanceof SVGElement) {
           const m = el.getScreenCTM?.(), k = m ? Math.hypot(m.a, m.b) : 1;
-          if (k > 0 && size * k < MIN_TEXT - .05) el.style.fontSize = (MIN_TEXT / k).toFixed(2) + 'px';
+          if (k > 0 && size * k < 12 - .05) el.style.fontSize = (12 / k).toFixed(2) + 'px';
           continue;
         }
         const min = el.tagName === 'P' && el.closest('.c2-panel') ? MIN_PARA : MIN_TEXT;

@@ -1886,7 +1886,9 @@ window.createChapterRenderer = options => {
     const main = $(pick(cfg.keep)), inset = cfg.inset ? $(pick(cfg.inset)) : null;
     if (!main) return false;
     document.documentElement.classList.add('c2-embed');
-    const style = document.createElement('style'); style.textContent = css; document.head.append(style);
+    /* 嵌入外壳后：三维区里的部件标签不小于 13px，字体与外壳一致 */
+    const type = '\n.part-label,.tag,button.tag,span.tag{font-size:13px!important;letter-spacing:0!important;font-family:"PingFang SC","Microsoft YaHei","Hiragino Sans GB","Noto Sans CJK SC","Segoe UI",system-ui,sans-serif!important}';
+    const style = document.createElement('style'); style.textContent = css + type; document.head.append(style);
     const keeps = [main, inset].filter(Boolean);
     main.dataset.c2Keep = 'main'; if (inset) inset.dataset.c2Keep = 'inset';
     for (const k of keeps) for (let n = k; n && n !== document.body; n = n.parentElement) {
