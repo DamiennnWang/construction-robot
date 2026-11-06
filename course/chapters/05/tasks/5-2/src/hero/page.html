@@ -73,7 +73,7 @@
 
           <div id="phase-strip" class="phase-strip" aria-label="观察绑扎动作" hidden>
             <button type="button" data-phase="0" class="active"><span>01</span>定位</button>
-            <button type="button" data-phase="1"><span>02</span>夹持</button>
+            <button type="button" data-phase="1"><span>02</span>就位</button>
             <button type="button" data-phase="2"><span>03</span>送丝</button>
             <button type="button" data-phase="3"><span>04</span>扭结</button>
             <button type="button" data-phase="4"><span>05</span>离开</button>
@@ -89,7 +89,7 @@
             <div class="metric"><span>复核完成</span><div><strong id="metric-checked">0</strong><small>/ 4</small></div></div>
             <div class="metric"><span>待处理</span><div><strong id="metric-pending">0</strong><small>处</small></div></div>
           </div>
-          <div class="cycle-monitor"><div class="cycle-heading"><span><i class="live-dot"></i>当前动作</span><strong id="cycle-label">准备就绪</strong></div><div class="cycle-track"><span id="cycle-progress"></span></div><div class="cycle-phases"><span>定位</span><span>夹持</span><span>送丝</span><span>扭结</span><span>离开</span></div></div>
+          <div class="cycle-monitor"><div class="cycle-heading"><span><i class="live-dot"></i>当前动作</span><strong id="cycle-label">准备就绪</strong></div><div class="cycle-track"><span id="cycle-progress"></span></div><div class="cycle-phases"><span>定位</span><span>就位</span><span>送丝</span><span>扭结</span><span>离开</span></div></div>
         </div>
 
         <nav class="project-nav" aria-label="学习环节">
@@ -146,7 +146,7 @@
     <footer class="app-footer"><span>智能建筑机械与机器人</span><span>任务 5-2<span class="footer-dot">·</span>钢筋绑扎机器人操作与人工复核</span><span class="footer-right">FIELD STUDIO <span class="footer-dot">/</span> LEARN BY DOING</span></footer>
   </div>
 
-  <dialog id="info" class="info-dialog"><div class="dialog-top"><span class="eyebrow">工坊操作说明</span><button id="close-info" class="icon-button" type="button" aria-label="关闭说明"><svg><use href="#i-close"/></svg></button></div><h2>动手绑一扣，再检查它。</h2><p>先选择钢筋交点，微调枪口，启动绑扎。完成四个交点后，确认停机，再逐点观察和轻拉检查。</p><ul><li><strong>观察工位：</strong>拖动旋转，滚轮或双指缩放；上方按钮切换视角。</li><li><strong>移动枪口：</strong>点击交点，或使用方向键微调。</li><li><strong>启动绑扎：</strong>点击按钮或按空格。动作中可暂停观察。</li><li><strong>看懂送丝：</strong>进入“看懂这一扣”，打开外壳，拖动进度。</li></ul><div class="scope-note"><strong>关于这个教学模型</strong><p>本工坊用简化机械臂和绑扎头呈现操作顺序、绑丝成环与人工复核。画面比例、动作速度与交点布置用于教学，不代表某一实际机型；实际设备操作与停机维护应按对应机型说明书执行。</p></div><div class="source-links"><span>结构与操作参考</span><a href="https://www.maxusacorp.com/wp-content/uploads/TWINTIER-Manual-RB441T-RB611T.pdf" target="_blank" rel="noopener noreferrer">MAX TWINTIER 官方操作手册 ↗</a><a href="https://www.maxusacorp.com/rebar_tying_tools/products/rb441t/" target="_blank" rel="noopener noreferrer">MAX RB441T 官方产品资料 ↗</a></div></dialog>
+  <dialog id="info" class="info-dialog"><div class="dialog-top"><span class="eyebrow">工坊操作说明</span><button id="close-info" class="icon-button" type="button" aria-label="关闭说明"><svg><use href="#i-close"/></svg></button></div><h2>动手绑一扣，再检查它。</h2><p>先选择钢筋交点，微调枪口，启动绑扎。完成四个交点后，确认停机，再逐点观察和轻拉检查。</p><ul><li><strong>观察工位：</strong>拖动旋转，滚轮或双指缩放；上方按钮切换视角。</li><li><strong>移动枪口：</strong>点击交点，或使用方向键微调。</li><li><strong>启动绑扎：</strong>点击按钮或按空格。动作中可暂停观察。</li><li><strong>看懂送丝：</strong>进入“看懂这一扣”，打开外壳，拖动进度。</li></ul><div class="scope-note"><strong>关于这个教学模型</strong><p>本工坊用简化机械臂和绑扎头呈现操作顺序、绑丝成环与人工复核。画面比例、动作速度与交点布置用于教学，不代表某一实际机型；实际设备操作与停机维护应按对应机型说明书执行。</p></div></dialog>
   <script>{{THREE}}</script>
   <script>{{MODEL}}</script>
   <script>{{SCENE}}</script>

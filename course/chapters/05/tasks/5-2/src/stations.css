@@ -1,10 +1,5 @@
-/* 5-2：三维区左上角“资料与范围”，右上角视角切换 */
-html.lab-native .scene-top { top:14px; left:16px; right:16px; }
-html.lab-native .c52-info {
-  pointer-events:auto; height:30px; padding:0 12px; border-radius:9px; font:600 12px/1 inherit;
-  border:1px solid var(--line); background:var(--hud); color:var(--secondary); cursor:pointer; box-shadow:0 3px 10px #223c4b0a;
-}
-html.lab-native .c52-info:hover { color:var(--teal); }
+/* 5-2：三维区里的原叠加层贴近边缘 */
+html.lab-native .scene-top { top:14px; left:16px; right:16px; justify-content:flex-end; }
 html.lab-native .view-tools { left:16px; bottom:44px; }
 html.lab-native .scene-bottom { left:16px; right:16px; bottom:14px; }
 
@@ -101,3 +96,6 @@ html.lab-native .c2-panel .fault-lab .fault-feedback { margin-top:8px; font-size
 body[data-stage="done"].lab-native .c2-panel .c2-group:has(.safe-card),
 html.lab-native body[data-stage="done"] .c2-panel .c2-group:has(.safe-card),
 html.lab-native body[data-stage="done"] .c2-panel :is(#review-closeup, .action-group:has(#pull)) { display:none; }
+
+/* 面板末尾的一句范围说明 */
+html.lab-native .c2-panel .c52-scope { margin:2px 0 0; padding-top:10px; border-top:1px solid var(--hair); font-size:11.5px; line-height:1.6; color:var(--course-muted); }

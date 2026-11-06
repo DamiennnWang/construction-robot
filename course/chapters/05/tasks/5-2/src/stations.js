@@ -9,7 +9,7 @@
   const HG = () => hero().model;
   const EL = {
     stage: $('#scene-shell'),
-    info: $('#info'), help: $('#help'), reset: $('#reset'),
+    reset: $('#reset'),
     feedback: $('#feedback'),
     metrics: $('.control-deck .metrics'), metric: all('.control-deck .metric'),
     cycle: $('.control-deck .cycle-monitor'),
@@ -28,12 +28,8 @@
     box.append(...list.map(i => EL.metric[i]).filter(Boolean));
     return box;
   };
-  // 原页面顶栏的“操作说明”（含模型范围与资料来源）改成三维区左上角的一个小按钮
-  const infoBtn = document.createElement('button');
-  infoBtn.type = 'button'; infoBtn.className = 'c52-info'; infoBtn.textContent = '资料与范围';
-  infoBtn.title = '本工位的模型说明与资料来源';
-  infoBtn.addEventListener('click', () => EL.help?.click());
-  $('.scene-top')?.prepend(infoBtn);
+  // 原页面“操作说明”里的模型范围，缩成一句放在每个工位面板末尾
+  const SCOPE = '教学模拟：画面比例、动作速度与交点布置为教学设定，不代表某一实际机型；实际操作与停机维护按所用设备的说明书执行。';
   const metricsTie = metricBox([0]), metricsReview = metricBox([1, 2]);
 
   // 原页面状态里没有的操作记录
@@ -157,6 +153,8 @@
     reset() { EL.reset?.click(); jogAligned = pausedMid = false; everMarked.clear(); },
     build(c) {
       station = c.station.id;
+      // 工位内容建好之后再追加范围说明（cfg.build 先于工位自己的 build 执行）
+      queueMicrotask(() => { if (c.body.isConnected) c.body.append(c.h('p', 'c52-scope', SCOPE)); });
       lastMessage = hero()?.state.game.message || '';
       c.lab.onState(s => {
         if (s.mode === 'study') return;
