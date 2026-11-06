@@ -1,4 +1,4 @@
-/* 统一任务页外壳的整体检查（第一章、第三～八章；第二章另有 check-chapter2.cjs）。
+/* 统一任务页外壳的整体检查（第一～八章全部任务页）。
  * 逐页打开 course/catalog.json 里的任务页，在 1440×810、1366×640 下注入 scripts/qa/shell-check.page.js 并运行：
  *   页头左上角回主页本章展台、当前任务标记、深浅色切换；2～5 个工位逐个切换，各有三维画面、原页面状态和“试一试”；
  *   页面不纵向滚动、不横向溢出；页头任务链接都指向存在的文件；页面无脚本错误、不访问外网。
@@ -17,12 +17,11 @@ const args = process.argv.slice(2), arg = (name, fallback) => args.includes(name
 const root = path.resolve(arg('--site', path.join(__dirname, '..'))), shots = arg('--screenshots', null), only = arg('--chapter', null);
 const checker = fs.readFileSync(path.join(__dirname, 'qa', 'shell-check.page.js'), 'utf8');
 
-// 任务页：catalog 里的任务（第二章除外），3-3 的入口是跳转页，改查它的两个实验页
+// 任务页：catalog 里的全部任务；3-3 的入口是跳转页，改查它的两个实验页
 const catalog = JSON.parse(fs.readFileSync(path.join(root, 'course/catalog.json'), 'utf8')).tasks;
 const pages = catalog.flatMap(t => t.id === '3-3'
   ? ['reducers', 'conversion'].map(p => ({task: '3-3', file: `course/chapters/03/tasks/3-3/${p}.html`}))
   : [{task: t.id, file: t.demo}])
-  .filter(p => !p.task.startsWith('2-'))
   .filter(p => !only || p.task.split('-')[0] === String(Number(only)));
 const VIEWPORTS = [{width: 1440, height: 810}, {width: 1366, height: 640}];
 
