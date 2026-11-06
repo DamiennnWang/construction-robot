@@ -59,8 +59,8 @@ def main():
         text = re.sub(r'<(?:script|link) data-course-theme[^>]*>(?:</script>)?\s*', '', text)
         theme = '<link data-course-theme rel="stylesheet" href="' + relative('shared/styles/theme.css') + '"><script data-course-theme src="' + relative('shared/theme.js') + '"></script>'
         text = text.replace('</head>', script + theme + '</head>', 1)
-        # Revised covers load matching assets even when an older preview was cached.
-        if page.relative_to(ROOT).as_posix() in ('course/home/index.html','course/chapters/01/overview/index.html','course/chapters/08/overview/index.html','course/chapters/01/tasks/1-2/index.html','course/chapters/01/tasks/1-3/index.html'):
+        # Revised covers, and pages that load the shared lab shell at run time, load matching assets even when an older preview was cached.
+        if page.relative_to(ROOT).as_posix() in ('course/home/index.html','course/chapters/01/overview/index.html','course/chapters/08/overview/index.html','course/chapters/01/tasks/1-2/index.html','course/chapters/01/tasks/1-3/index.html') or 'data-lab-shell src=' in text:
             def version_asset(match):
                 attr,quote,url=match.group(1,2,3)
                 parts=urlsplit(url)
