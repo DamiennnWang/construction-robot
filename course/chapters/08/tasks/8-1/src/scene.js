@@ -42,8 +42,8 @@
     x.strokeStyle = 'rgba(95,88,80,.45)'; x.lineWidth = 2.5; x.strokeRect(1, 1, w - 2, h - 2);
   }, [1 / 6, 1 / 6]);
   const dirtTex = () => canvasTex(512, 512, (x, w, h) => {
-    x.fillStyle = '#8e826d'; x.fillRect(0, 0, w, h);
-    noise(x, w, h, 22000, 90, 90, .5);
+    x.fillStyle = '#d9d4ca'; x.fillRect(0, 0, w, h);
+    noise(x, w, h, 22000, 165, 60, .4);
   }, [24, 24]);
   const stripeTex = (a, b, n = 6, vertical = false) => canvasTex(128, 128, (x, w, h) => {
     for (let i = 0; i < n; i++) { x.fillStyle = i % 2 ? b : a; vertical ? x.fillRect(0, i * h / n, w, h / n) : x.fillRect(i * w / n, 0, w / n, h); }
@@ -584,8 +584,7 @@
 
     /* —— 深浅色 —— */
     api.theme = dark => {
-      scene.background = new T.Color(dark ? 0x1b2738 : 0xdfe9f3);
-      scene.fog = new T.Fog(dark ? 0x1b2738 : 0xdfe9f3, 80, 190);
+      scene.fog = new T.Fog(0, 80, 190); StageTone.paint(scene, T); ground.material.color.setHex(dark ? 0x7d7a74 : 0xffffff);
       hemi.intensity = dark ? .8 : 1.25; sun.intensity = dark ? 1.8 : 2.6; renderer.toneMappingExposure = dark ? .9 : .98; dirty = true;
     };
     api.debug = {scene, camera, gun, sprayer};

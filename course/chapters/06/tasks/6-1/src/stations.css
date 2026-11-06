@@ -121,3 +121,6 @@ html.lab-native .c2-native-stage .scene-tag { display:none; }
 .c61-goal b { flex:none; font-size:12px; color:var(--course-accent); }
 .c61-goal span { min-width:0; overflow:hidden; text-overflow:ellipsis; white-space:nowrap; font-weight:600; }
 .c61-goal i { flex:none; font-style:normal; font-size:12px; font-weight:700; color:var(--good, #1f8a5b); }
+
+/* 看法按钮让出右上角的全屏按钮 */
+html.lab-native .stage-wrap .view-tools { right:58px; }

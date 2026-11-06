@@ -30,8 +30,8 @@ function createLidarScene(T,host,M,callbacks={}){
   scene.add(new T.HemisphereLight(0xe4efff,0x8c9db5,2.2));
   const key=new T.DirectionalLight(0xffffff,3.0);key.position.set(-4,-6,10);key.castShadow=true;key.shadow.mapSize.set(2048,2048);Object.assign(key.shadow.camera,{left:-7,right:7,top:7,bottom:-7,near:.3,far:25});key.shadow.normalBias=.018;key.shadow.bias=-.00012;key.shadow.radius=4;scene.add(key);
   const fill=new T.DirectionalLight(0x9cc6ff,1.1);fill.position.set(5,3,6);scene.add(fill);
-  const studioFloor=mesh(new T.PlaneGeometry(200,200),new T.MeshStandardMaterial({color:0xf4f8fe,roughness:.95}),scene,[0,0,-.52]);studioFloor.castShadow=false;
-  const studioGrid=new T.GridHelper(40,80,0xd9e5f2,0xe7eff8);studioGrid.rotation.x=Math.PI/2;studioGrid.position.z=-.514;studioGrid.material.transparent=true;studioGrid.material.opacity=.22;scene.add(studioGrid);
+  const studioFloor=mesh(new T.PlaneGeometry(200,200),new T.ShadowMaterial({opacity:.12}),scene,[0,0,-.52]);studioFloor.castShadow=false;studioFloor.receiveShadow=true;
+  const studioGrid=new T.GridHelper(40,80,0xd9e5f2,0xe7eff8);studioGrid.rotation.x=Math.PI/2;studioGrid.position.z=-.514;studioGrid.material.transparent=true;studioGrid.material.opacity=.22;studioGrid.visible=false;scene.add(studioGrid);
   // Thick table, leveling feet, edge band and a meter ruler physically support the model.
   for(const x of[-3.03,3.03])for(const y of[-1.92,1.92]){cyl(.13,.10,'rubber',root,[x,y,-.462]);cyl(.072,.16,'chrome',root,[x,y,-.332]);cyl(.17,.045,'edge',root,[x,y,-.23]);}
   box(7.03,4.72,.20,'white',root,[0,0,-.15]);box(6.87,4.55,.064,'edge',root,[0,0,-.035]);
@@ -150,7 +150,7 @@ function createLidarScene(T,host,M,callbacks={}){
   }
   function setPresentation(options={}){viewMode=options.viewMode||viewMode;if('truthVisible'in options)truthVisible=options.truthVisible;if('axes'in options)axesVisible=options.axes;applyPresentation();callbacks.wake?.();}
   function setView(id='iso',immediate=false){Object.assign(desired,presets[id]||presets.iso,{r:12.2,tx:0,ty:0,tz:.67});if(immediate)current={...desired};callbacks.wake?.();}
-  function setTheme(value){theme=value;const dark=value==='dark';scene.background=new T.Color(dark?0x0b1523:0xf5f8fd);scene.fog=new T.Fog(scene.background,24,75);studioFloor.material.color.set(dark?0x060d17:0xf5f8fd);studioGrid.material.opacity=dark?.06:.22;cloudMaterial.opacity=dark?1:.94;callbacks.wake?.();}
+  function setTheme(value){theme=value;const dark=value==='dark';scene.fog=new T.Fog(0,24,75);StageTone.paint(scene,T);studioFloor.material.opacity=dark?.3:.12;studioGrid.material.opacity=dark?.06:.22;cloudMaterial.opacity=dark?1:.94;callbacks.wake?.();}
   function resize(){const w=host.clientWidth,h=host.clientHeight;if(!w||!h)return;renderer.setSize(w,h,false);camera.aspect=w/h;camera.updateProjectionMatrix();callbacks.wake?.();}
   const ro=new ResizeObserver(resize);ro.observe(host);
   const raycaster=new T.Raycaster(),mouse=new T.Vector2();

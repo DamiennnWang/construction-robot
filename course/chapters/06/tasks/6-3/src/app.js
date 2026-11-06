@@ -81,7 +81,7 @@ CourseTheme.register(theme => hero.setTheme(theme));
 $$('[data-view]').forEach(b=>b.onclick=()=>hero.setView(b.dataset.view));
 $('#demoToggle').onclick=()=>{const on=$('#demoToggle').getAttribute('aria-pressed')!=='true';$('#demoToggle').setAttribute('aria-pressed',String(on));text('demoToggle',on?'Ⅱ 暂停演示':'▶ 动作演示');hero.setDemo(on);};
 $('#explodeTool').onclick=()=>{const on=$('#explodeTool').getAttribute('aria-pressed')!=='true';$('#explodeTool').setAttribute('aria-pressed',String(on));text('explodeTool',on?'合拢磨头':'拆开磨头');hero.setExploded(on);text('heroHint',on?'砂网 → 弹性接口垫 → 背盘 · 拆解仅供观察':'拖动旋转 · 滚轮缩放 · 点选墙上试片');};
-$('#fullscreen').onclick=async()=>{try{if(document.fullscreenElement)await document.exitFullscreen();else await document.documentElement.requestFullscreen();}catch{feedback('可使用浏览器全屏快捷键查看。');}};
+
 $('#help').onclick=()=>$('#helpDialog').showModal();$('#layerHelp').onclick=$('#abrasiveInfo').onclick=()=>$('#materialDialog').showModal();$$('[data-close]').forEach(e=>e.onclick=()=>$('#'+e.dataset.close).close());
 $('#mobileToggle').onclick=()=>{const on=$('#app').classList.toggle('mobile-controls');text('mobileToggle',on?'返回画面':'操作面板');};
 $('#downloadRecord').onclick=()=>{const report={task:'任务6-3 腻子打磨实训',completed:S.done,records:S.records,note:'教学操作记录，不是实际工程质量验收记录'};const blob=new Blob([JSON.stringify(report,null,2)],{type:'application/json;charset=utf-8'}),url=URL.createObjectURL(blob),a=document.createElement('a');a.href=url;a.download='任务6-3_实训记录.json';a.click();setTimeout(()=>URL.revokeObjectURL(url),1000);};

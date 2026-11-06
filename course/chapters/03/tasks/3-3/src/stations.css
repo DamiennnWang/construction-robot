@@ -48,3 +48,8 @@
 .c3-pick-row em::before { content:'用在：'; }
 .c3-pick-row.on { border-color:var(--course-accent); background:var(--blue-soft); color:var(--ink, inherit); }
 .c3-pick-row.on b, .c3-pick-row.on em { color:var(--course-accent); }
+
+/* 三维区：去掉英文图号（PLANETARY / 01 等）和重复的旋转提示；右上角让给全屏按钮 */
+html.lab-native .figure :is(#figNumber, .orbit-hint) { display:none !important; }
+html.lab-native .figure .fighead { right:60px; justify-content:flex-end; }
+html.lab-native .figure .fighead b { font-size:13px; }

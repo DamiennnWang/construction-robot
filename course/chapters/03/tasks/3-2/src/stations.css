@@ -73,3 +73,8 @@
 /* —— 基坐标 / 工具坐标：没有滑轨的行，− 和 + 做成两个并排的大按钮 —— */
 .c3-pendant .jog-row:not(:has(input[type="range"])) { grid-template-columns:1fr 1fr; grid-template-areas:"label value" "minus plus"; }
 .c3-pendant .jog-row:not(:has(input[type="range"])) .jog-button { width:100%; height:28px; }
+
+/* 三维区：去掉图号“FIG. 03.02”、型号“EDU / 6R”和重复的操作提示、单位注；看法切换放到左上角 */
+html.lab-native section.stage-card :is(.fig-index, .model-label, .canvas-corner) { display:none !important; }
+html.lab-native section.stage-card .stage-bar { justify-content:flex-start; padding:12px; }
+html.lab-native section.stage-card .view-buttons button { font-size:13px; }

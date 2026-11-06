@@ -1,6 +1,66 @@
 <!doctype html>
 <html lang="zh-CN" data-theme="light">
-<head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><meta name="color-scheme" content="light dark"><title>任务 3-4 · 末端执行器与 TCP 工作室</title><style>@font-face{font-family:LabMono;src:local('Cascadia Code'),local('Consolas');font-display:swap}*{box-sizing:border-box}html{--bg:#f4f6f8;--paper:#fff;--stage:#f8fafb;--ink:#223645;--muted:#7b8993;--subtle:#a4afb7;--line:#e3e9ed;--accent:#276f66;--accent-soft:#e9f4ef;--blue:#597c9f;--orange:#c18942;--orange-soft:#fcf3e4;--shadow:0 5px 26px #344d6210;color-scheme:light}html[data-theme=dark]{--bg:#131b22;--paper:#1b2630;--stage:#1b2630;--ink:#e0e9ef;--muted:#92a6b7;--subtle:#677c8d;--line:#31404d;--accent:#79d0b6;--accent-soft:#233d39;--blue:#94b7db;--orange:#e8b976;--orange-soft:#3b3226;--shadow:0 8px 30px #0002;color-scheme:dark}body{margin:0;background:var(--bg);color:var(--ink);font:13px/1.55 'Segoe UI','Microsoft YaHei',sans-serif}button,input,select{font:inherit}button,a,input,select,summary{-webkit-tap-highlight-color:transparent}button{cursor:pointer;border:1px solid var(--line);border-radius:7px;background:var(--paper);color:var(--ink);padding:8px 12px;transition:background .18s,color .18s,border-color .18s,transform .18s}button:hover{border-color:var(--accent);background:var(--accent-soft)}button:active{transform:translateY(1px)}button:disabled{cursor:default;opacity:.42;transform:none}button:focus-visible,a:focus-visible,summary:focus-visible,input:focus-visible,select:focus-visible{outline:2px solid var(--accent);outline-offset:3px}a{color:inherit;text-decoration:none}button[hidden],[hidden]{display:none!important}h1,h2,h3,p{margin:0}button.primary{background:var(--accent);border-color:var(--accent);color:var(--paper);font-weight:600;padding:11px 12px}html[data-theme=dark] button.primary{color:#142720}button.primary:hover{filter:brightness(1.08)}button.secondary{background:var(--stage)}.text-link{border:0;padding:0;background:none;color:var(--accent);text-align:left;font-size:12px}.text-link:hover{background:none}.mono,output,.eyebrow,.step-no,.tool-number,.range-ends,.tool-card small,.offset-values{font-family:LabMono,Consolas,monospace;font-variant-numeric:tabular-nums}
+<head><script data-lab-shell>/* 三维区底色（全课程统一）：近白中性灰，适合印刷教材截图；深色模式用深石墨色。
+ * 取值以 shared/lab-shell/lab-shell.css 里的 --stage-bg / --stage-floor / --stage-shadow 为准（深浅色一起切换）；
+ * 页面样式还没载入时（运行时才挂外壳的页面、第二章被嵌入前的原版实验页）用下面同值的后备。
+ * 用法：StageTone.bg() → '#f5f6f8'；StageTone.color(THREE) → THREE.Color；
+ *       StageTone.paint(scene, THREE) 设底色并让雾跟着变；StageTone.contactShadow(THREE, {size}) 模型下方的柔和接触阴影。
+ * 第二章：原版实验页被嵌入时，外壳把自己的取值经 postMessage 传进来（embed-bridge.js 调 StageTone.use）。
+ */
+(() => {
+  'use strict';
+  if (window.StageTone) return;
+  const FALLBACK = {
+    light: {bg: '#f5f6f8', floor: '#eceef1', shadow: 'rgba(28,36,48,.20)'},
+    dark: {bg: '#1a1f27', floor: '#222833', shadow: 'rgba(0,0,0,.55)'},
+  };
+  const root = document.documentElement;
+  let cache = null, override = null;
+  const theme = () => (root.dataset.theme === 'dark' ? 'dark' : 'light');
+  const read = () => {
+    const t = theme(), f = FALLBACK[t], cs = getComputedStyle(root);
+    const v = n => cs.getPropertyValue(n).trim();
+    return {theme: t, bg: v('--stage-bg') || f.bg, floor: v('--stage-floor') || f.floor, shadow: v('--stage-shadow') || f.shadow, ...(override?.[t] || {})};
+  };
+  const get = () => (cache && cache.theme === theme() ? cache : (cache = read()));
+  addEventListener('course-theme-change', () => { cache = null; });
+
+  window.StageTone = {
+    get,
+    bg: () => get().bg,
+    floor: () => get().floor,
+    /** 底色的 THREE.Color（传入页面自己的 THREE，模块化页面也能用）。 */
+    color: (T = window.THREE, key = 'bg') => new T.Color(get()[key]),
+    /** 设场景底色，雾（若有）随底色。返回 scene 便于链式调用。 */
+    paint(scene, T = window.THREE) {
+      if (!scene) return scene;
+      const c = get().bg;
+      if (scene.background?.isColor) scene.background.set(c); else scene.background = new T.Color(c);
+      if (scene.fog?.color) scene.fog.color.set(c);
+      return scene;
+    },
+    /** 模型下方的柔和接触阴影：一张径向渐变贴图的平面（不受光照影响，深浅色自动换）。
+     *  size 为直径（场景单位），up 为 'y' 或 'z'（哪个轴朝上）。返回 Mesh，自己 position 到模型脚下。 */
+    contactShadow(T = window.THREE, {size = 1, up = 'y', strength = 1} = {}) {
+      const c = document.createElement('canvas'); c.width = c.height = 128;
+      const g = c.getContext('2d'), grad = g.createRadialGradient(64, 64, 0, 64, 64, 64);
+      grad.addColorStop(0, 'rgba(0,0,0,1)'); grad.addColorStop(.45, 'rgba(0,0,0,.55)'); grad.addColorStop(1, 'rgba(0,0,0,0)');
+      g.fillStyle = grad; g.fillRect(0, 0, 128, 128);
+      const tex = new T.CanvasTexture(c);
+      const mat = new T.MeshBasicMaterial({map: tex, color: 0x000000, transparent: true, depthWrite: false, toneMapped: false});
+      const mesh = new T.Mesh(new T.PlaneGeometry(size, size), mat);
+      if (up === 'y') mesh.rotation.x = -Math.PI / 2;
+      mesh.renderOrder = -1; mesh.userData.contactShadow = true;
+      const tone = () => { mat.opacity = (theme() === 'dark' ? .5 : .16) * strength; };
+      tone(); addEventListener('course-theme-change', tone);
+      return mesh;
+    },
+    /** 外部指定取值（第二章嵌入时由外壳传入）；传 null 取消。 */
+    use(values) { override = values; cache = null; },
+    refresh() { cache = null; return get(); },
+  };
+})();
+</script><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><meta name="color-scheme" content="light dark"><title>任务 3-4 · 末端执行器与 TCP 工作室</title><style>@font-face{font-family:LabMono;src:local('Cascadia Code'),local('Consolas');font-display:swap}*{box-sizing:border-box}html{--bg:#f4f6f8;--paper:#fff;--stage:#f8fafb;--ink:#223645;--muted:#7b8993;--subtle:#a4afb7;--line:#e3e9ed;--accent:#276f66;--accent-soft:#e9f4ef;--blue:#597c9f;--orange:#c18942;--orange-soft:#fcf3e4;--shadow:0 5px 26px #344d6210;color-scheme:light}html[data-theme=dark]{--bg:#131b22;--paper:#1b2630;--stage:#1b2630;--ink:#e0e9ef;--muted:#92a6b7;--subtle:#677c8d;--line:#31404d;--accent:#79d0b6;--accent-soft:#233d39;--blue:#94b7db;--orange:#e8b976;--orange-soft:#3b3226;--shadow:0 8px 30px #0002;color-scheme:dark}body{margin:0;background:var(--bg);color:var(--ink);font:13px/1.55 'Segoe UI','Microsoft YaHei',sans-serif}button,input,select{font:inherit}button,a,input,select,summary{-webkit-tap-highlight-color:transparent}button{cursor:pointer;border:1px solid var(--line);border-radius:7px;background:var(--paper);color:var(--ink);padding:8px 12px;transition:background .18s,color .18s,border-color .18s,transform .18s}button:hover{border-color:var(--accent);background:var(--accent-soft)}button:active{transform:translateY(1px)}button:disabled{cursor:default;opacity:.42;transform:none}button:focus-visible,a:focus-visible,summary:focus-visible,input:focus-visible,select:focus-visible{outline:2px solid var(--accent);outline-offset:3px}a{color:inherit;text-decoration:none}button[hidden],[hidden]{display:none!important}h1,h2,h3,p{margin:0}button.primary{background:var(--accent);border-color:var(--accent);color:var(--paper);font-weight:600;padding:11px 12px}html[data-theme=dark] button.primary{color:#142720}button.primary:hover{filter:brightness(1.08)}button.secondary{background:var(--stage)}.text-link{border:0;padding:0;background:none;color:var(--accent);text-align:left;font-size:12px}.text-link:hover{background:none}.mono,output,.eyebrow,.step-no,.tool-number,.range-ends,.tool-card small,.offset-values{font-family:LabMono,Consolas,monospace;font-variant-numeric:tabular-nums}
 .topbar{height:63px;border-bottom:1px solid var(--line);background:var(--paper);display:flex;align-items:center;gap:28px;padding:0 30px}.brand{display:flex;align-items:center;gap:10px;font-size:14px;font-weight:700;line-height:1.3}.brand-mark{color:var(--accent);font-size:32px;font-weight:400;line-height:1}.brand small{display:block;font:8px/1.8 LabMono,monospace;letter-spacing:1.7px;color:var(--muted)}.crumb{display:flex;align-items:center;gap:16px;border-left:1px solid var(--line);padding-left:26px;font-size:11px;color:var(--muted)}.crumb b{font-weight:500;color:var(--accent)}.top-actions{margin-left:auto;display:flex;align-items:center;gap:7px}.top-actions button{width:31px;height:31px;padding:0;font-size:16px;border-radius:50%}.live-dot{display:flex;align-items:center;gap:7px;margin-right:13px;font-size:10px;color:var(--muted)}.live-dot:before,.stage-topline i,.connection-state i{content:'';display:inline-block;width:5px;height:5px;border-radius:50%;background:var(--accent)}main{max-width:1920px;margin:auto;padding:22px 28px 0}.page-heading{display:flex;justify-content:space-between;align-items:center;margin-bottom:20px}.eyebrow{font-size:9px;letter-spacing:1.8px;color:var(--muted);font-weight:500}.eyebrow i{color:var(--accent);font-style:normal;margin-left:8px}h1{font-size:27px;letter-spacing:.4px;line-height:1.6;font-weight:650}h1>span{font-family:LabMono,monospace;color:var(--accent);font-weight:500}h1 small{font-size:12px;color:var(--muted);font-weight:400;letter-spacing:0;margin-left:21px}.progress-badge{display:flex;align-items:center;gap:12px}.progress-badge b{font-size:11px;font-weight:600}.progress-badge small{display:block;font-size:9px;color:var(--muted)}.progress-icon{color:var(--accent);font-size:30px;font-weight:300}.mission-tabs{display:grid;grid-template-columns:repeat(4,1fr);gap:1px;border:1px solid var(--line);border-radius:10px;overflow:hidden;background:var(--line);margin-bottom:18px}.mission-tabs>button{position:relative;display:flex;align-items:center;gap:13px;padding:11px 20px;border:0;border-radius:0;text-align:left;background:var(--paper);font-size:12px;font-weight:600}.mission-tabs>button.active{background:var(--accent-soft);color:var(--accent)}.mission-tabs>button.active:after{content:'';height:2px;background:var(--accent);position:absolute;bottom:0;left:20px;right:20px}.step-no{font-size:11px;color:var(--subtle);font-weight:400}.active>.step-no{color:var(--accent)}.mission-tabs small{font-size:9px;font-weight:400;color:var(--muted);margin-left:15px}.step-check{font-style:normal;margin-left:auto;color:var(--accent);font-size:12px}
 .workshop{display:grid;grid-template-columns:194px minmax(0,1fr) 302px;gap:17px;align-items:stretch;min-height:616px;height:calc(100dvh - 252px)}.tool-cabinet{display:flex;flex-direction:column;min-height:0;background:var(--paper);border:1px solid var(--line);border-radius:11px;padding:15px 11px 9px;box-shadow:var(--shadow)}.cabinet-heading{display:flex;align-items:center;justify-content:space-between;padding:0 3px}.cabinet-heading b{font-size:13px}.cabinet-heading>span{font:8px LabMono,monospace;letter-spacing:1.2px;color:var(--muted)}.cabinet-hint{font-size:9px;color:var(--muted);padding:2px 3px 11px}.tool-list{display:grid;grid-template-rows:repeat(6,minmax(70px,1fr));gap:7px;min-height:0;flex:1}.tool-card{position:relative;display:flex;align-items:center;text-align:left;padding:6px 7px;border-radius:8px;background:var(--stage);overflow:hidden;gap:5px}.tool-card.active{border-color:var(--accent);background:var(--accent-soft);box-shadow:inset 3px 0 var(--accent)}.tool-card img{width:66px;height:66px;object-fit:contain;filter:drop-shadow(0 5px 3px #253b4a1a)}.tool-card .tool-copy{min-width:0}.tool-card b{display:block;font-size:11px;font-weight:600;white-space:nowrap}.tool-card .tool-use{display:block;font-size:9px;color:var(--muted);margin-top:1px}.tool-card small{font-size:7px;display:block;letter-spacing:.4px;margin-top:5px;color:var(--subtle)}.tool-card .equipped-indicator{position:absolute;top:4px;right:6px;color:var(--accent);font-size:10px;opacity:0}.tool-card.active .equipped-indicator{opacity:1}.cabinet-footer{font-size:8px;white-space:nowrap;color:var(--muted);text-align:center;padding-top:11px}.cabinet-footer span{color:var(--accent);margin-right:4px}.lab-centre{display:flex;min-width:0;flex-direction:column;gap:13px}.stage{border:1px solid var(--line);border-radius:11px;background:var(--paper);display:flex;flex-direction:column;overflow:hidden;min-height:0;flex:1;box-shadow:var(--shadow)}.stage-bar{height:48px;min-height:48px;border-bottom:1px solid var(--line);padding:0 16px;display:flex;align-items:center;justify-content:space-between}.stage-bar>div:first-child{display:flex;gap:14px;align-items:center}.stage-bar .mono{font-size:8px;color:var(--muted);letter-spacing:.8px}.stage-bar strong{font-size:10px;font-weight:500}.view-controls{display:flex;gap:2px;background:var(--bg);padding:3px;border:1px solid var(--line);border-radius:6px}.view-controls button{font-size:9px;border:0;background:none;padding:3px 8px;border-radius:4px;color:var(--muted)}.view-controls button.active{color:var(--accent);background:var(--paper);box-shadow:0 1px 3px #152c3810}.viewport{position:relative;flex:1;min-height:310px;overflow:hidden;outline-offset:-3px;background:radial-gradient(ellipse at 47% 38%,var(--paper) 0%,var(--stage) 65%,var(--bg) 100%);touch-action:none;cursor:grab}.viewport:active{cursor:grabbing}.viewport>canvas,.viewport>svg,#fallback{position:absolute;inset:0;width:100%;height:100%}#overlay{pointer-events:none;z-index:2;overflow:hidden}#overlay text{font-family:'Segoe UI','Microsoft YaHei',sans-serif;font-size:10px;font-weight:600;paint-order:stroke;stroke:var(--paper);stroke-width:4px;stroke-linejoin:round}#overlay .tcp-label{fill:var(--accent)}.stage-topline{position:absolute;left:16px;right:16px;top:14px;display:flex;justify-content:space-between;z-index:3;font-size:9px;color:var(--muted);pointer-events:none}.stage-topline>span:first-child{display:flex;gap:7px;align-items:center}.stage-topline>.mono{font-size:8px;letter-spacing:2px;color:var(--subtle)}.stage-tools{position:absolute;bottom:14px;left:14px;display:flex;gap:5px;z-index:3}.stage-tools button{font-size:9px;padding:5px 9px;background:var(--paper);box-shadow:0 2px 6px #21394008}.stage-tools button[aria-pressed=true]{background:var(--accent-soft);color:var(--accent);border-color:var(--accent)}.floating-key{position:absolute;right:15px;bottom:14px;display:flex;flex-direction:column;gap:5px;font-size:8px;color:var(--muted);pointer-events:none}.floating-key>span{display:flex;align-items:center;gap:5px}.key-dot{display:inline-block;width:6px;height:6px;border-radius:50%;flex-shrink:0}.key-dot.tcp{background:#2fa88d}.key-dot.flange{background:#8294a5}.key-ring{display:inline-block;width:7px;height:7px;border:1.5px solid var(--orange);border-radius:50%}.swap-toast{position:absolute;left:50%;top:50%;transform:translate(-50%,-50%);background:var(--paper);border:1px solid var(--line);padding:9px 17px;border-radius:7px;color:var(--accent);font-size:12px;box-shadow:var(--shadow)}.stage-caption{display:flex;justify-content:space-between;padding:6px 16px;font-size:8px;color:var(--muted);border-bottom:1px solid var(--line);background:var(--stage)}.readouts{display:grid;grid-template-columns:1.35fr repeat(3,.8fr) 1.1fr;gap:10px;padding:15px 16px;align-items:center}.readout-title{display:flex;gap:7px;align-items:flex-start;font-size:9px}.readout-title>.key-dot{margin-top:4px}.readouts small{display:block;color:var(--muted);font-size:8px;font-weight:400;letter-spacing:.4px}.readout-title small{font-size:7px;margin-top:3px;letter-spacing:0}.readouts output{font-size:17px;line-height:1.6}.readouts>div:not(:first-child){text-align:right}.error-readout{padding-left:10px;border-left:1px solid var(--line)}.error-readout output{color:var(--accent)}.insight-card{display:flex;align-items:center;gap:15px;padding:16px 19px;background:var(--accent-soft);border:1px solid color-mix(in srgb,var(--accent) 16%,var(--line));border-radius:9px;min-height:111px}.insight-mark{font-size:36px;line-height:1;color:var(--accent);font-weight:200}.insight-card>div:nth-child(2){flex:1}.insight-card .eyebrow{color:var(--accent);font-size:7px;letter-spacing:1.2px}.insight-card h2{font-size:14px;font-weight:600;margin:4px 0}.insight-card p{color:var(--muted);font-size:10px;max-width:560px}.insight-card>button{font-size:10px;max-width:105px;line-height:1.8}.insight-card>button span{display:block;font-size:18px}
 .control-panel{background:var(--paper);border:1px solid var(--line);border-radius:11px;display:flex;flex-direction:column;min-height:0;box-shadow:var(--shadow);overflow:auto;scrollbar-width:thin;scrollbar-color:var(--line) transparent}.panel-heading{padding:18px 18px 12px}.panel-heading .eyebrow{font-size:8px;letter-spacing:1.2px}.panel-heading h2{font-size:17px;font-weight:650;margin-top:5px}.panel-section{padding:0 18px 15px;display:flex;flex-direction:column;gap:13px}.equipped-heading{display:flex;gap:10px;align-items:center}.tool-number{width:32px;height:36px;display:grid;place-items:center;color:var(--accent);background:var(--accent-soft);border-radius:5px;font-size:12px}.equipped-heading h3{font-size:13px}.equipped-heading>div>span{font-size:9px;color:var(--muted)}.status-pill{margin-left:auto;padding:3px 6px;font-size:8px;border-radius:4px;background:var(--accent-soft);color:var(--accent);white-space:nowrap}.point-card{background:var(--stage);border:1px solid var(--line);border-radius:8px;padding:13px}.point-card small{font-size:9px;color:var(--muted)}.point-card strong{display:block;font-size:14px;font-weight:600;color:var(--accent);margin:6px 0}.point-card p{font-size:10px;color:var(--muted);line-height:1.8}.point-card button{font-size:9px;margin-top:10px}.offset-card>div:first-child{display:flex;align-items:center;justify-content:space-between;font-size:10px}.offset-card>div:first-child>span{font-size:8px;color:var(--muted)}.offset-values{display:flex;gap:7px;margin-top:8px}.offset-values span{flex:1;background:var(--stage);padding:7px 8px;color:var(--muted);font-size:8px;border-radius:5px;display:flex;justify-content:space-between;align-items:center}.offset-values b{color:var(--ink);font-weight:400;font-size:12px}.connection-state{display:flex;justify-content:space-between;font-size:8px;color:var(--accent);gap:4px}.connection-state i{width:4px;height:4px;margin-right:3px}.connection-state .warn{color:var(--orange)}.divider-label{display:flex;align-items:center;gap:10px;font-size:9px;color:var(--muted);margin-top:2px}.divider-label:after{content:'';height:1px;background:var(--line);flex:1}.microcopy{font-size:9px;color:var(--muted);line-height:1.8}.lesson-next{display:flex;justify-content:space-between;font-size:10px;color:var(--accent);padding:10px 0;border:0;border-top:1px solid var(--line);border-radius:0}.lesson-next:hover{background:none}.panel-footer{margin-top:auto;padding:0 18px 14px}.panel-footer>button{width:100%;display:flex;justify-content:space-between;align-items:center;color:#b96b68;font-size:9px;background:transparent;padding:7px 10px}kbd{border:1px solid var(--line);font:7px LabMono,monospace;color:var(--muted);padding:1px 4px;border-radius:3px}#notice{font-size:9px;line-height:1.6;color:var(--muted);margin-top:9px;min-height:29px}.intro{font-size:11px;color:var(--muted);line-height:1.9}.tcp-text{color:var(--accent)}.segmented{display:flex;gap:4px;background:var(--bg);border:1px solid var(--line);border-radius:7px;padding:4px}.segmented>button{flex:1;border:0;background:transparent;font-size:11px;padding:8px 4px}.segmented>button small{display:block;font-size:8px;color:var(--muted);margin-top:2px}.segmented>button.active{background:var(--paper);color:var(--accent);box-shadow:0 2px 5px #21394010}.angle-control>div:first-child{display:flex;justify-content:space-between;font-size:10px}.angle-control output{font-size:15px;color:var(--accent)}input[type=range]{width:100%;height:5px;accent-color:var(--accent);cursor:pointer;margin:15px 0 10px}.range-ends{display:flex;justify-content:space-between;font-size:8px;color:var(--muted)}.motion-metrics{display:grid;grid-template-columns:1fr 1fr;background:var(--stage);border:1px solid var(--line);border-radius:8px;padding:12px 0}.motion-metrics>div{padding:0 13px}.motion-metrics>div+div{border-left:1px solid var(--line)}.motion-metrics span{font-size:8px;color:var(--muted)}.motion-metrics b{display:block;font-weight:400;font-size:21px;margin-top:3px;color:var(--accent)}.motion-metrics small{font-size:8px;color:var(--muted);margin-left:4px}.explanation{font-size:10px;line-height:1.85;background:var(--accent-soft);color:var(--accent);border-left:2px solid var(--accent);padding:10px 12px;border-radius:0 5px 5px 0}.explanation.warn{background:var(--orange-soft);border-color:var(--orange);color:var(--orange)}.field-label{font-size:10px;color:var(--muted)}select{width:100%;padding:9px;color:var(--ink);background:var(--stage);border:1px solid var(--line);border-radius:6px;font-size:11px}.cal-points{display:flex;gap:7px}.cal-points button{flex:1;padding:8px 3px;border:1px solid var(--line);font:11px LabMono,monospace;position:relative}.cal-points button.active{border-color:var(--accent);color:var(--accent);background:var(--accent-soft)}.cal-points button.recorded:after{content:'✓';font-size:8px;position:absolute;top:0;right:3px;color:var(--accent)}.cal-distance{display:flex;align-items:center;justify-content:space-between;background:var(--stage);padding:10px 12px;border-radius:7px;font-size:10px;color:var(--muted)}.cal-distance b{font-size:22px;font-weight:400;color:var(--accent)}.cal-distance small{font-size:9px}.cal-adjust>div{display:grid;grid-template-columns:14px 1fr 55px;align-items:center;gap:10px;font:10px LabMono,monospace;color:var(--muted);height:28px}.cal-adjust input{margin:0}.cal-adjust output{text-align:right;font-size:9px}.button-pair{display:flex;gap:7px}.button-pair>button{flex:1;font-size:10px;padding:9px 4px}.cal-details{font-size:9px;color:var(--muted)}.cal-details summary{cursor:pointer;padding:5px 0}.cal-details table{border-collapse:collapse;width:100%;font-size:8px;margin:5px 0}td,th{border-bottom:1px solid var(--line);padding:5px;text-align:left;font-weight:400}td:last-child{font-family:LabMono,monospace}.cal-details .text-link{font-size:9px;margin-top:9px}.validation-result{padding:10px;background:var(--accent-soft);font-size:10px;line-height:1.8;color:var(--accent);border-radius:6px}.challenge-badge{font:9px LabMono,monospace;letter-spacing:1px;color:var(--orange);background:var(--orange-soft);padding:6px 9px;border-radius:4px;align-self:flex-start}.challenge-title{font-size:17px;line-height:1.6}.challenge-error{padding:13px;background:var(--orange-soft);border:1px solid color-mix(in srgb,var(--orange) 20%,var(--paper));border-radius:7px;margin-bottom:13px}.challenge-error span{color:var(--orange);font-size:9px}.challenge-error b{display:block;font-weight:400;font-size:30px;color:var(--orange)}.challenge-error small{font-size:11px}.quiz-answers{display:flex;flex-direction:column;gap:7px;margin:8px 0 12px}.quiz-answers>button{text-align:left;font-size:10px;padding:10px;line-height:1.7}.quiz-answers>button.correct{border-color:var(--accent);background:var(--accent-soft);color:var(--accent)}.quiz-answers>button.wrong{border-color:var(--orange);color:var(--orange)}#repairChallenge{width:100%;margin-top:12px}.tip-note{border-top:1px solid var(--line);padding-top:14px;font-size:10px}.tip-note b{font-size:10px}.tip-note p{font-size:10px;color:var(--muted);line-height:1.85;margin-top:5px}.success-card{text-align:center;padding:20px;background:var(--accent-soft);color:var(--accent);border-radius:9px}.success-card>span{display:grid;place-items:center;width:44px;height:44px;border:1px solid var(--accent);border-radius:50%;margin:0 auto 10px;font-size:22px}.success-card h3{font-size:18px}.success-card p{font-size:11px;margin:10px 0 16px}.page-footer{display:flex;align-items:center;justify-content:space-between;font-size:8px;color:var(--muted);padding:12px 0}.page-footer button{font-size:8px;color:var(--accent);background:none;border:0;padding:0}dialog{max-width:530px;width:calc(100% - 32px);border:1px solid var(--line);border-radius:12px;background:var(--paper);color:var(--ink);padding:26px;box-shadow:0 20px 100px #0004}dialog::backdrop{background:#10212e66;backdrop-filter:blur(4px)}.dialog-heading{display:flex;justify-content:space-between;align-items:center}.dialog-heading button{border:0;font-size:24px;padding:0 6px}dialog h2{font-size:21px;margin-top:6px}dialog ol{padding-left:21px;font-size:12px;line-height:1.9}dialog li{margin:10px 0}dialog p{font-size:11px;color:var(--muted);margin-top:12px;line-height:1.9}#fallback{pointer-events:none;z-index:1}#fallback svg{width:100%;height:100%}#fallback>span{position:absolute;bottom:60px;left:14px;max-width:80%;font-size:8px;color:var(--muted)}
@@ -33,6 +93,17 @@ html[data-theme="dark"] {
   --ok:#5cc597; --ok-soft:#173a2d; --ok-line:#2f6b51; --warn:#f0b35a; --warn-soft:#3b2d16; --bad:#f08079; --bad-soft:#3d1f1f;
   --shadow-sm:0 1px 2px rgba(0,0,0,.25); --shadow:0 1px 2px rgba(0,0,0,.25), 0 8px 24px rgba(0,0,0,.28); --shadow-lg:0 12px 34px rgba(0,0,0,.45);
   --page-bg:linear-gradient(180deg,#112035 0%,#0d1a2b 100%);
+}
+/* 三维区（全课程统一）：近白中性灰底，模型下方柔和接触阴影；也是印刷教材截图的底色。
+   --stage-floor 给场景里的真实地面（桥面、楼板、房间）用，与底色衔接；--stage-ink/chip 是三维区里的小字和浮签。
+   shared/lab-shell/stage-tone.js 把这些值交给三维场景（第二章经 postMessage 传进嵌入页），改值只改这里及该文件的同值后备。 */
+:root, [data-stage-tone="light"] {
+  --stage-bg:#f5f6f8; --stage-floor:#eceef1; --stage-shadow:rgba(28,36,48,.20);
+  --stage-ink:#4f5b6b; --stage-chip:rgba(255,255,255,.86); --stage-chip-line:rgba(25,40,60,.10);
+}
+html[data-theme="dark"], [data-stage-tone="dark"] {
+  --stage-bg:#1a1f27; --stage-floor:#222833; --stage-shadow:rgba(0,0,0,.55);
+  --stage-ink:#b8c3d1; --stage-chip:rgba(30,36,46,.86); --stage-chip-line:rgba(255,255,255,.10);
 }
 * { box-sizing:border-box; }
 [hidden] { display:none !important; }
@@ -98,11 +169,11 @@ html[data-theme="dark"] .c2-station[aria-selected="true"] { background:linear-gr
   display:flex; flex-direction:column; min-height:0; overflow:hidden; border-radius:16px;
   border:1px solid var(--hair); background:var(--course-surface); box-shadow:var(--shadow);
 }
-.c2-view { position:relative; flex:1 1 auto; min-height:0; background:var(--course-bg); }
+.c2-view { position:relative; flex:1 1 auto; min-height:0; background:var(--stage-bg); }
 .c2-frame { position:absolute; inset:0; width:100%; height:100%; border:0; display:block; background:transparent; }
 .c2-loading {
   position:absolute; inset:0; display:flex; flex-direction:column; align-items:center; justify-content:center; gap:12px;
-  color:var(--course-muted); font-size:15px; background:var(--course-bg); pointer-events:none; z-index:1;
+  color:var(--course-muted); font-size:15px; background:var(--stage-bg); pointer-events:none; z-index:1;
 }
 .c2-spinner { width:30px; height:30px; border-radius:50%; border:3px solid var(--blue-soft); border-top-color:var(--course-accent); animation:c2-spin .8s linear infinite; }
 @keyframes c2-spin { to { transform:rotate(360deg); } }
@@ -120,12 +191,31 @@ html[data-theme="dark"] .c2-station[aria-selected="true"] { background:linear-gr
 }
 .c2-toolseg button { height:26px; font-size:13px; padding:0 10px; }
 .c2-hint {
-  position:absolute; right:12px; bottom:10px; color:var(--course-muted); font-size:12px; pointer-events:none; z-index:2;
-  max-width:60%; white-space:nowrap; overflow:hidden; text-overflow:ellipsis;
-  background:color-mix(in srgb, var(--course-surface) 72%, transparent); padding:2px 10px; border-radius:10px;
+  position:absolute; left:50%; top:14px; transform:translateX(-50%); z-index:2; pointer-events:none;
+  max-width:min(80%,560px); white-space:nowrap; overflow:hidden; text-overflow:ellipsis;
+  padding:5px 14px; border-radius:999px; font-size:13px; line-height:1.4; color:var(--stage-ink);
+  background:var(--stage-chip); border:1px solid var(--stage-chip-line); backdrop-filter:blur(6px);
+  transition:opacity .6s ease, transform .6s ease;
 }
+.c2-hint.gone { opacity:0; transform:translate(-50%,-6px); }
+
+/* 全屏：外壳统一一个按钮，钉在三维区右上角；全屏的是整块三维区（含上方选择条和提示条） */
+.c2-fs {
+  position:absolute; right:12px; top:12px; z-index:5; width:34px; height:34px; padding:0; display:grid; place-items:center;
+  border-radius:10px; border:1px solid var(--stage-chip-line); background:var(--stage-chip); backdrop-filter:blur(8px);
+  color:var(--course-ink); box-shadow:var(--shadow-sm);
+}
+.c2-fs:hover { color:var(--course-accent); border-color:var(--course-accent); }
+.c2-fs svg { width:18px; height:18px; fill:none; stroke:currentColor; stroke-width:2; stroke-linecap:round; stroke-linejoin:round; }
+.c2-fs .c2-fs-out, .c2-stage.c2-full .c2-fs .c2-fs-in { display:none; }
+.c2-stage.c2-full .c2-fs .c2-fs-out { display:block; }
+.c2-stage:fullscreen { border:0; border-radius:0; box-shadow:none; width:100%; height:100%; }
+.c2-stage:fullscreen::backdrop { background:var(--stage-bg); }
+/* 浏览器不支持全屏接口时：铺满窗口 */
+.c2-stage.c2-full-fallback { position:fixed !important; inset:0 !important; z-index:2147483000 !important; width:auto !important; height:auto !important; border-radius:0; border:0; }
+
 .c2-part {
-  position:absolute; right:12px; top:12px; z-index:3; width:min(300px,42%); padding:11px 34px 11px 13px; border-radius:12px;
+  position:absolute; right:12px; top:56px; z-index:3; width:min(300px,42%); padding:11px 34px 11px 13px; border-radius:12px;
   background:var(--course-surface); border:1px solid var(--hair); border-left:4px solid var(--focus);
   box-shadow:var(--shadow-lg); display:flex; flex-direction:column; gap:3px;
 }
@@ -174,7 +264,7 @@ html[data-theme="dark"] .c2-play { background:linear-gradient(135deg,#8abaff,#5f
 }
 html[data-theme="dark"] .c2-head-num { color:#0f1d2e; background:linear-gradient(135deg,#8abaff,#5f97ea); }
 .c2-panel-head h2 { margin:0; font-size:19px; font-weight:800; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; }
-.c2-panel-head p { margin:6px 0 0; color:var(--course-muted); font-size:13.5px; line-height:1.55; }
+.c2-panel-head p { margin:6px 0 0; color:var(--course-muted); font-size:14px; line-height:1.55; }
 .c2-redo { height:30px; padding:0 11px; border-radius:15px; border:1px solid var(--hair); background:var(--surface-2); color:var(--course-muted); font-size:12.5px; white-space:nowrap; }
 .c2-redo:hover { color:var(--course-accent); border-color:var(--course-accent); }
 .c2-panel-body { display:flex; flex-direction:column; gap:14px; }
@@ -291,6 +381,23 @@ html[data-theme="dark"] .c2-ch-go { color:#0f1d2e; }
 html[data-theme="dark"] .c2-banner { background:#3b2d16; border-color:#6b5124; color:#f6d38f; }
 .c2-quiet { color:var(--course-muted); }
 
+/* 模型来源与许可：面板最底下一个 ⓘ，点开才显示，不占正文 */
+.c2-credit { position:relative; margin-top:auto; display:flex; justify-content:flex-end; }
+.c2-credit-btn {
+  height:26px; padding:0 10px; border-radius:13px; border:1px solid transparent; background:none;
+  color:var(--course-muted); font-size:12.5px; display:inline-flex; align-items:center; gap:5px;
+}
+.c2-credit-btn:hover, .c2-credit-btn[aria-expanded="true"] { color:var(--course-accent); border-color:var(--hair); background:var(--surface-2); }
+.c2-credit-btn i { font-style:normal; display:grid; place-items:center; width:16px; height:16px; border-radius:50%; border:1.5px solid currentColor; font-size:11px; font-weight:800; line-height:1; }
+.c2-credit-pop {
+  position:absolute; right:0; bottom:32px; z-index:6; width:min(320px,100%); padding:10px 12px; border-radius:12px;
+  background:var(--course-surface); border:1px solid var(--hair); box-shadow:var(--shadow-lg);
+  font-size:13px; line-height:1.55; color:var(--course-ink);
+}
+.c2-credit-pop p { margin:0; }
+.c2-credit-pop p + p { margin-top:4px; }
+.c2-credit-pop a { color:var(--course-accent); }
+
 /* 提示条：在三维区下方弹出，几秒后收起 */
 .c2-feedback {
   position:absolute; left:50%; top:56px; transform:translateX(-50%); z-index:4; max-width:min(640px,80%);
@@ -378,7 +485,12 @@ html.lab-native .c2-native-stage {
   max-width:none !important; max-height:none !important; min-height:0 !important;
   margin:0 !important; border:0 !important; border-radius:0 !important; box-shadow:none !important;
 }
-html.lab-native .c2-view { background:transparent; }
+/* 三维区统一底色（--stage-bg，见 lab-shell.css）：原页面的三维区本身铺底色，
+   它与三维画布之间的各层容器一律透明——原来的渐变、网格、色调底都不再露出。
+   three.js 画布带 data-engine 属性，用它找出“装着三维画布的那几层”。 */
+html.lab-native .c2-view, html.lab-native .c2-native-stage { background:var(--stage-bg) !important; }
+html.lab-native .c2-native-stage :has(canvas[data-engine]),
+html.lab-native .c2-native-stage canvas[data-engine] { background:transparent !important; }
 
 /* 三维区上方一排：模型选择 */
 .c2-stage-top {
@@ -535,12 +647,18 @@ html.lab-native .c2-panel .constraint-cards { height:auto !important; min-height
 .c2-panel .panel-section .button-pair { display:flex; gap:6px; flex-wrap:wrap; }
 .c2-panel .panel-section :is(.secondary) { height:32px; padding:0 12px; border-radius:10px; border:1px solid var(--hair); background:var(--course-surface); color:var(--course-ink); cursor:pointer; }
 .c2-panel .panel-section .text-link { border:0; background:none; color:var(--course-accent); font-weight:600; cursor:pointer; padding:0; }
+
+/* 三维区：去掉图号“FIG. 03.04”、型号“EDU / 6R”、工具柜英文编号和重复的操作提示；看法切换放到左上角 */
+html.lab-native :is(.stage, .c2-stage-top) :is(.stage-bar .mono, #figureName, .stage-topline > .mono, .tool-card small) { display:none !important; }
+html.lab-native .stage .stage-caption { display:none !important; } /* 只剩重复的操作提示和“三维教学模型”字样 */
+html.lab-native .stage .stage-bar { justify-content:flex-start; }
+html.lab-native .stage .view-controls button { font-size:13px; padding:4px 10px; }
 </style><script data-course-navigation src="../../../../../shared/navigation.js"></script><link data-course-theme rel="stylesheet" href="../../../../../shared/styles/theme.css"><script data-course-theme src="../../../../../shared/theme.js"></script></head>
 <body>
 <header class="topbar">
   <a class="brand" href="../../../../home/index.html#chapter-3"><span class="brand-mark">⌘</span><span>智能建造<small>INTERACTIVE LAB</small></span></a>
   <div class="crumb"><a href="../3-2/index.html">机器人构型与运动</a><span>/</span><b>任务 3-4</b></div>
-  <div class="top-actions"><span class="live-dot">三维交互实验</span><button id="theme" aria-label="切换深色主题">☾</button><button id="fullscreen" aria-label="切换全屏">⛶</button><button id="help" aria-label="操作说明">?</button></div>
+  <div class="top-actions"><span class="live-dot">三维交互实验</span><button id="theme" aria-label="切换深色主题">☾</button><button id="help" aria-label="操作说明">?</button></div>
 </header>
 <main>
   <div class="page-heading"><div><span class="eyebrow">ROBOT TOOL WORKSHOP <i>/ 03.04</i></span><h1>末端执行器与 <span>TCP</span><small>换一件工具，找到新的工作点。</small></h1></div><div class="progress-badge"><span class="progress-icon">✧</span><span><b id="progressText">探索进度 0 / 4</b><small>从认识工具，到精准对点</small></span></div></div>
@@ -554,7 +672,7 @@ html.lab-native .c2-panel .constraint-cards { height:auto !important; min-height
     <aside class="tool-cabinet" aria-label="末端执行器工具柜"><div class="cabinet-heading"><b>工具柜</b><span>06 TOOLS</span></div><p class="cabinet-hint">点击换装 · 按 1–6 快选</p><div id="toolPicker" class="tool-list"></div><div class="cabinet-footer"><span>◎</span> 同一机械臂，多种工作方式</div></aside>
     <section class="lab-centre">
       <div class="stage iso-plate">
-        <div class="stage-bar"><div><span class="mono">FIG. 03.04</span><strong id="figureName">六轴机械臂 · 工具工作点</strong></div><div class="view-controls"><button data-view="iso" class="active" aria-label="立体视角">立体</button><button data-view="front" aria-label="正视视角">正视</button><button data-view="top" aria-label="俯视视角">俯视</button></div></div>
+        <div class="stage-bar"><div><span class="mono">FIG. 03.04</span><strong id="figureName">六轴机械臂 · 工具工作点</strong></div><div class="view-controls"><button data-view="iso" class="active" aria-label="全景视角">全景</button><button data-view="front" aria-label="正视视角">正视</button><button data-view="top" aria-label="俯视视角">俯视</button></div></div>
         <div class="viewport" id="viewport" tabindex="0" role="group" aria-label="三维机械臂。拖动旋转，滚轮缩放；方向键旋转视角，空格停止运动。">
           <div id="fallback" hidden></div><svg id="overlay" aria-hidden="true"></svg>
           <div class="stage-topline"><span><i></i><span id="stageState">偏置喷枪已装配</span></span><span class="mono">EDU / 6R</span></div>
@@ -811,7 +929,7 @@ window.$=s=>document.querySelector(s);window.$$=s=>[...document.querySelectorAll
    if(mode==='fixed'){this.box(g,180,160,20,[0,0,53],this.mat.dark,4);this.box(g,71,72,128,[0,0,123],this.mat.white,5);this.box(g,140,121,18,[0,0,193],this.mat.steel,3);this.box(moving,105,96,90,[0,0,0],this.mat.white,6);for(const x of [-40,40])for(const y of [-34,34])this.bolt(g,[x,y,206],'z',4);}
    const contact=this.group(moving,mode==='hinge'?[125,0,0]:mode==='slide'?[0,0,170]:[0,0,0]);return {g,accent,tcp:contact,update:q=>{if(mode==='free'){moving.position.set(q[0],q[1],280+q[2]);moving.rotation.set(q[3]*M.D,q[4]*M.D,q[5]*M.D,'ZYX');}if(mode==='hinge'){moving.position.set(28,0,260);moving.rotation.z=q[0]*M.D;}if(mode==='slide')moving.position.x=q[0];if(mode==='fixed')moving.position.z=247;},anchors:q=>mode==='free'?Array.from({length:6},(_,i)=>({p:[q[0],q[1],280+q[2]],a:[[1,0,0],[0,1,0],[0,0,1]][i%3]})):mode==='hinge'?[{p:[28,0,260],a:[0,0,1]}]:mode==='slide'?[{p:[q[0],0,170],a:[1,0,0]}]:[]};
   }
-  setType(id,rig){this.id=id;this.rig=rig;const key=rig?'rig-'+rig:id;for(const m of this.models.values())m.g.visible=false;if(!this.models.has(key)){const names={cartesian:'buildCartesian',cylindrical:'buildCylindrical',articulated:'buildArticulated',scara:'buildScara',delta:'buildDelta'};this.models.set(key,rig?this.buildRig(rig):this[names[id]]());}this.model=this.models.get(key);this.model.g.visible=true;this.centre.set(id==='articulated'&&!rig?120:0,0,rig?230:320);this.goal={az:this.isoAzimuth(),el:27,zoom:1};this.view={...this.goal};this.clearTrace();this.pathDispose();this.resize();}
+  setType(id,rig){this.id=id;this.rig=rig;const key=rig?'rig-'+rig:id;for(const m of this.models.values())m.g.visible=false;if(!this.models.has(key)){const names={cartesian:'buildCartesian',cylindrical:'buildCylindrical',articulated:'buildArticulated',scara:'buildScara',delta:'buildDelta'};this.models.set(key,rig?this.buildRig(rig):this[names[id]]());}this.model=this.models.get(key);this.model.g.visible=true;this.centre.set(id==='articulated'&&!rig?120:0,0,rig?{free:270,hinge:240,slide:165,fixed:160}[rig]:320);this.goal={az:this.isoAzimuth(),el:27,zoom:1};this.view={...this.goal};this.clearTrace();this.pathDispose();this.resize();}
   isoAzimuth(){return this.rig?-48:({cartesian:-48,cylindrical:30,articulated:30,scara:-105,delta:-90}[this.id]??-48);}
   setObstacles(list,show=true){for(const b of list){if(!this.obstacleMeshes[b.id]){const g=this.group(this.obstacles),body=this.box(g,1,1,1,[0,0,0],this.material(b.id==='post'?0xd8a16b:0xaf8159,.2,.53),.1);const edges=new T.LineSegments(new T.EdgesGeometry(new T.BoxGeometry(1.01,1.01,1.01)),new T.LineBasicMaterial({color:0x996c43,transparent:true,opacity:.65}));g.add(edges);this.obstacleMeshes[b.id]={g,body,edges};}const {g}=this.obstacleMeshes[b.id];g.visible=show&&b.enabled;g.position.set(...b.c);g.scale.set(...b.size);}}
   setWorkspace(sample,id,q,locks,scale,length){this.cloud.geometry.dispose();this.cloud.geometry=new T.BufferGeometry().setFromPoints(sample.points.map(V));this.cloud.visible=this.flags.workspace;this.boundary.clear();if(id==='cartesian'){const bounds=M.bounds(id,scale).map((r,i)=>locks[i]?[q[i],q[i]]:r),lo=[bounds[0][0],bounds[1][0],bounds[2][0]-length],hi=[bounds[0][1],bounds[1][1],bounds[2][1]-length],size=lo.map((v,i)=>Math.max(.2,hi[i]-v));const box=new T.LineSegments(new T.EdgesGeometry(new T.BoxGeometry(...size)),new T.LineBasicMaterial({color:0x6b9ed5,transparent:true,opacity:.65}));box.position.set(...lo.map((v,i)=>(v+hi[i])/2));this.boundary.add(box);}if(id==='cylindrical'){const b=M.bounds(id,scale).map((r,i)=>locks[i]?[q[i],q[i]]:r);for(const z of b[2])for(const r of b[1]){const points=[];for(let i=0;i<=100;i++){const a=(b[0][0]+(b[0][1]-b[0][0])*i/100)*M.D;points.push([r*Math.cos(a),r*Math.sin(a),z-length]);}this.boundary.add(this.line(points,0x6b9ed5,.65));}for(const angle of b[0])for(const radius of b[1])this.boundary.add(this.line(b[2].map(z=>[radius*Math.cos(angle*M.D),radius*Math.sin(angle*M.D),z-length]),0x6b9ed5,.65));}this.boundary.visible=this.flags.workspace;}
@@ -830,7 +948,7 @@ window.$=s=>document.querySelector(s);window.$$=s=>[...document.querySelectorAll
   }
   clearTrace(){this.tracePoints=[];if(this.trace){this.trace.geometry.dispose();this.trace.geometry=new T.BufferGeometry();}}
   resize(){const w=this.container.clientWidth,h=this.container.clientHeight;if(this.renderer)this.renderer.setSize(w,h);document.getElementById('overlay').setAttribute('viewBox',`0 0 ${w} ${h}`);this.resizeCamera(1);this.onChange?.();}
-  resizeCamera(dt=.016){for(const k of ['az','el','zoom'])this.view[k]+=(this.goal[k]-this.view[k])*(1-Math.exp(-12*dt));const w=this.container.clientWidth,h=Math.max(1,this.container.clientHeight),a=this.view.az*M.D,e=this.view.el*M.D;this.camera.position.set(this.centre.x+2300*Math.cos(e)*Math.cos(a),this.centre.y+2300*Math.cos(e)*Math.sin(a),this.centre.z+2300*Math.sin(e));this.camera.lookAt(this.centre);const width=Math.max(w<500?1600:1450,(this.rig?660:this.id==='delta'?980:850)*w/h)/this.view.zoom;this.camera.left=-width/2;this.camera.right=width/2;this.camera.top=width*h/w/2;this.camera.bottom=-width*h/w/2;this.camera.updateProjectionMatrix();this.camera.updateMatrixWorld();}
+  resizeCamera(dt=.016){for(const k of ['az','el','zoom'])this.view[k]+=(this.goal[k]-this.view[k])*(1-Math.exp(-12*dt));const w=this.container.clientWidth,h=Math.max(1,this.container.clientHeight),a=this.view.az*M.D,e=this.view.el*M.D;this.camera.position.set(this.centre.x+2300*Math.cos(e)*Math.cos(a),this.centre.y+2300*Math.cos(e)*Math.sin(a),this.centre.z+2300*Math.sin(e));this.camera.lookAt(this.centre);const width=(this.rig?Math.max(w<500?1000:800,560*w/h):Math.max(w<500?1600:1450,(this.id==='delta'?980:850)*w/h))/this.view.zoom;this.camera.left=-width/2;this.camera.right=width/2;this.camera.top=width*h/w/2;this.camera.bottom=-width*h/w/2;this.camera.updateProjectionMatrix();this.camera.updateMatrixWorld();}
   project(p){const a=V(p).project(this.camera);return [(a.x+1)*this.container.clientWidth/2,(1-a.y)*this.container.clientHeight/2];}
   overlay(anchors,selected,locks){const svg=document.getElementById('overlay');if(svg.childElementCount!==anchors.length+1){svg.innerHTML=anchors.map((_,i)=>`<g class="joint-tag" data-anchor="${i}"><rect x="-13" y="-9" width="28" height="18" rx="4"/><text text-anchor="middle" dy="3">${i+1}</text></g>`).join('')+'<g class="base-labels">'+['X','Y','Z'].map((n,i)=>`<text fill="${['#e06777','#39a98a','#4988e7'][i]}">${n}</text>`).join('')+'</g>';svg.querySelectorAll('[data-anchor]').forEach(el=>el.addEventListener('click',()=>this.onSelect?.(+el.dataset.anchor)));}
    const occupied=[];anchors.forEach((a,i)=>{const p=this.project(a.p),el=svg.querySelector(`[data-anchor="${i}"]`);let x=p[0]+22,y=p[1]-16;while(occupied.some(o=>Math.abs(o[0]-x)<34&&Math.abs(o[1]-y)<21))y-=22;occupied.push([x,y]);el.setAttribute('transform',`translate(${x} ${y})`);const active=i===selected,rect=el.querySelector('rect');rect.setAttribute('fill',active?'#286bee':'#f2f7ff');rect.setAttribute('stroke',locks[i]?'#bf9b76':'#bdcfe7');const text=el.querySelector('text');text.textContent=(locks[i]?'×':'')+(this.rig?'':M.definitions[this.id].types[i])+(i+1);text.setAttribute('fill',active?'white':'#4b6b91');});svg.querySelectorAll('.base-labels text').forEach((el,i)=>{const p=[0,0,0];p[i]=100;const s=this.project(p);el.setAttribute('x',s[0]);el.setAttribute('y',s[1]);});
@@ -1174,7 +1292,7 @@ window.ToolView=ToolView;
   $('#home').onclick=()=>{stop();view.setView('iso');closeup(false);S.q=M.home.slice();S.angle=S.angleTarget=0;view.clearTraces();if(S.tab==='calibrate')movePose(S.pose);if(S.tab==='pivot')setPivotAngle(0,true);ui();notice('已复位机械臂与视角。');};
   $('#stop').onclick=()=>stop(true);
   function theme(value){const dark=value==='dark';document.documentElement.dataset.theme=dark?'dark':'light';$('#theme').setAttribute('aria-label',dark?'切换浅色主题':'切换深色主题');text('theme',dark?'☀':'☾');view.setTheme(dark?'dark':'light');run();}
-  CourseTheme.register(theme);$('#fullscreen').onclick=async()=>{try{if(document.fullscreenElement)await document.exitFullscreen();else await document.documentElement.requestFullscreen();}catch{notice('当前浏览器不支持全屏，可使用浏览器的全屏功能。');}};
+  CourseTheme.register(theme);
   $('#help').onclick=$('#about').onclick=()=>{stop();$('#helpDialog').showModal();};$('#closeHelp').onclick=()=>$('#helpDialog').close();
   window.addEventListener('keydown',e=>{const typing=/INPUT|SELECT|TEXTAREA/.test(e.target.tagName);if(e.code==='Space'&&!typing&&!$('#helpDialog').open){e.preventDefault();stop(true);}if(!typing&&!e.ctrlKey&&!e.altKey&&!e.metaKey&&!$('#helpDialog').open&&/^[1-6]$/.test(e.key)){e.preventDefault();setTool(ids[+e.key-1]);}if(e.key==='Escape')stop();});
   new IntersectionObserver(entries=>{visible=entries.at(-1).isIntersecting;if(visible)run();else if(frameId){cancelAnimationFrame(frameId);frameId=0;last=0;}},{rootMargin:'100px'}).observe($('#viewport'));
@@ -1213,6 +1331,19 @@ window.ToolView=ToolView;
   const h = (tag, cls, text) => { const e = document.createElement(tag); if (cls) e.className = cls; if (text != null) e.textContent = text; return e; };
   const href = p => (window.courseHref ? window.courseHref(p) : p);
   const fmt = (v, n = 0) => (Number.isFinite(v) ? (Math.abs(v) < Math.pow(10, -n) / 2 ? 0 : v).toFixed(n) : '—');
+
+  /** 外壳 CSS 里的三维区取值（浅色、深色各一份），传给嵌入的原版实验页。 */
+  function stageTones() {
+    const out = {};
+    for (const t of ['light', 'dark']) {
+      const probe = document.createElement('i'); probe.dataset.stageTone = t; probe.hidden = true;
+      document.body.append(probe);
+      const cs = getComputedStyle(probe), v = n => cs.getPropertyValue(n).trim();
+      out[t] = {bg: v('--stage-bg'), floor: v('--stage-floor'), shadow: v('--stage-shadow')};
+      probe.remove();
+    }
+    return out;
+  }
 
   function start(cfg) {
     const native = Boolean(cfg.native);
@@ -1253,8 +1384,11 @@ window.ToolView=ToolView;
     const loading = h('div', 'c2-loading'); loading.append(h('span', 'c2-spinner'), h('span', '', '正在载入三维模型…'));
     const tools = h('div', 'c2-tools');
     const card = h('div', 'c2-part'); card.hidden = true; card.setAttribute('role', 'status');
-    const hint = h('div', 'c2-hint');
-    view.append(loading, tools, card, hint);
+    const hint = h('div', 'c2-hint'); hint.setAttribute('aria-hidden', 'true');
+    const fs = h('button', 'c2-fs'); fs.type = 'button';
+    fs.innerHTML = '<svg class="c2-fs-in" viewBox="0 0 24 24" aria-hidden="true"><path d="M4 9V4h5M20 9V4h-5M4 15v5h5M20 15v5h-5"/></svg>'
+      + '<svg class="c2-fs-out" viewBox="0 0 24 24" aria-hidden="true"><path d="M9 4v5H4M15 4v5h5M9 20v-5H4M15 20v-5h5"/></svg>';
+    view.append(loading, tools, card, hint, fs);
     const strip = h('div', 'c2-strip');
     const transportBox = h('div', 'c2-transport');
     const readBox = h('div', 'c2-readouts');
@@ -1268,7 +1402,8 @@ window.ToolView=ToolView;
     const feedback = h('div', 'c2-feedback'); feedback.setAttribute('role', 'status'); feedback.setAttribute('aria-live', 'polite');
     const redo = h('button', 'c2-redo', '↺ 重来'); redo.type = 'button'; redo.title = '把这个工位恢复到开始的样子';
     const next = h('button', 'c2-btn c2-primary c2-next', '去下一站 →'); next.type = 'button';
-    panel.append(head, body);
+    const credit = h('div', 'c2-credit'); credit.hidden = true;
+    panel.append(head, body, credit);
     view.append(feedback);
     let toastTimer = 0;
     main.append(stageBox, panel);
@@ -1282,7 +1417,35 @@ window.ToolView=ToolView;
       if (cfg.redo === false) redo.hidden = true;
     }
 
-    let current = -1, ctx = null, frame = null, cleanup = [];
+    /* 全屏：整块三维区（三维视图 + 上方选择条 + 提示条）。进出全屏都补发 resize，Esc 退出。 */
+    const full = () => document.fullscreenElement === stageBox || stageBox.classList.contains('c2-full-fallback');
+    const relayout = () => { for (const t of [0, 80, 300]) setTimeout(() => { dispatchEvent(new Event('resize')); frame?.contentWindow?.postMessage({c2: 'cmd', op: 'resize'}, '*'); }, t); };
+    const syncFs = () => {
+      const on = full();
+      stageBox.classList.toggle('c2-full', on);
+      fs.setAttribute('aria-pressed', String(on));
+      fs.setAttribute('aria-label', on ? '退出全屏' : '全屏查看三维模型');
+      fs.title = on ? '退出全屏（Esc）' : '全屏';
+    };
+    const setFull = async on => {
+      if (on === full()) return;
+      if (document.fullscreenEnabled && stageBox.requestFullscreen) {
+        try { if (on) await stageBox.requestFullscreen(); else await document.exitFullscreen(); return; } catch { /* 改用铺满窗口 */ }
+      }
+      stageBox.classList.toggle('c2-full-fallback', on); syncFs(); relayout();
+    };
+    fs.addEventListener('click', () => setFull(!full()));
+    document.addEventListener('fullscreenchange', () => { syncFs(); relayout(); });
+    document.addEventListener('keydown', e => { if (e.key === 'Escape' && stageBox.classList.contains('c2-full-fallback')) setFull(false); });
+    syncFs();
+
+    /* 操作提示：只出现一次，第一次拖动、滚轮或几秒后淡出 */
+    let hintDone = false, hintTimer = 0;
+    const dismissHint = () => { if (hintDone) return; hintDone = true; clearTimeout(hintTimer); hint.classList.add('gone'); setTimeout(() => { hint.hidden = true; }, 700); };
+    for (const type of ['pointerdown', 'wheel']) view.addEventListener(type, dismissHint, {passive: true, capture: true});
+    window.addEventListener('blur', () => { if (document.activeElement === frame) dismissHint(); }); // 第二章：在 iframe 里的第一次操作
+
+    let current = -1, ctx = null, frame = null, cleanup = [], floorAll = () => {};
     const tabButtons = cfg.stations.map((s, i) => {
       const b = h('button', 'c2-station'); b.type = 'button'; b.setAttribute('role', 'tab');
       b.append(h('span', 'c2-num', String(i + 1)), h('span', 'c2-name', s.name), h('span', 'c2-check', '✓'));
@@ -1307,7 +1470,8 @@ window.ToolView=ToolView;
       if (d.type === 'ready' || (d.type === 'state' && ctx && !ctx.lab.ready)) { loading.hidden = true; sendTheme(); ctx?._ready(); }
       if (d.type === 'state') ctx?._state(d.data);
     });
-    const sendTheme = () => frame?.contentWindow?.postMessage({c2: 'cmd', op: 'theme', value: window.CourseTheme?.get?.() || 'light'}, '*');
+    // 主题和三维区底色一起传给原版实验页，嵌入的三维视图与外壳同一底色
+    const sendTheme = () => frame?.contentWindow?.postMessage({c2: 'cmd', op: 'theme', value: window.CourseTheme?.get?.() || 'light', stage: stageTones()}, '*');
     window.addEventListener('course-theme-change', sendTheme);
 
     // 原页面的控件始终留在文档里（原程序可能随时读写它们），换工位时先放回停放处
@@ -1326,8 +1490,12 @@ window.ToolView=ToolView;
       parkAll();
       body.replaceChildren(); clearTimeout(toastTimer); feedback.textContent = ''; feedback.className = 'c2-feedback';
       transportBox.replaceChildren(); readBox.replaceChildren(); tools.replaceChildren(); card.hidden = true;
-      hint.textContent = (s.note ? s.note + '　' : '') + (s.hint ?? cfg.hint ?? '拖动旋转 · 滚轮缩放');
-      hint.hidden = !hint.textContent;
+      if (!hintDone) {
+        hint.textContent = s.hint ?? cfg.hint ?? '拖动旋转 · 滚轮缩放';
+        hint.hidden = !hint.textContent;
+        clearTimeout(hintTimer); if (!hint.hidden) hintTimer = setTimeout(dismissHint, 9000);
+      }
+      credit.hidden = true; credit.replaceChildren();
       if (native) {
         if (!fromPage) cfg.select?.(s.id);
       } else {
@@ -1343,7 +1511,7 @@ window.ToolView=ToolView;
       syncTabs();
       // 原页面的渲染器按容器尺寸重新取景；布局稳定后再通知一次
       dispatchEvent(new Event('resize'));
-      if (native) for (const t of [60, 300, 900]) setTimeout(() => dispatchEvent(new Event('resize')), t);
+      if (native) for (const t of [60, 300, 900]) setTimeout(() => { dispatchEvent(new Event('resize')); floorAll(); }, t);
     }
     redo.addEventListener('click', () => { const i = current; current = -1; cfg.reset?.(cfg.stations[i].id); select(i); });
     next.addEventListener('click', () => select(Math.min(current + 1, cfg.stations.length - 1)));
@@ -1388,6 +1556,21 @@ window.ToolView=ToolView;
           card.replaceChildren(h('strong', '', name), h('span', '', desc || ''));
           const x = h('button', 'c2-x', '×'); x.type = 'button'; x.setAttribute('aria-label', '关闭'); x.onclick = () => { card.hidden = true; };
           card.append(x); card.hidden = false;
+        },
+        /** 模型来源与许可：面板最底下的 ⓘ，点开才显示。lines 为文字数组，link = {href, label}。 */
+        credit(lines, link) {
+          lines = [].concat(lines || []).filter(Boolean);
+          credit.replaceChildren(); credit.hidden = !lines.length;
+          if (!lines.length) return;
+          const btn = h('button', 'c2-credit-btn'); btn.type = 'button'; btn.setAttribute('aria-expanded', 'false');
+          btn.append(h('i', '', 'i'), document.createTextNode('模型来源'));
+          btn.title = lines.join('\n');
+          const pop = h('div', 'c2-credit-pop'); pop.hidden = true; pop.id = 'c2-credit-' + s.id;
+          btn.setAttribute('aria-controls', pop.id);
+          for (const l of lines) pop.append(h('p', '', l));
+          if (link?.href) { const a = h('a', '', (link.label || '许可证') + ' ↗'); a.href = link.href; a.target = '_blank'; a.rel = 'noopener'; pop.append(h('p')); pop.lastChild.append(a); }
+          btn.addEventListener('click', () => { pop.hidden = !pop.hidden; btn.setAttribute('aria-expanded', String(!pop.hidden)); });
+          credit.append(pop, btn);
         },
         /* —— 面板控件 —— */
         section(titleText, extra, into = body) {
@@ -1568,6 +1751,41 @@ window.ToolView=ToolView;
       return c;
     }
 
+    /* 字号下限（原地模式）：搬进外壳的原页面文字——面板、三维区里的浮层与 SVG 标注——不小于 12px，
+       面板里的段落不小于 13px。原页面按 1600×900 整页缩放设计，常有 7～11px 的小字，这里统一放大到可读、可投影的字号；
+       低价值的小字（英文小标、图号、重复的操作提示）由各任务 stations.css 直接隐藏。SVG 文字按屏幕上的实际大小计算。 */
+    const MIN_TEXT = 12, MIN_PARA = 13;
+    const floorText = root => {
+      if (!root?.querySelectorAll) return;
+      for (const el of [root, ...root.querySelectorAll('*')]) {
+        if (el.closest('.c2-parking, .c3-legacy, script, style')) continue;
+        if (![...el.childNodes].some(n => n.nodeType === 3 && n.textContent.trim())) continue;
+        const cs = getComputedStyle(el);
+        if (cs.display === 'none' || cs.position === 'absolute' && cs.clip !== 'auto' && /rect\(0/.test(cs.clip)) continue;
+        const size = parseFloat(cs.fontSize);
+        if (el instanceof SVGElement) {
+          const m = el.getScreenCTM?.(), k = m ? Math.hypot(m.a, m.b) : 1;
+          if (k > 0 && size * k < MIN_TEXT - .05) el.style.fontSize = (MIN_TEXT / k).toFixed(2) + 'px';
+          continue;
+        }
+        const min = el.tagName === 'P' && el.closest('.c2-panel') ? MIN_PARA : MIN_TEXT;
+        if (size < min - .05) el.style.setProperty('font-size', min + 'px', 'important');
+      }
+    };
+    if (native) {
+      // 观察者回调在本轮脚本结束、画面重绘之前执行：原页面每帧重写的读数也不会先以小字闪现
+      const mo = new MutationObserver(recs => {
+        const seen = new Set();
+        for (const r of recs) for (const n of r.addedNodes) {
+          const el = n.nodeType === 1 ? n : n.parentElement;
+          if (el && el.isConnected && !seen.has(el)) { seen.add(el); floorText(el); }
+        }
+      });
+      for (const root of [panel, stageBox]) mo.observe(root, {childList: true, subtree: true});
+      window.addEventListener('course-theme-change', () => floorText(stageBox));
+      floorAll = () => { floorText(panel); floorText(stageBox); };
+    }
+
     /* 原地模式：定时读原页面状态；原页面自己切换了活动时，工位条跟着变 */
     if (native) {
       setInterval(() => {
@@ -1585,7 +1803,7 @@ window.ToolView=ToolView;
     };
     window.addEventListener('hashchange', () => select(fromHash(), true));
     select(fromHash(), true);
-    window.c2Lab = {select, get ctx() { return ctx; }, get frame() { return frame; }, get current() { return current; }};
+    window.c2Lab = {select, setFull, get ctx() { return ctx; }, get frame() { return frame; }, get current() { return current; }};
   }
 
   window.LabShell = {
@@ -1626,7 +1844,7 @@ window.ToolView=ToolView;
       document.documentElement.dataset.c3Task = layout.task || '';
       LabShell.native({
         chapter: {title: chapter.title, href: chapter.href},
-        tasks: chapter.tasks || [], taskNav: layout.nav, hint: '', progressKey: layout.nav,
+        tasks: chapter.tasks || [], taskNav: layout.nav, hint: '拖动旋转 · 滚轮缩放', progressKey: layout.nav,
         ...cfg,
       });
     },

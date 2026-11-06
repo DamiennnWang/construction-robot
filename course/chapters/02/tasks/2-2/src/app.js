@@ -92,10 +92,9 @@
       : lightColors;
     for (const [k, c] of Object.entries(colors)) palette[k].color.set(c);
     if (renderer && stage.ground) {
-      scene.background.set(dark ? "#14263c" : "#ffffff");
-      stage.ground.material.color.set(dark ? "#111e29" : "#ffffff");
-      stage.grid.material.color.set(dark ? "#678492" : "#b9d5f3");
-      stage.grid.material.opacity = dark ? 0.23 : 0.14;
+      // 底色用全课程统一的三维区底色（shared/lab-shell/stage-tone.js）；地面只显示阴影
+      window.StageTone.paint(scene, THREE);
+      stage.ground.material.opacity = dark ? 0.32 : 0.13;
       stage.hemi.color.set(dark ? "#d6e7ff" : "#f7fbff");
       stage.hemi.groundColor.set(dark ? "#2c414e" : "#b8cde3");
       stage.hemi.intensity = dark ? 2.8 : 2.5;
@@ -251,7 +250,7 @@
   }
   function init() {
     scene = new THREE.Scene();
-    scene.background = new THREE.Color("#f3f6f0");
+    scene.background = window.StageTone.color(THREE);
     camera = new THREE.OrthographicCamera(-8, 8, 5, -5, 0.1, 100);
     try {
       renderer = window.createChapterRenderer({
@@ -286,9 +285,10 @@
     const fill = new THREE.DirectionalLight("#d8eefa", 1.5);
     fill.position.set(7, 4, -6);
     scene.add(fill);
+    // 地面不画颜色，只接住模型的阴影：画面是统一底色 + 柔和的落地阴影
     const ground = mesh(
       new THREE.PlaneGeometry(200, 200),
-      mat("#f3f6f0", 0, 0.9),
+      new THREE.ShadowMaterial({ opacity: 0.13 }),
       scene,
     );
     ground.rotation.x = -Math.PI / 2;
@@ -299,7 +299,7 @@
     grid.position.y = -0.12;
     grid.material.transparent = true;
     grid.material.opacity = 0.5;
-    scene.add(grid);
+    grid.visible = false; // 不铺网格地面（三维区统一为干净的底色）
     stage = { ground, grid, hemi, key: light, fill };
     nameLabels = new ComponentNames({
       wrap,
@@ -470,7 +470,7 @@
       scene.remove(inspection.root);
       inspection = null;
       if (rig) rig.visible = true;
-      stage.grid.visible = true;
+      stage.grid.visible = false;
       playing = resume;
       nameLabels.layer.hidden = false;
       nameLabels.svg.hidden = false;

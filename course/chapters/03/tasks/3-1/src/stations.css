@@ -24,3 +24,10 @@
   .c2-panel #pathInfo { display:none; }
   .c2-panel .obstacle-editor label { line-height:1.2; }
 }
+
+/* 三维区：去掉图号“FIG. 03.01”、英文自由度标记和重复的操作提示（外壳已有一次性提示）；看法切换放到左上角 */
+html.lab-native section.stage .stage-bar { justify-content:flex-start; padding:12px; }
+html.lab-native section.stage :is(.fig, #geometryLabel, .stage-hint) { display:none !important; }
+html.lab-native section.stage .views { background:var(--stage-chip); border-color:var(--stage-chip-line); border-radius:10px; box-shadow:var(--shadow-sm); }
+html.lab-native section.stage .views button { font-size:13px; padding:5px 11px; border-radius:7px; }
+html.lab-native section.stage .stage-state { top:58px; }

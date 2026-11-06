@@ -19,8 +19,8 @@
 .c2-native-stage.scene-area { position:absolute; inset:0; border-radius:inherit; }
 .c2-native-stage .view-tools { top:12px; left:12px; border-radius:12px; box-shadow:var(--shadow-sm); flex-wrap:wrap; max-width:calc(100% - 200px); }
 .c2-native-stage .view-tools button { font-size:12px; padding:6px 10px; color:var(--ink, inherit); }
-.c2-native-stage .scene-live { top:20px; bottom:auto; right:16px; font-size:11px; }
-.c2-native-stage .scene-caption-overlay { bottom:12px; font-size:11px; }
+.c2-native-stage .scene-live { top:20px; bottom:auto; right:16px; font-size:12px; }
+.c2-native-stage .scene-caption-overlay { bottom:12px; font-size:12px; }
 .c2-native-stage .parts-panel { top:64px; right:14px; border-radius:14px; }
 
 /* 7-1：面板里的原有内容 */
@@ -54,6 +54,10 @@
 .c2-panel .record-field select { font-size:12.5px; border-radius:10px; }
 .c2-panel .record-state { border-radius:12px; font-size:12.5px; }
 .c2-panel .photo-item { border-radius:10px; }
-.c2-panel .photo-item > span { font-size:11px; }
+.c2-panel .photo-item > span { font-size:12px; }
 .c2-panel #controlPanel button { border-radius:10px; }
 :root[data-theme="dark"] .c2-native-stage #liveReadout { color:#a9d0f5; }
+
+/* 三维区：右上角状态让出全屏按钮；左下角操作提示与外壳的一次性提示重复，去掉 */
+html.lab-native .scene-area .scene-live { right:60px; }
+html.lab-native .scene-area #viewHint { display:none !important; }

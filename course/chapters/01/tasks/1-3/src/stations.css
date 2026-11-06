@@ -18,12 +18,10 @@ html.lab-native #scene .hero-caption, html.lab-native #scene .scene-tools { disp
 .c1-picker button:hover { color:var(--course-accent); border-color:var(--course-accent); }
 .c1-picker button[aria-checked=true] { color:var(--course-accent); border-color:var(--course-accent); background:var(--course-surface); box-shadow:0 0 0 1.5px var(--course-accent) inset; }
 
-/* 面板：部件按钮铺成两列，来源一行放最底下 */
+/* 面板：部件按钮铺成两列 */
 html.lab-native .c2-panel .c1-dyn { display:contents; }
 html.lab-native .c2-panel .c1-dyn .c2-chips { display:grid; grid-template-columns:1fr 1fr; gap:6px; }
 html.lab-native .c2-panel .c1-dyn .c2-chip { text-align:left; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; }
-html.lab-native .c2-panel .c1-source { margin:2px 0 0 !important; font-size:11.5px; color:var(--course-muted); white-space:nowrap; overflow:hidden; text-overflow:ellipsis; }
-html.lab-native .c2-panel .c1-source a { color:var(--course-accent); }
 html.lab-native .c2-panel .c1-sliders { display:grid; gap:8px 14px; }
 html.lab-native .c2-panel .c1-sliders.c1-two { grid-template-columns:1fr 1fr; }
 html.lab-native .c2-panel .c1-sliders.c1-three { grid-template-columns:repeat(3, 1fr); gap:8px 12px; }

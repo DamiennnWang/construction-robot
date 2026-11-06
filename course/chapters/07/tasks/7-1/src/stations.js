@@ -119,7 +119,7 @@
     stage: EL.stage,
     stageTop: [EL.points],
     stations: STATIONS,
-    hint: '',  // 原页面三维区左下角已有操作提示
+    hint: '拖动旋转 · 滚轮缩放 · 点 A / B / C 选点',
     current,
     select: id => { const l = lab(); if (l && l.state.stage !== id) l.changeStage(id); lastStage = id; },
     poll() {

@@ -236,7 +236,68 @@ html[data-c2=mechanisms] .viewbar { margin: 6px 12px; min-height: 0; }
   html[data-c2=mechanisms] .labs[data-presentation=single] .c2-control-column { height: auto; }
   .c2-mechanism-transport { flex-wrap: wrap; }
 }
-</style><script>/* Optional Canvas 2D projection of the same articulated scene when WebGL is unavailable.
+</style><script>/* 三维区底色（全课程统一）：近白中性灰，适合印刷教材截图；深色模式用深石墨色。
+ * 取值以 shared/lab-shell/lab-shell.css 里的 --stage-bg / --stage-floor / --stage-shadow 为准（深浅色一起切换）；
+ * 页面样式还没载入时（运行时才挂外壳的页面、第二章被嵌入前的原版实验页）用下面同值的后备。
+ * 用法：StageTone.bg() → '#f5f6f8'；StageTone.color(THREE) → THREE.Color；
+ *       StageTone.paint(scene, THREE) 设底色并让雾跟着变；StageTone.contactShadow(THREE, {size}) 模型下方的柔和接触阴影。
+ * 第二章：原版实验页被嵌入时，外壳把自己的取值经 postMessage 传进来（embed-bridge.js 调 StageTone.use）。
+ */
+(() => {
+  'use strict';
+  if (window.StageTone) return;
+  const FALLBACK = {
+    light: {bg: '#f5f6f8', floor: '#eceef1', shadow: 'rgba(28,36,48,.20)'},
+    dark: {bg: '#1a1f27', floor: '#222833', shadow: 'rgba(0,0,0,.55)'},
+  };
+  const root = document.documentElement;
+  let cache = null, override = null;
+  const theme = () => (root.dataset.theme === 'dark' ? 'dark' : 'light');
+  const read = () => {
+    const t = theme(), f = FALLBACK[t], cs = getComputedStyle(root);
+    const v = n => cs.getPropertyValue(n).trim();
+    return {theme: t, bg: v('--stage-bg') || f.bg, floor: v('--stage-floor') || f.floor, shadow: v('--stage-shadow') || f.shadow, ...(override?.[t] || {})};
+  };
+  const get = () => (cache && cache.theme === theme() ? cache : (cache = read()));
+  addEventListener('course-theme-change', () => { cache = null; });
+
+  window.StageTone = {
+    get,
+    bg: () => get().bg,
+    floor: () => get().floor,
+    /** 底色的 THREE.Color（传入页面自己的 THREE，模块化页面也能用）。 */
+    color: (T = window.THREE, key = 'bg') => new T.Color(get()[key]),
+    /** 设场景底色，雾（若有）随底色。返回 scene 便于链式调用。 */
+    paint(scene, T = window.THREE) {
+      if (!scene) return scene;
+      const c = get().bg;
+      if (scene.background?.isColor) scene.background.set(c); else scene.background = new T.Color(c);
+      if (scene.fog?.color) scene.fog.color.set(c);
+      return scene;
+    },
+    /** 模型下方的柔和接触阴影：一张径向渐变贴图的平面（不受光照影响，深浅色自动换）。
+     *  size 为直径（场景单位），up 为 'y' 或 'z'（哪个轴朝上）。返回 Mesh，自己 position 到模型脚下。 */
+    contactShadow(T = window.THREE, {size = 1, up = 'y', strength = 1} = {}) {
+      const c = document.createElement('canvas'); c.width = c.height = 128;
+      const g = c.getContext('2d'), grad = g.createRadialGradient(64, 64, 0, 64, 64, 64);
+      grad.addColorStop(0, 'rgba(0,0,0,1)'); grad.addColorStop(.45, 'rgba(0,0,0,.55)'); grad.addColorStop(1, 'rgba(0,0,0,0)');
+      g.fillStyle = grad; g.fillRect(0, 0, 128, 128);
+      const tex = new T.CanvasTexture(c);
+      const mat = new T.MeshBasicMaterial({map: tex, color: 0x000000, transparent: true, depthWrite: false, toneMapped: false});
+      const mesh = new T.Mesh(new T.PlaneGeometry(size, size), mat);
+      if (up === 'y') mesh.rotation.x = -Math.PI / 2;
+      mesh.renderOrder = -1; mesh.userData.contactShadow = true;
+      const tone = () => { mat.opacity = (theme() === 'dark' ? .5 : .16) * strength; };
+      tone(); addEventListener('course-theme-change', tone);
+      return mesh;
+    },
+    /** 外部指定取值（第二章嵌入时由外壳传入）；传 null 取消。 */
+    use(values) { override = values; cache = null; },
+    refresh() { cache = null; return get(); },
+  };
+})();
+
+/* Optional Canvas 2D projection of the same articulated scene when WebGL is unavailable.
  * Component silhouettes preserve the original state/kinematics; no lighting or clipping.
  */
 window.createChapterRenderer = options => {
@@ -265,7 +326,7 @@ window.createChapterRenderer = options => {
       if(!scissor)this.clear();
       const vp=viewport||{x:0,y:0,w:width,h:height},dark=document.documentElement.dataset.theme==='dark';
       ctx.save();ctx.beginPath();ctx.rect(vp.x,vp.y,vp.w,vp.h);ctx.clip();
-      ctx.fillStyle=dark?'#14263c':'#edf4fc';ctx.fillRect(vp.x,vp.y,vp.w,vp.h);
+      ctx.fillStyle=window.StageTone?.bg()||(dark?'#1a1f27':'#f5f6f8');ctx.fillRect(vp.x,vp.y,vp.w,vp.h);
       scene.updateMatrixWorld(true);camera.updateMatrixWorld(true);const shapes=[];
       scene.traverseVisible(o=>{
         if(!o.isMesh||o.isInstancedMesh)return;
@@ -385,7 +446,7 @@ function capGeometry(ro,bore,h,holes=[]){const sh=new T.Shape();sh.absarc(0,0,ro
 function plateGeometry(w,d,h,bore=0,holes=[]){const sh=new T.Shape();sh.moveTo(-w/2,-d/2);sh.lineTo(w/2,-d/2);sh.lineTo(w/2,d/2);sh.lineTo(-w/2,d/2);sh.closePath();for(const [x,z,r] of [...(bore?[[0,0,bore]]:[]),...holes]){const hole=new T.Path();hole.absarc(x,-z,r,0,PI*2,true);sh.holes.push(hole)}const g=new T.ExtrudeGeometry(sh,{depth:h,bevelEnabled:false,curveSegments:48});g.rotateX(-PI/2);g.translate(0,-h/2,0);return g}
 const views={front:[0,0],side:[90,0],top:[0,89.9],iso:[28,19]};
 class Stage{
- constructor(name,target,span){this.name=name;this.el=$(name+'-stage');this.overlay=$(name+'-overlay');this.target=target;this.span=span;this.yaw=28;this.elev=19;this.zoom=1;this.view='iso';this.tags=[];this.scene=new T.Scene();this.scene.background=new T.Color(document.documentElement.dataset.theme==='dark'?'#14263c':'#edf4fc');this.scene.add(new T.HemisphereLight('#eaf4ff','#555c50',1.15));const light=new T.DirectionalLight('#fff4df',3.2);light.position.set(-100,350,250);light.castShadow=true;light.shadow.mapSize.set(1024,1024);Object.assign(light.shadow.camera,{left:-330,right:330,top:330,bottom:-330,near:1,far:1000});light.shadow.bias=-.0003;light.shadow.normalBias=.3;light.shadow.radius=3;this.scene.add(light);const fill=new T.DirectionalLight('#e8f8ff',1.1);fill.position.set(200,80,-250);this.scene.add(fill);this.camera=new T.OrthographicCamera(-100,100,100,-100,.1,2500);
+ constructor(name,target,span){this.name=name;this.el=$(name+'-stage');this.overlay=$(name+'-overlay');this.target=target;this.span=span;this.yaw=28;this.elev=19;this.zoom=1;this.view='iso';this.tags=[];this.scene=new T.Scene();this.scene.background=window.StageTone.color(T);this.scene.add(new T.HemisphereLight('#eaf4ff','#555c50',1.15));const light=new T.DirectionalLight('#fff4df',3.2);light.position.set(-100,350,250);light.castShadow=true;light.shadow.mapSize.set(1024,1024);Object.assign(light.shadow.camera,{left:-330,right:330,top:330,bottom:-330,near:1,far:1000});light.shadow.bias=-.0003;light.shadow.normalBias=.3;light.shadow.radius=3;this.scene.add(light);const fill=new T.DirectionalLight('#e8f8ff',1.1);fill.position.set(200,80,-250);this.scene.add(fill);this.camera=new T.OrthographicCamera(-100,100,100,-100,.1,2500);
   this.renderer=window.createChapterRenderer({antialias:true,alpha:false,preserveDrawingBuffer:true});this.renderer.setPixelRatio(Math.min(devicePixelRatio||1,1.6));this.renderer.outputColorSpace=T.SRGBColorSpace;this.renderer.toneMapping=T.ACESFilmicToneMapping;this.renderer.toneMappingExposure=.87;this.renderer.shadowMap.enabled=true;this.renderer.shadowMap.type=T.PCFSoftShadowMap;if(!this.renderer.isFallback){const pmrem=new T.PMREMGenerator(this.renderer);this.scene.environment=pmrem.fromEquirectangular(studioMap).texture;pmrem.dispose();}this.el.prepend(this.renderer.domElement);this.root=new T.Group();this.scene.add(this.root);this.dynamic=new T.Group();this.root.add(this.dynamic);this.trace=line(this.root,'#6fa1a0',220,true);
   let pointer=null;this.el.addEventListener('pointerdown',e=>{if(e.target!==this.renderer.domElement)return;pointer={x:e.clientX,y:e.clientY};this.el.setPointerCapture(e.pointerId)});this.el.addEventListener('pointermove',e=>{if(!pointer)return;this.yaw+=(e.clientX-pointer.x)*.42;this.elev=clamp(this.elev+(e.clientY-pointer.y)*.33,-20,88);pointer={x:e.clientX,y:e.clientY};this.view='free';this.el.classList.remove('quad');this.mark();dirty=true});for(const type of ['pointerup','pointercancel','lostpointercapture'])this.el.addEventListener(type,()=>pointer=null);
   this.el.addEventListener('wheel',e=>{e.preventDefault();this.zoom=clamp(this.zoom*Math.exp(-e.deltaY*.001),.65,2);dirty=true},{passive:false});new ResizeObserver(()=>{this.resize();dirty=true}).observe(this.el);this.resize();
@@ -401,13 +462,13 @@ class Stage{
 let boom,screw;
 try{boom=new Stage('boom',V(95,24,0),270);screw=new Stage('screw',V(0,87,0),228)}catch(err){for(const id of ['boom-stage','screw-stage'])$(id).insertAdjacentHTML('beforeend','<div class="error">当前浏览器未能启动三维图形。请使用启用硬件加速的 Edge / Chrome 浏览器打开本文件。</div>');console.error(err);return}
 const B={},S={};
-function addGround(st,y){const ground=mesh(st.root,new T.PlaneGeometry(1600,1200),new T.ShadowMaterial({color:'#304c50',opacity:.23}));ground.name='ground';ground.rotation.x=-PI/2;ground.position.set(st.target.x,y,0);ground.castShadow=false;return ground}
+function addGround(st,y){const ground=mesh(st.root,new T.PlaneGeometry(1600,1200),new T.ShadowMaterial({color:'#1c2430',opacity:.2}));ground.name='ground';ground.rotation.x=-PI/2;ground.position.set(st.target.x,y,0);ground.castShadow=false;return ground}
 function buildBoomBase(){
  const g=boom.root,start=g.children.length;box(g,V(90,-72,0),[300,9,96],C.base);box(g,V(90,-77,0),[302,4,97],'#819b80');
  for(const x of [-45,225])for(const z of [-37,37]){box(g,V(x,-82,z),[18,7,16],'#47614f');bolt(g,x,-66.5,z)}
  for(const x of [0,180]){box(g,V(x,-62,0),[42,12,88],'#a4b9a0');for(const z of [-32,34]){box(g,V(x,-36,z),[16,50,12],'#b7c8ac');const housing=mesh(g,boredPrism(11,4.2,14),mat('#668077',.55,.32));housing.rotation.x=PI/2;housing.position.set(x,0,z)}cylinder(g,V(x,0,-40),V(x,0,44),4,'#d9e3d5');bolt(g,x-14,-55,-21);bolt(g,x+14,-55,21)}
  box(g,V(anchor.x,-60,-25),[30,14,28],'#9ab18d');cylinder(g,V(anchor.x,anchor.y,-40),V(anchor.x,anchor.y,-10),5,C.steel);
- const drum=mesh(g,boredPrism(14,5.1,5),mat('#47545b',.7,.27));drum.rotation.x=PI/2;drum.position.set(180,0,-29);box(g,V(192,0,-29),[7,14,10],'#b56a35');B.frame=g.children.slice(start);addGround(boom,-86);const grid=new T.GridHelper(360,18,'#bfcfba','#e3ebdf');grid.position.set(90,-85.7,0);g.add(grid);
+ const drum=mesh(g,boredPrism(14,5.1,5),mat('#47545b',.7,.27));drum.rotation.x=PI/2;drum.position.set(180,0,-29);box(g,V(192,0,-29),[7,14,10],'#b56a35');B.frame=g.children.slice(start);addGround(boom,-86);
  B.foot=line(g,'#bd4e42',3);B.forceLine=line(g,'#b85a50',3);B.muArc=line(g,'#9b7766',48);B.thetaArc=line(g,'#bd8653',48);
  B.hydForce=new T.ArrowHelper(V(0,1,0),V(),31,0xc64f42,7,3);g.add(B.hydForce);B.linkForce=new T.ArrowHelper(V(1,0,0),V(),28,0xbc5a45,6,3);g.add(B.linkForce);B.tangent=new T.ArrowHelper(V(1,0,0),V(),20,0x238066,5,3);g.add(B.tangent);
  boom.tag('O₁',()=>V(-6,0,31),'','pin');boom.tag('O₂',()=>V(184,0,31),'','pin');boom.tag('A 动臂',()=>{const m=solve(s.theta);return V(m.p.x*.38,m.p.y*.38,27)},'a','arm-a');boom.tag('B 连杆',()=>{const m=solve(s.theta);return V(m.p.x*.2+m.q.x*.8,m.p.y*.2+m.q.y*.8,17)},'b','link-b');boom.tag('C 从动臂',()=>{const m=solve(s.theta);return V((m.q.x+180)/2,m.q.y/2,-2)},'c','rocker-c');boom.tag('P',()=>{const m=solve(s.theta);return V(m.P.x,m.P.y,15)},'b');B.rTag=boom.tag('r',()=>{const m=solve(s.theta);return V(m.foot.x/2,m.foot.y/2,-12)},'red');boom.tag('液压缸',()=>{const m=solve(s.theta);return V(anchor.x+(m.H.x-anchor.x)*.38,anchor.y+(m.H.y-anchor.y)*.38,-30)},'a','hydraulic');
@@ -435,7 +496,7 @@ function buildScrew(){
  S.threads=new T.Group();S.rotor.add(S.threads);S.carriage=new T.Group();g.add(S.carriage);const deck=mesh(S.carriage,plateGeometry(77,47,6,14.5,[[-30,-8,3.4],[30,-8,3.4]]),mat('#8ca093'));deck.position.y=6;box(S.carriage,V(0,-5,19),[78,5,7],'#71877b');for(const x of [-30,30]){const sleeve=mesh(S.carriage,boredPrism(6,3.35,17),mat('#527c70',.5));sleeve.position.set(x,.5,-8);bolt(S.carriage,x,4,6)}
  S.nut=new T.Group();S.carriage.add(S.nut);mesh(S.nut,boredPrism(14,7.65,18,6),mat(C.nut,.45));S.nut.position.set(0,0,0);box(S.nut,V(14,1,0),[2,9,3],C.a);const flange=mesh(S.nut,boredPrism(16,7.65,2),mat(C.nut,.5));flange.position.y=10.2;const thrust=mesh(S.carriage,boredPrism(16,14.4,.5),mat(C.steel,.75,.2));thrust.position.y=9.1;S.payload=box(S.carriage,V(25,14,9),[13,10,11],'#56636a');
  S.lock=box(S.carriage,V(20,3,0),[12,3,5],C.lock);S.rule=new T.Group();g.add(S.rule);box(S.rule,V(49,108,-8),[8,104,1],'#edf3e4');for(let n=0;n<=100;n+=5)box(S.rule,V(47+(n%20===0?0:1.5),58+n,-6.7),[n%20===0?5:2,.5,.4],'#819a7c');S.positionMark=box(g,V(42,69,-6),[8,1.6,2],C.a);
- const grid=new T.GridHelper(180,12,'#bbcfb8','#e3ebdf');grid.position.y=-30.8;screw.root.add(grid);addGround(screw,-31);box(screw.root,V(0,-28,0),[126,5,94],'#374c52');S.springs=[];for(const x of [-42,42]){const spring=line(screw.root,'#879b9d',14);S.springs.push({x,spring})}screw.trace.visible=false;
+ addGround(screw,-31);box(screw.root,V(0,-28,0),[126,5,94],'#374c52');S.springs=[];for(const x of [-42,42]){const spring=line(screw.root,'#879b9d',14);S.springs.push({x,spring})}screw.trace.visible=false;
  screw.tag('轴向支承',()=>V(-13,182,8),'','bearings');screw.tag('止转导向',()=>V(30,115,-8),'b','guides');S.nutTag=screw.tag('螺母 / 升降台',()=>V(10,62+(s.ns-s.nn)*s.lead,20),'a','nut');screw.tag('电机',()=>V(-24,14,10),'','motor');S.heightTag=screw.tag('s = 24.0 mm',()=>V(50,58+(s.ns-s.nn)*s.lead,-5),'a');S.lockTag=screw.tag('止转锁销',()=>V(24,63+(s.ns-s.nn)*s.lead,5),'b','lock');screw.tag('丝杠',()=>V(-6,140,5),'a','spindle');
  rebuildThreads();updateScrew();
 }
@@ -608,7 +669,7 @@ function initParts(){
 
 const study={type:'hyd',stage:null,model:null,pieces:[],section:true,cut:0,explode:0,target:0,exercise:false,installed:new Set(),history:[],selected:null,play:false,dir:1,speed:.5,auto:false,autoTime:0,errors:0,hyd:null,screw:null,theme:'light',labels:true,focus:false,detailTags:[]};
 function stagesAll(){return [boom,screw,partStage,study.stage].filter(Boolean)}
-function setTheme(theme){study.theme=theme==='dark'?'dark':'light';document.documentElement.dataset.theme=study.theme;for(const st of stagesAll()){st.scene.background.set(study.theme==='dark'?'#14263c':'#edf4fc');st.scene.traverse(o=>{if(o.name==='ground'){o.material.color.set(study.theme==='dark'?'#02070b':'#304c50');o.material.opacity=study.theme==='dark'?.4:.23}if(o.isGridHelper||o.type==='GridHelper'){const m=o.material;m.transparent=true;m.opacity=study.theme==='dark'?.22:1}})}for(const b of document.querySelectorAll('[data-theme-toggle]')){b.textContent=study.theme==='dark'?'浅色背景':'深色背景';b.setAttribute('aria-pressed',String(study.theme==='dark'))}dirty=true}
+function setTheme(theme){study.theme=theme==='dark'?'dark':'light';document.documentElement.dataset.theme=study.theme;for(const st of stagesAll()){window.StageTone.paint(st.scene,T);st.scene.traverse(o=>{if(o.name==='ground'){o.material.color.set(study.theme==='dark'?'#02070b':'#1c2430');o.material.opacity=study.theme==='dark'?.4:.2}if(o.isGridHelper||o.type==='GridHelper'){const m=o.material;m.transparent=true;m.opacity=study.theme==='dark'?.22:1}})}for(const b of document.querySelectorAll('[data-theme-toggle]')){b.textContent=study.theme==='dark'?'浅色背景':'深色背景';b.setAttribute('aria-pressed',String(study.theme==='dark'))}dirty=true}
 function setLabels(show){study.labels=show;document.documentElement.classList.toggle('hide-labels',!show);for(const b of document.querySelectorAll('[data-labels-toggle]')){b.textContent=show?'隐藏部件名':'显示部件名';b.setAttribute('aria-pressed',String(!show))}dirty=true}
 function own(object){object.traverse(o=>{if(o.material)o.material=Array.isArray(o.material)?o.material.map(m=>m.clone()):o.material.clone()});return object}
 function studyMesh(parent,g,color,metal=.25){return mesh(parent,g,new T.MeshStandardMaterial({color,roughness:.3,metalness:metal,side:T.DoubleSide}))}
@@ -937,7 +998,7 @@ window.mechanismLab={snapshot:()=>({...s,activeMechanism,geometry:renderedGeomet
 
   const css = `
     html.c2-embed, html.c2-embed body { overflow:hidden !important; margin:0 !important; padding:0 !important; min-width:0 !important; min-height:0 !important; }
-    html.c2-embed body { background:var(--course-bg, #edf4fc) !important; }
+    html.c2-embed body { background:var(--stage-bg, #f5f6f8) !important; }
     html.c2-embed .c2-embed-hide { display:none !important; }
     html.c2-embed [data-c2-path] { transform:none !important; filter:none !important; contain:none !important; overflow:visible !important; }
     html.c2-embed [data-c2-keep="main"] {
@@ -976,14 +1037,8 @@ window.mechanismLab={snapshot:()=>({...s,activeMechanism,geometry:renderedGeomet
       }
     }
     for (const sel of cfg.hideInside || []) main.querySelectorAll(sel).forEach(e => e.classList.add('c2-embed-hide'));
-    // 画布多为透明：沿用原页面里离它最近的底色，避免露出被隐藏布局的残影
-    for (const k of keeps) {
-      for (let n = k; n && n !== document.documentElement; n = n.parentElement) {
-        const cs = getComputedStyle(n);
-        const solid = cs.backgroundImage !== 'none' || !/rgba\(.*,\s*0\)|transparent/.test(cs.backgroundColor);
-        if (solid) { k.style.setProperty('background', cs.background, 'important'); break; }
-      }
-    }
+    // 画布多为透明：铺上外壳统一的三维区底色（--stage-bg 由外壳传入），不沿用原页面的网格、渐变底
+    for (const k of keeps) k.style.setProperty('background', 'var(--stage-bg, #f5f6f8)', 'important');
     // 隐藏页面级的浮动按钮（深色模式切换等）
     document.querySelectorAll('body > button, body > .toast, #course-theme-toggle').forEach(e => { if (!e.dataset.c2Keep) e.classList.add('c2-embed-hide'); });
     return true;
@@ -1011,7 +1066,15 @@ window.mechanismLab={snapshot:()=>({...s,activeMechanism,geometry:renderedGeomet
       else if (d.op === 'set') setValue($(d.sel), d.value);
       else if (d.op === 'call') call(d.path, d.args);
       else if (d.op === 'event') document.dispatchEvent(new Event(d.name));
-      else if (d.op === 'theme') window.CourseTheme?.set?.(d.value);
+      else if (d.op === 'theme') {
+        if (d.stage) {
+          // 外壳的三维区取值：CSS 变量给页面样式用，StageTone 给三维场景用；再按主题重绘
+          const t = d.value === 'dark' ? 'dark' : 'light', v = d.stage[t] || {};
+          for (const [k, val] of Object.entries(v)) if (val) document.documentElement.style.setProperty('--stage-' + k, val);
+          window.StageTone?.use(d.stage);
+        }
+        window.CourseTheme?.set?.(d.value);
+      }
       else if (d.op === 'resize') dispatchEvent(new Event('resize'));
     } catch (err) { console.warn('[c2 bridge]', d, err); }
     setTimeout(send, 30);

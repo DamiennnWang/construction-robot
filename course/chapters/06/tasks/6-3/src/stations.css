@@ -67,3 +67,8 @@ html[data-c3-task="6-3"] .c2-panel .c2-group > button.wide + button.wide { margi
 
 /* 深色：原页面画面层沿用原页面自己的深色变量（hero.css），面板跟随外壳 */
 html[data-theme="dark"][data-c3-task="6-3"] .c2-panel button:not(.c2-btn, .c2-redo, .c2-ch-go, .c2-opt, .c2-switch, .c2-chip):not(.primary):not([aria-pressed="true"]):not(.done) { background:var(--surface-2); }
+
+/* 三维区：去掉“SD–03 / 打磨工作站”编号小字和重复的操作提示；右上角按钮让出全屏按钮 */
+html.lab-native .scene-area .hero-state { right:58px; }
+html.lab-native .scene-area :is(.hero-hint) { display:none !important; }
+html.lab-native .scene-area .hero-state > span { display:none !important; }

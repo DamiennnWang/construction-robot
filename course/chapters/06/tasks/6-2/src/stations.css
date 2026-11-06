@@ -63,3 +63,7 @@ html.lab-native .c2-panel #occlude[aria-pressed="true"] { border-color:#c77a12; 
 .c2-panel #gripMore .detail-body > :not(.check) { grid-column:1/-1; }
 .c2-panel :is(#gripMore, #pressMore) .micro { display:none; }
 .c2-panel .range-ends { display:none; }
+
+/* 三维区：去掉“TL–06 / 铺砖工作站”这类编号小字；相机画面让出右上角的全屏按钮 */
+html.lab-native .scene-area #sceneStatus { display:none !important; }
+html.lab-native .scene-area #cameraPanel { top:56px; }

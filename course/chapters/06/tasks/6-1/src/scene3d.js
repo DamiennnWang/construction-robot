@@ -29,7 +29,7 @@ class MasonryScene {
     let seed=7;const rnd=()=>((seed=(seed*16807)%2147483647)/2147483647);
     for(let i=0;i<4200;i++){const v=226+Math.floor(rnd()*26);nc.fillStyle=`rgb(${v},${v},${v})`;nc.fillRect(rnd()*256,rnd()*256,1+rnd()*1.6,1+rnd()*1.6);}
     const alpha=new THREE.CanvasTexture(a),map=new THREE.CanvasTexture(n);map.colorSpace=THREE.SRGBColorSpace;map.wrapS=map.wrapT=THREE.RepeatWrapping;map.repeat.set(9,9);
-    const g=new THREE.Mesh(new THREE.PlaneGeometry(1,1),new THREE.MeshStandardMaterial({color:0xe7e4de,map,alphaMap:alpha,transparent:true,depthWrite:false,roughness:.96,metalness:0}));
+    const g=new THREE.Mesh(new THREE.PlaneGeometry(1,1),new THREE.MeshStandardMaterial({color:0xf3f2f0,map,alphaMap:alpha,transparent:true,depthWrite:false,roughness:.96,metalness:0}));
     g.name='site-ground';g.receiveShadow=true;g.position.z=-.8;g.renderOrder=-1;return g;
   }
   clamp(v,a,b){return Math.max(a,Math.min(b,v));}
@@ -52,7 +52,7 @@ class MasonryScene {
   clear(g){while(g.children.length)g.remove(g.children[0]);}
   setTheme(dark){this.dark=!!dark;
     const colors=dark?{base:0x29394c,lo:0x5e728b,mid:0x8d9fb2,hi:0xd6e0ea,steel:0xa6b9c9,ink:0x132238,rubber:0x121b2a,brick:0xa8735e,lit:0x84b5ff,mortar:0x536477,glass:0x233a57,chalk:0xd6e0ea}:{base:0xc4ced8,lo:0x788b9e,mid:0xa2b2c2,hi:0xe2e7ed,steel:0xb9c8d4,ink:0x30475e,rubber:0x263647,brick:0xc98d70,lit:0x4b82c9,mortar:0xa5adb3,glass:0x5a7898,chalk:0x6f8196};
-    for(const key of Object.keys(colors))this.mat[key].color.setHex(colors[key]);this.mat.ghost.color.setHex(dark?0xa0c5fa:0x4c7db7);this.mat.slot.color.setHex(dark?0x6685ac:0xadc4df);this.edgeMat.color.setHex(dark?0xc0d0e0:0x3b536e);this.floor.material.color.setHex(dark?0x5c6875:0xe7e4de);this.draw();
+    for(const key of Object.keys(colors))this.mat[key].color.setHex(colors[key]);this.mat.ghost.color.setHex(dark?0xa0c5fa:0x4c7db7);this.mat.slot.color.setHex(dark?0x6685ac:0xadc4df);this.edgeMat.color.setHex(dark?0xc0d0e0:0x3b536e);this.floor.material.color.setHex(dark?0x46505c:0xf3f2f0);this.draw();
   }
   bind(){let dragging=false,lastX=0,lastY=0,distance=0;
     this.host.addEventListener('pointerdown',e=>{if(e.button!==0)return;dragging=true;distance=0;lastX=e.clientX;lastY=e.clientY;this.host.setPointerCapture(e.pointerId);});

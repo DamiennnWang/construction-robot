@@ -161,7 +161,7 @@
     task: '6-4', title: '室内喷涂',
     stage: EL.stage,
     stations: STATIONS,
-    hint: '',
+    hint: '拖动旋转 · 滚轮缩放',
     // 只在原页面自己换了阶段（如试喷后开始喷涂）时带着工位走；学生点到还没解锁的工位时不被拉回
     current() {
       const st = STAGE_TO_STATION[snap()?.stage];

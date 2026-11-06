@@ -201,9 +201,9 @@
   $('pathToggle').addEventListener('change',()=>scene.setPathVisible($('pathToggle').checked));
   $('inspectToggle').addEventListener('change',()=>{state.inspect=$('inspectToggle').checked;updateScene();});
   CourseTheme.register(theme => scene.setTheme(theme));
-  $('fullscreen').addEventListener('click',async()=>{try{if(document.fullscreenElement)await document.exitFullscreen();else await document.documentElement.requestFullscreen();}catch{toast('当前窗口不支持全屏，可使用浏览器全屏功能。');}});
+  
   $('help').addEventListener('click',()=>$('helpDialog').showModal());$('closeHelp').addEventListener('click',()=>$('helpDialog').close());
-  document.addEventListener('keydown',e=>{if(e.target.closest('input,select,textarea,button')||$('helpDialog').open)return;if(e.code==='Space'){e.preventDefault();togglePlay();}if(e.key.toLowerCase()==='f')$('fullscreen').click();});
+  document.addEventListener('keydown',e=>{if(e.target.closest('input,select,textarea,button')||$('helpDialog').open)return;if(e.code==='Space'){e.preventDefault();togglePlay();}});
   document.addEventListener('visibilitychange',()=>{visible=!document.hidden;lastTime=0;if(visible&&!frame)frame=requestAnimationFrame(tick);else if(!visible){cancelAnimationFrame(frame);frame=0;}});
   window.sprayLab={model:M,projectModel:PM,scene,snapshot:()=>({stage:state.stage,params:{...state.params},progress:activeRun()?.progress||0,playing:state.running,active:state.active,trialDone:state.trialDone,pose:currentPose(),summary:summary(),selection:state.selection,stats:scene.getStats(),logCount:logs.length})};
   reset();frame=requestAnimationFrame(tick);

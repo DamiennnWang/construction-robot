@@ -22,7 +22,6 @@ html.lab-native #field .process-overlay button { font-size:12.5px; padding:4px 1
 html.lab-native #field .hotspot { font-size:13px; padding:6px 10px; gap:6px; border-radius:9px; min-height:32px; }
 html.lab-native #field .hotspot .pin { width:20px; height:20px; font-size:11px; }
 html.lab-native #field .hotspot:after { width:10px; height:10px; bottom:-6px; }
-html.lab-native .c2-hint { right:12px; left:auto; }
 
 /* 面板：订单卡、现场说明卡不再浮在三维区里 */
 html.lab-native .c2-panel :is(.order-card, .site-note) {
@@ -113,3 +112,6 @@ html[data-theme="dark"].lab-native .ri-feedback { color:#7bd5b4; }
 html[data-theme="dark"].lab-native :is(.ri-toolbar, .ri-tab, .ri-state, .dialog-close) { background:#243c56; color:#dcecff; border-color:#46617f; }
 html[data-theme="dark"].lab-native .ri-tab[aria-selected="true"] { background:#2c6fbe; color:#fff; border-color:#80b5ff; }
 html[data-theme="dark"].lab-native .ri-action:disabled { background:#344c66; color:#bacde4; }
+
+/* 看法按钮放到三维区左上角（右上角是全屏按钮） */
+html.lab-native #field .view-tools { left:12px; right:auto; top:12px; }

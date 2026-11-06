@@ -79,3 +79,6 @@ html.lab-native .c2-view .scene-live { font-size:12px !important; padding:7px 11
 html.lab-native .c2-view .orbit-hint { font-size:11px !important; }
 html.lab-native .c2-view .orbit-hint #tcp { font-size:11px !important; }
 html.lab-native .c2-view .inspection-legend { font-size:12px !important; bottom:92px; }
+
+/* 三维区：左下角的操作提示与外壳的一次性提示重复，去掉；喷枪位置读数保留 */
+html.lab-native .orbit-hint > :is(svg, span:not(#tcp)) { display:none !important; }

@@ -11,8 +11,8 @@
       onStep: () => lab.click('#stepBtn'), onReset: () => lab.click('#resetBtn'), stepText: '前进 0.1 秒',
       speeds: [[0.5, '慢'], [1, '中'], [2, '快']], speed: 1, onSpeed: v => lab.set('#speed', v),
     });
-    c.view('复位视角', () => lab.click('#homeBtn'));
-    const cam = c.toolSeg([{value: 'isoBtn', label: '3D'}, {value: 'frontBtn', label: '正视'}], 'isoBtn', v => lab.click('#' + v), '视角');
+    c.view('全景', () => lab.click('#homeBtn'));
+    const cam = c.toolSeg([{value: 'isoBtn', label: '立体'}, {value: 'frontBtn', label: '正视'}], 'isoBtn', v => lab.click('#' + v), '视角');
     return s => { playing = s.playing; tr.setPlaying(playing); };
   }
 

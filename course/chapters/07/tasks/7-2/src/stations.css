@@ -174,3 +174,6 @@ html.lab-native .c7-hw-body table { width:100%; border-collapse:collapse; font-s
 html.lab-native .c7-hw-body td { padding:3px 6px; border-bottom:1px solid var(--hair); }
 html.lab-native .c7-hw-body td:nth-child(2) { font-weight:800; color:var(--course-accent); text-align:right; width:36px; }
 @media (max-width:900px) { html.lab-native .c7-hw-body { grid-template-columns:1fr; } html.lab-native .c7-hw-body > section:nth-child(2) { grid-row:auto; } }
+
+/* 右上角的取景画面、记录表让出全屏按钮 */
+html.lab-native .scene-card :is(.preview-frame, .evidence-ledger) { top:56px; }

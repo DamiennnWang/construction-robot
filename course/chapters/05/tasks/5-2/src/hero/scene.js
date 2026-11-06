@@ -348,7 +348,7 @@
       const signature=[pose,pointState,data.stage,data.selected,data.busy?.kind||'',data.busy?.id||'',data.jammed,view].join('/');
       if(needsPaint||signature!==lastPaintSignature){renderer.render(scene,camera);renderedFrames++;lastPaintSignature=signature;needsPaint=false;}else skippedFrames++;
     }
-    function setTheme(dark){scene.background=new T.Color(dark?0x242c28:0xf3f0e8);scene.fog=new T.Fog(scene.background,8,18);materials.floor.color.set(dark?0x666c60:0xe9e4d9);materials.seam.color.set(dark?0x575e53:0xd7d2c8);renderer.toneMappingExposure=dark?1.05:1.17;needsPaint=true;}
+    function setTheme(dark){scene.fog=new T.Fog(0,8,18);StageTone.paint(scene,T);materials.floor.color.set(StageTone.floor());materials.seam.color.set(dark?0x343b46:0xdcdfe4);renderer.toneMappingExposure=dark?1.05:1.17;needsPaint=true;}
     function resize(){const w=Math.max(1,host.clientWidth),h=Math.max(1,host.clientHeight);renderer.setSize(w,h,false);camera.aspect=w/h;camera.updateProjectionMatrix();needsPaint=true;}
     function projectPoint(x,z,y=.75){const v=new T.Vector3(x,y,z).project(camera);return{x:(v.x+1)*host.clientWidth/2,y:(1-v.y)*host.clientHeight/2,visible:v.z<1&&v.z>-1};}
     function geometryMeasurements(){

@@ -42,9 +42,9 @@
       asphalt:mat('asphalt',0xe2e5e5,.96,0,{map:asphaltMap}),white:mat('white',0xf7f5e6,.9),
       steel:mat('steel',0xffffff,.56,.32,{map:steelMap}),steelEdge:mat('steelEdge',0x6e8e9c,.52,.4),steelLight:mat('steelLight',0xb4c6cc,.42,.48),bolt:mat('bolt',0x566d78,.47,.57),
       rubber:mat('rubber',0x38494b,.92),rail:mat('rail',0xe2e8e7,.38,.6),drain:mat('drain',0x4c6266,.72,.48),void:mat('void',0x243838,.99),
-      soil:mat('soil',0xe7ddc3,.98,0,{map:soilMap}),soilSide:mat('soilSide',0xb9aa8b,.98),path:mat('path',0xd6cdb5,.98),grass:mat('grass',0xa6b495,.97),
+      soil:mat('soil',0xe7ddc3,.98,0,{map:soilMap}),soilSide:mat('soilSide',0xb9aa8b,.98),path:mat('path',0xd6cdb5,.98),grass:mat('grass',0xc6cfbb,.97),
       treeLeaf:mat('treeLeaf',0x9eb29a,.93),treeLeafLight:mat('treeLeafLight',0xb6c6a5,.93),trunk:mat('trunk',0x8d8c78,.95),stone:mat('stone',0xafae9e,.97),
-      wet:mat('wet',0x627d7b,.2,.1,{transparent:true,opacity:.4,depthWrite:false}),water:mat('water',0x92bac5,.27,.2,{transparent:true,opacity:.83,depthWrite:false}),
+      wet:mat('wet',0x627d7b,.2,.1,{transparent:true,opacity:.4,depthWrite:false}),water:mat('water',0xb7cdd4,.27,.2,{transparent:true,opacity:.8,depthWrite:false}),
       ripple:mat('ripple',0xc5dce1,.5,0,{transparent:true,opacity:.21,depthWrite:false}),debris:mat('debris',0x907b57,.97),leafDebris:mat('leafDebris',0xa59761,.96)
     };
     function add(geometry, material, position, name, parent=group) {

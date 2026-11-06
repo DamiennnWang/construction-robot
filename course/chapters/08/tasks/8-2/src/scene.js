@@ -27,7 +27,7 @@
 
     const scene = new T.Scene();
     const camera = new T.PerspectiveCamera(34, 1, .05, 200);
-    scene.fog = new T.Fog(0xe9eef4, 26, 60);
+    scene.fog = new T.Fog(StageTone.bg(), 26, 60);
 
     /* —— 灯光与环境反射（与 2-1 同一套布光思路） —— */
     const hemi = new T.HemisphereLight(0xf2f6ff, 0x6b7380, 1.6); scene.add(hemi);
@@ -278,7 +278,7 @@
     function theme() {
       const dark = document.documentElement.dataset.theme === 'dark';
       floorMat.map = concreteTexture(dark); floorMat.needsUpdate = true;
-      scene.fog.color.set(dark ? 0x111c2a : 0xe9eef4);
+      scene.fog.color.set(StageTone.bg());
       hemi.intensity = dark ? 1.15 : 1.6; key.intensity = dark ? 3 : 3.6;
       multi.theme?.(dark);
     }

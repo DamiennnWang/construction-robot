@@ -8,7 +8,7 @@ window.createPatrolScene=function(host,callbacks={}){
  renderer.setPixelRatio(Math.min(devicePixelRatio||1,1.5));renderer.outputColorSpace=T.SRGBColorSpace;renderer.toneMapping=T.ACESFilmicToneMapping;renderer.toneMappingExposure=1.12;renderer.shadowMap.enabled=true;renderer.shadowMap.type=T.PCFSoftShadowMap;renderer.shadowMap.autoUpdate=false;
  const canvas=renderer.domElement;canvas.tabIndex=0;canvas.setAttribute('aria-label','桥梁巡检三维现场：拖动旋转、滚轮缩放，方向键旋转，Home恢复全桥');host.appendChild(canvas);
  const scene=new T.Scene(),camera=new T.PerspectiveCamera(38,1,.05,180),inspectionCamera=new T.PerspectiveCamera(58,1.6,.015,90);
- scene.fog=new T.Fog(0xeaf0f3,65,120);
+ scene.fog=new T.Fog(StageTone.bg(),65,120);
  const hemi=new T.HemisphereLight(0xe4f3ff,0xb1a891,2.0);scene.add(hemi);
  const sun=new T.DirectionalLight(0xffefd8,3.05);sun.position.set(-12,25,17);sun.castShadow=true;sun.shadow.mapSize.set(2048,2048);Object.assign(sun.shadow.camera,{left:-24,right:24,top:20,bottom:-20,near:.5,far:75});sun.shadow.bias=-.00015;sun.shadow.normalBias=.035;sun.shadow.radius=3;scene.add(sun);
  const fill=new T.DirectionalLight(0xc9e4ff,1.25);fill.position.set(16,12,-8);scene.add(fill);
@@ -121,7 +121,7 @@ window.createPatrolScene=function(host,callbacks={}){
  canvas.addEventListener('keydown',e=>{if(e.key==='Home'){setView('overview');e.preventDefault();return;}if(['ArrowLeft','ArrowRight','ArrowUp','ArrowDown','+','-','='].includes(e.key)){e.preventDefault();if(e.key==='ArrowLeft')goal.az-=.12;if(e.key==='ArrowRight')goal.az+=.12;if(e.key==='ArrowUp')goal.el=clamp(goal.el+.08,-.12,1.35);if(e.key==='ArrowDown')goal.el=clamp(goal.el-.08,-.12,1.35);if(e.key==='+'||e.key==='=')goal.r*=.9;if(e.key==='-')goal.r*=1.1;request();}});
  return{
   update(s){const changed=lastMission!==s.mission,switched=changed||lastRobot!==s.robot||state!==s;state=s;if(switched){lastRobot=s.robot;exploded=false;explosion=0;clearHighlight();}if(changed){lastMission=s.mission;buildRoute();}updateWorld(0,switched);request();},
-  setView,setTheme(t){theme=t;scene.fog.color.setHex(t==='dark'?0x1d3040:0xeaf0f3);renderer.toneMappingExposure=t==='dark'?.88:1.12;request();},
+  setView,setTheme(t){theme=t;scene.fog.color.set(StageTone.bg());renderer.toneMappingExposure=t==='dark'?.88:1.12;request();},
   explode(value){exploded=value;setView('robot');request();},highlightPart,
   capture(){if(!state)return null;updateWorld(0);renderPreview();if(visible)drawMain();return{image:preview.toDataURL('image/jpeg',.88),metrics:JSON.parse(JSON.stringify(cameraMetrics)),mode:state.camera.mode,mission:state.mission,condition:state.mission==='road'&&(state.entries.road.serviceDone||state.entries.road.follow)?'after-maintenance':'initial',capturedAt:new Date().toISOString()};},
   metrics(){return cameraMetrics},preview,resize,
