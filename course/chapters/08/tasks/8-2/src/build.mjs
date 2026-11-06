@@ -1,4 +1,4 @@
-// 任务 8-2 保养排查：生成独立页面 index.html，再由 labShell 套上统一任务页外壳。
+// 任务 8-2 保养排查（四个工位）：生成独立页面 index.html，再由 labShell 套上统一任务页外壳。
 // 机型复用第二章 2-1：从 2-1/diesel-source/src/engine-lab.js 截取 createMultiEngine（四缸柴油机）与 createExcavator（挖掘机）的源码内联，
 // 只在挖掘机代码里加两处钩子（姿态由本页控制、把动臂/斗杆/铲斗交给本页），不修改 2-1 的文件。
 import {readFileSync, writeFileSync} from 'node:fs';
@@ -22,6 +22,21 @@ lib = replaceOnce(lib,
 lib = replaceOnce(lib, 'const psi=1.02+.33*Math.sin(t*.58+1.65)', 'const psi=P?P.psi:1.02+.33*Math.sin(t*.58+1.65)');
 lib = replaceOnce(lib, 'let lastXray=null;', 'globalThis.__excavatorRig={root,boom,stick,bucket,cylinders,BL,SL,pivot};let lastXray=null;');
 
+// 喷涂机器人复用第六章 6-4：从 6-4/src/scene3d.js 截取材质与造型函数、机器人本体（底盘、升降架、喷枪、随车涂料桶、泵与压力表、软管）三段源码，
+// 包成 createSprayRobot(T)，只返回模型对象，不带 6-4 的墙面、灯光与渲染循环；不修改 6-4 的文件。
+const spraySrc = read('../../../../06/tasks/6-4/src/scene3d.js');
+const between = (from, to) => {
+  const i = spraySrc.indexOf(from), j = spraySrc.indexOf(to, i + 1);
+  if (i < 0 || j < 0 || spraySrc.indexOf(from, i + 1) >= 0) throw new Error('6-4 scene3d.js 结构已变化，找不到：' + from.slice(0, 40));
+  return spraySrc.slice(i, j);
+};
+const sprayLib = `function createSprayRobot(T){const scene=new T.Group();
+${between('const materials = {}', 'const hemi =')}
+${between('function put(', 'const room = new T.Group()')}
+${between("const robot = new T.Group(); robot.name = 'spray-robot'", 'const paintCanvas =')}
+return {root:scene,robot,carriage,gun,supply,needle,updateHose,getHose:()=>hose,materials,arm};}
+`;
+
 // createMultiEngine 原本给 2-1 的仪表区写字；这些元素在本页不显示，放一份空的接住
 const stubIds = ['angleReadout', 'cylinderCards', 'detachPart', 'firingOrder', 'fxBadge', 'fxDetail', 'fxState', 'isolatePart', 'labels', 'multiExplanation',
   'multiSelected', 'partDesc', 'partName', 'partsCount', 'partsList', 'powerCount', 'powerCylinders', 'powerDescription', 'selectionCard', 'timingRows'];
@@ -37,7 +52,10 @@ ${stubs}
 <script src="${S}vendor/three-r160.min.js"></script>
 <script src="${S}动力与工作机构/renderer.js"></script>
 <script>${safe(lib)}</script>
+<script>${safe(sprayLib)}</script>
 <script src="src/maint.model.js"></script>
+<script src="src/scene-spray.js"></script>
+<script src="src/scene-mortar.js"></script>
 <script src="src/scene.js"></script>
 <script src="src/app.js"></script>
 </body></html>

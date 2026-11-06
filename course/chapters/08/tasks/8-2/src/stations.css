@@ -129,3 +129,21 @@ html.lab-native .c2-panel .m82-step-btn.static { cursor:default; opacity:1; }
   .m82-step:not(.m82-ends)::before { left:14px; top:26px; }
   .m82-chip, .m82-mat { height:26px; }
 }
+
+/* —— 清洗工位（喷涂管路、砂浆管道） —— */
+.m82-note { margin:8px 0 0; font-size:11.5px; line-height:1.45; color:var(--course-muted); }
+.m82-step.running .m82-step-btn { border-color:var(--warn); background:var(--warn-soft); }
+.m82-step.running .m82-dot { border-color:var(--warn); color:var(--warn); animation:m82-pulse 1.6s ease-in-out infinite; }
+.m82-step.need:not(.done) .m82-step-text::after { content:' · 本单必做'; color:var(--warn); font-weight:700; }
+.m82-cup { display:flex; align-items:center; gap:7px; padding:2px 10px 4px 41px; font-size:12.5px; color:var(--course-muted); }
+.m82-cup i { width:16px; height:16px; border-radius:4px 4px 7px 7px; border:1.5px solid var(--hair); background:#cfe6f2; transition:background .4s; }
+.m82-cup i[data-k="paint"][data-paint="water"] { background:#3f8fd6; }
+.m82-cup i[data-k="paint"][data-paint="oil"] { background:#c4702a; }
+.m82-cup i[data-k="mid"][data-paint="water"] { background:#8dbde3; }
+.m82-cup i[data-k="mid"][data-paint="oil"] { background:#dca878; }
+.m82-seg { position:relative; overflow:hidden; padding-right:10px; }
+.m82-seg em { position:absolute; left:0; right:0; bottom:0; height:3px; background:linear-gradient(90deg,#8b7f6c,#c9a227 60%,#d6453b); clip-path:inset(0 calc((1 - var(--k,0)) * 100%) 0 0); }
+.m82-seg[data-state="ok"] em { display:none; }
+.m82-seg[data-state="done"] { border-color:var(--course-accent); background:var(--blue-soft); }
+.m82-seg[data-state="done"] i { background:var(--course-accent); color:#fff; }
+.m82-mat.ok[aria-checked="true"] { border-color:var(--ok); color:var(--ok); background:var(--ok-soft); }
