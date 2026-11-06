@@ -123,7 +123,7 @@
       if (c.station.id !== 'drive') flags.driveStart = false;
       // 怎么看：视角和方向参照放在三维区左上角，点的是原页面的按钮
       const view = all('[data-view]').find(b => b.getAttribute('aria-pressed') === 'true')?.dataset.view || 'iso';
-      c.toolSeg([{value: 'iso', label: '三维'}, {value: 'side', label: '侧视'}, {value: 'top', label: '俯视'}], view,
+      c.toolSeg([{value: 'iso', label: '全景'}, {value: 'side', label: '侧视'}, {value: 'top', label: '俯视'}], view,
         v => $(`[data-view="${v}"]`)?.click(), '视角');
       c.tool('方向参照', on => { if (EL.axes && EL.axes.checked !== on) EL.axes.click(); }, EL.axes ? EL.axes.checked : true);
       // 时间轴和关键片段放进底栏（随工位停放，原程序照常读写）

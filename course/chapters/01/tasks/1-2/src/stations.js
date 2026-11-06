@@ -134,7 +134,6 @@
         /* 面板：随展品重建的部件、调节两组，后面是试一试 */
         const dyn = h('div', 'c1-dyn'); c.body.append(dyn);
         c.challenges(st.challenges);
-        const source = h('p', 'c1-source'); c.body.append(source);
 
         let shown = '', chips = null, sliders = [], lastPart = null;
         function render(s) {
@@ -157,9 +156,9 @@
               grid.append(sl.el); sliders.push([ctl.id, sl]);
             }
           }
-          source.replaceChildren(document.createTextNode('模型：' + (m.metadata?.nature || '课程教学模型')));
-          source.title = row.application || '';
-          if (row.license) { const a = h('a', '', '许可 ↗'); a.href = window.courseHref ? courseHref(row.license) : row.license; a.target = '_blank'; source.append(' · ', a); }
+          // 模型来源与许可：收进面板底部的 ⓘ，不占正文
+          c.credit([row.title + '：' + (m.metadata?.nature || '课程教学模型'), row.application],
+            row.license && {href: window.courseHref ? courseHref(row.license) : row.license, label: '查看模型许可'});
         }
 
         c.lab.onState(s => {

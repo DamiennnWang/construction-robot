@@ -15,7 +15,7 @@
     return s => { playing = Boolean(s.play); tr.setPlaying(playing); };
   }
   function views(c, lab, scope) {
-    c.view('复位视角', () => lab.click(`${scope} [data-view="iso"]`));
+    c.view('全景', () => lab.click(`${scope} [data-view="iso"]`));
     return c.toolSeg([['iso', '轴测'], ['front', '正视'], ['side', '侧视'], ['top', '俯视']].map(([value, label]) => ({value, label})), 'iso', v => lab.click(`${scope} [data-view="${v}"]`), '视角');
   }
 

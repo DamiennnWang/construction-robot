@@ -36,6 +36,9 @@ export function labShell(html, task, page = '') {
   const js = [join(HERE, 'lab-shell.js'), join(HERE, 'native.js'), stations].map(p => safe(read(p))).join('\n');
   const {chapter, nav} = chapterInfo(task, page);
   html = html.replace('</head>', () => `<style data-lab-shell>${css}</style></head>`);
+  // 三维区底色取值器放在最前面：原页面的场景一建好就能用统一底色
+  const tone = safe(read(join(HERE, 'stage-tone.js')));
+  html = html.replace(/<head[^>]*>/i, m => `${m}<script data-lab-shell>${tone}</script>`);
   // 放在 body 最后：原页面的程序都已运行，接口可用；再把原有元素搬进新版式。
   const at = html.lastIndexOf('</body>');
   return html.slice(0, at) + `<script data-lab-shell>window.CHAPTER_LAYOUT=${JSON.stringify({task, page, nav, chapter})};\n${js}</script>` + html.slice(at);

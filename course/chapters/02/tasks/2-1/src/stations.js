@@ -66,7 +66,7 @@
     const read = c.readouts([{id: 'n', label: '转速', unit: 'r/min'}, {id: 'I', label: '电流', unit: 'A'}, {id: 'T', label: '输出转矩', unit: 'N·m'}, {id: 'P', label: '输出功率', unit: 'W'}]);
     let playing = false, lastFeedback = '';
     const tr = c.transport({onToggle: p => { if (p !== playing) lab.click('#pauseBtn'); }, onStep: () => lab.click('#stepBtn'), onReset: () => lab.click('#resetBtn'), stepText: '单步 15°'});
-    c.view('复位视角', () => lab.click('#viewReset'));
+    c.view('全景', () => lab.click('#viewReset'));
     const look = c.toolSeg([{value: 'cutMode', label: '剖开'}, {value: 'wholeMode', label: '完整'}, {value: 'wireMode', label: '去掉外壳'}], 'cutMode', v => lab.click('#' + v), '外观');
     const em = c.tool('磁场与受力', () => lab.click('#emToggle'), true);
     const chipName = p => ({magnet: '永磁定子', rotor: '电枢与铜线圈', comm: '分裂环换向器', brush: '碳刷与接线端'}[p] || '');
@@ -121,8 +121,8 @@
     let running = false;
     const tr = c.transport({onToggle: p => { if (p !== running) lab.click('#playBtn'); }, onStep: () => lab.click('#stepBtn'), onReset: () => lab.click('#resetAll'), stepText: '前进 15°',
       speeds: [[0.25, '慢'], [0.5, '中'], [1.2, '快']], speed: 0.5, onSpeed: v => lab.set('#speedRange', v)});
-    c.view('复位视角', () => lab.click('#resetView'));
-    c.toolSeg([['iso', '透视'], ['front', '正视'], ['side', '侧视']].map(([value, label]) => ({value, label})), 'iso', v => lab.click(`[data-view="${v}"]`), '视角');
+    c.view('全景', () => lab.click('#resetView'));
+    c.toolSeg([['iso', '立体'], ['front', '正视'], ['side', '侧视']].map(([value, label]) => ({value, label})), 'iso', v => lab.click(`[data-view="${v}"]`), '视角');
     const cut = c.tool('剖开机体', () => lab.click('#cutToggle'), true);
     const sound = c.tool('🔊 声音', () => lab.click('#audioToggle'), false);
     const watch = c.toolSeg([1, 2, 3, 4].map(n => ({value: n, label: `看${n}缸`})), 1, v => lab.call('engineLab.observeCylinder', v), '观察气缸');

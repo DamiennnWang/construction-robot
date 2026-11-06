@@ -1,10 +1,8 @@
 /* 4-2：原页面的扫描台搬进外壳后的微调（只作用于本页） */
 
-/* 三维区：“怎么看”的视角与显示方式放左上；手势提示和坐标说明放右上；慢放按钮与读数留在原来的底部位置 */
+/* 三维区：“怎么看”的视角与显示方式放左上；慢放按钮与读数留在原来的底部位置 */
 html[data-c3-task="4-2"] .c2-view .view-tools { left:12px !important; right:auto !important; top:12px !important; }
 html[data-c3-task="4-2"] .c2-view #displayModes { left:12px !important; right:auto !important; top:60px !important; }
-html[data-c3-task="4-2"] .c2-view .c2-hint { top:12px; bottom:auto; right:12px; }
-html[data-c3-task="4-2"] .c2-view .world-note { top:42px !important; right:12px !important; text-align:right; }
 html[data-c3-task="4-2"] .c2-view .stage-readouts {
   left:16px !important; bottom:16px !important; padding:8px 14px; border-radius:14px; border:1px solid var(--hair);
   background:color-mix(in srgb, var(--course-surface) 86%, transparent); backdrop-filter:blur(6px); box-shadow:var(--shadow-sm);
@@ -111,3 +109,6 @@ html[data-c3-task="4-2"] .c2-strip { display:none !important; }
 .c2-panel .challenge-feedback.correct { color:#1f8a5b; }
 .c2-panel .challenge-feedback.incorrect { color:#c77a12; }
 .c2-panel #checkAnswer { width:100%; margin-top:8px; }
+
+/* 三维区：右上角“Z 轴朝上 / 台座与网格是显示参照”去掉（场景已有坐标轴，网格地面已取消） */
+html.lab-native .stage .world-note { display:none !important; }

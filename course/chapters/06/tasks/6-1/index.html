@@ -1,4 +1,64 @@
-<!doctype html><html lang="zh-CN" data-theme="light"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>任务6-1 · 从人工砌筑到机器人</title><style>.iso{
+<!doctype html><html lang="zh-CN" data-theme="light"><head><script data-lab-shell>/* 三维区底色（全课程统一）：近白中性灰，适合印刷教材截图；深色模式用深石墨色。
+ * 取值以 shared/lab-shell/lab-shell.css 里的 --stage-bg / --stage-floor / --stage-shadow 为准（深浅色一起切换）；
+ * 页面样式还没载入时（运行时才挂外壳的页面、第二章被嵌入前的原版实验页）用下面同值的后备。
+ * 用法：StageTone.bg() → '#f5f6f8'；StageTone.color(THREE) → THREE.Color；
+ *       StageTone.paint(scene, THREE) 设底色并让雾跟着变；StageTone.contactShadow(THREE, {size}) 模型下方的柔和接触阴影。
+ * 第二章：原版实验页被嵌入时，外壳把自己的取值经 postMessage 传进来（embed-bridge.js 调 StageTone.use）。
+ */
+(() => {
+  'use strict';
+  if (window.StageTone) return;
+  const FALLBACK = {
+    light: {bg: '#f5f6f8', floor: '#eceef1', shadow: 'rgba(28,36,48,.20)'},
+    dark: {bg: '#1a1f27', floor: '#222833', shadow: 'rgba(0,0,0,.55)'},
+  };
+  const root = document.documentElement;
+  let cache = null, override = null;
+  const theme = () => (root.dataset.theme === 'dark' ? 'dark' : 'light');
+  const read = () => {
+    const t = theme(), f = FALLBACK[t], cs = getComputedStyle(root);
+    const v = n => cs.getPropertyValue(n).trim();
+    return {theme: t, bg: v('--stage-bg') || f.bg, floor: v('--stage-floor') || f.floor, shadow: v('--stage-shadow') || f.shadow, ...(override?.[t] || {})};
+  };
+  const get = () => (cache && cache.theme === theme() ? cache : (cache = read()));
+  addEventListener('course-theme-change', () => { cache = null; });
+
+  window.StageTone = {
+    get,
+    bg: () => get().bg,
+    floor: () => get().floor,
+    /** 底色的 THREE.Color（传入页面自己的 THREE，模块化页面也能用）。 */
+    color: (T = window.THREE, key = 'bg') => new T.Color(get()[key]),
+    /** 设场景底色，雾（若有）随底色。返回 scene 便于链式调用。 */
+    paint(scene, T = window.THREE) {
+      if (!scene) return scene;
+      const c = get().bg;
+      if (scene.background?.isColor) scene.background.set(c); else scene.background = new T.Color(c);
+      if (scene.fog?.color) scene.fog.color.set(c);
+      return scene;
+    },
+    /** 模型下方的柔和接触阴影：一张径向渐变贴图的平面（不受光照影响，深浅色自动换）。
+     *  size 为直径（场景单位），up 为 'y' 或 'z'（哪个轴朝上）。返回 Mesh，自己 position 到模型脚下。 */
+    contactShadow(T = window.THREE, {size = 1, up = 'y', strength = 1} = {}) {
+      const c = document.createElement('canvas'); c.width = c.height = 128;
+      const g = c.getContext('2d'), grad = g.createRadialGradient(64, 64, 0, 64, 64, 64);
+      grad.addColorStop(0, 'rgba(0,0,0,1)'); grad.addColorStop(.45, 'rgba(0,0,0,.55)'); grad.addColorStop(1, 'rgba(0,0,0,0)');
+      g.fillStyle = grad; g.fillRect(0, 0, 128, 128);
+      const tex = new T.CanvasTexture(c);
+      const mat = new T.MeshBasicMaterial({map: tex, color: 0x000000, transparent: true, depthWrite: false, toneMapped: false});
+      const mesh = new T.Mesh(new T.PlaneGeometry(size, size), mat);
+      if (up === 'y') mesh.rotation.x = -Math.PI / 2;
+      mesh.renderOrder = -1; mesh.userData.contactShadow = true;
+      const tone = () => { mat.opacity = (theme() === 'dark' ? .5 : .16) * strength; };
+      tone(); addEventListener('course-theme-change', tone);
+      return mesh;
+    },
+    /** 外部指定取值（第二章嵌入时由外壳传入）；传 null 取消。 */
+    use(values) { override = values; cache = null; },
+    refresh() { cache = null; return get(); },
+  };
+})();
+</script><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>任务6-1 · 从人工砌筑到机器人</title><style>.iso{
   --anatomy-page:#0b0b0b;--anatomy-card:#131313;--anatomy-text:#a3a3a3;--anatomy-strong:#e6e6e6;--anatomy-muted:#6e6e6e;
   --anatomy-paper:#131313;--anatomy-face:#1b1b1b;--anatomy-top:#1c1c1c;
   --anatomy-shade-0:#0f0f0f;--anatomy-shade-1:#121212;--anatomy-shade-2:#151515;--anatomy-shade-3:#181818;
@@ -134,6 +194,17 @@ html[data-theme="dark"] {
   --shadow-sm:0 1px 2px rgba(0,0,0,.25); --shadow:0 1px 2px rgba(0,0,0,.25), 0 8px 24px rgba(0,0,0,.28); --shadow-lg:0 12px 34px rgba(0,0,0,.45);
   --page-bg:linear-gradient(180deg,#112035 0%,#0d1a2b 100%);
 }
+/* 三维区（全课程统一）：近白中性灰底，模型下方柔和接触阴影；也是印刷教材截图的底色。
+   --stage-floor 给场景里的真实地面（桥面、楼板、房间）用，与底色衔接；--stage-ink/chip 是三维区里的小字和浮签。
+   shared/lab-shell/stage-tone.js 把这些值交给三维场景（第二章经 postMessage 传进嵌入页），改值只改这里及该文件的同值后备。 */
+:root, [data-stage-tone="light"] {
+  --stage-bg:#f5f6f8; --stage-floor:#eceef1; --stage-shadow:rgba(28,36,48,.20);
+  --stage-ink:#4f5b6b; --stage-chip:rgba(255,255,255,.86); --stage-chip-line:rgba(25,40,60,.10);
+}
+html[data-theme="dark"], [data-stage-tone="dark"] {
+  --stage-bg:#1a1f27; --stage-floor:#222833; --stage-shadow:rgba(0,0,0,.55);
+  --stage-ink:#b8c3d1; --stage-chip:rgba(30,36,46,.86); --stage-chip-line:rgba(255,255,255,.10);
+}
 * { box-sizing:border-box; }
 [hidden] { display:none !important; }
 html, body { margin:0; height:100%; }
@@ -198,11 +269,11 @@ html[data-theme="dark"] .c2-station[aria-selected="true"] { background:linear-gr
   display:flex; flex-direction:column; min-height:0; overflow:hidden; border-radius:16px;
   border:1px solid var(--hair); background:var(--course-surface); box-shadow:var(--shadow);
 }
-.c2-view { position:relative; flex:1 1 auto; min-height:0; background:var(--course-bg); }
+.c2-view { position:relative; flex:1 1 auto; min-height:0; background:var(--stage-bg); }
 .c2-frame { position:absolute; inset:0; width:100%; height:100%; border:0; display:block; background:transparent; }
 .c2-loading {
   position:absolute; inset:0; display:flex; flex-direction:column; align-items:center; justify-content:center; gap:12px;
-  color:var(--course-muted); font-size:15px; background:var(--course-bg); pointer-events:none; z-index:1;
+  color:var(--course-muted); font-size:15px; background:var(--stage-bg); pointer-events:none; z-index:1;
 }
 .c2-spinner { width:30px; height:30px; border-radius:50%; border:3px solid var(--blue-soft); border-top-color:var(--course-accent); animation:c2-spin .8s linear infinite; }
 @keyframes c2-spin { to { transform:rotate(360deg); } }
@@ -220,12 +291,31 @@ html[data-theme="dark"] .c2-station[aria-selected="true"] { background:linear-gr
 }
 .c2-toolseg button { height:26px; font-size:13px; padding:0 10px; }
 .c2-hint {
-  position:absolute; right:12px; bottom:10px; color:var(--course-muted); font-size:12px; pointer-events:none; z-index:2;
-  max-width:60%; white-space:nowrap; overflow:hidden; text-overflow:ellipsis;
-  background:color-mix(in srgb, var(--course-surface) 72%, transparent); padding:2px 10px; border-radius:10px;
+  position:absolute; left:50%; top:14px; transform:translateX(-50%); z-index:2; pointer-events:none;
+  max-width:min(80%,560px); white-space:nowrap; overflow:hidden; text-overflow:ellipsis;
+  padding:5px 14px; border-radius:999px; font-size:13px; line-height:1.4; color:var(--stage-ink);
+  background:var(--stage-chip); border:1px solid var(--stage-chip-line); backdrop-filter:blur(6px);
+  transition:opacity .6s ease, transform .6s ease;
 }
+.c2-hint.gone { opacity:0; transform:translate(-50%,-6px); }
+
+/* 全屏：外壳统一一个按钮，钉在三维区右上角；全屏的是整块三维区（含上方选择条和提示条） */
+.c2-fs {
+  position:absolute; right:12px; top:12px; z-index:5; width:34px; height:34px; padding:0; display:grid; place-items:center;
+  border-radius:10px; border:1px solid var(--stage-chip-line); background:var(--stage-chip); backdrop-filter:blur(8px);
+  color:var(--course-ink); box-shadow:var(--shadow-sm);
+}
+.c2-fs:hover { color:var(--course-accent); border-color:var(--course-accent); }
+.c2-fs svg { width:18px; height:18px; fill:none; stroke:currentColor; stroke-width:2; stroke-linecap:round; stroke-linejoin:round; }
+.c2-fs .c2-fs-out, .c2-stage.c2-full .c2-fs .c2-fs-in { display:none; }
+.c2-stage.c2-full .c2-fs .c2-fs-out { display:block; }
+.c2-stage:fullscreen { border:0; border-radius:0; box-shadow:none; width:100%; height:100%; }
+.c2-stage:fullscreen::backdrop { background:var(--stage-bg); }
+/* 浏览器不支持全屏接口时：铺满窗口 */
+.c2-stage.c2-full-fallback { position:fixed !important; inset:0 !important; z-index:2147483000 !important; width:auto !important; height:auto !important; border-radius:0; border:0; }
+
 .c2-part {
-  position:absolute; right:12px; top:12px; z-index:3; width:min(300px,42%); padding:11px 34px 11px 13px; border-radius:12px;
+  position:absolute; right:12px; top:56px; z-index:3; width:min(300px,42%); padding:11px 34px 11px 13px; border-radius:12px;
   background:var(--course-surface); border:1px solid var(--hair); border-left:4px solid var(--focus);
   box-shadow:var(--shadow-lg); display:flex; flex-direction:column; gap:3px;
 }
@@ -274,7 +364,7 @@ html[data-theme="dark"] .c2-play { background:linear-gradient(135deg,#8abaff,#5f
 }
 html[data-theme="dark"] .c2-head-num { color:#0f1d2e; background:linear-gradient(135deg,#8abaff,#5f97ea); }
 .c2-panel-head h2 { margin:0; font-size:19px; font-weight:800; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; }
-.c2-panel-head p { margin:6px 0 0; color:var(--course-muted); font-size:13.5px; line-height:1.55; }
+.c2-panel-head p { margin:6px 0 0; color:var(--course-muted); font-size:14px; line-height:1.55; }
 .c2-redo { height:30px; padding:0 11px; border-radius:15px; border:1px solid var(--hair); background:var(--surface-2); color:var(--course-muted); font-size:12.5px; white-space:nowrap; }
 .c2-redo:hover { color:var(--course-accent); border-color:var(--course-accent); }
 .c2-panel-body { display:flex; flex-direction:column; gap:14px; }
@@ -391,6 +481,23 @@ html[data-theme="dark"] .c2-ch-go { color:#0f1d2e; }
 html[data-theme="dark"] .c2-banner { background:#3b2d16; border-color:#6b5124; color:#f6d38f; }
 .c2-quiet { color:var(--course-muted); }
 
+/* 模型来源与许可：面板最底下一个 ⓘ，点开才显示，不占正文 */
+.c2-credit { position:relative; margin-top:auto; display:flex; justify-content:flex-end; }
+.c2-credit-btn {
+  height:26px; padding:0 10px; border-radius:13px; border:1px solid transparent; background:none;
+  color:var(--course-muted); font-size:12.5px; display:inline-flex; align-items:center; gap:5px;
+}
+.c2-credit-btn:hover, .c2-credit-btn[aria-expanded="true"] { color:var(--course-accent); border-color:var(--hair); background:var(--surface-2); }
+.c2-credit-btn i { font-style:normal; display:grid; place-items:center; width:16px; height:16px; border-radius:50%; border:1.5px solid currentColor; font-size:11px; font-weight:800; line-height:1; }
+.c2-credit-pop {
+  position:absolute; right:0; bottom:32px; z-index:6; width:min(320px,100%); padding:10px 12px; border-radius:12px;
+  background:var(--course-surface); border:1px solid var(--hair); box-shadow:var(--shadow-lg);
+  font-size:13px; line-height:1.55; color:var(--course-ink);
+}
+.c2-credit-pop p { margin:0; }
+.c2-credit-pop p + p { margin-top:4px; }
+.c2-credit-pop a { color:var(--course-accent); }
+
 /* 提示条：在三维区下方弹出，几秒后收起 */
 .c2-feedback {
   position:absolute; left:50%; top:56px; transform:translateX(-50%); z-index:4; max-width:min(640px,80%);
@@ -478,7 +585,12 @@ html.lab-native .c2-native-stage {
   max-width:none !important; max-height:none !important; min-height:0 !important;
   margin:0 !important; border:0 !important; border-radius:0 !important; box-shadow:none !important;
 }
-html.lab-native .c2-view { background:transparent; }
+/* 三维区统一底色（--stage-bg，见 lab-shell.css）：原页面的三维区本身铺底色，
+   它与三维画布之间的各层容器一律透明——原来的渐变、网格、色调底都不再露出。
+   three.js 画布带 data-engine 属性，用它找出“装着三维画布的那几层”。 */
+html.lab-native .c2-view, html.lab-native .c2-native-stage { background:var(--stage-bg) !important; }
+html.lab-native .c2-native-stage :has(canvas[data-engine]),
+html.lab-native .c2-native-stage canvas[data-engine] { background:transparent !important; }
 
 /* 三维区上方一排：模型选择 */
 .c2-stage-top {
@@ -744,12 +856,15 @@ html.lab-native .c2-native-stage .scene-tag { display:none; }
 .c61-goal b { flex:none; font-size:12px; color:var(--course-accent); }
 .c61-goal span { min-width:0; overflow:hidden; text-overflow:ellipsis; white-space:nowrap; font-weight:600; }
 .c61-goal i { flex:none; font-style:normal; font-size:12px; font-weight:700; color:var(--good, #1f8a5b); }
+
+/* 看法按钮让出右上角的全屏按钮 */
+html.lab-native .stage-wrap .view-tools { right:58px; }
 </style><script data-course-navigation src="../../../../../shared/navigation.js"></script><link data-course-theme rel="stylesheet" href="../../../../../shared/styles/theme.css"><script data-course-theme src="../../../../../shared/theme.js"></script></head>
 <body class="iso" data-theme="light"><div class="app">
-<header class="masthead"><a class="brand" href="../../../../../README.md"><span class="brand-mark">筑</span><span>智能建造实验室<small>CONSTRUCTION LAB / 06.01</small></span></a><div class="course-name">砌筑工程<span>从工艺到机器人</span></div><div class="header-tools"><button id="theme" aria-label="切换深浅主题">◐ 深色</button><button id="fullscreen">⛶ 全屏</button><button id="help">使用说明</button></div></header>
+<header class="masthead"><a class="brand" href="../../../../../README.md"><span class="brand-mark">筑</span><span>智能建造实验室<small>CONSTRUCTION LAB / 06.01</small></span></a><div class="course-name">砌筑工程<span>从工艺到机器人</span></div><div class="header-tools"><button id="theme" aria-label="切换深浅主题">◐ 深色</button><button id="help">使用说明</button></div></header>
 <nav class="chapter-nav" aria-label="学习阶段"><button data-tab="manual" aria-pressed="true"><b>01</b><span>先亲手砌一砌<small>认砖 · 组砌 · 错缝</small></span><i>→</i></button><button data-tab="mortar" aria-pressed="false"><b>02</b><span>拌一筒砂浆<small>投料 · 搅拌 · 送料</small></span><i>→</i></button><button data-tab="issues" aria-pressed="false"><b>03</b><span>发现人工难点<small>灰缝 · 基准 · 连续作业</small></span><i>→</i></button><button data-tab="robot" aria-pressed="false"><b>04</b><span>再让机器人介入<small>定位 · 取放 · 反馈</small></span><i>↗</i></button></nav>
 <main class="lab-layout"><section class="visual-card iso-plate"><div class="figure-heading"><div><div class="eyebrow"><span class="status-dot"></span><span id="eyebrow">MASONRY / LEARN BY BUILDING</span></div><h1 id="title">砖怎样摆，才是一面墙？</h1><p id="subtitle">转一转砖，拼一皮墙，再让上下皮接缝错开。</p></div><span class="figure-number" id="figureNumber">FIG. 01</span></div>
-<div class="stage-wrap"><div id="stage" class="stage" tabindex="0" role="group" aria-label="三维砌筑工作台。拖动旋转，滚轮缩放，方向键旋转。"></div><div class="scene-tag" id="sceneTag">人工砌筑试排台</div><div class="view-tools" aria-label="观察视角"><button data-view="iso" aria-pressed="true">立体</button><button data-view="top" aria-pressed="false">俯视</button><button data-view="front" aria-pressed="false">正视</button><button data-view="detail" aria-pressed="false">近看</button><span></span><button id="zoomOut" aria-label="缩小">−</button><button id="zoomIn" aria-label="放大">＋</button><button id="home" aria-label="复位视角">↺</button></div><div id="fallbackNotice" class="fallback-note" hidden>三维加速不可用，已切换实体投影画面；仍可完成操作。</div></div>
+<div class="stage-wrap"><div id="stage" class="stage" tabindex="0" role="group" aria-label="三维砌筑工作台。拖动旋转，滚轮缩放，方向键旋转。"></div><div class="scene-tag" id="sceneTag">人工砌筑试排台</div><div class="view-tools" aria-label="观察视角"><button data-view="iso" aria-pressed="true">全景</button><button data-view="top" aria-pressed="false">俯视</button><button data-view="front" aria-pressed="false">正视</button><button data-view="detail" aria-pressed="false">近看</button><span></span><button id="zoomOut" aria-label="缩小">−</button><button id="zoomIn" aria-label="放大">＋</button><button id="home" aria-label="复位视角">↺</button></div><div id="fallbackNotice" class="fallback-note" hidden>三维加速不可用，已切换实体投影画面；仍可完成操作。</div></div>
 <div class="figure-bottom"><span id="gestureHint">拖动旋转 · 滚轮缩放 · 点视角观察墙厚</span><strong id="liveReadout" data-readout>标准砖 240 × 115 × 53 mm</strong></div>
 <div class="metrics"><div><span id="metricLabel0">当前任务</span><strong id="metric0">认识砖的朝向</strong></div><div><span id="metricLabel1">观察重点</span><strong id="metric1">长边相对墙长</strong></div><div><span id="metricLabel2">学习进度</span><strong id="metric2">第 1 / 3 关</strong></div></div>
 </section>
@@ -1815,7 +1930,7 @@ class MasonryScene {
     let seed=7;const rnd=()=>((seed=(seed*16807)%2147483647)/2147483647);
     for(let i=0;i<4200;i++){const v=226+Math.floor(rnd()*26);nc.fillStyle=`rgb(${v},${v},${v})`;nc.fillRect(rnd()*256,rnd()*256,1+rnd()*1.6,1+rnd()*1.6);}
     const alpha=new THREE.CanvasTexture(a),map=new THREE.CanvasTexture(n);map.colorSpace=THREE.SRGBColorSpace;map.wrapS=map.wrapT=THREE.RepeatWrapping;map.repeat.set(9,9);
-    const g=new THREE.Mesh(new THREE.PlaneGeometry(1,1),new THREE.MeshStandardMaterial({color:0xe7e4de,map,alphaMap:alpha,transparent:true,depthWrite:false,roughness:.96,metalness:0}));
+    const g=new THREE.Mesh(new THREE.PlaneGeometry(1,1),new THREE.MeshStandardMaterial({color:0xf3f2f0,map,alphaMap:alpha,transparent:true,depthWrite:false,roughness:.96,metalness:0}));
     g.name='site-ground';g.receiveShadow=true;g.position.z=-.8;g.renderOrder=-1;return g;
   }
   clamp(v,a,b){return Math.max(a,Math.min(b,v));}
@@ -1838,7 +1953,7 @@ class MasonryScene {
   clear(g){while(g.children.length)g.remove(g.children[0]);}
   setTheme(dark){this.dark=!!dark;
     const colors=dark?{base:0x29394c,lo:0x5e728b,mid:0x8d9fb2,hi:0xd6e0ea,steel:0xa6b9c9,ink:0x132238,rubber:0x121b2a,brick:0xa8735e,lit:0x84b5ff,mortar:0x536477,glass:0x233a57,chalk:0xd6e0ea}:{base:0xc4ced8,lo:0x788b9e,mid:0xa2b2c2,hi:0xe2e7ed,steel:0xb9c8d4,ink:0x30475e,rubber:0x263647,brick:0xc98d70,lit:0x4b82c9,mortar:0xa5adb3,glass:0x5a7898,chalk:0x6f8196};
-    for(const key of Object.keys(colors))this.mat[key].color.setHex(colors[key]);this.mat.ghost.color.setHex(dark?0xa0c5fa:0x4c7db7);this.mat.slot.color.setHex(dark?0x6685ac:0xadc4df);this.edgeMat.color.setHex(dark?0xc0d0e0:0x3b536e);this.floor.material.color.setHex(dark?0x5c6875:0xe7e4de);this.draw();
+    for(const key of Object.keys(colors))this.mat[key].color.setHex(colors[key]);this.mat.ghost.color.setHex(dark?0xa0c5fa:0x4c7db7);this.mat.slot.color.setHex(dark?0x6685ac:0xadc4df);this.edgeMat.color.setHex(dark?0xc0d0e0:0x3b536e);this.floor.material.color.setHex(dark?0x46505c:0xf3f2f0);this.draw();
   }
   bind(){let dragging=false,lastX=0,lastY=0,distance=0;
     this.host.addEventListener('pointerdown',e=>{if(e.button!==0)return;dragging=true;distance=0;lastX=e.clientX;lastY=e.clientY;this.host.setPointerCapture(e.pointerId);});
@@ -2725,7 +2840,7 @@ window.MasonryScene=MasonryScene;
  $('issuesToRobot').onclick=()=>setTab('robot');$('nextSection').onclick=()=>setTab(state.tab==='manual'?'mortar':state.tab==='mortar'?'issues':state.tab==='issues'?'robot':'manual');
  $('reset').onclick=()=>{pause();scene.resetView();if(state.tab==='manual')manual.reset();else if(state.tab==='mortar')mortar.reset();else if(state.tab==='issues'){state.issueAmount=IssuesModel.ISSUES[state.issue].start;renderIssue();}else{state.t=0;state.fault=false;state.corrected=false;$('datumFault').checked=false;scene.setExplode(0);$('explode').value=0;text('explodeValue','0%');renderRobot();}};
  function setTheme(dark){state.dark=dark;document.documentElement.dataset.theme=dark?'dark':'light';document.body.dataset.theme=dark?'dark':'light';text('theme',dark?'◑ 浅色':'◐ 深色');scene.setTheme(dark);}
- CourseTheme.register(theme => setTheme(theme === 'dark'));$('help').onclick=()=>{$('helpDialog').showModal();pause();};$('fullscreen').onclick=async()=>{try{if(document.fullscreenElement)await document.exitFullscreen();else await document.documentElement.requestFullscreen();scene.resize();}catch{ text('fullscreen','当前窗口不支持全屏');}};
+ CourseTheme.register(theme => setTheme(theme === 'dark'));$('help').onclick=()=>{$('helpDialog').showModal();pause();};
  $('stage').addEventListener('keydown',e=>{if(e.code==='Space'&&state.tab==='robot'){e.preventDefault();play();}});
  new IntersectionObserver(entries=>{state.visible=entries.at(-1).isIntersecting;if(!state.visible){cancelAnimationFrame(frame);frame=0;last=0;}else if(state.playing&&!frame)frame=requestAnimationFrame(tick);}).observe($('stage'));
  document.addEventListener('visibilitychange',()=>{if(document.hidden){cancelAnimationFrame(frame);frame=0;last=0;}else if(state.playing&&state.visible&&!frame)frame=requestAnimationFrame(tick);});motion.addEventListener('change',()=>{if(motion.matches)pause();});
@@ -2744,6 +2859,19 @@ window.MasonryScene=MasonryScene;
   const h = (tag, cls, text) => { const e = document.createElement(tag); if (cls) e.className = cls; if (text != null) e.textContent = text; return e; };
   const href = p => (window.courseHref ? window.courseHref(p) : p);
   const fmt = (v, n = 0) => (Number.isFinite(v) ? (Math.abs(v) < Math.pow(10, -n) / 2 ? 0 : v).toFixed(n) : '—');
+
+  /** 外壳 CSS 里的三维区取值（浅色、深色各一份），传给嵌入的原版实验页。 */
+  function stageTones() {
+    const out = {};
+    for (const t of ['light', 'dark']) {
+      const probe = document.createElement('i'); probe.dataset.stageTone = t; probe.hidden = true;
+      document.body.append(probe);
+      const cs = getComputedStyle(probe), v = n => cs.getPropertyValue(n).trim();
+      out[t] = {bg: v('--stage-bg'), floor: v('--stage-floor'), shadow: v('--stage-shadow')};
+      probe.remove();
+    }
+    return out;
+  }
 
   function start(cfg) {
     const native = Boolean(cfg.native);
@@ -2784,8 +2912,11 @@ window.MasonryScene=MasonryScene;
     const loading = h('div', 'c2-loading'); loading.append(h('span', 'c2-spinner'), h('span', '', '正在载入三维模型…'));
     const tools = h('div', 'c2-tools');
     const card = h('div', 'c2-part'); card.hidden = true; card.setAttribute('role', 'status');
-    const hint = h('div', 'c2-hint');
-    view.append(loading, tools, card, hint);
+    const hint = h('div', 'c2-hint'); hint.setAttribute('aria-hidden', 'true');
+    const fs = h('button', 'c2-fs'); fs.type = 'button';
+    fs.innerHTML = '<svg class="c2-fs-in" viewBox="0 0 24 24" aria-hidden="true"><path d="M4 9V4h5M20 9V4h-5M4 15v5h5M20 15v5h-5"/></svg>'
+      + '<svg class="c2-fs-out" viewBox="0 0 24 24" aria-hidden="true"><path d="M9 4v5H4M15 4v5h5M9 20v-5H4M15 20v-5h5"/></svg>';
+    view.append(loading, tools, card, hint, fs);
     const strip = h('div', 'c2-strip');
     const transportBox = h('div', 'c2-transport');
     const readBox = h('div', 'c2-readouts');
@@ -2799,7 +2930,8 @@ window.MasonryScene=MasonryScene;
     const feedback = h('div', 'c2-feedback'); feedback.setAttribute('role', 'status'); feedback.setAttribute('aria-live', 'polite');
     const redo = h('button', 'c2-redo', '↺ 重来'); redo.type = 'button'; redo.title = '把这个工位恢复到开始的样子';
     const next = h('button', 'c2-btn c2-primary c2-next', '去下一站 →'); next.type = 'button';
-    panel.append(head, body);
+    const credit = h('div', 'c2-credit'); credit.hidden = true;
+    panel.append(head, body, credit);
     view.append(feedback);
     let toastTimer = 0;
     main.append(stageBox, panel);
@@ -2813,7 +2945,35 @@ window.MasonryScene=MasonryScene;
       if (cfg.redo === false) redo.hidden = true;
     }
 
-    let current = -1, ctx = null, frame = null, cleanup = [];
+    /* 全屏：整块三维区（三维视图 + 上方选择条 + 提示条）。进出全屏都补发 resize，Esc 退出。 */
+    const full = () => document.fullscreenElement === stageBox || stageBox.classList.contains('c2-full-fallback');
+    const relayout = () => { for (const t of [0, 80, 300]) setTimeout(() => { dispatchEvent(new Event('resize')); frame?.contentWindow?.postMessage({c2: 'cmd', op: 'resize'}, '*'); }, t); };
+    const syncFs = () => {
+      const on = full();
+      stageBox.classList.toggle('c2-full', on);
+      fs.setAttribute('aria-pressed', String(on));
+      fs.setAttribute('aria-label', on ? '退出全屏' : '全屏查看三维模型');
+      fs.title = on ? '退出全屏（Esc）' : '全屏';
+    };
+    const setFull = async on => {
+      if (on === full()) return;
+      if (document.fullscreenEnabled && stageBox.requestFullscreen) {
+        try { if (on) await stageBox.requestFullscreen(); else await document.exitFullscreen(); return; } catch { /* 改用铺满窗口 */ }
+      }
+      stageBox.classList.toggle('c2-full-fallback', on); syncFs(); relayout();
+    };
+    fs.addEventListener('click', () => setFull(!full()));
+    document.addEventListener('fullscreenchange', () => { syncFs(); relayout(); });
+    document.addEventListener('keydown', e => { if (e.key === 'Escape' && stageBox.classList.contains('c2-full-fallback')) setFull(false); });
+    syncFs();
+
+    /* 操作提示：只出现一次，第一次拖动、滚轮或几秒后淡出 */
+    let hintDone = false, hintTimer = 0;
+    const dismissHint = () => { if (hintDone) return; hintDone = true; clearTimeout(hintTimer); hint.classList.add('gone'); setTimeout(() => { hint.hidden = true; }, 700); };
+    for (const type of ['pointerdown', 'wheel']) view.addEventListener(type, dismissHint, {passive: true, capture: true});
+    window.addEventListener('blur', () => { if (document.activeElement === frame) dismissHint(); }); // 第二章：在 iframe 里的第一次操作
+
+    let current = -1, ctx = null, frame = null, cleanup = [], floorAll = () => {};
     const tabButtons = cfg.stations.map((s, i) => {
       const b = h('button', 'c2-station'); b.type = 'button'; b.setAttribute('role', 'tab');
       b.append(h('span', 'c2-num', String(i + 1)), h('span', 'c2-name', s.name), h('span', 'c2-check', '✓'));
@@ -2838,7 +2998,8 @@ window.MasonryScene=MasonryScene;
       if (d.type === 'ready' || (d.type === 'state' && ctx && !ctx.lab.ready)) { loading.hidden = true; sendTheme(); ctx?._ready(); }
       if (d.type === 'state') ctx?._state(d.data);
     });
-    const sendTheme = () => frame?.contentWindow?.postMessage({c2: 'cmd', op: 'theme', value: window.CourseTheme?.get?.() || 'light'}, '*');
+    // 主题和三维区底色一起传给原版实验页，嵌入的三维视图与外壳同一底色
+    const sendTheme = () => frame?.contentWindow?.postMessage({c2: 'cmd', op: 'theme', value: window.CourseTheme?.get?.() || 'light', stage: stageTones()}, '*');
     window.addEventListener('course-theme-change', sendTheme);
 
     // 原页面的控件始终留在文档里（原程序可能随时读写它们），换工位时先放回停放处
@@ -2857,8 +3018,12 @@ window.MasonryScene=MasonryScene;
       parkAll();
       body.replaceChildren(); clearTimeout(toastTimer); feedback.textContent = ''; feedback.className = 'c2-feedback';
       transportBox.replaceChildren(); readBox.replaceChildren(); tools.replaceChildren(); card.hidden = true;
-      hint.textContent = (s.note ? s.note + '　' : '') + (s.hint ?? cfg.hint ?? '拖动旋转 · 滚轮缩放');
-      hint.hidden = !hint.textContent;
+      if (!hintDone) {
+        hint.textContent = s.hint ?? cfg.hint ?? '拖动旋转 · 滚轮缩放';
+        hint.hidden = !hint.textContent;
+        clearTimeout(hintTimer); if (!hint.hidden) hintTimer = setTimeout(dismissHint, 9000);
+      }
+      credit.hidden = true; credit.replaceChildren();
       if (native) {
         if (!fromPage) cfg.select?.(s.id);
       } else {
@@ -2874,7 +3039,7 @@ window.MasonryScene=MasonryScene;
       syncTabs();
       // 原页面的渲染器按容器尺寸重新取景；布局稳定后再通知一次
       dispatchEvent(new Event('resize'));
-      if (native) for (const t of [60, 300, 900]) setTimeout(() => dispatchEvent(new Event('resize')), t);
+      if (native) for (const t of [60, 300, 900]) setTimeout(() => { dispatchEvent(new Event('resize')); floorAll(); }, t);
     }
     redo.addEventListener('click', () => { const i = current; current = -1; cfg.reset?.(cfg.stations[i].id); select(i); });
     next.addEventListener('click', () => select(Math.min(current + 1, cfg.stations.length - 1)));
@@ -2919,6 +3084,21 @@ window.MasonryScene=MasonryScene;
           card.replaceChildren(h('strong', '', name), h('span', '', desc || ''));
           const x = h('button', 'c2-x', '×'); x.type = 'button'; x.setAttribute('aria-label', '关闭'); x.onclick = () => { card.hidden = true; };
           card.append(x); card.hidden = false;
+        },
+        /** 模型来源与许可：面板最底下的 ⓘ，点开才显示。lines 为文字数组，link = {href, label}。 */
+        credit(lines, link) {
+          lines = [].concat(lines || []).filter(Boolean);
+          credit.replaceChildren(); credit.hidden = !lines.length;
+          if (!lines.length) return;
+          const btn = h('button', 'c2-credit-btn'); btn.type = 'button'; btn.setAttribute('aria-expanded', 'false');
+          btn.append(h('i', '', 'i'), document.createTextNode('模型来源'));
+          btn.title = lines.join('\n');
+          const pop = h('div', 'c2-credit-pop'); pop.hidden = true; pop.id = 'c2-credit-' + s.id;
+          btn.setAttribute('aria-controls', pop.id);
+          for (const l of lines) pop.append(h('p', '', l));
+          if (link?.href) { const a = h('a', '', (link.label || '许可证') + ' ↗'); a.href = link.href; a.target = '_blank'; a.rel = 'noopener'; pop.append(h('p')); pop.lastChild.append(a); }
+          btn.addEventListener('click', () => { pop.hidden = !pop.hidden; btn.setAttribute('aria-expanded', String(!pop.hidden)); });
+          credit.append(pop, btn);
         },
         /* —— 面板控件 —— */
         section(titleText, extra, into = body) {
@@ -3099,6 +3279,41 @@ window.MasonryScene=MasonryScene;
       return c;
     }
 
+    /* 字号下限（原地模式）：搬进外壳的原页面文字——面板、三维区里的浮层与 SVG 标注——不小于 12px，
+       面板里的段落不小于 13px。原页面按 1600×900 整页缩放设计，常有 7～11px 的小字，这里统一放大到可读、可投影的字号；
+       低价值的小字（英文小标、图号、重复的操作提示）由各任务 stations.css 直接隐藏。SVG 文字按屏幕上的实际大小计算。 */
+    const MIN_TEXT = 12, MIN_PARA = 13;
+    const floorText = root => {
+      if (!root?.querySelectorAll) return;
+      for (const el of [root, ...root.querySelectorAll('*')]) {
+        if (el.closest('.c2-parking, .c3-legacy, script, style')) continue;
+        if (![...el.childNodes].some(n => n.nodeType === 3 && n.textContent.trim())) continue;
+        const cs = getComputedStyle(el);
+        if (cs.display === 'none' || cs.position === 'absolute' && cs.clip !== 'auto' && /rect\(0/.test(cs.clip)) continue;
+        const size = parseFloat(cs.fontSize);
+        if (el instanceof SVGElement) {
+          const m = el.getScreenCTM?.(), k = m ? Math.hypot(m.a, m.b) : 1;
+          if (k > 0 && size * k < MIN_TEXT - .05) el.style.fontSize = (MIN_TEXT / k).toFixed(2) + 'px';
+          continue;
+        }
+        const min = el.tagName === 'P' && el.closest('.c2-panel') ? MIN_PARA : MIN_TEXT;
+        if (size < min - .05) el.style.setProperty('font-size', min + 'px', 'important');
+      }
+    };
+    if (native) {
+      // 观察者回调在本轮脚本结束、画面重绘之前执行：原页面每帧重写的读数也不会先以小字闪现
+      const mo = new MutationObserver(recs => {
+        const seen = new Set();
+        for (const r of recs) for (const n of r.addedNodes) {
+          const el = n.nodeType === 1 ? n : n.parentElement;
+          if (el && el.isConnected && !seen.has(el)) { seen.add(el); floorText(el); }
+        }
+      });
+      for (const root of [panel, stageBox]) mo.observe(root, {childList: true, subtree: true});
+      window.addEventListener('course-theme-change', () => floorText(stageBox));
+      floorAll = () => { floorText(panel); floorText(stageBox); };
+    }
+
     /* 原地模式：定时读原页面状态；原页面自己切换了活动时，工位条跟着变 */
     if (native) {
       setInterval(() => {
@@ -3116,7 +3331,7 @@ window.MasonryScene=MasonryScene;
     };
     window.addEventListener('hashchange', () => select(fromHash(), true));
     select(fromHash(), true);
-    window.c2Lab = {select, get ctx() { return ctx; }, get frame() { return frame; }, get current() { return current; }};
+    window.c2Lab = {select, setFull, get ctx() { return ctx; }, get frame() { return frame; }, get current() { return current; }};
   }
 
   window.LabShell = {
@@ -3157,7 +3372,7 @@ window.MasonryScene=MasonryScene;
       document.documentElement.dataset.c3Task = layout.task || '';
       LabShell.native({
         chapter: {title: chapter.title, href: chapter.href},
-        tasks: chapter.tasks || [], taskNav: layout.nav, hint: '', progressKey: layout.nav,
+        tasks: chapter.tasks || [], taskNav: layout.nav, hint: '拖动旋转 · 滚轮缩放', progressKey: layout.nav,
         ...cfg,
       });
     },

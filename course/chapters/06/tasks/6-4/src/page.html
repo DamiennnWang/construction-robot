@@ -5,13 +5,13 @@
 <header class="topbar">
 <a class="brand" href="../README.md" aria-label="智能建造项目目录"><span class="brand-mark" aria-hidden="true"><i></i><i></i><i></i><i></i></span><span>智能建造<small>FIELD STUDIO</small></span></a>
 <div class="project-heading"><span>实训项目 06.04</span><h1>室内喷涂工坊</h1></div><div class="session-tag"><i></i>项目进行中</div>
-<div class="header-actions"><button id="reset" class="quiet">重新开工</button><button id="help" class="quiet">操作指南</button><button id="theme" class="icon-button" aria-label="切换明暗主题" title="切换明暗主题">◐</button><button id="fullscreen" class="icon-button" aria-label="全屏作业" title="全屏作业">⛶</button></div>
+<div class="header-actions"><button id="reset" class="quiet">重新开工</button><button id="help" class="quiet">操作指南</button><button id="theme" class="icon-button" aria-label="切换明暗主题" title="切换明暗主题">◐</button></div>
 </header>
 <main class="workspace">
 <section class="world" aria-label="喷涂作业现场">
 <div class="scene-shell">
 <div id="scene" tabindex="0" role="application" aria-label="三维喷涂作业现场，拖动旋转、滚轮缩放，方向键旋转，加减键缩放"></div>
-<div class="scene-top"><div class="stage-badge"><i></i><span id="stageLabel">01 / 规划路线</span><span class="stage-divider"></span><span id="stageHint">把方案带到墙面上</span></div><div class="view-switch" aria-label="观察视角"><button data-view="orbit" class="active" aria-pressed="true">立体</button><button data-view="front" aria-pressed="false">正视</button><button data-view="top" aria-pressed="false">俯视</button><button data-view="nozzle" aria-pressed="false">喷头</button></div></div>
+<div class="scene-top"><div class="stage-badge"><i></i><span id="stageLabel">01 / 规划路线</span><span class="stage-divider"></span><span id="stageHint">把方案带到墙面上</span></div><div class="view-switch" aria-label="观察视角"><button data-view="orbit" class="active" aria-pressed="true">全景</button><button data-view="front" aria-pressed="false">正视</button><button data-view="top" aria-pressed="false">俯视</button><button data-view="nozzle" aria-pressed="false">喷头</button></div></div>
 <div class="mission-card"><div class="mission-eyebrow"><span class="wall-dot"></span>WALL A <span>3.6 × 2.4 m</span></div><h2 id="missionTitle">让每一条路径都有交叠</h2><p id="missionHint">调节喷距和道间距，为这面墙规划涂装路线。</p><div class="mission-foot"><span class="small-window" aria-hidden="true"></span>窗洞 800 × 800 mm · 保留保护区</div></div>
 <div class="scene-left-tools"><label class="hud-toggle"><input type="checkbox" id="pathToggle" checked><span>作业路径</span></label><label class="hud-toggle"><input type="checkbox" id="inspectToggle"><span>质检视图</span></label></div>
 <div id="inspectionLegend" class="inspection-legend" hidden><span><i style="background:#efad57"></i>漏喷</span><span><i style="background:#efbd6c"></i>涂层偏薄</span><span><i style="background:#a17ac7"></i>涂层偏厚</span><span><i style="background:#e8505e"></i>窗面受喷</span><span><i style="background:#4fbaa9"></i>厚薄合适</span></div>

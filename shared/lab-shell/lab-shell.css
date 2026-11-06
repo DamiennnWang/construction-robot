@@ -16,6 +16,17 @@ html[data-theme="dark"] {
   --shadow-sm:0 1px 2px rgba(0,0,0,.25); --shadow:0 1px 2px rgba(0,0,0,.25), 0 8px 24px rgba(0,0,0,.28); --shadow-lg:0 12px 34px rgba(0,0,0,.45);
   --page-bg:linear-gradient(180deg,#112035 0%,#0d1a2b 100%);
 }
+/* 三维区（全课程统一）：近白中性灰底，模型下方柔和接触阴影；也是印刷教材截图的底色。
+   --stage-floor 给场景里的真实地面（桥面、楼板、房间）用，与底色衔接；--stage-ink/chip 是三维区里的小字和浮签。
+   shared/lab-shell/stage-tone.js 把这些值交给三维场景（第二章经 postMessage 传进嵌入页），改值只改这里及该文件的同值后备。 */
+:root, [data-stage-tone="light"] {
+  --stage-bg:#f5f6f8; --stage-floor:#eceef1; --stage-shadow:rgba(28,36,48,.20);
+  --stage-ink:#4f5b6b; --stage-chip:rgba(255,255,255,.86); --stage-chip-line:rgba(25,40,60,.10);
+}
+html[data-theme="dark"], [data-stage-tone="dark"] {
+  --stage-bg:#1a1f27; --stage-floor:#222833; --stage-shadow:rgba(0,0,0,.55);
+  --stage-ink:#b8c3d1; --stage-chip:rgba(30,36,46,.86); --stage-chip-line:rgba(255,255,255,.10);
+}
 * { box-sizing:border-box; }
 [hidden] { display:none !important; }
 html, body { margin:0; height:100%; }
@@ -80,11 +91,11 @@ html[data-theme="dark"] .c2-station[aria-selected="true"] { background:linear-gr
   display:flex; flex-direction:column; min-height:0; overflow:hidden; border-radius:16px;
   border:1px solid var(--hair); background:var(--course-surface); box-shadow:var(--shadow);
 }
-.c2-view { position:relative; flex:1 1 auto; min-height:0; background:var(--course-bg); }
+.c2-view { position:relative; flex:1 1 auto; min-height:0; background:var(--stage-bg); }
 .c2-frame { position:absolute; inset:0; width:100%; height:100%; border:0; display:block; background:transparent; }
 .c2-loading {
   position:absolute; inset:0; display:flex; flex-direction:column; align-items:center; justify-content:center; gap:12px;
-  color:var(--course-muted); font-size:15px; background:var(--course-bg); pointer-events:none; z-index:1;
+  color:var(--course-muted); font-size:15px; background:var(--stage-bg); pointer-events:none; z-index:1;
 }
 .c2-spinner { width:30px; height:30px; border-radius:50%; border:3px solid var(--blue-soft); border-top-color:var(--course-accent); animation:c2-spin .8s linear infinite; }
 @keyframes c2-spin { to { transform:rotate(360deg); } }
@@ -102,12 +113,31 @@ html[data-theme="dark"] .c2-station[aria-selected="true"] { background:linear-gr
 }
 .c2-toolseg button { height:26px; font-size:13px; padding:0 10px; }
 .c2-hint {
-  position:absolute; right:12px; bottom:10px; color:var(--course-muted); font-size:12px; pointer-events:none; z-index:2;
-  max-width:60%; white-space:nowrap; overflow:hidden; text-overflow:ellipsis;
-  background:color-mix(in srgb, var(--course-surface) 72%, transparent); padding:2px 10px; border-radius:10px;
+  position:absolute; left:50%; top:14px; transform:translateX(-50%); z-index:2; pointer-events:none;
+  max-width:min(80%,560px); white-space:nowrap; overflow:hidden; text-overflow:ellipsis;
+  padding:5px 14px; border-radius:999px; font-size:13px; line-height:1.4; color:var(--stage-ink);
+  background:var(--stage-chip); border:1px solid var(--stage-chip-line); backdrop-filter:blur(6px);
+  transition:opacity .6s ease, transform .6s ease;
 }
+.c2-hint.gone { opacity:0; transform:translate(-50%,-6px); }
+
+/* 全屏：外壳统一一个按钮，钉在三维区右上角；全屏的是整块三维区（含上方选择条和提示条） */
+.c2-fs {
+  position:absolute; right:12px; top:12px; z-index:5; width:34px; height:34px; padding:0; display:grid; place-items:center;
+  border-radius:10px; border:1px solid var(--stage-chip-line); background:var(--stage-chip); backdrop-filter:blur(8px);
+  color:var(--course-ink); box-shadow:var(--shadow-sm);
+}
+.c2-fs:hover { color:var(--course-accent); border-color:var(--course-accent); }
+.c2-fs svg { width:18px; height:18px; fill:none; stroke:currentColor; stroke-width:2; stroke-linecap:round; stroke-linejoin:round; }
+.c2-fs .c2-fs-out, .c2-stage.c2-full .c2-fs .c2-fs-in { display:none; }
+.c2-stage.c2-full .c2-fs .c2-fs-out { display:block; }
+.c2-stage:fullscreen { border:0; border-radius:0; box-shadow:none; width:100%; height:100%; }
+.c2-stage:fullscreen::backdrop { background:var(--stage-bg); }
+/* 浏览器不支持全屏接口时：铺满窗口 */
+.c2-stage.c2-full-fallback { position:fixed !important; inset:0 !important; z-index:2147483000 !important; width:auto !important; height:auto !important; border-radius:0; border:0; }
+
 .c2-part {
-  position:absolute; right:12px; top:12px; z-index:3; width:min(300px,42%); padding:11px 34px 11px 13px; border-radius:12px;
+  position:absolute; right:12px; top:56px; z-index:3; width:min(300px,42%); padding:11px 34px 11px 13px; border-radius:12px;
   background:var(--course-surface); border:1px solid var(--hair); border-left:4px solid var(--focus);
   box-shadow:var(--shadow-lg); display:flex; flex-direction:column; gap:3px;
 }
@@ -156,7 +186,7 @@ html[data-theme="dark"] .c2-play { background:linear-gradient(135deg,#8abaff,#5f
 }
 html[data-theme="dark"] .c2-head-num { color:#0f1d2e; background:linear-gradient(135deg,#8abaff,#5f97ea); }
 .c2-panel-head h2 { margin:0; font-size:19px; font-weight:800; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; }
-.c2-panel-head p { margin:6px 0 0; color:var(--course-muted); font-size:13.5px; line-height:1.55; }
+.c2-panel-head p { margin:6px 0 0; color:var(--course-muted); font-size:14px; line-height:1.55; }
 .c2-redo { height:30px; padding:0 11px; border-radius:15px; border:1px solid var(--hair); background:var(--surface-2); color:var(--course-muted); font-size:12.5px; white-space:nowrap; }
 .c2-redo:hover { color:var(--course-accent); border-color:var(--course-accent); }
 .c2-panel-body { display:flex; flex-direction:column; gap:14px; }
@@ -272,6 +302,23 @@ html[data-theme="dark"] .c2-ch-go { color:#0f1d2e; }
 }
 html[data-theme="dark"] .c2-banner { background:#3b2d16; border-color:#6b5124; color:#f6d38f; }
 .c2-quiet { color:var(--course-muted); }
+
+/* 模型来源与许可：面板最底下一个 ⓘ，点开才显示，不占正文 */
+.c2-credit { position:relative; margin-top:auto; display:flex; justify-content:flex-end; }
+.c2-credit-btn {
+  height:26px; padding:0 10px; border-radius:13px; border:1px solid transparent; background:none;
+  color:var(--course-muted); font-size:12.5px; display:inline-flex; align-items:center; gap:5px;
+}
+.c2-credit-btn:hover, .c2-credit-btn[aria-expanded="true"] { color:var(--course-accent); border-color:var(--hair); background:var(--surface-2); }
+.c2-credit-btn i { font-style:normal; display:grid; place-items:center; width:16px; height:16px; border-radius:50%; border:1.5px solid currentColor; font-size:11px; font-weight:800; line-height:1; }
+.c2-credit-pop {
+  position:absolute; right:0; bottom:32px; z-index:6; width:min(320px,100%); padding:10px 12px; border-radius:12px;
+  background:var(--course-surface); border:1px solid var(--hair); box-shadow:var(--shadow-lg);
+  font-size:13px; line-height:1.55; color:var(--course-ink);
+}
+.c2-credit-pop p { margin:0; }
+.c2-credit-pop p + p { margin-top:4px; }
+.c2-credit-pop a { color:var(--course-accent); }
 
 /* 提示条：在三维区下方弹出，几秒后收起 */
 .c2-feedback {

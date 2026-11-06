@@ -99,3 +99,6 @@ html.lab-native body[data-stage="done"] .c2-panel :is(#review-closeup, .action-g
 
 /* 面板末尾的一句范围说明 */
 html.lab-native .c2-panel .c52-scope { margin:2px 0 0; padding-top:10px; border-top:1px solid var(--hair); font-size:11.5px; line-height:1.6; color:var(--course-muted); }
+
+/* 看法按钮放到三维区左上角（右上角是全屏按钮） */
+html.lab-native #scene-shell .scene-top { justify-content:flex-start; right:60px; }

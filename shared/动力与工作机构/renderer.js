@@ -27,7 +27,7 @@ window.createChapterRenderer = options => {
       if(!scissor)this.clear();
       const vp=viewport||{x:0,y:0,w:width,h:height},dark=document.documentElement.dataset.theme==='dark';
       ctx.save();ctx.beginPath();ctx.rect(vp.x,vp.y,vp.w,vp.h);ctx.clip();
-      ctx.fillStyle=dark?'#14263c':'#edf4fc';ctx.fillRect(vp.x,vp.y,vp.w,vp.h);
+      ctx.fillStyle=window.StageTone?.bg()||(dark?'#1a1f27':'#f5f6f8');ctx.fillRect(vp.x,vp.y,vp.w,vp.h);
       scene.updateMatrixWorld(true);camera.updateMatrixWorld(true);const shapes=[];
       scene.traverseVisible(o=>{
         if(!o.isMesh||o.isInstancedMesh)return;

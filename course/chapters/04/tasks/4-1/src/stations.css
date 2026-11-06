@@ -85,3 +85,6 @@ html.lab-native .c2-panel .gravity-control > span { padding-left:22px; margin:0;
   html.lab-native .c2-panel .reading { padding:6px 10px; }
   html.lab-native .c2-panel .reading strong { font-size:21px; }
 }
+
+/* 三维区右上角的状态读数让出全屏按钮的位置 */
+html.lab-native #viewport .scene-stamp { right:60px; }

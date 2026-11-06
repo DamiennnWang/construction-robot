@@ -73,7 +73,7 @@
 
   const css = `
     html.c2-embed, html.c2-embed body { overflow:hidden !important; margin:0 !important; padding:0 !important; min-width:0 !important; min-height:0 !important; }
-    html.c2-embed body { background:var(--course-bg, #edf4fc) !important; }
+    html.c2-embed body { background:var(--stage-bg, #f5f6f8) !important; }
     html.c2-embed .c2-embed-hide { display:none !important; }
     html.c2-embed [data-c2-path] { transform:none !important; filter:none !important; contain:none !important; overflow:visible !important; }
     html.c2-embed [data-c2-keep="main"] {
@@ -112,14 +112,8 @@
       }
     }
     for (const sel of cfg.hideInside || []) main.querySelectorAll(sel).forEach(e => e.classList.add('c2-embed-hide'));
-    // 画布多为透明：沿用原页面里离它最近的底色，避免露出被隐藏布局的残影
-    for (const k of keeps) {
-      for (let n = k; n && n !== document.documentElement; n = n.parentElement) {
-        const cs = getComputedStyle(n);
-        const solid = cs.backgroundImage !== 'none' || !/rgba\(.*,\s*0\)|transparent/.test(cs.backgroundColor);
-        if (solid) { k.style.setProperty('background', cs.background, 'important'); break; }
-      }
-    }
+    // 画布多为透明：铺上外壳统一的三维区底色（--stage-bg 由外壳传入），不沿用原页面的网格、渐变底
+    for (const k of keeps) k.style.setProperty('background', 'var(--stage-bg, #f5f6f8)', 'important');
     // 隐藏页面级的浮动按钮（深色模式切换等）
     document.querySelectorAll('body > button, body > .toast, #course-theme-toggle').forEach(e => { if (!e.dataset.c2Keep) e.classList.add('c2-embed-hide'); });
     return true;
@@ -147,7 +141,15 @@
       else if (d.op === 'set') setValue($(d.sel), d.value);
       else if (d.op === 'call') call(d.path, d.args);
       else if (d.op === 'event') document.dispatchEvent(new Event(d.name));
-      else if (d.op === 'theme') window.CourseTheme?.set?.(d.value);
+      else if (d.op === 'theme') {
+        if (d.stage) {
+          // 外壳的三维区取值：CSS 变量给页面样式用，StageTone 给三维场景用；再按主题重绘
+          const t = d.value === 'dark' ? 'dark' : 'light', v = d.stage[t] || {};
+          for (const [k, val] of Object.entries(v)) if (val) document.documentElement.style.setProperty('--stage-' + k, val);
+          window.StageTone?.use(d.stage);
+        }
+        window.CourseTheme?.set?.(d.value);
+      }
       else if (d.op === 'resize') dispatchEvent(new Event('resize'));
     } catch (err) { console.warn('[c2 bridge]', d, err); }
     setTimeout(send, 30);

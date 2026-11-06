@@ -140,7 +140,7 @@
     task: '5-2', title: '钢筋绑扎机器人',
     stage: EL.stage,
     stations: STATIONS,
-    hint: '',
+    hint: '拖动旋转 · 滚轮缩放',
     current() {
       const s = hero()?.state; if (!s) return null;
       // 复核未解锁时留在“人工复核”说明页；四点绑完后“对点绑扎”保持在原工位，不被页面拉走

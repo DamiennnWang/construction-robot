@@ -12,3 +12,9 @@
 .c2-panel .panel-section .button-pair { display:flex; gap:6px; flex-wrap:wrap; }
 .c2-panel .panel-section :is(.secondary) { height:32px; padding:0 12px; border-radius:10px; border:1px solid var(--hair); background:var(--course-surface); color:var(--course-ink); cursor:pointer; }
 .c2-panel .panel-section .text-link { border:0; background:none; color:var(--course-accent); font-weight:600; cursor:pointer; padding:0; }
+
+/* 三维区：去掉图号“FIG. 03.04”、型号“EDU / 6R”、工具柜英文编号和重复的操作提示；看法切换放到左上角 */
+html.lab-native :is(.stage, .c2-stage-top) :is(.stage-bar .mono, #figureName, .stage-topline > .mono, .tool-card small) { display:none !important; }
+html.lab-native .stage .stage-caption { display:none !important; } /* 只剩重复的操作提示和“三维教学模型”字样 */
+html.lab-native .stage .stage-bar { justify-content:flex-start; }
+html.lab-native .stage .view-controls button { font-size:13px; padding:4px 10px; }

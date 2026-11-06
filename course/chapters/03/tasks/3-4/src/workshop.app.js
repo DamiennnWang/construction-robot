@@ -175,7 +175,7 @@
   $('#home').onclick=()=>{stop();view.setView('iso');closeup(false);S.q=M.home.slice();S.angle=S.angleTarget=0;view.clearTraces();if(S.tab==='calibrate')movePose(S.pose);if(S.tab==='pivot')setPivotAngle(0,true);ui();notice('已复位机械臂与视角。');};
   $('#stop').onclick=()=>stop(true);
   function theme(value){const dark=value==='dark';document.documentElement.dataset.theme=dark?'dark':'light';$('#theme').setAttribute('aria-label',dark?'切换浅色主题':'切换深色主题');text('theme',dark?'☀':'☾');view.setTheme(dark?'dark':'light');run();}
-  CourseTheme.register(theme);$('#fullscreen').onclick=async()=>{try{if(document.fullscreenElement)await document.exitFullscreen();else await document.documentElement.requestFullscreen();}catch{notice('当前浏览器不支持全屏，可使用浏览器的全屏功能。');}};
+  CourseTheme.register(theme);
   $('#help').onclick=$('#about').onclick=()=>{stop();$('#helpDialog').showModal();};$('#closeHelp').onclick=()=>$('#helpDialog').close();
   window.addEventListener('keydown',e=>{const typing=/INPUT|SELECT|TEXTAREA/.test(e.target.tagName);if(e.code==='Space'&&!typing&&!$('#helpDialog').open){e.preventDefault();stop(true);}if(!typing&&!e.ctrlKey&&!e.altKey&&!e.metaKey&&!$('#helpDialog').open&&/^[1-6]$/.test(e.key)){e.preventDefault();setTool(ids[+e.key-1]);}if(e.key==='Escape')stop();});
   new IntersectionObserver(entries=>{visible=entries.at(-1).isIntersecting;if(visible)run();else if(frameId){cancelAnimationFrame(frameId);frameId=0;last=0;}},{rootMargin:'100px'}).observe($('#viewport'));

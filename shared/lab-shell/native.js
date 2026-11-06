@@ -29,7 +29,7 @@
       document.documentElement.dataset.c3Task = layout.task || '';
       LabShell.native({
         chapter: {title: chapter.title, href: chapter.href},
-        tasks: chapter.tasks || [], taskNav: layout.nav, hint: '', progressKey: layout.nav,
+        tasks: chapter.tasks || [], taskNav: layout.nav, hint: '拖动旋转 · 滚轮缩放', progressKey: layout.nav,
         ...cfg,
       });
     },

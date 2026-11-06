@@ -69,7 +69,7 @@
  $('info')?.addEventListener('close',()=>{app.paused=helpPause;app.study.playing=helpPlaying;dirty=true});
  $('info')?.addEventListener('click',e=>{if(e.target===$('info'))$('info').close()});
  CourseTheme.register(theme => { if($('fallback'))$('fallback').dataset.theme=theme; scene?.setTheme?.(theme==='dark'); });
- bind('fullscreen',()=>{if(document.fullscreenElement)document.exitFullscreen?.();else document.documentElement.requestFullscreen?.().catch(()=>feedback('当前浏览器不支持全屏，可以直接放大窗口。'))});
+ 
  bind('mission-toggle',()=>{$('mission-card')?.classList.toggle('is-collapsed');$('mission-toggle')?.setAttribute('aria-expanded',!$('mission-card')?.classList.contains('is-collapsed'))});
  if(matchMedia('(max-width:600px)').matches){$('mission-card')?.classList.add('is-collapsed');$('mission-toggle')?.setAttribute('aria-expanded','false')}
  document.addEventListener('keydown',e=>{

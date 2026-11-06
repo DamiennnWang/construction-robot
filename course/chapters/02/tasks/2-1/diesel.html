@@ -253,7 +253,68 @@ html[data-c2=mechanisms] .viewbar { margin: 6px 12px; min-height: 0; }
   html[data-c2=mechanisms] .labs[data-presentation=single] .c2-control-column { height: auto; }
   .c2-mechanism-transport { flex-wrap: wrap; }
 }
-</style><script>/* Optional Canvas 2D projection of the same articulated scene when WebGL is unavailable.
+</style><script>/* 三维区底色（全课程统一）：近白中性灰，适合印刷教材截图；深色模式用深石墨色。
+ * 取值以 shared/lab-shell/lab-shell.css 里的 --stage-bg / --stage-floor / --stage-shadow 为准（深浅色一起切换）；
+ * 页面样式还没载入时（运行时才挂外壳的页面、第二章被嵌入前的原版实验页）用下面同值的后备。
+ * 用法：StageTone.bg() → '#f5f6f8'；StageTone.color(THREE) → THREE.Color；
+ *       StageTone.paint(scene, THREE) 设底色并让雾跟着变；StageTone.contactShadow(THREE, {size}) 模型下方的柔和接触阴影。
+ * 第二章：原版实验页被嵌入时，外壳把自己的取值经 postMessage 传进来（embed-bridge.js 调 StageTone.use）。
+ */
+(() => {
+  'use strict';
+  if (window.StageTone) return;
+  const FALLBACK = {
+    light: {bg: '#f5f6f8', floor: '#eceef1', shadow: 'rgba(28,36,48,.20)'},
+    dark: {bg: '#1a1f27', floor: '#222833', shadow: 'rgba(0,0,0,.55)'},
+  };
+  const root = document.documentElement;
+  let cache = null, override = null;
+  const theme = () => (root.dataset.theme === 'dark' ? 'dark' : 'light');
+  const read = () => {
+    const t = theme(), f = FALLBACK[t], cs = getComputedStyle(root);
+    const v = n => cs.getPropertyValue(n).trim();
+    return {theme: t, bg: v('--stage-bg') || f.bg, floor: v('--stage-floor') || f.floor, shadow: v('--stage-shadow') || f.shadow, ...(override?.[t] || {})};
+  };
+  const get = () => (cache && cache.theme === theme() ? cache : (cache = read()));
+  addEventListener('course-theme-change', () => { cache = null; });
+
+  window.StageTone = {
+    get,
+    bg: () => get().bg,
+    floor: () => get().floor,
+    /** 底色的 THREE.Color（传入页面自己的 THREE，模块化页面也能用）。 */
+    color: (T = window.THREE, key = 'bg') => new T.Color(get()[key]),
+    /** 设场景底色，雾（若有）随底色。返回 scene 便于链式调用。 */
+    paint(scene, T = window.THREE) {
+      if (!scene) return scene;
+      const c = get().bg;
+      if (scene.background?.isColor) scene.background.set(c); else scene.background = new T.Color(c);
+      if (scene.fog?.color) scene.fog.color.set(c);
+      return scene;
+    },
+    /** 模型下方的柔和接触阴影：一张径向渐变贴图的平面（不受光照影响，深浅色自动换）。
+     *  size 为直径（场景单位），up 为 'y' 或 'z'（哪个轴朝上）。返回 Mesh，自己 position 到模型脚下。 */
+    contactShadow(T = window.THREE, {size = 1, up = 'y', strength = 1} = {}) {
+      const c = document.createElement('canvas'); c.width = c.height = 128;
+      const g = c.getContext('2d'), grad = g.createRadialGradient(64, 64, 0, 64, 64, 64);
+      grad.addColorStop(0, 'rgba(0,0,0,1)'); grad.addColorStop(.45, 'rgba(0,0,0,.55)'); grad.addColorStop(1, 'rgba(0,0,0,0)');
+      g.fillStyle = grad; g.fillRect(0, 0, 128, 128);
+      const tex = new T.CanvasTexture(c);
+      const mat = new T.MeshBasicMaterial({map: tex, color: 0x000000, transparent: true, depthWrite: false, toneMapped: false});
+      const mesh = new T.Mesh(new T.PlaneGeometry(size, size), mat);
+      if (up === 'y') mesh.rotation.x = -Math.PI / 2;
+      mesh.renderOrder = -1; mesh.userData.contactShadow = true;
+      const tone = () => { mat.opacity = (theme() === 'dark' ? .5 : .16) * strength; };
+      tone(); addEventListener('course-theme-change', tone);
+      return mesh;
+    },
+    /** 外部指定取值（第二章嵌入时由外壳传入）；传 null 取消。 */
+    use(values) { override = values; cache = null; },
+    refresh() { cache = null; return get(); },
+  };
+})();
+
+/* Optional Canvas 2D projection of the same articulated scene when WebGL is unavailable.
  * Component silhouettes preserve the original state/kinematics; no lighting or clipping.
  */
 window.createChapterRenderer = options => {
@@ -282,7 +343,7 @@ window.createChapterRenderer = options => {
       if(!scissor)this.clear();
       const vp=viewport||{x:0,y:0,w:width,h:height},dark=document.documentElement.dataset.theme==='dark';
       ctx.save();ctx.beginPath();ctx.rect(vp.x,vp.y,vp.w,vp.h);ctx.clip();
-      ctx.fillStyle=dark?'#14263c':'#edf4fc';ctx.fillRect(vp.x,vp.y,vp.w,vp.h);
+      ctx.fillStyle=window.StageTone?.bg()||(dark?'#1a1f27':'#f5f6f8');ctx.fillRect(vp.x,vp.y,vp.w,vp.h);
       scene.updateMatrixWorld(true);camera.updateMatrixWorld(true);const shapes=[];
       scene.traverseVisible(o=>{
         if(!o.isMesh||o.isInstancedMesh)return;
@@ -818,7 +879,7 @@ const partInfo=[
 let renderer;
 try{renderer=window.createChapterRenderer({antialias:true,alpha:true,powerPreference:'high-performance'});}catch(e){$('loading').className='error';$('loading').textContent='三维视图暂不可用。请在启用硬件加速的 Chrome 或 Edge 中打开此 HTML。';document.querySelectorAll('.controls button,.controls input').forEach(x=>x.disabled=true);return;}
 renderer.setPixelRatio(Math.min(devicePixelRatio,2));renderer.setClearColor(0xf5f8fd,0);renderer.outputColorSpace=THREE.SRGBColorSpace;renderer.toneMapping=THREE.ACESFilmicToneMapping;renderer.toneMappingExposure=1.25;renderer.localClippingEnabled=true;renderer.shadowMap.enabled=true;renderer.shadowMap.type=THREE.PCFSoftShadowMap;$('viewport').prepend(renderer.domElement);$('loading').remove();
-const scene=new THREE.Scene();scene.fog=new THREE.Fog(0xf5f8fd,22,50);
+const scene=new THREE.Scene();scene.fog=new THREE.Fog(window.StageTone?StageTone.bg():0xf5f8fd,22,50);
 const camera=new THREE.PerspectiveCamera(36,1,.1,100);const engine=new THREE.Group();scene.add(engine);
 const hemi=new THREE.HemisphereLight(0xedf5ff,0x60718a,2.4);scene.add(hemi);
 const key=new THREE.DirectionalLight(0xfff6df,4.4);key.position.set(-5,10,7);key.castShadow=true;key.shadow.mapSize.set(1024,1024);key.shadow.camera.left=-8;key.shadow.camera.right=8;key.shadow.camera.top=10;key.shadow.camera.bottom=-7;key.shadow.normalBias=.025;key.shadow.bias=-.00015;scene.add(key);
@@ -949,7 +1010,7 @@ function resize(){const r=$('viewport').getBoundingClientRect();if(r.width<1||r.
 let last=performance.now(),elapsed=0;function frame(now){requestAnimationFrame(frame);const visualDt=Math.min((now-last)/1000,.25),dt=Math.min(visualDt,.1);last=now;if(document.hidden)return;frameDelta=dt;elapsed+=dt;const diff=state.targetExplode-state.explode;if(Math.abs(diff)>.0003){state.explode+=diff*(1-Math.exp(-visualDt*5));if(Math.abs(state.targetExplode-state.explode)<.001){state.explode=state.targetExplode;if(state.explode===0){state.running=state.resumeAfterExplode&&!(state.mode>1&&multi.apart());state.resumeAfterExplode=false;}updatePlayUI();}}
 if(state.running&&state.explode<.002&&state.targetExplode===0&&!(state.mode>1&&multi.apart()))state.angle=(state.angle+dt*180*state.speed)%720;const installDiff=state.targetInstallation-state.installation;state.installation+=installDiff*(1-Math.exp(-visualDt*2.7));if(Math.abs(installDiff)<.001)state.installation=state.targetInstallation;
 const ins=state.installation;engine.scale.setScalar(1-ins*.76);engine.position.set(-1.5*ins,.95*ins,0);clip.constant=state.mode>1?state.cutPos*1.8:state.cutPos*1.25*(1-ins*.76)-clip.normal.dot(engine.position);excavator.update(dt,{amount:ins,running:state.running,speed:state.speed,xray:$('xrayToggle').checked,tracks:state.tracks,direction:state.driveDir,engineAngle:state.angle,smoke:state.effects});updateMechanism(elapsed);if(focusActive&&state.selected)focusGoal=partCameraGoal(state.selected);updateCamera(visualDt);updateSoundAndMotion();renderer.render(scene,camera);if(!frame.lastDiagnostic||now-frame.lastDiagnostic>500){frame.lastDiagnostic=now;let diagnostic=$('modelDiagnostics');if(!diagnostic){diagnostic=document.createElement('output');diagnostic.id='modelDiagnostics';diagnostic.hidden=true;document.body.append(diagnostic);}diagnostic.textContent=JSON.stringify({state:{mode:state.mode,angle:state.angle,running:state.running,explode:state.explode,cut:state.cut,selected:state.selected,observed:state.observed},multi:state.mode>1?multi.diagnostics(state.angle):null,render:{calls:renderer.info.render.calls,triangles:renderer.info.render.triangles,frameMs:Math.round(visualDt*1000)}});}}
-function setTheme(theme){state.theme=theme;document.documentElement.dataset.theme=theme;const dark=theme==='dark';document.querySelector('meta[name="theme-color"]').content=dark?'#0b101a':'#f5f8fd';$('lightTheme').classList.toggle('active',!dark);$('darkTheme').classList.toggle('active',dark);$('lightTheme').setAttribute('aria-pressed',String(!dark));$('darkTheme').setAttribute('aria-pressed',String(dark));scene.fog.color.setHex(dark?0x0b101a:0xf5f8fd);hemi.intensity=dark?1.75:2.4;key.intensity=dark?3.4:4.4;grid.material.color.setHex(dark?0x3c526d:0xffffff);grid.material.opacity=dark?.27:.33;baseRing.material.color.setHex(dark?0x304565:0xb5c9e4);ground.material.opacity=dark?.28:.12;ground.material.color.setHex(dark?0x000000:0x536e91);for(const m of selectables){if(m.userData.materialKey==='shell')m.material.color.setHex(dark?0x43668e:0x7194ba);}effects.setTheme(theme);multi.theme(dark);}
+function setTheme(theme){state.theme=theme;document.documentElement.dataset.theme=theme;const dark=theme==='dark';document.querySelector('meta[name="theme-color"]').content=dark?'#0b101a':'#f5f8fd';$('lightTheme').classList.toggle('active',!dark);$('darkTheme').classList.toggle('active',dark);$('lightTheme').setAttribute('aria-pressed',String(!dark));$('darkTheme').setAttribute('aria-pressed',String(dark));if(window.StageTone)scene.fog.color.set(StageTone.bg());else scene.fog.color.setHex(dark?0x0b101a:0xf5f8fd);hemi.intensity=dark?1.75:2.4;key.intensity=dark?3.4:4.4;grid.material.color.setHex(dark?0x3c526d:0xffffff);grid.material.opacity=dark?.27:.33;baseRing.material.color.setHex(dark?0x304565:0xb5c9e4);ground.material.opacity=dark?.28:.12;ground.material.color.setHex(dark?0x000000:0x536e91);for(const m of selectables){if(m.userData.materialKey==='shell')m.material.color.setHex(dark?0x43668e:0x7194ba);}effects.setTheme(theme);multi.theme(dark);}
 CourseTheme.register(setTheme);
 document.querySelectorAll('[data-fx-angle]').forEach(b=>b.onclick=()=>{setExplosion(0);state.cut=true;state.effects=true;$('cutToggle').checked=$('effectsToggle').checked=true;updateClip();seekLocal(+b.dataset.fxAngle);});
 document.querySelectorAll('[data-angle]').forEach(b=>b.onclick=()=>seekLocal(+b.dataset.angle));
@@ -1241,7 +1302,7 @@ window.engineLab={getState:()=>({...state}),setAngle:seek,setEngine:chooseEngine
 
   const css = `
     html.c2-embed, html.c2-embed body { overflow:hidden !important; margin:0 !important; padding:0 !important; min-width:0 !important; min-height:0 !important; }
-    html.c2-embed body { background:var(--course-bg, #edf4fc) !important; }
+    html.c2-embed body { background:var(--stage-bg, #f5f6f8) !important; }
     html.c2-embed .c2-embed-hide { display:none !important; }
     html.c2-embed [data-c2-path] { transform:none !important; filter:none !important; contain:none !important; overflow:visible !important; }
     html.c2-embed [data-c2-keep="main"] {
@@ -1280,14 +1341,8 @@ window.engineLab={getState:()=>({...state}),setAngle:seek,setEngine:chooseEngine
       }
     }
     for (const sel of cfg.hideInside || []) main.querySelectorAll(sel).forEach(e => e.classList.add('c2-embed-hide'));
-    // 画布多为透明：沿用原页面里离它最近的底色，避免露出被隐藏布局的残影
-    for (const k of keeps) {
-      for (let n = k; n && n !== document.documentElement; n = n.parentElement) {
-        const cs = getComputedStyle(n);
-        const solid = cs.backgroundImage !== 'none' || !/rgba\(.*,\s*0\)|transparent/.test(cs.backgroundColor);
-        if (solid) { k.style.setProperty('background', cs.background, 'important'); break; }
-      }
-    }
+    // 画布多为透明：铺上外壳统一的三维区底色（--stage-bg 由外壳传入），不沿用原页面的网格、渐变底
+    for (const k of keeps) k.style.setProperty('background', 'var(--stage-bg, #f5f6f8)', 'important');
     // 隐藏页面级的浮动按钮（深色模式切换等）
     document.querySelectorAll('body > button, body > .toast, #course-theme-toggle').forEach(e => { if (!e.dataset.c2Keep) e.classList.add('c2-embed-hide'); });
     return true;
@@ -1315,7 +1370,15 @@ window.engineLab={getState:()=>({...state}),setAngle:seek,setEngine:chooseEngine
       else if (d.op === 'set') setValue($(d.sel), d.value);
       else if (d.op === 'call') call(d.path, d.args);
       else if (d.op === 'event') document.dispatchEvent(new Event(d.name));
-      else if (d.op === 'theme') window.CourseTheme?.set?.(d.value);
+      else if (d.op === 'theme') {
+        if (d.stage) {
+          // 外壳的三维区取值：CSS 变量给页面样式用，StageTone 给三维场景用；再按主题重绘
+          const t = d.value === 'dark' ? 'dark' : 'light', v = d.stage[t] || {};
+          for (const [k, val] of Object.entries(v)) if (val) document.documentElement.style.setProperty('--stage-' + k, val);
+          window.StageTone?.use(d.stage);
+        }
+        window.CourseTheme?.set?.(d.value);
+      }
       else if (d.op === 'resize') dispatchEvent(new Event('resize'));
     } catch (err) { console.warn('[c2 bridge]', d, err); }
     setTimeout(send, 30);
