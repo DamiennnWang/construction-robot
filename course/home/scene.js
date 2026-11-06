@@ -57,14 +57,18 @@
   hovered=id;
   items.forEach(item=>{const active=item.chapter.id===id;item.base.material.color.setHex(active?0xcde3ff:0xf5f8fa);item.label.classList.toggle('is-focused',active);});
   const c=chapters.find(c=>c.id===id);
-  document.getElementById('exhibit-detail').textContent=c?`${String(c.id).padStart(2,'0')} ${c.title} · ${c.description}`:'点击模型或章节铭牌，进入对应章节封面。';
+  document.getElementById('exhibit-detail').textContent=c?`${String(c.id).padStart(2,'0')} ${c.title} · ${c.description}`:'点击展台、模型或章节铭牌，进入对应章节封面。';
   render();
  }
  labels.querySelectorAll('a').forEach(a=>{a.addEventListener('mouseenter',()=>focus(Number(a.dataset.chapter)));a.addEventListener('focus',()=>focus(Number(a.dataset.chapter)));a.addEventListener('mouseleave',()=>focus(null));a.addEventListener('blur',()=>focus(null));});
  if(renderer){
   const ray=new T.Raycaster(),pointer=new T.Vector2(),canvas=renderer.domElement;let down=null;
-  function hit(e){const r=canvas.getBoundingClientRect();pointer.set((e.clientX-r.left)/r.width*2-1,1-(e.clientY-r.top)/r.height*2);ray.setFromCamera(pointer,camera);let node=ray.intersectObjects(items.map(i=>i.stand),true)[0]?.object;while(node&&!node.userData.chapter)node=node.parent;return node?.userData.chapter||null;}
-  canvas.addEventListener('pointermove',e=>{const id=hit(e);canvas.style.cursor=id?'pointer':'default';if(id!==hovered)focus(id);});
+  function hit(e){const r=canvas.getBoundingClientRect();pointer.set((e.clientX-r.left)/r.width*2-1,1-(e.clientY-r.top)/r.height*2);ray.setFromCamera(pointer,camera);let node=ray.intersectObjects(items.map(i=>i.stand),true)[0]?.object;while(node&&!node.userData.chapter)node=node.parent;if(node)return node.userData.chapter;
+   /* Missed every mesh: treat each exhibit card (stand + model projected to screen, joined with its label) as one target. */
+   let best=null,bestD=Infinity;for(const item of items){const n=item.label.getBoundingClientRect();if(e.clientX<n.left-12||e.clientX>n.right+12||e.clientY<n.top-12||e.clientY>n.bottom+12)continue;const d=Math.hypot(e.clientX-(n.left+n.right)/2,e.clientY-(n.top+n.bottom)/2);if(d<bestD){bestD=d;best=item.chapter.id;}}if(best)return best;
+   for(const item of items){const b=new T.Box3().setFromObject(item.stand);let L=Infinity,Tp=Infinity,R=-Infinity,B=-Infinity;for(let k=0;k<8;k++){const q=new T.Vector3(k&1?b.max.x:b.min.x,k&2?b.max.y:b.min.y,k&4?b.max.z:b.min.z).project(camera);const x=r.left+(q.x+1)*r.width/2,y=r.top+(1-q.y)*r.height/2;L=Math.min(L,x);R=Math.max(R,x);Tp=Math.min(Tp,y);B=Math.max(B,y);}
+    const n=item.label.getBoundingClientRect();L=Math.min(L,n.left);R=Math.max(R,n.right);Tp=Math.min(Tp,n.top);B=Math.max(B,n.bottom);if(e.clientX<L-12||e.clientX>R+12||e.clientY<Tp-12||e.clientY>B+12)continue;const d=Math.hypot(e.clientX-(L+R)/2,e.clientY-(Tp+B)/2);if(d<bestD){bestD=d;best=item.chapter.id;}}return best;}
+  canvas.addEventListener('pointermove',e=>{if(e.buttons)return;const id=hit(e);canvas.style.cursor=id?'pointer':'default';if(id!==hovered)focus(id);});
   canvas.addEventListener('pointerleave',()=>focus(null));canvas.addEventListener('pointerdown',e=>{down={x:e.clientX,y:e.clientY};});
   canvas.addEventListener('pointerup',e=>{if(down&&Math.hypot(e.clientX-down.x,e.clientY-down.y)<8){const id=hit(e);if(id)location.href=courseHref(chapters.find(c=>c.id===id).entry);}down=null;});
   canvas.addEventListener('webglcontextlost',e=>{e.preventDefault();fallback();});

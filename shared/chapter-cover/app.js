@@ -42,8 +42,35 @@
   $('part-detail').textContent=C.motionDescription||'挖掘机：动臂、斗杆与铲斗联动；六轴机械臂：关节转动与夹爪开合。';
  }
  stage.onTick=()=>stage.model?.pose(stage.elapsed);
- stage.onPart=part=>select(part.id);
- document.querySelectorAll('.task-select').forEach(button=>button.onclick=()=>select(button.closest('[data-task]').dataset.task));
+ const enter=id=>{const item=C.items.find(item=>item.id===id);if(item)location.href=courseHref(item.entry);};
+ stage.onPart=part=>enter(part.id);
+ /* Whole exhibit area is a link: mesh hit first, then each stand's projected screen box plus its hotspot label. */
+ function exhibitAt(e){
+  if(!stage.renderer||!stage.model)return null;const rect=stage.host.getBoundingClientRect();
+  stage.pointer.set((e.clientX-rect.left)/rect.width*2-1,-(e.clientY-rect.top)/rect.height*2+1);stage.ray.setFromCamera(stage.pointer,stage.camera);
+  let node=stage.ray.intersectObject(stage.model.root,true)[0]?.object;while(node&&!node.userData.partId)node=node.parent;if(node)return node.userData.partId;
+  const pad=14*rect.width/(stage.host.clientWidth||rect.width);let best=null,bestDistance=Infinity;
+  /* Labels win over overlapping model boxes, so the area around a label always enters its own task. */
+  for(const p of stage.hotspots){if(p.button.hidden)continue;const q=p.button.getBoundingClientRect();if(e.clientX<q.left-pad||e.clientX>q.right+pad||e.clientY<q.top-pad||e.clientY>q.bottom+pad)continue;const d=Math.hypot(e.clientX-(q.left+q.right)/2,e.clientY-(q.top+q.bottom)/2);if(d<bestDistance){bestDistance=d;best=p.id;}}
+  if(best)return best;
+  exhibits.forEach(ex=>{
+   const box=new THREE.Box3().setFromObject(ex.stand);let l=Infinity,t=Infinity,r=-Infinity,b=-Infinity;
+   for(let k=0;k<8;k++){const p=new THREE.Vector3(k&1?box.max.x:box.min.x,k&2?box.max.y:box.min.y,k&4?box.max.z:box.min.z).project(stage.camera);const x=rect.left+(p.x+1)*rect.width/2,y=rect.top+(1-p.y)*rect.height/2;l=Math.min(l,x);r=Math.max(r,x);t=Math.min(t,y);b=Math.max(b,y);}
+   const label=stage.hotspots.find(p=>p.id===ex.item.id)?.button;if(label&&!label.hidden){const q=label.getBoundingClientRect();l=Math.min(l,q.left);r=Math.max(r,q.right);t=Math.min(t,q.top);b=Math.max(b,q.bottom);}
+   if(e.clientX<l-pad||e.clientX>r+pad||e.clientY<t-pad||e.clientY>b+pad)return;
+   const d=Math.hypot(e.clientX-(l+r)/2,e.clientY-(t+b)/2);if(d<bestDistance){bestDistance=d;best=ex.item.id;}
+  });
+  return best;
+ }
+ stage.pick=e=>{const id=exhibitAt(e);if(id)enter(id);};
+ let hoverId=null;
+ stage.host.addEventListener('pointermove',e=>{if(e.buttons||e.target.closest('button')){return;}const id=exhibitAt(e);stage.host.style.cursor=id?'pointer':'';if(id&&id!==hoverId)select(id);hoverId=id;});
+ stage.host.addEventListener('pointerleave',()=>{stage.host.style.cursor='';hoverId=null;});
+ document.querySelectorAll('.task-card').forEach(card=>{
+  const id=card.dataset.task;card.style.cursor='pointer';
+  card.addEventListener('click',e=>{if(e.target.closest('a'))return;enter(id);});
+  card.addEventListener('mouseenter',()=>select(id));card.querySelector('.task-select').addEventListener('focus',()=>select(id));
+ });
  $('motion').onclick=()=>{stage.running=!stage.running;motion();};
  function resetView(){stage.view('home');stage.distance*=innerWidth<=800?.9:(C.viewScale??.7);stage.orbit();}
  $('reset-view').onclick=resetView;

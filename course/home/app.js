@@ -36,7 +36,7 @@
     const available=CourseScene.getState().webgl;
     if(!available)return;
     const b=$('motion');b.setAttribute('aria-pressed',String(!paused));b.textContent=paused?'▷ 演示动作':'Ⅱ 暂停动作';
-    $('motion-status').textContent=paused?'展品已暂停 · 点击模型直接选章':'动作演示中：举臂、关节、飞轮与扫描；安全展品静态陈列。';
+    $('motion-status').textContent=paused?'展品已暂停 · 点击展台任意位置进入章节':'动作演示中：举臂、关节、飞轮与扫描；安全展品静态陈列。';
     CourseScene.pause(paused);
   }
   $('motion').onclick=()=>{paused=!paused;motion();};

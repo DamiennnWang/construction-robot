@@ -39,5 +39,11 @@
   function fit(){$('entry-screen').style.transform=`translate(-50%,-50%) scale(${Math.min(innerWidth/1600,innerHeight/900)})`;}
   addEventListener('resize',fit);addEventListener('pagehide',stopTour);document.addEventListener('visibilitychange',()=>{if(document.hidden)stopTour();});
   fit();window.CourseScene?.show(2);motion();select(null);
+  /* Clicking an exhibit or anywhere on a task card enters that task; hover / focus only previews it. */
+  const exhibitUrl=id=>exhibits.find(e=>e.id===id)?.link[1],previewOf=task=>exhibits.find(e=>e.task===task)?.id;
+  window.CourseUI.model=id=>{const url=exhibitUrl(id);if(!url)return;stopTour();location.href=url;};
+  document.querySelectorAll('.task-card').forEach(card=>{const b=card.querySelector('.task-select');b.onclick=null;card.style.cursor='pointer';
+    card.addEventListener('click',e=>{if(e.target.closest('a'))return;const a=card.querySelector('.task-links a');if(a){stopTour();location.href=a.href;}});
+    const show=()=>window.CourseUI.preview(previewOf(card.dataset.task));card.addEventListener('mouseenter',show);b.addEventListener('focus',show);});
   window.ChapterEntry={select,stopTour,state:()=>({selected,touring:!!timer,paused,models:window.CourseScene?.getState()})};
 })();
