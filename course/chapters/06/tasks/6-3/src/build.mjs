@@ -1,6 +1,7 @@
 import { readFileSync, writeFileSync } from 'node:fs';
 import { fileURLToPath } from 'node:url';
 import {integrateChapter6} from '../../../../../../shared/装饰装修施工/chapter-layout.mjs';
+import {labShell, hasStations} from '../../../../../../shared/lab-shell/native-layout.mjs';
 import * as Model from './model.mjs';
 import * as GameModel from './game.model.mjs';
 
@@ -32,7 +33,8 @@ const html = read('./page.html').replace(/\{\{(CSS|SCENE|SERVICE|SOURCES|JS)\}\}
 if (/\{\{[A-Z]+\}\}/.test(html)) throw new Error('页面仍有未替换的构建占位符。');
 // Change only the initial root/body theme attributes, never selectors in CSS.
 const themePage = theme => html.replace(/(<(?:html|body)\b[^>]*\bdata-theme=")[^"]*(")/g, '$1' + theme + '$2');
-writeFileSync(file('../index.html'), integrateChapter6(themePage('light'),'sanding'));
+// 有 src/stations.js 时套统一任务页外壳（原地模式），不再套第六章 1600×900 版式。
+writeFileSync(file('../index.html'), hasStations('6-3') ? labShell(themePage('light'), '6-3') : integrateChapter6(themePage('light'),'sanding'));
 
 console.log('Built index.html · shared theme · Hero 3D workshop, local Three.js runtime');
 if(audit) console.log('Three.js physical mesh scene: use node qa/hero-check.mjs for camera, pose, hose, game and layout checks. The legacy SVG audit does not certify this renderer.');
