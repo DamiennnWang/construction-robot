@@ -8,10 +8,9 @@ html[data-theme=dark]{--bg:#0b101a;--surface:#111a29;--stage:#15232c;--ink:#e4ed
 .brand-icon{display:flex;position:relative;justify-content:center;align-items:center;width:37px;height:40px;border:1.5px solid var(--blue);border-radius:6px 6px 13px 6px;font-size:24px;font-weight:500;color:var(--blue)}
 .brand-icon span{position:absolute;font-size:13px;right:2px;top:1px;background:var(--surface)}
 .help-icon{border:1px solid var(--line);border-radius:50%;display:inline-grid;place-items:center;width:16px;height:16px;margin-left:5px;font-size:10px}
-.capture-button{border:1px solid var(--line);color:var(--blue);background:var(--soft);width:100%;padding:7px;font-size:11px;margin-top:12px}
 .data-heading strong{color:var(--ink);font-weight:600;font-size:12px}
 .wave-title{display:flex;align-items:baseline;gap:14px}.wave-title>span{color:var(--muted);font-size:10px}
-.wave-tools{display:flex;align-items:center;gap:18px}.wave-tools .capture-button{width:auto;margin:0;padding:4px 10px;white-space:nowrap;background:var(--surface)}
+.wave-tools{display:flex;align-items:center;gap:18px}
 .primary{background:linear-gradient(120deg,#3b82f6,#2563eb);box-shadow:0 3px 9px #2563eb20;border-radius:8px}
 .primary:hover{background:#1d4ed8}
 .case-tabs [aria-pressed=true]{box-shadow:inset 3px 0 var(--blue);border-color:var(--blue)}
@@ -52,12 +51,11 @@ html[data-theme=dark]{--bg:#0b101a;--surface:#111a29;--stage:#15232c;--ink:#e4ed
  .choice-row{gap:.4cqw;margin-bottom:.45cqw}.choice-row button,.presets button{font-size:.7cqw;padding:.3cqw .4cqw;border-radius:.4cqw}.presets{gap:.4cqw}
  .range-label{font-size:.73cqw}input[type=range]{height:1.4cqw;margin:.4cqw 0}input[type=checkbox]{height:.95cqw;width:.95cqw}
  .control-note{font-size:.68cqw;margin-top:.65cqw;line-height:1.7}.gravity-control{margin-top:.8cqw;font-size:.7cqw}.gravity-control label{gap:.4cqw}.gravity-control>span{font-size:.63cqw;padding-left:1.35cqw;margin-top:.3cqw}
- .capture-button{margin-top:auto;font-size:.76cqw;padding:.4cqw;border-radius:.5cqw}
  .timeline{grid-column:1;grid-row:2;gap:.85cqw;padding:.4cqw 1.2cqw 0;border:1px solid var(--line);border-bottom:0;background:var(--surface)}
  .primary{font-size:.76cqw;padding:.6cqw .9cqw}.step{font-size:.7cqw;padding:.4cqw .55cqw}.timeline>output{font-size:.85cqw;min-width:3.5cqw}.time-scale{font-size:.6cqw}.timeline-track input{height:1.2cqw;margin:0}.rate{gap:.4cqw;font-size:.65cqw}.rate select{font-size:.7cqw;padding:.2cqw}
  .phase-row{grid-column:1;grid-row:3;padding:0 1.2cqw .4cqw;gap:.8cqw;background:var(--surface);border:1px solid var(--line);border-top:0;border-radius:0 0 1cqw 1cqw;font-size:.65cqw;min-height:0}.phase-row p{display:none}#phaseButtons{gap:.4cqw;flex-wrap:nowrap}#phaseButtons button{padding:.15cqw .6cqw;font-size:.64cqw}
  .wave-section{margin:0;min-height:0;display:grid;grid-template-rows:1.9cqw minmax(0,1fr) 1.1cqw;gap:.35cqw}
- .wave-tools{gap:1cqw}.wave-tools .capture-button{padding:.12cqw .65cqw;font-size:.7cqw}
+ .wave-tools{gap:1cqw}
  .wave-heading{margin:0;align-items:center;gap:1cqw}.wave-heading h2{font-size:.95cqw;margin:0}.wave-title{gap:1cqw}.wave-title>span{font-size:.65cqw}.compare-label{font-size:.7cqw;gap:.4cqw}
  .chart-grid{gap:.8cqw;min-height:0}.chart-card{padding:.65cqw .85cqw .4cqw;border-radius:.8cqw;display:flex;flex-direction:column}.chart-title{flex-shrink:0}.chart-title h3{font-size:.8cqw}.chart-title span{font-size:.65cqw}
  .chart-card svg{height:0;flex:1;min-height:0;margin-top:.15cqw}.chart-legend{font-size:.65cqw;gap:.8cqw;height:1.1cqw;flex-shrink:0}.chart-legend i{width:.45cqw;height:.45cqw;margin-right:.3cqw}
@@ -66,9 +64,9 @@ html[data-theme=dark]{--bg:#0b101a;--surface:#111a29;--stage:#15232c;--ink:#e4ed
 }
 @media(max-width:999px){
  .site-header{height:auto;min-height:68px;flex-wrap:wrap;padding:12px 20px;gap:10px 18px}.header-title{padding-left:16px}.header-title h1{font-size:15px}.site-header nav{margin-left:auto}
- .shell{padding:18px 20px 0}.scene-data-grid{grid-template-columns:minmax(0,1fr) 300px}.experiment-heading{padding:14px 18px;border-bottom:0}.experiment-heading h2{font-size:17px}.scene-panel #viewport{min-height:280px}.live-explanation{margin:0 16px;padding:10px;border-left:2px solid var(--blue);background:var(--surface);border-radius:0 5px 5px 0;font-size:11px;min-height:0}.capture-button{margin-top:14px}.wave-title>span{display:none}
+ .shell{padding:18px 20px 0}.scene-data-grid{grid-template-columns:minmax(0,1fr) 300px}.experiment-heading{padding:14px 18px;border-bottom:0}.experiment-heading h2{font-size:17px}.scene-panel #viewport{min-height:280px}.live-explanation{margin:0 16px;padding:10px;border-left:2px solid var(--blue);background:var(--surface);border-radius:0 5px 5px 0;font-size:11px;min-height:0}.wave-title>span{display:none}
 }
 @media(max-width:760px){
  .site-header{padding:12px 14px;gap:10px}.brand{font-size:10px}.brand small{font-size:7px}.brand-icon{width:29px;height:32px;font-size:20px}.brand-icon span{font-size:10px}.header-title{border:0;padding:0;display:block;margin-left:auto;margin-right:0}.header-title h1{font-size:12px}.header-title>span{font-size:8px;padding:2px 5px;display:inline-block;margin-top:3px}.site-header nav{width:100%;margin:0;justify-content:space-between;gap:4px}.site-header button{font-size:10px;padding:6px 8px}.help-icon{width:13px;height:13px;font-size:9px;margin-left:3px}
- .shell{padding:16px 14px 0}.scene-data-grid{grid-template-columns:1fr}.scene-toolbar>span{font-size:9px}.experiment-heading{gap:8px;padding:14px 14px 0}.experiment-heading h2{font-size:16px}.source-tag{font-size:8px}.scene-stamp strong{font-size:15px}.scene-panel #viewport{min-height:290px}.scene-foot{flex-wrap:wrap}.scene-foot>span:last-child{width:auto}.wave-title{display:block}.wave-heading{gap:8px}.wave-heading h2{font-size:18px}.chart-card svg{height:156px}.capture-button{padding:10px}footer{padding:18px 0}
+ .shell{padding:16px 14px 0}.scene-data-grid{grid-template-columns:1fr}.scene-toolbar>span{font-size:9px}.experiment-heading{gap:8px;padding:14px 14px 0}.experiment-heading h2{font-size:16px}.source-tag{font-size:8px}.scene-stamp strong{font-size:15px}.scene-panel #viewport{min-height:290px}.scene-foot{flex-wrap:wrap}.scene-foot>span:last-child{width:auto}.wave-title{display:block}.wave-heading{gap:8px}.wave-heading h2{font-size:18px}.chart-card svg{height:156px}footer{padding:18px 0}
 }

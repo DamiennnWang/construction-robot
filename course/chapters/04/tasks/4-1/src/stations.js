@@ -1,4 +1,4 @@
-/* 任务 4-1 从施工状态读懂传感数据 —— 原页面的三维、数据模型和同步曲线保持不变，搬进统一外壳。
+/* 任务 4-1 机器人自身状态感知 —— 原页面的三维、数据模型和同步曲线保持不变，搬进统一外壳。
  * 原页面的四种状态案例（坡面停驻 / 起步与制动 / 路面颠簸 / 原地转向）就是四个工位。
  * 三维区下面紧挨着三条同步曲线和时间轴（同一时间轴，是本页的主体）；面板里是读数、改变条件和试一试。
  * 原页面没有自带关卡，“试一试”全部从 window.__STATE_LAB__.snapshot() 读状态判定。
@@ -14,7 +14,6 @@
     controls: {slope: $('#slopeControls'), drive: $('#driveControls'), bump: $('#bumpControls'), turn: $('#turnControls')},
     gravity: $('#gravityControl'),
     waves: $('.wave-section'), timeline: $('.timeline'), phases: $('.phase-row'),
-    record: $('#recordBtn'), csv: $('#csvOpen'),
     compare: $('#compareToggle'), axes: $('#axesToggle'),
   };
   // 外壳里已有工位条、工位名和“重来”：原来的页头、状态页签、标题、复位、说明文字收起
@@ -23,14 +22,6 @@
   // 同步曲线：放在三维区和底栏（时间轴）之间，四个工位共用（不随工位切换搬动）
   const band = document.createElement('div');
   band.className = 'c41-waves';
-  const tools = document.createElement('div');
-  tools.className = 'c41-wave-tools';
-  if (EL.record) { EL.record.className = 'c41-mini'; EL.record.title = '查看和导出观察记录'; }
-  if (EL.csv) { EL.csv.className = 'c41-mini'; EL.csv.textContent = '手机数据'; EL.csv.title = '导入手机加速度 CSV 做对照'; }
-  const capture = $('#captureButton');
-  if (capture) capture.textContent = '＋ 记录';
-  tools.append(...[capture, EL.record, EL.csv].filter(Boolean));
-  $('.wave-heading')?.append(tools);
   band.append(...[EL.waves].filter(Boolean));
 
   const flags = {}, moved = {}, startTime = {};
@@ -50,10 +41,10 @@
             result: '平放时 x、y 接近 0，z 约 9.81 m/s²：一动不动，也有重力的读数。'},
           {id: 'roll', icon: '↔', title: '换成左右倾斜', hint: '看哪根轴的读数变了', check: s => s.state.tiltAxis === 'roll' && Math.abs(s.state.tilt) >= 5 && s.state.time >= 3,
             result: '左右倾斜时变的是 y 轴，前后倾斜变的是 x 轴；合起来仍约 9.81 m/s²。'},
-          {id: 'hold', icon: '⏸', title: '停在坡上看变化率', hint: '定位到“坡面保持”', check: s => moved.slope && s.state.tilt !== 0 && s.state.time >= 3.2 && !s.state.playing && s.sample.angular === 0,
-            result: '倾斜着不动，倾角不变、变化率为 0——“斜着”和“正在转”是两回事。'},
+          {id: 'hold', icon: '⏸', title: '停在坡上看倾斜变化', hint: '定位到“坡面保持”', check: s => moved.slope && s.state.tilt !== 0 && s.state.time >= 3.2 && !s.state.playing && s.sample.angular === 0,
+            result: '停在坡上不动，车身斜着，倾斜变化却是 0——“斜着”和“正在变斜”是两回事。'},
           {id: 'nog', icon: '🧲', title: '关掉“包含重力”', hint: '静止时三轴变成多少', check: s => !s.state.gravity,
-            result: '理想去除重力后，静止的三轴都接近 0；倾角仍要靠含重力的数据来估计。'},
+            result: '去掉重力的影响后，停着不动的三轴都接近 0；车身斜了多少，还得看含重力的读数。'},
         ]);
       },
     },
@@ -64,7 +55,7 @@
         const g2 = c.section('改变条件'); c.adopt(EL.controls.drive, g2);
         c.challenges([
           {id: 'whole', icon: '▶', title: '从起步看到停稳', hint: '从头播放一遍', check: () => flags.driveWhole,
-            result: '加速度先正、再为 0、再为负；速度先升、再平、再降；位移一直在增加。'},
+            result: '加速度先正、再为 0、再为负；速度先升、再平、再降；走过的路一直在增加。'},
           {id: 'cruise', icon: '0', title: '停在匀速段', hint: '还在走，加速度是多少', check: s => s.sample.phase === '匀速前进' && !s.state.playing,
             result: '还在前进，但速度不再变化，所以前向加速度为 0。'},
           {id: 'brake', icon: '➖', title: '找到负的加速度', hint: '车这时还在往前走', check: s => s.sample.ax < 0 && !s.state.playing,
@@ -75,17 +66,17 @@
       },
     },
     {
-      id: 'bump', name: '路面颠簸', lead: '车速不变，只改路面的起伏，把起伏和加速度波形对上。', note: '垂向位移放大 8 倍显示，读数不放大',
+      id: 'bump', name: '路面颠簸', lead: '车速不变，只改路面的起伏，把起伏和加速度波形对上。', note: '上下起伏放大 8 倍显示，读数不放大',
       build(c) {
         const g = c.section('此刻的数据'); c.adopt([EL.readings, EL.axis, EL.explain], g);
         const g2 = c.section('改变条件'); c.adopt([EL.controls.bump, EL.gravity], g2);
         c.challenges([
           {id: 'flat', icon: '🛣', title: '换成平整路面', hint: '波形还在吗', check: s => s.state.roughness === 0,
-            result: '路面平整，垂向加速度不再波动。'},
+            result: '路面平整，上下方向的加速度不再波动。'},
           {id: 'rough', icon: '〰', title: '换成明显起伏', hint: '波形高了还是矮了', check: s => s.state.roughness === 2,
-            result: '起伏越明显，垂向加速度上下摆得越大。'},
+            result: '起伏越明显，上下方向的加速度摆得越大。'},
           {id: 'inside', icon: '📍', title: '停在颠簸中间', hint: '时间拖到 2～6 秒', check: s => moved.bump && s.state.roughness > 0 && s.state.time > 2.2 && s.state.time < 5.8 && !s.state.playing,
-            result: '颠簸时垂向加速度正负波动；波形的峰谷不等于路面的最高、最低点。'},
+            result: '颠簸时上下方向的加速度忽正忽负；波形的最高、最低点，并不是路面的最高、最低点。'},
           {id: 'compare', icon: '📊', title: '和基准叠在一起比', hint: '换个起伏，打开“叠加基准”', check: s => s.state.compare && s.state.roughness !== 1,
             result: '虚线是“轻微起伏”的基准，实线和它一比，差别一眼就能看出来。'},
         ]);
@@ -101,7 +92,7 @@
             result: '慢转 4 秒：角速度一直不高，累计转角慢慢到 90°。'},
           {id: 'quick', icon: '🐇', title: '换成快转', hint: '看完 1 秒的转向', check: s => s.state.turnDuration === 1 && s.state.time >= 2.1,
             result: '快转 1 秒也只转到 90°：角速度峰值更高，持续时间更短。'},
-          {id: 'half', icon: '🎯', title: '停在转了一半时', hint: '累计转角约 45°', check: s => near(s.sample.yaw, 45, 5) && !s.state.playing,
+          {id: 'half', icon: '🎯', title: '停在转了一半时', hint: '一共转了约 45°', check: s => near(s.sample.yaw, 45, 5) && !s.state.playing,
             result: '转到一半时角速度最大；转过多少和转得多快要分开看。'},
           {id: 'compare', icon: '📊', title: '快转叠上慢转比', hint: '快转时打开“叠加基准”', check: s => s.state.compare && s.state.turnDuration === 1,
             result: '实线快转、虚线慢转：一个高而窄，一个矮而宽，最后都停在 90°。'},
@@ -111,7 +102,7 @@
   ];
 
   NativeShell.start({
-    task: '4-1', title: '从施工状态读懂传感数据',
+    task: '4-1', title: '机器人自身状态感知',
     stage: EL.stage,
     hint: '教学模拟 · 拖动旋转 · 滚轮缩放',
     stations: STATIONS,
@@ -139,7 +130,7 @@
       const stage = document.querySelector('.c2-stage'), strip = document.querySelector('.c2-strip');
       if (stage && strip && band.parentNode !== stage) stage.insertBefore(band, strip);
       c.stripAdopt([EL.timeline, EL.phases].filter(Boolean));
-      // 原页面的提示条（记录、减少动态）转成外壳提示
+      // 原页面的提示条（减少动态）转成外壳提示
       const toast = $('#toast');
       if (toast && !toast.dataset.c41) {
         toast.dataset.c41 = '1';

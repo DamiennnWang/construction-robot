@@ -13,18 +13,9 @@ html.lab-native #viewport #loading { font-size:13px; }
 .c41-waves { flex:0 0 auto; height:clamp(150px, 27vh, 236px); padding:8px 12px 6px; border-top:1px solid var(--hair); background:var(--course-surface); }
 html.lab-native .c41-waves .wave-section { height:100%; margin:0; padding:0; border:0; background:none; display:grid; grid-template-rows:auto minmax(0,1fr) auto; gap:6px; min-height:0; }
 html.lab-native .c41-waves .wave-heading { display:flex; align-items:center; justify-content:space-between; gap:10px; margin:0; }
-html.lab-native .c41-waves .wave-tools { display:contents; }
 html.lab-native .c41-waves .compare-label { display:inline-flex; align-items:center; gap:6px; font-size:12.5px; color:var(--course-muted); cursor:pointer; }
 html.lab-native .c41-waves .compare-label input { width:15px; height:15px; margin:0; accent-color:var(--course-accent); }
 html.lab-native .c41-waves .compare-label span { color:var(--course-accent); font-weight:600; }
-.c41-wave-tools { display:flex; gap:6px; margin-left:auto; }
-html.lab-native .c41-wave-tools button {
-  height:26px; width:auto; margin:0; padding:0 10px; border-radius:8px; font-size:12px; font-weight:600; white-space:nowrap; cursor:pointer;
-  border:1px solid var(--hair); background:var(--surface-2); color:var(--course-muted); box-shadow:none;
-}
-html.lab-native .c41-wave-tools button:hover { border-color:var(--course-accent); color:var(--course-accent); }
-html.lab-native .c41-wave-tools #captureButton { background:var(--blue-soft); color:var(--course-accent); border-color:transparent; }
-html.lab-native .c41-wave-tools b { margin-left:3px; color:var(--course-accent); }
 html.lab-native .c41-waves .chart-grid { display:grid; grid-template-columns:repeat(3, minmax(0,1fr)); gap:10px; min-height:0; }
 html.lab-native .c41-waves .chart-card { display:flex; flex-direction:column; min-height:0; padding:6px 10px 4px; border-radius:12px; border:1px solid var(--hair); background:var(--course-surface); box-shadow:none; }
 html.lab-native .c41-waves .chart-title { flex-shrink:0; display:flex; justify-content:space-between; align-items:baseline; gap:4px; }
