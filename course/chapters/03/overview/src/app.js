@@ -14,5 +14,11 @@ $('reset-view').onclick=()=>window.CourseScene?.resetView?.();function setMotion
 $('show-guide').onclick=()=>$('entry-guide').showModal();$('close-guide').onclick=()=>$('entry-guide').close();$('entry-full').onclick=()=>{if(document.fullscreenElement)document.exitFullscreen?.();else document.documentElement.requestFullscreen?.().catch(()=>{});};
 function fit(){const s=Math.min(innerWidth/1600,innerHeight/900);$('entry-screen').style.transform=`translate(-50%,-50%) scale(${s})`;}
 addEventListener('resize',fit);addEventListener('pagehide',stopTour);document.addEventListener('visibilitychange',()=>{if(document.hidden)stopTour();});fit();CourseScene.show(3);setMotion();select(null);
-window.ChapterEntry={select,stopTour,state:()=>({selected,touring:!!timer,paused,models:CourseScene.getState()})};
+/* Clicking an exhibit or anywhere on a task card enters that task; hover / focus only previews it. */
+  const exhibitUrl=id=>tasks.find(t=>t.id===id)?.links[0][1],previewOf=task=>task;
+  window.CourseUI.model=id=>{const url=exhibitUrl(id);if(!url)return;stopTour();location.href=url;};
+  document.querySelectorAll('.task-card').forEach(card=>{const b=card.querySelector('.task-select');b.onclick=null;card.style.cursor='pointer';
+    card.addEventListener('click',e=>{if(e.target.closest('a'))return;const a=card.querySelector('.task-links a');if(a){stopTour();location.href=a.href;}});
+    const show=()=>window.CourseUI.preview(previewOf(card.dataset.task));card.addEventListener('mouseenter',show);b.addEventListener('focus',show);});
+  window.ChapterEntry={select,stopTour,state:()=>({selected,touring:!!timer,paused,models:CourseScene.getState()})};
 })();
