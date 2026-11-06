@@ -61,15 +61,15 @@
     material('silver', 0xc4c5c1, .58, .31); material('steel', 0x7c807e, .48, .45);
     material('orange', 0xdf7841, .2, .36); material('teal', 0x267e70, .15, .4);
     material('wire', 0xb7aaa0, .76, .3); material('brass', 0xad935c, .6, .35);
-    material('floor', 0xe9e4d9, 0, .94); material('seam', 0xd7d2c8, 0, .96);
-    material('concrete', 0xc7c5ba, .04, .92); material('wood', 0xc1a37a, 0, .85);
+    material('floor', 0xe4eef9, 0, .94); material('seam', 0xcfdcec, 0, .96);
+    material('concrete', 0xc5d2e1, .04, .92); material('wood', 0xc1a37a, 0, .85);
     material('mark', 0x668c73, .15, .62); material('warning', 0xd18a35, .1, .55);
     material('red', 0xc55b42, .1, .47); material('white', 0xfaf8ef, 0, .8);
-    const hemi = new T.HemisphereLight(0xfffbf5, 0xaba8a0, 2.3); scene.add(hemi);
-    const key = new T.DirectionalLight(0xfff3dc, 3.0); key.position.set(-3, 7, 4.2); key.castShadow = true;
+    const hemi = new T.HemisphereLight(0xf4f8ff, 0xa3b2c4, 2.3); scene.add(hemi);
+    const key = new T.DirectionalLight(0xfffaf2, 3.0); key.position.set(-3, 7, 4.2); key.castShadow = true;
     key.shadow.mapSize.set(2048, 2048); Object.assign(key.shadow.camera, { left: -4, right: 4, top: 4, bottom: -3, near: .5, far: 14 });
     key.shadow.bias = -.0002; key.shadow.normalBias = .014; key.shadow.radius = 5; scene.add(key);
-    const fill = new T.DirectionalLight(0xf3f6ef, 1.5); fill.position.set(4, 2.6, -3); scene.add(fill);
+    const fill = new T.DirectionalLight(0xeef4ff, 1.5); fill.position.set(4, 2.6, -3); scene.add(fill);
     const back = new T.DirectionalLight(0xfff8e5, .8); back.position.set(-2, 4, -5); scene.add(back);
     const floorGroup = new T.Group(), robot = new T.Group(), workpiece = new T.Group(), annotations = new T.Group();
     floorGroup.name = 'workshop-floor'; robot.name = 'articulated-tying-robot'; workpiece.name = 'rebar-fixture'; annotations.name = 'workpoint-markers';
@@ -114,9 +114,9 @@
       const p = []; for (let i = 0; i <= turns * 16; i++) { const t = i / (turns * 16), a = t * turns * Math.PI * 2; const q = axis === 'y' ? [radius * Math.cos(a), t * length, radius * Math.sin(a)] : [radius * Math.cos(a), radius * Math.sin(a), t * length]; p.push(q.map((v, k) => v + origin[k])); }
       return tube(name, p, .003, 'silver', parent, turns * 16);
     }
-    // The warm open workshop has no wall to obstruct orbit or close inspection.
+    // The open blue-white workshop has no wall to obstruct orbit or close inspection.
     rounded('concrete-plinth', 4.75, .08, 3.75, -.35, -.065, -.1, 'concrete', floorGroup, .025);
-    box('warm-finished-floor', 4.7, .018, 3.7, -.35, -.016, -.1, 'floor', floorGroup);
+    box('finished-floor', 4.7, .018, 3.7, -.35, -.016, -.1, 'floor', floorGroup);
     for (let x = -2.3; x <= 1.9; x += .7) box('floor-expansion-x', .004, .001, 3.69, x, -.006, -.1, 'seam', floorGroup);
     for (let z = -1.6; z <= 1.5; z += .7) box('floor-expansion-z', 4.69, .001, .004, -.35, -.005, z, 'seam', floorGroup);
     // Rebar holding fixture: raw alloy beams, open space beneath the intersections.
@@ -348,7 +348,7 @@
       const signature=[pose,pointState,data.stage,data.selected,data.busy?.kind||'',data.busy?.id||'',data.jammed,view].join('/');
       if(needsPaint||signature!==lastPaintSignature){renderer.render(scene,camera);renderedFrames++;lastPaintSignature=signature;needsPaint=false;}else skippedFrames++;
     }
-    function setTheme(dark){scene.background=new T.Color(dark?0x242c28:0xf3f0e8);scene.fog=new T.Fog(scene.background,8,18);materials.floor.color.set(dark?0x666c60:0xe9e4d9);materials.seam.color.set(dark?0x575e53:0xd7d2c8);renderer.toneMappingExposure=dark?1.05:1.17;needsPaint=true;}
+    function setTheme(dark){scene.background=new T.Color(dark?0x20334a:0xeef6ff);scene.fog=new T.Fog(scene.background,8,18);materials.floor.color.set(dark?0x2a3d54:0xe4eef9);materials.seam.color.set(dark?0x36506c:0xcfdcec);materials.concrete.color.set(dark?0x30455e:0xc5d2e1);hemi.color.set(dark?0xdfe9f7:0xf4f8ff);hemi.groundColor.set(dark?0x2a3a50:0xa3b2c4);renderer.toneMappingExposure=dark?1.05:1.17;needsPaint=true;}
     function resize(){const w=Math.max(1,host.clientWidth),h=Math.max(1,host.clientHeight);renderer.setSize(w,h,false);camera.aspect=w/h;camera.updateProjectionMatrix();needsPaint=true;}
     function projectPoint(x,z,y=.75){const v=new T.Vector3(x,y,z).project(camera);return{x:(v.x+1)*host.clientWidth/2,y:(1-v.y)*host.clientHeight/2,visible:v.z<1&&v.z>-1};}
     function geometryMeasurements(){
