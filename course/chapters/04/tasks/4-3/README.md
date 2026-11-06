@@ -22,6 +22,8 @@
 
 修改源码后，在仓库目录运行 `node scripts/build.mjs 4-3` 可重新生成三个离线入口。
 
+**统一任务页外壳（原地模式）**：有 `src/stations.js` 时，构建把标注、预测、评估三个实验放进同一个文档（不再用 iframe 与旧的 16:9 外框），由 `shared/lab-shell` 外壳排成“标注 / 预测 / 评估”三个工位：图像画布在左侧大区，原有控件与“试一试”在右侧面板；`predict.html`、`evaluate.html` 打开时分别落在对应工位。面板编排与试一试见 `src/stations.js`、`src/stations.css`；删掉 `stations.js` 即恢复旧版式。
+
 ## 原文依据与网页定位
 
 依据[飞书任务一：标注安全帽并应用YOLO模型](https://my.feishu.cn/wiki/UXc0wYD4JiFgZ1kmKJWcKv4wn4c#RMOxdbvVDorkQwx8CTScWPpLnFc)，快照见[来源10](../../../../../resources/textbook/10_4.YOLO施工视觉识别（4课时）.txt)。对应知识准备1—7：神经网络、素材用途、四种标注、统一规则与YOLO标签、数据划分、训练和推理、结果复核；裂缝量测为原文讨论与扩展。任务4-3编号保留，标注、预测、评估作为三个实验共用一个网页入口。

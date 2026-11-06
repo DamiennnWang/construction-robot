@@ -2,6 +2,7 @@ import {readFileSync, writeFileSync} from 'node:fs';
 import {join} from 'node:path';
 import {fileURLToPath} from 'node:url';
 import {integrateChapter4} from '../../../../../../shared/感知与识别/chapter-layout.mjs';
+import {labShell, hasStations} from '../../../../../../shared/lab-shell/native-layout.mjs';
 
 const HERE = fileURLToPath(new URL('.', import.meta.url));
 const pages = [
@@ -31,6 +32,23 @@ export function buildUnifiedHelmet() {
   }));
   const navigation = pages.map((page, index) => `<button class="shell-tab" id="tab-${page.key}" data-view="${page.key}" role="tab" aria-selected="false" aria-controls="frame-${page.key}" tabindex="-1"><span class="tab-number">0${index + 1}</span><strong>${page.title}</strong><small>${page.description}</small><span class="tab-arrow" aria-hidden="true">↗</span></button>`).join('');
   const frames = pages.map(page => `<iframe id="frame-${page.key}" class="lesson-frame" data-view="${page.key}" title="${page.title}实验" role="tabpanel" aria-labelledby="tab-${page.key}" hidden></iframe>`).join('');
+  if (hasStations('4-3')) {
+    // 统一任务页外壳（原地模式）：三个实验放进同一个文档，成为三个工位；不再用 iframe 与旧的 16:9 外框。
+    const scoped = [read('style.css'), read('page-extra.css'), read('dark-theme.css')].join('\n')
+      .replace(/--(ink|muted|blue|deep|soft|line|paper|good|bad|warn)\b/g, '--h43-$1')
+      .replace(/font-synthesis:none;color:var\(--h43-ink\);background:var\(--h43-paper\)\}/, 'font-synthesis:none}')
+      .replace(/(^|[}\s])main\{/g, '$1#lesson-main{')
+      .replace(/html\[data-theme=dark\] body\{[^}]*\}/, '');
+    const lessons = pages.map(page => `<div class="h43-lesson" id="lesson-${page.key}" data-lesson="${page.key}">${read(page.key + '.body.html')}</div>`).join('');
+    const script = [common, ...pages.map(page => read(page.key + '.js'))].join('\n');
+    for (const page of pages) {
+      const html = `<!doctype html><html lang="zh-CN" data-theme="light"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><meta name="color-scheme" content="light dark"><title>安全帽与 YOLO</title><style>${scoped}</style></head>
+<body data-start-view="${page.key}"><main id="lesson-main"><div id="workbench">${lessons}</div></main><div id="toast" role="status" aria-live="polite"></div><noscript><p>请启用 JavaScript 以使用标注、预测和评估实验。</p></noscript><script>${inlineScript(script)}</script></body></html>`;
+      writeFileSync(join(HERE, '..', page.file), labShell(html, '4-3'));
+      console.log(`built ${page.file} · lab-shell native · start ${page.key}`);
+    }
+    return;
+  }
   for (const page of pages) {
     // Every legacy filename also contains all three lessons for single-file sharing.
     const html = `<!doctype html>
