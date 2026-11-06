@@ -37,12 +37,9 @@
     const c = chapter(n);
     $('ov-kicker').textContent = `${ordinal(n)} · ${c.tasks.length} 项任务`;
     $('ov-name').textContent = c.title;
-    $('ov-desc').textContent = c.description;
     for (const a of [$('ov-name'), $('ov-enter')]) a.href = '#chapter-' + n;
     $('ov-enter').setAttribute('aria-label', `进入${ordinal(n)} ${c.title}`);
     $('ov-info').style.setProperty('--tint', tint(n));
-    $('ov-tasks').innerHTML = c.tasks.map(t => `<a class="mini" href="${esc(taskHref(t))}" data-task="${t.id}" title="${t.id} ${esc(t.title)}：${esc(t.note)}"><i class="thumb"><img alt="" hidden></i><b>${t.id}</b>${progress(t.id) ? '<em>✓</em>' : ''}</a>`).join('');
-    if (stage.webgl) c.tasks.forEach(t => stage.thumb(n, t.id).then(url => { const img = $('ov-tasks').querySelector(`[data-task="${t.id}"] img`); if (img && focus === n) fillThumb(img, url); }));
     $('toc').querySelectorAll('.toc-ch').forEach(sec => { const on = Number(sec.dataset.chapter) === n; sec.classList.toggle('on', on); sec.querySelector('button').setAttribute('aria-current', on ? 'true' : 'false'); });
     $('ov-info').classList.remove('swap'); void $('ov-info').offsetWidth; $('ov-info').classList.add('swap');
   }
@@ -105,13 +102,13 @@
   let shown = null, cameFromOverview = false, token = 0;
   function fillCover(n) {
     const c = chapter(n);
-    $('cv-kicker').textContent = `${ordinal(n)} · ${c.tasks.length} 项任务`;
+    $('cv-kicker').innerHTML = `${ordinal(n)}<span>${c.tasks.length} 项互动任务</span>`;
+    $('cv-side').style.setProperty('--tint', tint(n));
     $('cv-name').textContent = c.title;
     $('cv-lead').textContent = c.description;
-    $('tasks').style.setProperty('--count', c.tasks.length);
-    $('tasks').innerHTML = c.tasks.map(t => {
+        $('tasks').innerHTML = c.tasks.map(t => {
       const done = progress(t.id);
-      return `<a class="task" href="${esc(taskHref(t))}" data-task="${t.id}"><span class="id">${t.id}</span><span class="name">${esc(t.title)}</span><span class="note">${esc(t.note)}</span><span class="state">${done ? `<em>✓ 已完成 ${done} 个工位</em>` : '<span>进入任务</span>'}<span class="go" aria-hidden="true">→</span></span></a>`;
+      return `<a class="task" href="${esc(taskHref(t))}" data-task="${t.id}"><span class="id">${t.id}</span><span class="name">${esc(t.title)}</span><span class="note">${esc(t.note)}</span>${done ? `<em class="done">✓ ${done} 个工位</em>` : ''}<span class="go" aria-hidden="true">→</span></a>`;
     }).join('');
     $('chips').innerHTML = c.tasks.map(t => `<a class="chip" href="${esc(taskHref(t))}" data-task="${t.id}" tabindex="-1"><b>${t.id}</b><span>${esc(t.title)}</span>${progress(t.id) ? '<em>✓</em>' : ''}</a>`).join('');
     $('tasks').querySelectorAll('a').forEach(a => {
@@ -139,8 +136,10 @@
     measure();
   }
   async function route(initial = false) {
-    const n = parse(), my = ++token;
+    /* hashchange 与 popstate 常常一起触发：同一地址只处理一次，不能让第二次把第一次的动画作废 */
+    const n = parse();
     if (n === shown && !initial) return;
+    const my = ++token;
     if (n) {
       const from = shown; shown = n;
       cameFromOverview = !initial && from === null;
@@ -174,8 +173,9 @@
     if (!stage.webgl) return;
     /* 宽屏：书名在左，展台占右侧；窄屏：书名在上，展台在下 */
     const h = innerHeight, info = $('ov-info').getBoundingClientRect(), wide = innerWidth > 900;
-    const coverTop = document.querySelector('.cv-info').getBoundingClientRect().bottom, coverBottom = $('tasks').getBoundingClientRect().top;
-    stage.layout({overview: {left: wide ? info.left : 0, top: wide ? 64 : $('book').getBoundingClientRect().bottom + 4, bottom: Math.max(120, h - info.top + 26)}, cover: {left: 0, top: Math.max(120, coverTop + 4), bottom: Math.max(110, h - coverBottom + 44)}});
+    const list = $('tasks').getBoundingClientRect();
+    stage.layout({overview: {left: wide ? info.left : 0, top: wide ? 64 : $('book').getBoundingClientRect().bottom + 4, bottom: Math.max(110, h - info.top + 20)},
+      cover: wide ? {left: info.left, top: 64, bottom: 40} : {left: 0, top: $('cv-lead').getBoundingClientRect().bottom + 4, bottom: Math.max(110, h - list.top + 40)}});
   }
   addEventListener('resize', measure);
 

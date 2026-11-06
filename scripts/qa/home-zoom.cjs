@@ -114,6 +114,11 @@ async function clickTarget(p, match) {
     await p.click('.task[data-task="3-1"] .name'); await p.waitForURL(/\/tasks\/3-1\//);
     ok(true, 'clicking a task card (anywhere on it) opens the task');
     await p.goBack(); await settle(p, 'chapter');
+    /* 章节页左下“下一章”：直接从第三章切到第四章（推远—转台—推近） */
+    await p.click('.cv-step.is-next'); await p.waitForURL(u => u.hash === '#chapter-4');
+    const switched = await p.waitForFunction(() => { const s = CourseHome.state().stage; return s.chapter === 4 && s.zoom === 1; }, null, {timeout: 8000}).then(() => true, () => false);
+    ok(switched, 'next-chapter card switches straight to chapter 4');
+    await p.goBack(); await settle(p, 'chapter');
     /* 左侧目录：点一章转到这一章，再点一次进入；不再自动轮换 */
     await p.click('#back'); await settle(p, 'overview');
     await p.click('#toc button[data-chapter="7"]'); await settle(p, 'overview');
@@ -137,7 +142,7 @@ async function clickTarget(p, match) {
     const ctx = await context(browser, 1440, 810, 'light'), p = await page(ctx);
     await p.goto(pathToFileURL(path.join(root, 'course/home/index.html')).href + '#chapter-6'); await settle(p, 'chapter');
     ok((await p.evaluate(() => CourseHome.state())).chapter === 6, 'file:// opens chapter 6 directly');
-    await clickTarget(p, t => t.task === '6-2'); await p.waitForURL(/tasks\/6-2\/index\.html/);
+    await clickTarget(p, t => t.task === '6-1'); await p.waitForURL(/tasks\/6-1\/index\.html/);
     ok(p.url().startsWith('file:'), 'file:// task link works', p.url());
     await p.goto(pathToFileURL(path.join(root, 'course/chapters/02/overview/index.html')).href); await p.waitForURL(u => u.hash === '#chapter-2');
     ok(p.url().startsWith('file:') && p.url().includes('course/home/index.html#chapter-2'), 'file:// old cover redirect', p.url());

@@ -196,28 +196,40 @@
     return island.tasks;
   }
 
-  /* 宽屏：两三件排一道浅弧，四五件前后错开、排得更紧；竖屏：两三列网格，往后一排排退。 */
+  /* 章节镜头里任务展品的摆法（只用书名/任务列表右侧的画幅）：
+   * 三件以内平铺成一道浅弧；四件以上主展品在前居中，其余沿身后一道弧排开；竖屏改为网格。 */
   function arrange(island) {
-    const n = island.tasks.length, aspect = width / height, cols = aspect >= 1.15 ? n : Math.min(n, aspect < .7 ? 2 : 3);
-    island.cols = cols;
-    if (cols === n) {
-      const zig = n >= 4, step = zig ? 4.7 : SLOT;
+    const n = island.tasks.length, left = state?.layout.cover.left || 0, aspect = Math.max(200, width - left) / height;
+    island.tasks.forEach(item => { item.slotScale = 1; item.slotYaw = 0; });
+    if (aspect >= .9 && n <= 3) {
+      island.mode = 'row';
       island.tasks.forEach((item, j) => {
-        const x = (j - (n - 1) / 2) * step;
-        item.slot = new T.Vector3(x, 0, -(x * x) / (2 * ARC) - (zig && j % 2 ? 2.6 : 0));
+        const x = (j - (n - 1) / 2) * SLOT;
+        item.slot = new T.Vector3(x, 0, -(x * x) / (2 * ARC));
         item.slotYaw = -x / ARC * .9;
       });
-      island.width = (n - 1) * step + 5.2;
+      island.width = (n - 1) * SLOT + 5.2;
+    } else if (aspect >= .9) {
+      island.mode = 'hero';
+      const others = island.tasks.filter(item => item !== island.hero), k = others.length, span = k > 3 ? 1.35 : 1.1;
+      island.hero.slot = new T.Vector3(0, 0, 1.8); island.hero.slotScale = 1.2;
+      others.forEach((item, j) => {
+        const a = k === 1 ? .9 : -span + 2 * span * j / (k - 1);
+        item.slot = new T.Vector3(6.3 * Math.sin(a), 0, -3.4 * Math.cos(a));
+        item.slotYaw = -a * .35; item.slotScale = .82;
+      });
+      island.width = 2 * 6.3 * Math.sin(span) + 4.6;
     } else {
-      const rows = Math.ceil(n / cols);
+      island.mode = 'grid';
+      const cols = Math.min(n, aspect < .7 ? 2 : 3), rows = Math.ceil(n / cols);
       island.tasks.forEach((item, j) => {
         const row = Math.floor(j / cols), inRow = Math.min(cols, n - row * cols), x = (j % cols - (inRow - 1) / 2) * 4.8;
         item.slot = new T.Vector3(x, 0, -row * 5.4 + (rows - 1) * 2.7);
-        item.slotYaw = 0;
       });
       island.width = (cols - 1) * 4.8 + 5;
     }
-    island.depth = island.tasks.reduce((a, item) => Math.min(a, item.slot.z), 0);
+    const zs = island.tasks.map(item => item.slot.z);
+    island.zmid = (Math.max(...zs) + Math.min(...zs)) / 2;
   }
 
   /* 状态 */
@@ -257,12 +269,11 @@
     camOver.target.set(0, 2.3, R * .7);
     camOver.pos.set(0, 2.3 + Math.sin(.36) * d, R * .7 + Math.cos(.36) * d);
     const island = islands[(state.chapter || state.focus) - 1], c = state.layout.cover, cz = Math.max(160, height - c.top - c.bottom);
-    const w = island.width || 10, depth = island.depth || 0;
-    let dc = Math.max((w / 2) / tanH * 1.03 + 2.2, 3.7 * height / (.92 * cz * 2 * tanV));
-    const tilt = island.cols && island.tasks && island.cols < island.tasks.length ? .62 : .36;
-    if (tilt > .5) dc = Math.max((w / 2) / tanH * 1.08 + 3, 4.3 * height / (.9 * cz * 2 * tanV));
-    camCover.target.set(0, 1.25, R + (tilt > .5 ? 0 : depth * .5));
-    camCover.pos.set(0, 1.25 + Math.sin(tilt) * dc, R + (tilt > .5 ? 0 : depth * .5) + Math.cos(tilt) * dc);
+    const w = island.width || 10, zmid = island.zmid || 0, mode = island.mode || 'row';
+    const tilt = {row: .36, hero: .46, grid: .62}[mode], tall = {row: 3.9, hero: 5.6, grid: 4.3}[mode];
+    const dc = Math.max((w / 2) / tanH * 1.04 + 2.4, tall * height / (.9 * cz * 2 * tanV));
+    camCover.target.set(0, mode === 'hero' ? 1.7 : 1.25, R + zmid);
+    camCover.pos.set(0, camCover.target.y + Math.sin(tilt) * dc, R + zmid + Math.cos(tilt) * dc);
   }
   function resize() {
     width = host.clientWidth || innerWidth; height = host.clientHeight || innerHeight;
@@ -383,7 +394,7 @@
         item.holder.visible = isHero || show > .001;
         item.holder.position.set(item.slot.x * ez, -1.6 * (1 - show) + .28 * item.hover, item.slot.z * ez);
         item.holder.rotation.y = item.slotYaw * ez;
-        item.holder.scale.setScalar(Math.max(.001, (isHero ? 1 - .1 * ez : show * .9) * (1 + .1 * item.hover)));
+        item.holder.scale.setScalar(Math.max(.001, (isHero ? 1 + (item.slotScale - 1) * ez : show * item.slotScale) * (1 + .1 * item.hover)));
         if (!isHero) ringFor(item, item.hover * .9);
         else if (ez > .5) ringFor(item, item.hover * .9);
       }
@@ -431,7 +442,7 @@
   window.HomeStage = {
     webgl: true, focus, enter, leave, thumb,
     on(name, fn) { (listeners[name] ||= []).push(fn); },
-    layout(value) { Object.assign(state.layout, value); dirty = true; },
+    layout(value) { Object.assign(state.layout, value); islands.forEach(island => { if (island.tasks) arrange(island); }); dirty = true; },
     hover(target) {
       if (!target) return setHover(null);
       const island = islands[target.chapter - 1];
