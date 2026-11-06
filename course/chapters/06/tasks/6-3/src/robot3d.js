@@ -79,10 +79,6 @@
     const turret = sub('shoulder-turret', chassis);
     cyl('turret-foot-ring', .225, .035, -.09, .568, .98, 'silver', turret);
     cyl('turret-rotary-bearing', .19, .065, -.09, .615, .98, 'navy', turret);
-    rounded('shoulder-pedestal', .36, .27, .34, -.09, .77, .98, 'white', turret, .06);
-    rounded('shoulder-blue-cheek', .09, .27, .28, -.29, .79, .98, 'blue', turret, .023);
-    rounded('shoulder-access-cover', .08, .18, .21, .113, .79, .98, 'silver', turret, .02);
-    for (const z of [.89, 1.07]) bolt('pedestal-cover-bolt-' + z, .158, .79, z, turret, 'x');
 
     const controls = sub('controls', chassis); controls.position.set(-.23, .59, 1.365); controls.rotation.x = -.32;
     rounded('control-console', .3, .15, .065, 0, 0, 0, 'white', controls, .018);
@@ -100,24 +96,16 @@
     const label = material({ map: labelTexture, roughness: .72 });
     box('engraved-nameplate', .26, .08, .004, -.19, .421, .626, label, chassis);
 
-    // Arm links use their local y axis. A finite IK solution positions both end joints.
-    const arm = sub('articulated-arm'), upper = sub('upper-arm', arm), lower = sub('forearm', arm);
-    const upperLength = .78, lowerLength = .78;
-    function link(parent, length, wide, depth, prefix) {
-      rounded(prefix + '-cast-shell', wide, length - .10, depth, 0, length / 2, 0, 'blue', parent, .045);
-      rounded(prefix + '-ceramic-inlay', wide * .72, length - .22, .035, 0, length / 2, depth / 2 + .004, 'white', parent, .015);
-      rounded(prefix + '-service-seam', wide * .73, .018, .008, 0, length * .7, depth / 2 + .024, 'lightblue', parent, .004);
-      for (const y of [length * .22, length * .78]) bolt(prefix + '-inlay-bolt-' + y, 0, y, depth / 2 + .027, parent);
-    }
-    link(upper, upperLength, .22, .20, 'upper'); link(lower, lowerLength, .17, .16, 'lower');
-    const shoulder = sub('shoulder-joint', arm), elbow = sub('elbow-joint', arm), wrist = sub('wrist-joint', arm);
-    function joint(g, radius, width, prefix) {
-      cyl(prefix + '-bearing-body', radius, width, 0, 0, 0, 'navy', g, 'x');
-      cyl(prefix + '-outer-bearing', radius * .82, width + .01, 0, 0, 0, 'silver', g, 'x');
-      cyl(prefix + '-cover', radius * .66, width + .018, 0, 0, 0, 'white', g, 'x');
-      cyl(prefix + '-axle-cap', radius * .28, width + .025, 0, 0, 0, 'blue', g, 'x');
-    }
-    joint(shoulder, .135, .27, 'shoulder'); joint(elbow, .116, .235, 'elbow'); joint(wrist, .082, .18, 'wrist');
+    // 机械臂本体：全课程统一六轴臂（shared/robot-arm/six-axis-arm.js），坐在回转轴承上，随底盘移动。
+    const ARM = { scale: .0018, upper: 433, fore: 368 };
+    const armHolder = sub('six-axis-arm', turret); armHolder.position.set(-.09, .6475 - window.CourseSixAxisArm.MOUNT_Z * ARM.scale, .98);
+    armHolder.rotation.x = -Math.PI / 2; armHolder.scale.setScalar(ARM.scale);
+    const six = window.CourseSixAxisArm.build(T, { upper: ARM.upper, fore: ARM.fore }); armHolder.add(six.root);
+    for (const o of six.meshes) { geometries.add(o.geometry); parts.push(o); o.userData.part = 'six-axis-arm'; }
+    for (const m of [...Object.values(six.materials), ...six.accent]) ownedMaterials.add(m);
+    assemblies['six-axis-arm'] = six.meshes.length;
+    const upperLength = ARM.upper * ARM.scale, lowerLength = (ARM.fore + 65) * ARM.scale;
+    const shoulder = six.joints[1], elbow = six.joints[2], wrist = six.joints[4];
 
     // Head local z points out from the wall. Stack: abrasive / interface / pad /
     // extraction shroud / motor / force slide. Every movable layer is supported.
@@ -194,10 +182,6 @@
     const hoseMat = material({ color: 0x293941, roughness: .82, bumpMap: hoseTexture, bumpScale: .003 });
     let hose = null, hoseCurve = null, hoseStamp = '', previousBaseX = 0, currentPose = {}, hoseAudit = {}, hoseEnds = null, hoseRebuilds = 0;
     const shoulderPoint = new T.Vector3(), elbowPoint = new T.Vector3(), wristPoint = new T.Vector3();
-    function placeLink(linkObject, from, to, axis) {
-      const along = to.clone().sub(from).normalize(), normal = axis.clone().cross(along).normalize();
-      linkObject.position.copy(from); linkObject.quaternion.setFromRotationMatrix(new T.Matrix4().makeBasis(axis, along, normal));
-    }
     function setPose(p = {}) {
       const x = Number.isFinite(p.x) ? p.x : 0, y = clamp(Number.isFinite(p.y) ? p.y : 1.55, .65, 2.18), z = clamp(Number.isFinite(p.z) ? p.z : .035, .005, .75);
       const service = clamp(p.service || 0, 0, 1), baseX = x * .82, cutaway = clamp(p.cutaway || 0, 0, 1);
@@ -215,19 +199,10 @@
       statusLed.material = p.isolated || !dust.power ? mats.navy : mats.green;
       chassis.position.x = baseX; const travel = baseX - previousBaseX; previousBaseX = baseX;
       for (const wheel of wheels) wheel.rotation.x -= travel / .155;
-      shoulderPoint.set(baseX - .09, .94, .98); wristPoint.set(x, y, z + .44 + slideStroke);
-      const delta = wristPoint.clone().sub(shoulderPoint), d = clamp(delta.length(), .08, upperLength + lowerLength - .001), u = delta.normalize();
-      // A back-and-up elbow preference avoids a sideways flip when the service
-      // pose puts the wrist almost directly above the shoulder.
-      const preferredBend = new T.Vector3(0, .75, 1);
-      const bend = preferredBend.addScaledVector(u, -preferredBend.dot(u)).normalize();
-      const a = (upperLength * upperLength - lowerLength * lowerLength + d * d) / (2 * d), h = Math.sqrt(Math.max(0, upperLength * upperLength - a * a));
-      elbowPoint.copy(shoulderPoint).addScaledVector(u, a).addScaledVector(bend, h);
-      const axis = new T.Vector3().crossVectors(u, bend).normalize();
-      placeLink(upper, shoulderPoint, elbowPoint, axis); placeLink(lower, elbowPoint, wristPoint, axis);
-      shoulder.position.copy(shoulderPoint); elbow.position.copy(elbowPoint); wrist.position.copy(wristPoint);
-      // Joint shafts are normal to the plane of the two actual links.
-      for (const j of [shoulder, elbow, wrist]) j.quaternion.setFromUnitVectors(new T.Vector3(1, 0, 0), axis);
+      wristPoint.set(x, y, z + .44 + slideStroke);
+      // The flange meets the head's rear mount; the tool points into the wall (-z).
+      group.updateMatrixWorld(true); const solved = six.reachWorld(group.localToWorld(wristPoint.clone()), new T.Vector3(0, 0, -1).transformDirection(group.matrixWorld), 0), pts = six.points();
+      shoulderPoint.copy(group.worldToLocal(pts.shoulder)); elbowPoint.copy(group.worldToLocal(pts.elbow)); const wristCentre = group.worldToLocal(pts.wrist);
       head.position.set(x, y, z); disc.rotation.z = p.spin || 0; disc.position.z = -.15 * service; interfacePad.position.z = .004 - .065 * service;
       interfacePad.rotation.z = backingPad.rotation.z = p.spin || 0;
       const force = clamp(Number.isFinite(p.force) ? p.force : 20, 0, 60);
@@ -264,7 +239,7 @@
         hoseCurve.points[0].copy(headPort); hoseCurve.points[7].copy(end);
       }
       hoseAudit = { start: hoseCurve.getPoint(0).toArray(), end: hoseCurve.getPoint(1).toArray(), toolPort: headPort.toArray(), extractorPort: extractorPort.toArray(), connected: dust.connected, intendedServiceGap: dust.connected ? 0 : .15 };
-      currentPose = { x, y, z, service, force, retreat, bump, gap, slideStroke, shoulder: shoulderPoint.toArray(), elbow: elbowPoint.toArray(), wrist: wristPoint.toArray(), upperLength: shoulderPoint.distanceTo(elbowPoint), lowerLength: elbowPoint.distanceTo(wristPoint) };
+      currentPose = { x, y, z, service, force, retreat, bump, gap, slideStroke, shoulder: shoulderPoint.toArray(), elbow: elbowPoint.toArray(), wrist: wristPoint.toArray(), upperLength: shoulderPoint.distanceTo(elbowPoint), lowerLength: elbowPoint.distanceTo(wristCentre), armReachable: solved.reachable };
       group.updateMatrixWorld(true);
     }
     setPose();

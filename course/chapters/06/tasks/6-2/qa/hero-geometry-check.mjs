@@ -8,9 +8,9 @@ import assert from 'node:assert/strict';
 import { createRequire } from 'node:module';
 import { fileURLToPath } from 'node:url';
 const qa=path.dirname(fileURLToPath(import.meta.url)),root=path.dirname(qa),require=createRequire(import.meta.url);
-const T=require(path.resolve(root,'../../../../../../shared/vendor/three-r160.min.js'));
+const T=require(path.resolve(root,'../../../../../shared/vendor/three-r160.min.js'));
 const document={createElement(){return {width:0,height:0,getContext(){return {fillStyle:'',font:'',fillRect(){},fillText(){}};}};}};
-const context={window:{},document,console};vm.createContext(context);vm.runInContext(fs.readFileSync(path.join(root,'src/robot3d.js'),'utf8'),context);
+const context={window:{},document,console};vm.createContext(context);vm.runInContext(fs.readFileSync(path.resolve(root,'../../../../../shared/robot-arm/six-axis-arm.js'),'utf8'),context);vm.runInContext(fs.readFileSync(path.join(root,'src/robot3d.js'),'utf8'),context);
 const robot=context.window.createTilingRobot(T),report={generated:new Date().toISOString(),renderer:'Three.js r160',cases:0,maxJointError:0,maxCupPlaneError:0,maxHoseEndpointError:0,maxReach:0,counts:{},checks:[],limitations:['Does not prove collision clearance along flexible hoses.','Does not replace desktop/mobile/4x visual inspection.','Does not claim the SVG Anatomy audit was run for Three.js.']};
 for(const layout of ['single','dual','quad'])for(const [x,z] of [[-.5,-.65],[.6,.35],[.62,.33]])for(const y of [.1,.3,.014])for(const yaw of [0,4,-4])for(const tilt of [0,9])for(const offsetY of [0,110]){
   const tile={x,z,y,yaw,tilt};robot.update({tile,layout,spread:.6,offsetY,visibility:'clear',force:160});const stats=robot.getStats();
@@ -34,7 +34,7 @@ report.counts={robotMeshes:robot.getStats().meshes,assemblies:robot.getStats().a
 const canvas={style:{},setAttribute(){},addEventListener(){},remove(){}};
 class Renderer {constructor(){this.domElement=canvas;this.shadowMap={};this.capabilities={getMaxAnisotropy:()=>8};this.info={render:{calls:0,triangles:0},memory:{geometries:0}};}setPixelRatio(){}setSize(){}render(){}dispose(){}}
 const context2={window:{THREE:{...T,WebGLRenderer:Renderer}},document:{hidden:false,body:{dataset:{theme:'light'}},addEventListener(){},removeEventListener(){},createElement(){return {width:0,height:0,getContext(){return {fillStyle:'',font:'',fillRect(){},fillText(){},beginPath(){},moveTo(){},bezierCurveTo(){},stroke(){}};}};}},console,matchMedia:()=>({matches:false,addEventListener(){},removeEventListener(){}}),location:{search:''},devicePixelRatio:1,requestAnimationFrame:()=>1,cancelAnimationFrame(){},ResizeObserver:class{observe(){}disconnect(){}},IntersectionObserver:class{observe(){}disconnect(){}}};
-vm.createContext(context2);for(const f of ['robot3d.js','scene3d.js'])vm.runInContext(fs.readFileSync(path.join(root,'src',f),'utf8'),context2);
+vm.createContext(context2);vm.runInContext(fs.readFileSync(path.resolve(root,'../../../../../shared/robot-arm/six-axis-arm.js'),'utf8'),context2);for(const f of ['robot3d.js','scene3d.js'])vm.runInContext(fs.readFileSync(path.join(root,'src',f),'utf8'),context2);
 const scene=context2.window.createTilingScene({clientWidth:1000,clientHeight:550,appendChild(){}});let minimumCorner=Infinity,minimumCupClearance=Infinity;
 for(const layout of ['single','dual','quad'])for(const offsetY of [-220,0,220])for(const spread of [.15,.6,.9]){
   scene.update({stage:'grip',layout,offsetY,offsetX:0,spread,failed:1,peel:true,toolTilt:0,tile:{x:-.5,z:-.65,y:.18,yaw:3,tilt:4},visibility:'clear'});const stats=scene.stats(),pose=stats.renderedTile,position=new T.Vector3(...pose.position),q=new T.Quaternion(...pose.quaternion),inv=q.clone().invert();

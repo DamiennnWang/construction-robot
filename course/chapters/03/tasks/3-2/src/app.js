@@ -111,23 +111,10 @@
    for(const x of [-145,745])for(const y of [-420,420])bolt(base,[x,y,43]);
    for(const y of [-415,415]){box(base,850,12,1,[300,y,44],pale,.3);for(let i=0;i<=42;i++){box(base,1,i%5===0?10:5,.5,[-110+i*20,y+(i%5===0?0:2.5),44.7],steel,.15);}}
    plaque(base,'EDU 6R  /  ROBOTICS LAB',190,17,[170,-456,31]);
-   cylinder(base,103,12,[0,0,51],dark);cylinder(base,91,33,[0,0,72],white);cylinder(base,106,8,[0,0,91],steel);ringBolts(base,[0,0,96],'z',92,8,4);cylinder(base,72,11,[0,0,99],rubber);
-   arm=new THREE.Group();scene.add(arm);let parent=arm;
-   for(let i=0;i<6;i++){const group=new THREE.Group();group.position.set(...M.offsets[i]);group.userData.joint=i;parent.add(group);joints.push(group);parent=group;const m=blue.clone();m.color.setHex(i===0?0x347cf2:0x66809e);selectedMaterials.push(m);}
-   const [j1,j2,j3,j4,j5,j6]=joints;
-   cylinder(j1,69,30,[0,0,12],white);torus(j1,69,1.5,[0,0,24],dark);cylinder(j1,65,10,[0,0,31],selectedMaterials[0]);
-   for(const y of [-53,53])box(j1,93,23,93,[0,y,75],white,7);
-   box(j1,80,84,15,[0,0,41],white,5);for(const y of [-66,66]){cylinder(j1,45,10,[0,y,110],dark,'y');torus(j1,38,2,[0,y-6,110],steel,'y');}
-   // Shoulder covers, output bearings and a tapered upper-arm housing.
-   cylinder(j2,47,102,[0,0,0],steel,'y');cylinder(j2,53,22,[0,-69,0],white,'y');cylinder(j2,39,5,[0,-82,0],selectedMaterials[1],'y');ringBolts(j2,[0,-86,0],'y',44,8,3);cylinder(j2,34,7,[0,61,0],dark,'y');
-   box(j2,89,77,281,[0,0,178],white,13);box(j2,60,4,233,[0,-40,177],shell,1);box(j2,48,4,194,[0,40,177],shell,1);box(j2,33,5,137,[0,-44,179],selectedMaterials[1],1.5);box(j2,68,69,25,[0,0,33],steel,5);box(j2,66,69,25,[0,0,326],steel,5);for(const z of [69,286])for(const x of [-24,24])bolt(j2,[x,-44,z],'y',2.6);
-   cylinder(j3,44,98,[0,0,0],steel,'y');cylinder(j3,49,18,[0,-59,0],white,'y');cylinder(j3,35,4,[0,-70,0],selectedMaterials[2],'y');ringBolts(j3,[0,-74,0],'y',41,8,2.8);cylinder(j3,36,7,[0,53,0],dark,'y');
-   box(j3,253,67,70,[155,0,0],white,11);box(j3,207,4,43,[158,-35,0],shell,1);box(j3,170,4,35,[160,35,0],shell,1);box(j3,160,5,18,[160,-39,0],selectedMaterials[2],1);box(j3,210,22,6,[161,0,37],pale,1);for(const x of [65,247])for(const z of [-20,20])bolt(j3,[x,-38,z],'y',2.4);cylinder(j3,34,17,[294,0,0],steel,'x');
-   // Coaxial wrist J4, a perpendicular J5 and the rotating output flange J6.
-   cylinder(j4,34,47,[23.5,0,0],white,'x');cylinder(j4,35,6,[3,0,0],dark,'x');cylinder(j4,33,5,[46,0,0],selectedMaterials[3],'x');ringBolts(j4,[3,0,0],'x',27,6,2.3);torus(j4,34,1,[36,0,0],steel,'x');
-   for(const y of [-29,29])box(j4,30,12,55,[54,y,0],white,4);
-   cylinder(j5,28,66,[0,0,0],steel,'y');cylinder(j5,31,7,[0,-36,0],white,'y');cylinder(j5,22,4,[0,-42,0],selectedMaterials[4],'y');ringBolts(j5,[0,-45,0],'y',25,6,2);cylinder(j5,26,8,[0,37,0],dark,'y');cylinder(j5,25,49,[37,0,0],white,'x');cylinder(j5,26,6,[63,0,0],steel,'x');
-   cylinder(j6,28,10,[-5,0,0],selectedMaterials[5],'x');cylinder(j6,31,5,[2,0,0],steel,'x');ringBolts(j6,[5,0,0],'x',24,6,2);cylinder(j6,22,6,[7,0,0],dark,'x');
+   // The six-axis arm itself is the course-wide shared model (shared/robot-arm/six-axis-arm.js).
+   for(let i=0;i<6;i++){const m=blue.clone();m.color.setHex(i===0?0x347cf2:0x66809e);selectedMaterials.push(m);}
+   const unified=CourseSixAxisArm.build(THREE,{offsets:M.offsets,materials:{white,shell,dark,steel,rubber,pale},accent:selectedMaterials});
+   arm=unified.root;scene.add(arm);joints.push(...unified.joints);meshCount+=unified.meshes.length;const j6=unified.flange;
    toolRoot=new THREE.Group();toolRoot.rotation.y=Math.PI/2;j6.add(toolRoot);
    gripper=new THREE.Group();toolRoot.add(gripper);cylinder(gripper,23,9,[0,0,16],steel);cylinder(gripper,26,5,[0,0,23],dark);box(gripper,72,49,35,[0,0,43],dark,5);box(gripper,61,4,24,[0,-26,42],blue,1);for(const x of [-24,24])bolt(gripper,[x,-29,42],'y',2.1);for(const y of [-13,13])box(gripper,68,5,6,[0,y,66],steel,1);
    for(const s of [-1,1]){const finger=new THREE.Group();gripper.add(finger);jaws.push(finger);box(finger,17,39,14,[0,0,70],steel,2);box(finger,14,22,57,[0,0,106],dark,2.5);box(finger,6,22,24,[-s*8,0,123],rubber,1);bolt(finger,[0,-13,91],'y',2);}
