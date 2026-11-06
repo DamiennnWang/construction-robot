@@ -4,13 +4,13 @@
  */
 (() => {
   'use strict';
-  const {$, all} = NativeShell;
+  const {$} = NativeShell;
   const h = (tag, cls, ...kids) => { const e = document.createElement(tag); if (cls) e.className = cls; e.append(...kids); return e; };
   const A = () => window.helmetAnnotationState?.(), P = () => window.helmetPredictionState?.(), E = () => window.helmetEvaluationState?.();
 
-  // 旧入口 predict.html / evaluate.html、旧链接 #evaluate?threshold=0.50 都落到对应工位
+  // 旧入口 predict.html / evaluate.html 跳转为 #predict、#evaluate（可带 ?threshold=），落到对应工位
   const [hashId, hashQuery = ''] = location.hash.slice(1).split('?');
-  const startId = ['annotation', 'predict', 'evaluate'].includes(hashId) ? hashId : document.body.dataset.startView || 'annotation';
+  const startId = ['annotation', 'predict', 'evaluate'].includes(hashId) ? hashId : 'annotation';
   history.replaceState(null, '', '#' + startId);
 
   // 原程序用 hidden 控制显隐的元素（答题反馈、零值说明）外面包一层再搬：adopt 只会取消外层的 hidden
@@ -67,8 +67,6 @@
     predict: h('div', 'h43-top h43-top-predict', ...[EL.p.top].filter(Boolean)),
     evaluate: h('div', 'h43-top h43-top-evaluate', ...[EL.e.top].filter(Boolean)),
   };
-  // 外壳的工位条已经说明了在哪一步：原页面的“下一页/返回”跳转、学习卡片不再出现
-  for (const e of all('.next-lesson, .page-next, .lesson-cards:not(:has(.question))')) e.hidden = true;
 
   /* 试一试用到的标记（原页面状态里没有的“做过某事”） */
   const flags = {};
@@ -163,6 +161,8 @@
     for (const [k, top] of Object.entries(tops)) top.hidden = k !== id;
     // 标注台的 R / V / Delete / 方向键快捷键只在标注工位生效（原程序以 #lesson-main.inert 判断）
     if (EL.main) EL.main.inert = id !== 'annotation';
+    // 标注画布按显示宽度计算角点手柄大小；画布搬进大区、尺寸稳定后让原程序重画一次（不改变参考框开关）
+    if (id === 'annotation') for (const t of [80, 400]) setTimeout(() => $('#referenceToggle')?.dispatchEvent(new Event('change')), t);
   };
 
   NativeShell.start({
@@ -215,8 +215,10 @@
       }
     },
   });
-  if (startId !== 'annotation' || hashQuery) {
-    const v = Number(new URLSearchParams(hashQuery).get('threshold'));
-    if (hashQuery && Number.isFinite(v) && v >= 0 && v <= 1) fill($(startId === 'evaluate' ? '#evaluation-threshold' : '#prediction-threshold'), v);
+  // 旧链接带的阈值（#evaluate?threshold=0.50），只在预测、评估工位生效
+  const query = new URLSearchParams(hashQuery).get('threshold');
+  if (startId !== 'annotation' && query !== null && query.trim() !== '') {
+    const v = Number(query);
+    if (Number.isFinite(v) && v >= 0 && v <= 1) fill($(startId === 'evaluate' ? '#evaluation-threshold' : '#prediction-threshold'), v);
   }
 })();
