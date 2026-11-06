@@ -37,6 +37,7 @@ node qa/hero-geometry-check.mjs
 ```
 
 - 当前入口：`src/hero.page.html`、`hero.css`、`hero.app.js`。
+- 统一任务页外壳：`src/stations.js`（三个工位：吸牢再提起 / 看清再对缝 / 压稳再复核，各 4 张“试一试”）与 `src/stations.css`；`build.mjs` 生成原页面后调用 `labShell(html, '6-2')`，有 `stations.js` 时不再套第六章原版式（`chapter-layout.mjs`）。
 - 操作模型：`src/game.model.mjs`，基础公式：`src/model.mjs`。
 - 场景与机械结构：`src/scene3d.js`、`src/robot3d.js`；[建模说明](./src/scene-plan.md)。
 - 当前验证：[三维重做检查记录](./qa/hero-review.md)。`qa/hero-*-actions.json` 可用 anatomy 的 `drive.mjs` 执行。
