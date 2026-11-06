@@ -72,5 +72,10 @@ if config.get('layout')=='chapter-cover':
 extra='<link rel="stylesheet" href="'+relative('shared/workshop/hero-gallery.css')+'">' if config['mode']=='gallery' else ''
 if config.get('layout')=='gallery-workstation':extra+='<link rel="stylesheet" href="'+relative('shared/workshop/gallery-workstation.css')+'">'
 html='<!doctype html><html lang="zh-CN"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><meta name="color-scheme" content="light dark"><title>'+escape(config['title'])+'｜智能建筑机械与机器人</title><link rel="stylesheet" href="'+relative('shared/workshop/ui.css')+'">'+extra+'</head><body><noscript>此课堂需要 JavaScript。请在浏览器中启用脚本后打开。</noscript><script>window.WorkshopPage='+data+';</script>'+''.join(script(s) for s in scripts)+'</body></html>\n'
+# 统一任务页外壳：任务目录里有 src/stations.js 时，在页面末尾加载 shared/lab-shell（见 shared/lab-shell/native-layout.mjs）
+if (home/'src/stations.js').exists():
+    layout=(ROOT/'shared/lab-shell/native-layout.mjs').as_uri()
+    tags=subprocess.run(['node','--input-type=module','-e',f"import {{labShellTags}} from {json.dumps(layout)};process.stdout.write(labShellTags({json.dumps(ident)},'',{json.dumps(str(home))}))"],capture_output=True,text=True,check=True).stdout
+    html=html.replace('</body>',tags+'</body>')
 (home/entry).write_text(html,encoding='utf-8')
 print('Built '+ident+' -> '+str((home/entry).relative_to(ROOT)))

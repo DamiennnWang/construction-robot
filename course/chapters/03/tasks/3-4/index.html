@@ -1199,7 +1199,7 @@ window.ToolView=ToolView;
   ui();view.updateLab(S,1);readouts();run();
 })();
 </script>
-<script data-lab-shell>window.CHAPTER_LAYOUT={"task":"3-4","page":""};
+<script data-lab-shell>window.CHAPTER_LAYOUT={"task":"3-4","page":"","nav":"3-4","chapter":{"title":"第三章 · 机器人结构与运动","href":"course/chapters/03/overview/index.html","tasks":[{"id":"3-1","label":"3-1","short":"构型与空间","href":"course/chapters/03/tasks/3-1/index.html"},{"id":"3-2","label":"3-2","short":"六轴点动","href":"course/chapters/03/tasks/3-2/index.html"},{"id":"3-3a","task":"3-3","page":"reducers","label":"3-3","short":"减速器","href":"course/chapters/03/tasks/3-3/reducers.html"},{"id":"3-3b","task":"3-3","page":"conversion","label":"3-3","short":"运动转换","href":"course/chapters/03/tasks/3-3/conversion.html"},{"id":"3-4","label":"3-4","short":"末端与 TCP","href":"course/chapters/03/tasks/3-4/index.html"},{"id":"3-5","label":"3-5","short":"移动底盘","href":"course/chapters/03/tasks/3-5/index.html"}]}};
 /* 课程任务页外壳（第二章起使用）：页头（本章任务）→ 工位条 → 三维区 + 操作面板。
  * 两种用法：
  *   LabShell.embedded(cfg)  三维区放原版实验页（iframe，嵌入模式只显示三维视图），面板通过 postMessage 驱动原模型。（第二章）
@@ -1589,20 +1589,13 @@ window.ToolView=ToolView;
   window.C2Lab = {start};
 })();
 
-/* 第三章：把原页面装进统一任务页外壳（shared/lab-shell/lab-shell.js 的原地模式）。
+/* 原地模式的统一任务页外壳（全课程共用）：把原页面装进 lab-shell。
  * 原页面的全部元素先移入一个隐藏容器（仍在文档里，原有程序照常工作），
  * 各任务的 src/stations.js 再把需要的三维区和控件搬进外壳。
+ * 章节标题和本章任务列表来自 shared/lab-shell/chapters.json，由 native-layout.mjs 写进 window.CHAPTER_LAYOUT。
  */
 (() => {
   'use strict';
-  const TASKS = [
-    {id: '3-1', label: '3-1', short: '构型与空间', href: 'course/chapters/03/tasks/3-1/index.html'},
-    {id: '3-2', label: '3-2', short: '六轴点动', href: 'course/chapters/03/tasks/3-2/index.html'},
-    {id: '3-3a', label: '3-3', short: '减速器', href: 'course/chapters/03/tasks/3-3/reducers.html'},
-    {id: '3-3b', label: '3-3', short: '运动转换', href: 'course/chapters/03/tasks/3-3/conversion.html'},
-    {id: '3-4', label: '3-4', short: '末端与 TCP', href: 'course/chapters/03/tasks/3-4/index.html'},
-    {id: '3-5', label: '3-5', short: '移动底盘', href: 'course/chapters/03/tasks/3-5/index.html'},
-  ];
   const $ = s => document.querySelector(s);
   const all = s => [...document.querySelectorAll(s)];
 
@@ -1614,10 +1607,10 @@ window.ToolView=ToolView;
   document.addEventListener('input', e => { if (e.target.matches?.('input[type="range"]')) fill(e.target); }, true);
   setInterval(() => document.querySelectorAll('.c2-panel input[type="range"], .c2-strip input[type="range"]').forEach(fill), 250);
 
-  window.C3Shell = {
+  window.NativeShell = window.C3Shell = {
     $, all,
     start(cfg) {
-      const layout = window.CHAPTER_LAYOUT || {};
+      const layout = window.CHAPTER_LAYOUT || {}, chapter = layout.chapter || {};
       const legacy = document.createElement('div');
       legacy.className = 'c3-legacy'; legacy.hidden = true;
       [...document.body.children]
@@ -1625,10 +1618,9 @@ window.ToolView=ToolView;
         .forEach(e => legacy.append(e));
       document.body.append(legacy);
       document.documentElement.dataset.c3Task = layout.task || '';
-      const taskNav = layout.task === '3-3' ? (layout.page === 'conversion' ? '3-3b' : '3-3a') : layout.task;
       LabShell.native({
-        chapter: {title: '第三章 · 机器人结构与运动', href: 'course/chapters/03/overview/index.html'},
-        tasks: TASKS, taskNav, hint: '', progressKey: taskNav,
+        chapter: {title: chapter.title, href: chapter.href},
+        tasks: chapter.tasks || [], taskNav: layout.nav, hint: '', progressKey: layout.nav,
         ...cfg,
       });
     },
