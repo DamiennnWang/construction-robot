@@ -52,6 +52,8 @@ button { cursor:pointer; transition:background .15s, border-color .15s, color .1
   color:var(--course-ink); text-decoration:none; font-weight:700; white-space:nowrap; font-size:14px; background:var(--surface-2);
 }
 .c2-back:hover { color:var(--course-accent); background:var(--blue-soft); }
+.c2-back-chapter { margin-left:4px; padding-left:9px; border-left:1px solid var(--hair); color:var(--course-muted); font-weight:500; font-size:12.5px; }
+@media (max-width:1280px) { .c2-back-chapter { display:none; } }
 .c2-tasks { display:flex; gap:2px; margin:0 auto; padding:3px; border-radius:12px; background:var(--surface-2); overflow-x:auto; }
 .c2-tasks a { padding:5px 16px; border-radius:9px; color:var(--course-muted); text-decoration:none; white-space:nowrap; font-size:14px; }
 .c2-tasks a:hover { color:var(--course-accent); }
@@ -930,7 +932,11 @@ html.lab-native .c2-panel .constraint-cards { height:auto !important; min-height
 
     /* 页头 */
     const top = h('header', 'c2-top course-nav');
-    const back = h('a', 'c2-back', '← ' + cfg.chapter.title); back.href = href(cfg.chapter.href);
+    // 左上角回主页（同章任务在页头中间互相跳转，不必再回章节封面）；主页定位到本章展台
+    const no = (String(cfg.chapter.href || '').match(/chapters\/0?(\d+)\//) || [])[1];
+    const back = h('a', 'c2-back', '← 主页'); back.href = href('course/home/index.html' + (no ? '#chapter-' + no : ''));
+    back.title = '返回课程主页 · ' + cfg.chapter.title;
+    back.append(h('small', 'c2-back-chapter', cfg.chapter.title));
     const tasks = h('nav', 'c2-tasks'); tasks.setAttribute('aria-label', '本章任务');
     for (const t of cfg.tasks) {
       const a = h('a', '', `${t.label || t.id} ${t.short || t.title}`); a.href = href(t.href);

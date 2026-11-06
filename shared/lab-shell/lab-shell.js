@@ -22,7 +22,11 @@
 
     /* 页头 */
     const top = h('header', 'c2-top course-nav');
-    const back = h('a', 'c2-back', '← ' + cfg.chapter.title); back.href = href(cfg.chapter.href);
+    // 左上角回主页（同章任务在页头中间互相跳转，不必再回章节封面）；主页定位到本章展台
+    const no = (String(cfg.chapter.href || '').match(/chapters\/0?(\d+)\//) || [])[1];
+    const back = h('a', 'c2-back', '← 主页'); back.href = href('course/home/index.html' + (no ? '#chapter-' + no : ''));
+    back.title = '返回课程主页 · ' + cfg.chapter.title;
+    back.append(h('small', 'c2-back-chapter', cfg.chapter.title));
     const tasks = h('nav', 'c2-tasks'); tasks.setAttribute('aria-label', '本章任务');
     for (const t of cfg.tasks) {
       const a = h('a', '', `${t.label || t.id} ${t.short || t.title}`); a.href = href(t.href);
