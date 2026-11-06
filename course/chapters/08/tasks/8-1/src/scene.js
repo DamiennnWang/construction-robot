@@ -378,14 +378,27 @@
     craneG.rotation.y = theta;
     const local = (r, y) => V(Math.cos(theta) * r, y, -Math.sin(theta) * r).add(L.mast);
     let jibY = 23.9;
-    const loading = document.createElement('div'); loading.className = 'c8-loading'; loading.textContent = '正在载入挖掘机和塔吊模型…'; host.append(loading);
+    // 挖掘机：第二章 2-1 的同一台（build.mjs 内联 createExcavator，回转平台以上归入 upper 组）。
+    // 回转中心放在原布局的回转位置，整机约 8.5 m 长（工作装置抬起），朝 +x。
+    const exG = group(scene, 'swing'); exG.position.set(L.excavator.x - 1.3, 0, L.excavator.z);
+    let exc = null, exUpper = null;
+    try {
+      exc = global.createExcavator(T, scene, renderer);
+      const rig = global.__excavatorRig;
+      exc.update(0, {amount: 1, running: false, speed: 0, xray: false, tracks: false, smoke: false});
+      scene.remove(rig.root); exG.add(rig.root); exUpper = rig.upper;
+      rig.root.updateMatrixWorld(true);
+      const eb = new T.Box3().setFromObject(rig.root);
+      rig.root.position.y = -eb.min.y;
+      exG.scale.setScalar(8.5 / Math.max(eb.max.x - eb.min.x, .1));
+      machines.excavator = rig;
+    } catch (err) { console.warn('8-1 挖掘机未能生成', err); }
+    const loading = document.createElement('div'); loading.className = 'c8-loading'; loading.textContent = '正在载入塔吊模型…'; host.append(loading);
     const placeMachine = (m, at, ry) => {
       const s = m.root.scale.x, wrap = new T.Group(); wrap.scale.setScalar(1 / s); wrap.add(m.root); wrap.position.copy(at); wrap.rotation.y = ry; return wrap;
     };
     api.ready = (async () => {
       try {
-        const ex = await CourseImportedMachinery.load('excavator');
-        const w = placeMachine(ex, L.excavator, 0); w.userData.pick = 'swing'; scene.add(w); machines.excavator = ex;
         const cr = await CourseImportedMachinery.load('crane');
         const s = cr.root.scale.x, mastLocal = -1.44 / s;
         const cw = placeMachine(cr, V(-mastLocal, 0, 0), 0); craneG.add(cw); machines.crane = cr;
@@ -393,8 +406,8 @@
         // 原模型的小车和吊钩位置固定：取它的顶部高度放自绘小车，再把原吊钩藏起来
         const hb = new T.Box3(); cr.root.traverse(n => { if (n.name === 'hook') { hb.union(new T.Box3().setFromObject(n)); n.visible = false; } });
         if (!hb.isEmpty()) jibY = hb.max.y - .35;
-        cr.pose(0, {manual: {slew: 0}}); ex.pose(0, {manual: {slew: 0}});
-      } catch (err) { console.warn('8-1 外部模型未能载入', err); loading.textContent = '挖掘机/塔吊模型未能载入；其余现场照常可用。'; return; }
+        cr.pose(0, {manual: {slew: 0}});
+      } catch (err) { console.warn('8-1 外部模型未能载入', err); loading.textContent = '塔吊模型未能载入；其余现场照常可用。'; return; }
       loading.remove(); dirty = true;
     })();
 
@@ -506,7 +519,7 @@
       const moving = Math.abs(before - (cam.dist + cam.az + cam.el + cam.target.x + cam.target.y + cam.target.z)) > 1e-4;
       placeCam();
       // 机械动作
-      if (machines.excavator) machines.excavator.pose(0, {manual: {slew: 58 * Math.sin(siteT * .45)}});
+      if (exUpper) exUpper.rotation.y = rad(58 * Math.sin(siteT * .45));
       for (const [i, p] of pulleys.entries()) if (running && S.power === 'on' && motion) p.rotation.z -= dt * (i ? 9 : 17);
       if (running && motion) disk.rotation.y += dt * .8;
       // 吊物升降与摆动
@@ -556,7 +569,9 @@
       return running || moving || hornT < 1.6 || Math.abs(loadY - targetY) > .005 || Math.abs(guardK - (S?.fixed.belt ? 1 : 0)) > .002;
     }
     let last = 0, lastRaf = 0;
-    const draw = dt => { const active = frame(dt); renderer.render(scene, camera); api.frames = (api.frames || 0) + 1; dirty = active; };
+    // 每次出图前核对画布尺寸：外壳搬动三维区、面板隐藏时 ResizeObserver 可能迟迟不回调，首屏会画在 1×1 的画布上
+    const fit = () => { const w = host.clientWidth, h = host.clientHeight; if (!w || !h) return false; const c = renderer.getSize(new T.Vector2()); if (c.x !== w || c.y !== h) resize(); return true; };
+    const draw = dt => { const active = frame(dt); if (fit()) renderer.render(scene, camera); api.frames = (api.frames || 0) + 1; dirty = active; };
     const loop = now => {
       requestAnimationFrame(loop); lastRaf = performance.now();
       const dt = Math.min((now - (last || now)) / 1000, .05); last = now;
@@ -574,7 +589,7 @@
       hemi.intensity = dark ? .8 : 1.25; sun.intensity = dark ? 1.8 : 2.6; renderer.toneMappingExposure = dark ? .9 : .98; dirty = true;
     };
     api.debug = {scene, camera, gun, sprayer};
-    api.renderNow = (dt = 0) => { frame(dt); renderer.render(scene, camera); };
+    api.renderNow = (dt = 0) => { frame(dt); fit(); renderer.render(scene, camera); };
     api.stats = () => ({webgl: true, frames: api.frames || 0, machines: Object.keys(machines).filter(k => machines[k]).length});
     return api;
   }
