@@ -100,3 +100,24 @@ html[data-theme="dark"] .c2-panel :is(.game-primary, button.primary) { backgroun
 .c2-panel .mix-meter .meter i { display:block; height:100%; width:0; border-radius:4px; background:linear-gradient(90deg, #8fb4e6, var(--course-accent)); transition:width .2s; }
 .c2-panel .mix-meter output { text-align:right; }
 .c2-panel #mortarControls .play-row button:disabled { opacity:.45; }
+
+/* 人工砌墙：五步一排，后三步标“难点”；下一步要做的那一格描一圈虚线 */
+.c2-stage-top .c61-steps:not([hidden]) { grid-template-columns:repeat(5, minmax(0, 1fr)) !important; }
+.c2-stage-top .c61-steps button { gap:8px; padding:0 10px !important; white-space:nowrap; }
+.c2-stage-top .c61-steps button span { flex:1 1 auto; min-width:0; overflow:hidden; text-overflow:ellipsis; }
+.c2-stage-top .c61-steps em { flex:none; padding:1px 6px; border-radius:6px; font-style:normal; font-size:11px; font-weight:700; color:#b5591d; background:rgba(214,120,48,.13); }
+html[data-theme="dark"] .c2-stage-top .c61-steps em { color:#f0a46a; background:rgba(240,164,106,.16); }
+.c2-stage-top .c61-steps button.next:not([aria-checked="true"]) { border-style:dashed; border-color:var(--course-accent); }
+.c2-stage-top .c61-steps b { flex:none; }
+
+/* 三维区左上角：这一步要做什么 */
+html.lab-native .c2-native-stage .scene-tag { display:none; }
+.c61-goal {
+  position:absolute; left:12px; top:12px; z-index:3; display:flex; align-items:center; gap:10px; max-width:calc(100% - 330px);
+  padding:6px 12px; border-radius:12px; border:1px solid var(--hair); background:var(--course-surface); box-shadow:var(--shadow-sm);
+  font-size:14px; line-height:1.4; color:var(--course-ink); pointer-events:none;
+}
+.c61-goal[hidden] { display:none; }
+.c61-goal b { flex:none; font-size:12px; color:var(--course-accent); }
+.c61-goal span { min-width:0; overflow:hidden; text-overflow:ellipsis; white-space:nowrap; font-weight:600; }
+.c61-goal i { flex:none; font-style:normal; font-size:12px; font-weight:700; color:var(--good, #1f8a5b); }

@@ -723,6 +723,27 @@ html[data-theme="dark"] .c2-panel :is(.game-primary, button.primary) { backgroun
 .c2-panel .mix-meter .meter i { display:block; height:100%; width:0; border-radius:4px; background:linear-gradient(90deg, #8fb4e6, var(--course-accent)); transition:width .2s; }
 .c2-panel .mix-meter output { text-align:right; }
 .c2-panel #mortarControls .play-row button:disabled { opacity:.45; }
+
+/* 人工砌墙：五步一排，后三步标“难点”；下一步要做的那一格描一圈虚线 */
+.c2-stage-top .c61-steps:not([hidden]) { grid-template-columns:repeat(5, minmax(0, 1fr)) !important; }
+.c2-stage-top .c61-steps button { gap:8px; padding:0 10px !important; white-space:nowrap; }
+.c2-stage-top .c61-steps button span { flex:1 1 auto; min-width:0; overflow:hidden; text-overflow:ellipsis; }
+.c2-stage-top .c61-steps em { flex:none; padding:1px 6px; border-radius:6px; font-style:normal; font-size:11px; font-weight:700; color:#b5591d; background:rgba(214,120,48,.13); }
+html[data-theme="dark"] .c2-stage-top .c61-steps em { color:#f0a46a; background:rgba(240,164,106,.16); }
+.c2-stage-top .c61-steps button.next:not([aria-checked="true"]) { border-style:dashed; border-color:var(--course-accent); }
+.c2-stage-top .c61-steps b { flex:none; }
+
+/* 三维区左上角：这一步要做什么 */
+html.lab-native .c2-native-stage .scene-tag { display:none; }
+.c61-goal {
+  position:absolute; left:12px; top:12px; z-index:3; display:flex; align-items:center; gap:10px; max-width:calc(100% - 330px);
+  padding:6px 12px; border-radius:12px; border:1px solid var(--hair); background:var(--course-surface); box-shadow:var(--shadow-sm);
+  font-size:14px; line-height:1.4; color:var(--course-ink); pointer-events:none;
+}
+.c61-goal[hidden] { display:none; }
+.c61-goal b { flex:none; font-size:12px; color:var(--course-accent); }
+.c61-goal span { min-width:0; overflow:hidden; text-overflow:ellipsis; white-space:nowrap; font-weight:600; }
+.c61-goal i { flex:none; font-style:normal; font-size:12px; font-weight:700; color:var(--good, #1f8a5b); }
 </style><script data-course-navigation src="../../../../../shared/navigation.js"></script><link data-course-theme rel="stylesheet" href="../../../../../shared/styles/theme.css"><script data-course-theme src="../../../../../shared/theme.js"></script></head>
 <body class="iso" data-theme="light"><div class="app">
 <header class="masthead"><a class="brand" href="../../../../../README.md"><span class="brand-mark">筑</span><span>智能建造实验室<small>CONSTRUCTION LAB / 06.01</small></span></a><div class="course-name">砌筑工程<span>从工艺到机器人</span></div><div class="header-tools"><button id="theme" aria-label="切换深浅主题">◐ 深色</button><button id="fullscreen">⛶ 全屏</button><button id="help">使用说明</button></div></header>
@@ -740,14 +761,14 @@ html[data-theme="dark"] .c2-panel :is(.game-primary, button.primary) { backgroun
 <div class="observation"><span class="section-label">现场会发生什么</span><h3 id="issueTitle"></h3><p id="issueText"></p></div>
 <div class="control-block connection"><span class="section-label">这一步，机器人如何介入？</span><h3 id="robotHelpTitle"></h3><p id="robotHelpText"></p><p class="human-note" id="humanStill"></p></div>
 <button class="text-button" id="issuesToRobot">去三维工作站验证 →</button></section>
-<section id="robotControls" data-panel="robot" hidden><div class="control-block"><div class="section-label">同一套核心，换一种进场方式</div><div class="segmented"><button data-platform="fixed" aria-pressed="true">固定工位</button><button data-platform="mobile" aria-pressed="false">移动工位</button></div><p class="small-note" id="platformNote">固定架先安装找正，取料点与墙体目标都在同一基准中表达。</p></div>
+<section id="robotControls" data-panel="robot" hidden><div class="control-block"><div class="section-label">同一台机器人，换一个站位</div><div class="segmented"><button data-platform="fixed" aria-pressed="true">原站位</button><button data-platform="mobile" aria-pressed="false">换站位</button></div><p class="small-note" id="platformNote">底盘停稳、放下支腿，再测出机器人与墙体基准的相对位置，取料点和墙上目标都按这个基准表达。</p></div>
 <div class="control-block"><div class="range-label"><label for="timeline">拆开一次取放</label><output id="timeValue">0%</output></div><input type="range" id="timeline" min="0" max="8" step="0.01" value="0"><div class="play-row"><button class="primary" id="play">▶ 开始演示</button><button id="step">下一步 →</button><select id="speed" aria-label="演示速度"><option value="0.45">慢放</option><option value="0.8" selected>常速</option></select></div><div id="phaseList" class="phase-list"></div><div class="phase-note"><b id="phaseTitle"></b><p id="phaseText"></p></div></div>
 <div class="control-block"><div class="section-label">做一次闭环定位实验</div><label class="toggle-row"><input type="checkbox" id="datumFault"><span>设置站位偏差（18 mm）</span></label><button id="calibrate" class="wide">重新测量基准 → 修正目标</button><div class="feedback" id="robotFeedback" aria-live="polite">先建立共同基准，才知道砖该落在哪里。</div></div>
-<details class="mechanism-details"><summary>看懂机构与供料分工</summary><p>导轨负责平移，升降轴负责高度，旋转夹具决定顺丁方向。砖的几何、夹具位置与读数来自同一模型。</p><p>搅拌、转运、铺灰是材料准备；机器人执行取放还需要持续供砖、结合材料和质量复核。此教具显示预铺砂浆，不代表所有设备都自带供浆装置。</p><label class="range-label" for="explode">展开夹具外壳 <output id="explodeValue">0%</output></label><input id="explode" type="range" min="0" max="1" step="0.01" value="0"></details></section>
+<details class="mechanism-details"><summary>看懂机构与供料分工</summary><p>移动底盘把机器人送到站位；底座回转和大臂、小臂摆动决定夹具到哪里，手腕转动决定顺丁方向。砖的几何、夹具位置与读数来自同一模型。</p><p>搅拌、转运、铺灰是材料准备；机器人执行取放还需要持续供砖、结合材料和质量复核。此教具显示预铺砂浆，不代表所有设备都自带供浆装置。</p><label class="range-label" for="explode">展开夹具外壳 <output id="explodeValue">0%</output></label><input id="explode" type="range" min="0" max="1" step="0.01" value="0"></details></section>
 </aside></main>
 <section class="lesson-band"><div class="lesson-lead"><span class="eyebrow">从手艺，到控制</span><h2 id="takeawayTitle">先看方向，再看联系。</h2></div><article><span>01</span><h3 id="takeawayA">顺丁是朝向</h3><p id="takeawayAText">砖长边顺着墙长是顺砖，垂直墙长是丁砖。</p></article><article><span>02</span><h3 id="takeawayB">平侧是放置面</h3><p id="takeawayBText">平砌与侧砌改变砖的底面，不能把丁砖理解为立起来的砖。</p></article><article><span>03</span><h3 id="takeawayC">组砌要有联系</h3><p id="takeawayCText">既看上下皮错缝，也看墙厚方向拉结。先试排，再铺灰。</p></article></section>
 <footer><span>任务 6-1 · 砌筑工程 <i>/</i> 标准砖组砌与机器人共性原理</span><button id="nextSection">发现人工难点 →</button></footer>
-</div><dialog id="helpDialog"><form method="dialog"><button class="dialog-close" aria-label="关闭说明">×</button></form><span class="eyebrow">任务 6-1 / 教学说明</span><h2>先学砌筑，再理解自动化。</h2><p>第一站：转砖、拼墙、错缝闯关。第二站：改变施工条件，观察问题。第三站：分步操作机器人，用基准偏差实验理解反馈。</p><h3>操作</h3><p>拖动工作台旋转，滚轮或“＋ / −”缩放；“俯视”看墙厚，“正视”看错缝。工作台获得焦点后，方向键转视角，Home复位；机器人页用空格播放或暂停，时间轴可直接定位。手机可上下滚动操作。</p><h3>砖型与墙厚</h3><p>采用普通标准砖240 × 115 × 53 mm，10 mm灰缝仅作本页几何示例。二四墙厚240 mm；一砖半墙由240 + 10 + 115组合为365 mm，常称“三七墙”。口头“三六墙”应核对具体墙厚，本页按365 mm讲解。顺丁描述平面方向，平砌与侧砌描述放置面。</p><h3>模型范围</h3><p>普通砖组砌用于理解工艺；机器人工作台是用于拆解XYZ定位、绕竖轴转向和夹持的教学机构，不对应某台商品设备。固定式与移动式共享的是目标表达、定位、取放、材料协同与反馈，不是相同机械外形。不同设备可能使用大砌块、薄层砂浆或专用胶黏剂。</p><p>墙体画面展示直墙中部的观察窗口，边缘截断不作为完整墙端和转角做法。显示的偏差是人为设定的教学量；预铺灰几何不代表砂浆饱满度、材料强度或现场验收结果。转角、洞口、拉结、收口须按设计与现场工艺处理。</p><h3>资料与说明</h3><div id="sources"><p>教材依据：本项目“resources/textbook/12_6.装饰装修施工分项.txt”及当前教材任务6-1。</p>
+</div><dialog id="helpDialog"><form method="dialog"><button class="dialog-close" aria-label="关闭说明">×</button></form><span class="eyebrow">任务 6-1 / 教学说明</span><h2>先学砌筑，再理解自动化。</h2><p>第一站：转砖、拼墙、错缝闯关。第二站：改变施工条件，观察问题。第三站：分步操作机器人，用基准偏差实验理解反馈。</p><h3>操作</h3><p>拖动工作台旋转，滚轮或“＋ / −”缩放；“俯视”看墙厚，“正视”看错缝。工作台获得焦点后，方向键转视角，Home复位；机器人页用空格播放或暂停，时间轴可直接定位。手机可上下滚动操作。</p><h3>砖型与墙厚</h3><p>采用普通标准砖240 × 115 × 53 mm，10 mm灰缝仅作本页几何示例。二四墙厚240 mm；一砖半墙由240 + 10 + 115组合为365 mm，常称“三七墙”。口头“三六墙”应核对具体墙厚，本页按365 mm讲解。顺丁描述平面方向，平砌与侧砌描述放置面。</p><h3>模型范围</h3><p>普通砖组砌用于理解工艺；机器人是移动底盘加机械臂的教学模型，用于拆解定位、绕竖轴转向和夹持，不对应某台商品设备。固定式与移动式共享的是目标表达、定位、取放、材料协同与反馈，不是相同机械外形。不同设备可能使用大砌块、薄层砂浆或专用胶黏剂。</p><p>墙体画面展示直墙中部的观察窗口，边缘截断不作为完整墙端和转角做法。显示的偏差是人为设定的教学量；预铺灰几何不代表砂浆饱满度、材料强度或现场验收结果。转角、洞口、拉结、收口须按设计与现场工艺处理。</p><h3>资料与说明</h3><div id="sources"><p>教材依据：本项目“resources/textbook/12_6.装饰装修施工分项.txt”及当前教材任务6-1。</p>
 <a href="https://epro.ztu.edu.cn/jjgs/8888889655.chtml" target="_blank" rel="noopener">昭通学院 · 标准砖尺寸规格</a>
 <a href="https://www.gzhsvc.edu.cn/jzsjy/info/1006/2014.htm" target="_blank" rel="noopener">广州华商职业学院 · 顺砖、丁砖教学</a>
 <a href="https://www.fbr.com.au/view/hadrian-x" target="_blank" rel="noopener">FBR · Hadrian X 设备与砌筑系统</a>
@@ -1600,7 +1621,7 @@ const IssuesModel=(()=>{
 const ISSUES={
  joints:{title:'上下皮的竖缝连在一起',text:'只顾一块一块放齐，容易忽略相邻皮的搭接。连续竖缝削弱组砌联系；墙厚方向还需要丁砖拉结。',slider:'上皮错开',min:0,max:62.5,step:0.5,start:0,fix:62.5,hint:'本例一顺一丁，以四分之一模数62.5 mm错开接缝。窗口边缘的截断不是完整墙端做法。',robot:'先排砖，再生成目标',help:'把砖的尺寸、墙厚、上下皮组砌和墙端处理一起编入排布，再给每块砖一个目标位置和朝向。',human:'仍需人工：审核转角、洞口、拉结与收口方案。',unit:'mm'},
  mortar:{title:'每一皮的小差异会积累',text:'铺灰厚薄不一，砖底支承高度就会不同。仅盯末端坐标，不能判断砂浆是否铺满，也不能替代标高检查。',slider:'每层示例厚度偏差',min:0,max:6,step:1,start:4,fix:0,hint:'左段按10 mm水平灰缝示例，右段每层增加所设偏差；四皮之间三道灰缝累积高度差。',robot:'材料协同 + 标高反馈',help:'稳定制备和供料，协调铺灰与放砖，再测量实际砌筑标高。必要时停下调整工艺。',human:'仍需人工：判断材料状态、砂浆饱满度及灰缝质量。',unit:'mm'},
- datum:{title:'动作重复，错误也可能重复',text:'基准有偏差时，机器人可以非常稳定地把每块砖都放偏。施工时必须把墙体目标和设备位置对到同一基准。',slider:'整段墙的示例偏移',min:0,max:30,step:1,start:18,fix:0,hint:'底座上的基准带保持不动；墙体随所设偏差整体偏移。',robot:'测量基准 → 修正目标 → 再复核',help:'固定工位安装后要标定；移动工位换站后要重新定位。用实际测量更新目标，形成反馈。',human:'仍需人工：确认控制线、工作区和重新定位结果。',unit:'mm'}
+ datum:{title:'动作重复，错误也可能重复',text:'基准有偏差时，机器人可以非常稳定地把每块砖都放偏。施工时必须把墙体目标和设备位置对到同一基准。',slider:'整段墙的示例偏移',min:0,max:30,step:1,start:18,fix:0,hint:'地面上弹好的基准线保持不动；墙体随所设偏差整体偏移。',robot:'测量基准 → 修正目标 → 再复核',help:'固定工位安装后要标定；移动工位换站后要重新定位。用实际测量更新目标，形成反馈。',human:'仍需人工：确认控制线、工作区和重新定位结果。',unit:'mm'}
 };
 function issueScene(type,amount){
  const info=ISSUES[type]||ISSUES.joints;amount=Math.max(info.min,Math.min(info.max,Number(amount)||0));
@@ -1778,14 +1799,24 @@ class MasonryScene {
     const light=new THREE.DirectionalLight(0xffffff,2.6);light.position.set(-900,-1100,1800);light.castShadow=true;
     Object.assign(light.shadow.camera,{left:-1500,right:1500,top:1500,bottom:-1500,near:10,far:5000});light.shadow.mapSize.set(2048,2048);light.shadow.normalBias=1.7;light.shadow.bias=-.00012;this.scene.add(light);
     const fill=new THREE.DirectionalLight(0xdce8fa,.8);fill.position.set(1000,800,700);this.scene.add(fill);
-    this.mat={};for(const k of ['base','lo','mid','hi','steel','ink','rubber','brick','lit','mortar','glass'])this.mat[k]=new THREE.MeshStandardMaterial({roughness:k==='rubber'?.98:k==='brick'?.87:.49,metalness:k==='steel'?.57:k==='brick'||k==='mortar'?0:.13});
+    this.mat={};for(const k of ['base','lo','mid','hi','steel','ink','rubber','brick','lit','mortar','glass','chalk'])this.mat[k]=new THREE.MeshStandardMaterial({roughness:k==='rubber'?.98:k==='brick'?.87:.49,metalness:k==='steel'?.57:k==='brick'||k==='mortar'?0:.13});
     this.mat.ghost=new THREE.MeshStandardMaterial({color:0x7395bf,transparent:true,opacity:.20,depthWrite:false,roughness:.9});
     this.mat.slot=new THREE.MeshStandardMaterial({color:0xadc4df,transparent:true,opacity:.65,roughness:.9});
     this.edgeMat=new THREE.LineBasicMaterial({color:0x3b536e,transparent:true,opacity:.25});
-    this.floor=new THREE.Mesh(new THREE.PlaneGeometry(7000,7000),new THREE.ShadowMaterial({opacity:.12}));this.floor.position.z=-133;this.floor.receiveShadow=true;this.scene.add(this.floor);
+    this.floor=this.makeGround();this.scene.add(this.floor);
     this.manualRoot=this.group(this.scene);this.robotRoot=this.group(this.scene);this.makeRobot();this.robotRoot.visible=false;
     this.ray=new THREE.Raycaster();this.pointer=new THREE.Vector2();this.bind();
     this.observer=new ResizeObserver(()=>this.resize());this.observer.observe(host);this.setTheme(false);this.resize();
+  }
+  /* 现场地面：浅色混凝土楼板，向四周淡出；不进取景计算，随画面内容居中铺开 */
+  makeGround(){
+    const a=document.createElement('canvas');a.width=a.height=256;const ac=a.getContext('2d'),gr=ac.createRadialGradient(128,128,40,128,128,128);gr.addColorStop(0,'#fff');gr.addColorStop(.45,'#fff');gr.addColorStop(1,'#000');ac.fillStyle=gr;ac.fillRect(0,0,256,256);
+    const n=document.createElement('canvas');n.width=n.height=256;const nc=n.getContext('2d');nc.fillStyle='#f4f4f4';nc.fillRect(0,0,256,256);
+    let seed=7;const rnd=()=>((seed=(seed*16807)%2147483647)/2147483647);
+    for(let i=0;i<4200;i++){const v=226+Math.floor(rnd()*26);nc.fillStyle=`rgb(${v},${v},${v})`;nc.fillRect(rnd()*256,rnd()*256,1+rnd()*1.6,1+rnd()*1.6);}
+    const alpha=new THREE.CanvasTexture(a),map=new THREE.CanvasTexture(n);map.colorSpace=THREE.SRGBColorSpace;map.wrapS=map.wrapT=THREE.RepeatWrapping;map.repeat.set(9,9);
+    const g=new THREE.Mesh(new THREE.PlaneGeometry(1,1),new THREE.MeshStandardMaterial({color:0xe7e4de,map,alphaMap:alpha,transparent:true,depthWrite:false,roughness:.96,metalness:0}));
+    g.name='site-ground';g.receiveShadow=true;g.position.z=-.8;g.renderOrder=-1;return g;
   }
   clamp(v,a,b){return Math.max(a,Math.min(b,v));}
   group(parent,name=''){const g=new THREE.Group();g.name=name;parent.add(g);return g;}
@@ -1806,8 +1837,8 @@ class MasonryScene {
   meshCount(g){let n=0;g.traverse(o=>{if(o.isMesh)n++;});return n;}
   clear(g){while(g.children.length)g.remove(g.children[0]);}
   setTheme(dark){this.dark=!!dark;
-    const colors=dark?{base:0x29394c,lo:0x5e728b,mid:0x8d9fb2,hi:0xd6e0ea,steel:0xa6b9c9,ink:0x132238,rubber:0x121b2a,brick:0xa6aeb8,lit:0x84b5ff,mortar:0x536477,glass:0x233a57}:{base:0xc4ced8,lo:0x788b9e,mid:0xa2b2c2,hi:0xe2e7ed,steel:0xb9c8d4,ink:0x30475e,rubber:0x263647,brick:0xd2d0ca,lit:0x4b82c9,mortar:0xa5adb3,glass:0x5a7898};
-    for(const key of Object.keys(colors))this.mat[key].color.setHex(colors[key]);this.mat.ghost.color.setHex(dark?0xa0c5fa:0x4c7db7);this.mat.slot.color.setHex(dark?0x6685ac:0xadc4df);this.edgeMat.color.setHex(dark?0xc0d0e0:0x3b536e);this.floor.material.opacity=dark?.23:.12;this.draw();
+    const colors=dark?{base:0x29394c,lo:0x5e728b,mid:0x8d9fb2,hi:0xd6e0ea,steel:0xa6b9c9,ink:0x132238,rubber:0x121b2a,brick:0xa8735e,lit:0x84b5ff,mortar:0x536477,glass:0x233a57,chalk:0xd6e0ea}:{base:0xc4ced8,lo:0x788b9e,mid:0xa2b2c2,hi:0xe2e7ed,steel:0xb9c8d4,ink:0x30475e,rubber:0x263647,brick:0xc98d70,lit:0x4b82c9,mortar:0xa5adb3,glass:0x5a7898,chalk:0x6f8196};
+    for(const key of Object.keys(colors))this.mat[key].color.setHex(colors[key]);this.mat.ghost.color.setHex(dark?0xa0c5fa:0x4c7db7);this.mat.slot.color.setHex(dark?0x6685ac:0xadc4df);this.edgeMat.color.setHex(dark?0xc0d0e0:0x3b536e);this.floor.material.color.setHex(dark?0x5c6875:0xe7e4de);this.draw();
   }
   bind(){let dragging=false,lastX=0,lastY=0,distance=0;
     this.host.addEventListener('pointerdown',e=>{if(e.button!==0)return;dragging=true;distance=0;lastX=e.clientX;lastY=e.clientY;this.host.setPointerCapture(e.pointerId);});
@@ -1819,7 +1850,7 @@ class MasonryScene {
   }
   pick(e){const r=this.host.getBoundingClientRect();this.pointer.set(2*(e.clientX-r.left)/r.width-1,1-2*(e.clientY-r.top)/r.height);this.ray.setFromCamera(this.pointer,this.camera);const hits=this.ray.intersectObjects(this.pickables,false);for(const hit of hits){let p=hit.object,visible=true;while(p){visible=visible&&p.visible;p=p.parent;}if(visible){if(this.onPick)this.onPick(hit.object.userData.pickId);return;}}}
   resize(){const r=this.host.getBoundingClientRect();if(!r.width||!r.height)return;this.renderer.setSize(r.width,r.height,false);this.draw();}
-  setMode(mode){if(!['manual','issues','robot'].includes(mode))mode='manual';const changed=this.mode!==mode;this.mode=mode;this.manualRoot.visible=mode!=='robot';this.robotRoot.visible=mode==='robot';this.floor.position.z=mode==='robot'?-133:-74;if(changed)this.resetView();else this.draw();}
+  setMode(mode){if(!['manual','issues','robot'].includes(mode))mode='manual';const changed=this.mode!==mode;this.mode=mode;this.manualRoot.visible=mode!=='robot';this.robotRoot.visible=mode==='robot';if(changed)this.resetView();else this.draw();}
   setView(view){this.view=view;this.zoom=1;this.yaw=-1.08;this.pitch=this.mode==='robot'?.55:.7;if(view==='top'){this.yaw=-Math.PI/2;this.pitch=Math.PI/2-.001;}else if(view==='front'){this.yaw=-Math.PI/2;this.pitch=.12;}else if(view==='detail'){this.yaw=-1.15;this.pitch=.53;}this.draw();}
   resetView(){this.setView('iso');}
   zoomBy(f){this.zoom=this.clamp(this.zoom*f,.65,3.6);this.draw();}
@@ -1833,17 +1864,12 @@ class MasonryScene {
     const bricks=data.bricks||[],width=data.width||240,length=data.length||Math.max(740,...bricks.map(b=>b.x+b.w)),w=length+170,d=Math.max(width+180,480),mortar=Number.isFinite(+data.mortar)?+data.mortar:10;
     this.manualDimensions={length,width,w,d,height:Math.max(140,...bricks.map(b=>b.z+b.h))};
     const root=this.manualRoot;
-    for(const x of[-w/2+65,w/2-65])for(const y of[-d/2+55,d/2-55]){this.cyl(24,14,x,y,-72,'rubber',root);this.cyl(17,23,x,y,-58,'lo',root);}
-    this.box(w,d,32,0,0,-35,'base',root,'base',7);this.box(w-6,d-6,3,0,0,-3,'hi',root,'working-surface',2);
-    for(const x of[-w/2+20,w/2-20])for(const y of[-d/2+20,d/2-20])this.bolt(x,y,0,root,4);
-    const ry=-d/2+21;this.box(length+50,18,2,0,ry,0,'lo',root,'ruler-strip',1);
-    for(let i=0;i<=24;i++){const major=i%4===0,len=major?14:8;this.box(1.5,len,.5,-length/2+i*length/24,ry-9+len/2,2,'hi',root,'ruler-tick',0);}
+    const ry=-d/2+21;
     this.box(164,26,1.5,0,ry+32,0,'hi',root,'wall-direction-plate',1);
     if(!this.directionMaterial){const c=document.createElement('canvas');c.width=640;c.height=104;const ctx=c.getContext('2d');ctx.fillStyle='#e2e7ed';ctx.fillRect(0,0,640,104);ctx.fillStyle='#30475e';ctx.font='600 51px sans-serif';ctx.textAlign='center';ctx.textBaseline='middle';ctx.fillText('墙长方向  →',320,52);const tex=new THREE.CanvasTexture(c);tex.colorSpace=THREE.SRGBColorSpace;this.directionMaterial=new THREE.MeshBasicMaterial({map:tex,polygonOffset:true,polygonOffsetFactor:-1});}
     const directionFace=new THREE.Mesh(this.geo('wall-direction-face',()=>new THREE.PlaneGeometry(160,26)),this.directionMaterial);directionFace.position.set(0,ry+32,1.6);root.add(directionFace);
-    for(const x of[-length/2-12,length/2+12])this.box(12,30,10,x,width/2+28,0,'mid',root,'end-guide',1);
-    this.box(length+3,2,0.4,0,-width/2-7,0,'lo',root,'wall-front-datum',0);
-    for(const x of[-length/2,length/2])this.box(2,width+30,.4,x,0,0,'lo',root,'wall-end-datum',0);
+    this.box(length+240,2.5,.6,0,-width/2-7,0,'chalk',root,'wall-front-datum',0);
+    for(const x of[-length/2,length/2])this.box(2.5,width+90,.6,x,0,0,'chalk',root,'wall-end-datum',0);
     const content=this.group(root,'wall-content');content.position.set(-length/2,-width/2,0);
     const courseGroups=new Map();
     for(const b of bricks){const course=b.course??Math.max(0,Math.round((b.z||0)/(53+mortar)));if(!courseGroups.has(course)){const g=this.group(content,`course-${course}`);g.userData.course=course;courseGroups.set(course,g);this.manualCourses.push(g);}const group=courseGroups.get(course);
@@ -1858,9 +1884,6 @@ class MasonryScene {
       // A narrow solid insert occupies only the actual open joint interval.
       this.box(Math.min(3,seam.w),seam.d,Math.max(1,seam.h),seam.x,seam.y+seam.d/2,seam.z,'lit',content,'aligned-joint',0);
     }
-    // A real square and level resting beside the trial wall, rather than floating dimensions.
-    this.box(145,10,11,w/2-110,d/2-30,0,'lo',root,'square-long');this.box(10,80,11,w/2-177,d/2-65,0,'lo',root,'square-short');
-    this.box(85,19,12,-w/2+75,d/2-30,0,'mid',root,'spirit-level');this.box(27,10,1,-w/2+75,d/2-30,12,'glass',root,'level-window',1);
     this.applyManualExplode();this.draw();
   }
   makeRobot(){
@@ -1945,10 +1968,10 @@ class MasonryScene {
   updateRobot(state){this.applyRobotPose(state);this.draw();}
   setPlatformQuiet(p){this.platform=p==='mobile'?'mobile':'fixed';this.mobileParts.visible=this.platform==='mobile';this.fixedParts.visible=this.platform==='fixed';}
   draw(){if(!this.renderer||!this.camera)return;const rect=this.host.getBoundingClientRect();if(!rect.width||!rect.height)return;
-    const aspect=rect.width/rect.height,robot=this.mode==='robot',mortar=this.mode==='mortar';this.floor.position.z=robot?(this.platform==='mobile'?-130:-86):mortar?-86:-72;
+    const aspect=rect.width/rect.height,robot=this.mode==='robot',mortar=this.mode==='mortar';
     let box=(mortar?this.mortarBounds:robot?this.robotBounds:this.manualBounds)?.clone(),points=mortar?this.mortarFramePoints:robot?this.robotFramePoints:this.manualFramePoints;
     if(!box||box.isEmpty())box=new THREE.Box3(new THREE.Vector3(-500,-300,-72),new THREE.Vector3(500,300,150));
-    if(robot)box.min.z=this.platform==='mobile'?-130:-86;
+    {const c=box.getCenter(new THREE.Vector3()),sz=box.getSize(new THREE.Vector3()),span=Math.max(sz.x,sz.y,900)*1.9;this.floor.position.set(c.x,c.y,-.8);this.floor.scale.set(span,span,1);}
     if(this.view==='detail'){
       // 砂浆工位近看：滚筒开口与出料位的灰车
       if(mortar){box=new THREE.Box3(new THREE.Vector3(-1150,-450,100),new THREE.Vector3(-150,450,1200));points=null;}
@@ -1969,6 +1992,197 @@ class MasonryScene {
   dispose(){this.observer.disconnect();this.renderer.dispose();for(const geo of this.geometries.values())geo.dispose();for(const mat of Object.values(this.mat))mat.dispose();if(this.directionMaterial){this.directionMaterial.map.dispose();this.directionMaterial.dispose();}this.edgeMat.dispose();this.renderer.domElement.remove();}
 }
 window.MasonryScene=MasonryScene;
+
+/* 机器人取放工位：移动底盘 + 机械臂的砌筑机器人（教学模型，不对应品牌型号）。
+ * 外观和尺度参照第六章 6-2、6-3 的同系机器人：蓝色底盘、白色盖板、深蓝关节、银色轴承环。
+ * 末端是夹砖夹具；取放流程、8 个阶段、18 mm 基准偏差都沿用 RobotModel.robotAt，不改数据模型。
+ * 单位 mm，Z 向上。机械臂只做“底座回转 + 大臂、小臂俯仰 + 手腕转向”，用两段臂的几何关系求关节位置。
+ */
+(() => {
+  const P = MasonryScene.prototype;
+  const K = .72;                       // 底盘与臂截面按 6-2 同系机型的 0.72 倍画，和砖、墙的尺度相称
+  const L1 = 700, L2 = 700;            // 大臂、小臂长度
+  const WRIST = 237;                   // 夹具参考点（砖底）到手腕关节的高度
+  const SHOULDER_Z = (490 + 270) * K;  // 肩关节高度（回转台顶 + 肩座）
+  // 两个站位：原站位、换站位（底盘中心）。回转台在底盘中心前方 230 mm（按比例）。
+  const STATIONS = {fixed: {x: -1010, y: 0}, mobile: {x: -1080, y: 330}};
+  const TURRET_DX = 230 * K;
+  const PALETTE = {
+    light: {rbBlue: 0x2f74c4, rbNavy: 0x1d3f5c, rbWhite: 0xf0f3f5, rbSilver: 0xc3cfd8, rbRed: 0xd9604f, rbAmber: 0xe0a14c, rbGreen: 0x34ad8f, rbScreen: 0x174257},
+    dark: {rbBlue: 0x3b7fcf, rbNavy: 0x1a3550, rbWhite: 0xd9e1e8, rbSilver: 0x9fb0be, rbRed: 0xd9604f, rbAmber: 0xe0a14c, rbGreen: 0x3fbf9e, rbScreen: 0x1d5a72},
+  };
+
+  P.makeRobot = function () {
+    const r = this.robotRoot;
+    for (const k of Object.keys(PALETTE.light)) this.mat[k] = new THREE.MeshStandardMaterial({
+      roughness: k === 'rbSilver' ? .3 : k === 'rbScreen' ? .25 : .4, metalness: k === 'rbSilver' ? .7 : .15});
+    this.mat.rbScreen.emissive = new THREE.Color(0x1d7384); this.mat.rbScreen.emissiveIntensity = .25;
+
+    /* —— 作业面：供料托盘、已砌的两皮墙、目标灰床（原样保留）—— */
+    for (const x of [-575, -285]) for (const y of [-350, -170]) this.box(24, 24, 47, x, y, 0, 'lo', r, 'feed-leg', 2);
+    this.box(350, 240, 16, -430, -260, 47, 'mid', r, 'feed-table', 3);
+    for (const y of [-342, -260, -178]) this.box(330, 49, 11, -430, y, 63, 'hi', r, 'pallet-board', 1.2);
+    for (const x of [-577, -283]) this.box(14, 220, 24, x, -260, 74, 'lo', r, 'feed-guide', 1);
+    this.box(240, 115, 53, -430, 28, 0, 'brick', r, 'spare-brick-1'); this.box(240, 115, 53, -430, 28, 53, 'brick', r, 'spare-brick-2');
+    for (const z of [0, 63]) this.box(740, 240, 10, 310, 110, z, 'mortar', r, `bed-${z}`, 0);
+    for (const b of RobotModel.robotWall().bricks) this.box(b.w, b.d, b.h, b.x + b.w / 2, b.y + b.d / 2, b.z, 'brick', r, b.id);
+    this.targetBed = this.box(115, 240, 10, 302.5, 110, 126, 'mortar', r, 'target-bed', 0);
+    this.targetMarkers = this.group(r, 'target-witness');
+    for (const x of [245, 360]) for (const y of [-10, 230]) this.cyl(3, 1, x, y, 137, 'lit', this.targetMarkers, 'target-corner', 'z', 16);
+    // 灰槽挪到墙后侧，给底盘和机械臂让出位置
+    const sx = -330, sy = 470;
+    this.box(240, 160, 6, sx, sy, 0, 'lo', r, 'mortar-tray'); for (const y of [sy - 77, sy + 77]) this.box(240, 6, 27, sx, y, 6, 'mid', r);
+    for (const x of [sx - 117, sx + 117]) this.box(6, 148, 27, x, sy, 6, 'mid', r);
+    this.box(224, 144, 10, sx, sy, 6, 'mortar', r); this.box(95, 55, 3, sx + 20, sy, 16, 'steel', r, 'trowel'); this.box(13, 55, 17, sx + 20, sy, 19, 'lo', r, 'trowel-handle', 3);
+    // 地面弹线：墙的基准线（机器人测量的就是它）
+    this.box(1100, 4, .6, 310, -24, 0, 'chalk', r, 'datum-line', 0);
+    for (const x of [-60, 680]) this.box(4, 330, .6, x, 110, 0, 'chalk', r, 'datum-end', 0);
+
+    /* —— 换站位：地上留下原站位的轮廓和行驶方向 —— */
+    this.stationTrace = this.group(r, 'station-trace');
+    const f = STATIONS.fixed;
+    for (const [w, d, x, y] of [[620, 6, 0, -317], [620, 6, 0, 317], [6, 640, -310, 0], [6, 640, 310, 0]]) this.box(w, d, .6, f.x + x, f.y + y, 0, 'chalk', this.stationTrace, 'old-footprint', 0);
+    const arrow = this.group(this.stationTrace, 'move-arrow'); arrow.position.set(f.x - 20, 170, 0); arrow.rotation.z = Math.atan2(330, -70);
+    this.box(260, 10, .8, 0, 0, 0, 'lit', arrow, 'arrow-shaft', 0);
+    for (const s of [-1, 1]) { const h = this.box(70, 10, .8, 112, s * 22, 0, 'lit', arrow, 'arrow-head', 0); h.rotation.z = -s * .7; }
+
+    /* —— 移动底盘（随站位整体平移）—— */
+    const base = this.armBase = this.group(r, 'mobile-chassis'); base.scale.setScalar(K);
+    this.box(760, 780, 100, 0, 0, 80, 'rbNavy', base, 'load-bearing-belly', 20);
+    this.box(840, 860, 75, 0, 0, 200, 'rubber', base, 'bumper', 22);
+    this.box(800, 820, 200, 0, 0, 255, 'rbBlue', base, 'drive-shell', 40);
+    this.box(770, 790, 35, 0, 0, 455, 'rbWhite', base, 'service-deck', 10);
+    for (const x of [-265, 265]) for (const y of [-414, 414]) {
+      this.cyl(140, 90, x, y + (y > 0 ? -45 : 45) * 0, 0, 'rubber', base, 'tread', 'y', 36).position.set(x, y - 45, 140);
+      const hub = this.cyl(92, 96, x, y - 48, 140, 'rbSilver', base, 'hub', 'y', 28); hub.position.set(x, y - 48, 140);
+      const inset = this.cyl(63, 103, x, y - 51, 140, 'rbBlue', base, 'hub-inset', 'y', 24); inset.position.set(x, y - 51, 140);
+    }
+    // 支腿：停稳后放下，承担作业时的反力
+    for (const x of [-430, 430]) for (const y of [-300, 300]) {
+      this.box(70, 70, 200, x + Math.sign(x) * 20, y, 230, 'rbNavy', base, 'outrigger-housing', 8);
+      this.cyl(16, 230, x + Math.sign(x) * 20, y, 6, 'rbSilver', base, 'outrigger-leg', 'z', 16);
+      this.cyl(46, 12, x + Math.sign(x) * 20, y, 0, 'rubber', base, 'outrigger-pad', 'z', 24);
+    }
+    // 激光测距头、操作盒、急停
+    this.cyl(64, 18, -270, -240, 490, 'steel', base, 'lidar-pedestal', 'z', 24); this.cyl(58, 38, -270, -240, 508, 'rbScreen', base, 'lidar-window', 'z', 24); this.cyl(61, 16, -270, -240, 546, 'rbWhite', base, 'lidar-cap', 'z', 24);
+    const panel = this.box(250, 60, 120, -250, 250, 490, 'rbWhite', base, 'console', 14); panel.rotation.x = .35;
+    this.box(150, 8, 70, -265, 222, 525, 'rbScreen', base, 'console-screen', 3).rotation.x = .35;
+    this.cyl(23, 7, -160, 236, 560, 'rbAmber', base, 'estop-seat', 'z', 20); this.cyl(18, 20, -160, 236, 567, 'rbRed', base, 'emergency-stop', 'z', 20);
+    this.cyl(6, 6, -330, 236, 556, 'rbGreen', base, 'ready-led', 'z', 12);
+
+    /* —— 回转台与肩座 —— */
+    const turret = this.armTurret = this.group(base, 'turret'); turret.position.set(TURRET_DX, 0, 490);
+    this.cyl(170, 25, 0, 0, 0, 'rbSilver', turret, 'rotary-seat', 'z', 40);
+    this.cyl(146, 50, 0, 0, 25, 'rbNavy', turret, 'rotary-bearing', 'z', 40);
+    this.box(265, 250, 200, 0, 0, 75, 'rbWhite', turret, 'shoulder-pedestal', 34);
+    for (const s of [-1, 1]) this.box(70, 40, 160, 0, s * 140, 170, 'rbBlue', turret, 'shoulder-cheek', 10);
+
+    /* —— 两段臂与关节：各自在局部坐标里沿 +Z 建模，摆姿态时整体对准 —— */
+    const link = (name, len, w, d) => {
+      const g = this.group(r, name);
+      this.box(w, d, len - 100, 0, 0, 50, 'rbBlue', g, 'cast-link', 30);
+      this.box(w * .69, 22, len - 220, 0, -d / 2 - 4, 110, 'rbWhite', g, 'link-cover', 8);
+      this.box(w * .7, 4, 7, 0, -d / 2 - 15, len * .65, 'rbBlue', g, 'cover-seam', 1);
+      for (const z of [len * .21, len * .79]) this.cyl(7, 5, 0, -d / 2 - 15, z, 'steel', g, 'cover-bolt', 'y', 8).position.set(0, -d / 2 - 12, z);
+      g.scale.set(K, K, 1);
+      return g;
+    };
+    this.armUpper = link('upper-arm', L1, 195, 180); this.armFore = link('forearm', L2, 150, 145);
+    const joint = (name, rad, w) => {
+      const g = this.group(r, name);
+      for (const [rr, ww, m] of [[rad, w, 'rbNavy'], [rad * .84, w + 8, 'rbSilver'], [rad * .67, w + 14, 'rbWhite'], [rad * .28, w + 19, 'rbBlue']]) this.cyl(rr, ww, 0, -ww / 2, 0, m, g, 'joint-ring', 'y', 32).position.set(0, -ww / 2, 0);
+      g.scale.setScalar(K);
+      return g;
+    };
+    this.armShoulder = joint('shoulder-joint', 120, 240); this.armElbow = joint('elbow-joint', 102, 210); this.armWristJoint = joint('wrist-joint', 73, 165);
+
+    /* —— 手腕与夹砖夹具：始终竖直向下，绕竖轴转向 —— */
+    this.zCarriage = this.group(r, 'tool');
+    this.wristHousing = this.cyl(48, 1, 0, 0, 0, 'rbWhite', this.zCarriage, 'wrist-housing', 'z', 28);
+    this.cyl(34, 31, 0, 0, 107, 'steel', this.zCarriage, 'rotation-motor'); this.cyl(42, 8, 0, 0, 79, 'lo', this.zCarriage, 'bearing-flange');
+    this.wrist = this.group(this.zCarriage, 'rotating-gripper');
+    this.box(139, 112, 16, 0, 0, 63, 'rbWhite', this.wrist, 'gripper-body', 2);
+    this.jawCovers = [];
+    for (const side of [-1, 1]) {
+      const cover = this.group(this.wrist, `jaw-cover-${side}`); cover.userData.side = side;
+      this.box(7, 156, 23, side * 76.5, 0, 63, 'rbBlue', cover, 'cover-side', 1); this.box(33, 156, 7, side * 59.5, 0, 79, 'rbWhite', cover, 'cover-top', 1);
+      for (const y of [-53, 53]) this.bolt(side * 57, y, 86, cover, 3.6);
+      this.jawCovers.push(cover);
+    }
+    for (const x of [-56, 56]) this.box(24, 16, 8, x, 0, 79, 'lo', this.wrist, 'jaw-guide-saddle');
+    for (const x of [-56, 56]) this.cyl(4, 168, x, -84, 72, 'steel', this.wrist, 'jaw-guide', 'y', 16);
+    this.jaws = [];
+    for (const side of [-1, 1]) {
+      const jaw = this.group(this.wrist, side < 0 ? 'jaw-left' : 'jaw-right'); jaw.userData.side = side;
+      this.box(99, 16, 49, 0, 0, 17, 'rbNavy', jaw, 'jaw-finger', 2); this.box(90, 4, 31, 0, -side * 10, 21, 'rubber', jaw, 'jaw-pad', .7);
+      this.jaws.push(jaw);
+    }
+    // 夹具上的测距传感器：落砖后复测
+    this.box(38, 35, 20, 63, 0, 87, 'lo', this.zCarriage, 'sensor-mount'); this.box(36, 39, 31, 83, 0, 107, 'rbNavy', this.zCarriage, 'sensor-case', 2);
+    this.box(25, 23, 1, 83, 0, 106, 'glass', this.zCarriage, 'sensor-window', .3);
+    this.carriedBrick = this.box(240, 115, 53, 0, 0, 0, 'lit', r, 'active-brick', 1.2);
+
+    this.mobileParts = this.stationTrace; this.fixedParts = this.group(r, 'none');
+    this.armPose = {};
+    this.robotParts = this.meshCount(r);
+    this.robotBounds = this.boundsOf(r); this.cacheRobotFraming();
+  };
+
+  P.cacheRobotFraming = function () {
+    const saved = this.robotState || RobotModel.robotAt(0), unique = new Map();
+    for (const platform of ['fixed', 'mobile']) for (const t of [0, 1, 2, 3, 3.5, 4, 4.5, 5, 6, 7, 8]) {
+      this.applyRobotPose(RobotModel.robotAt(t, {platform, fault: 'offset'}));
+      for (const p of this.pointsOf(this.robotRoot)) { const key = p.map(v => Math.round(v / 5)).join(','); if (!unique.has(key)) unique.set(key, p); }
+    }
+    this.robotFramePoints = [...unique.values()];
+    this.robotBounds = new THREE.Box3().setFromPoints(this.robotFramePoints.map(p => new THREE.Vector3(...p)));
+    this.applyRobotPose(saved);
+  };
+
+  // 把一段臂（局部 +Z 为长度方向、局部 X 为关节轴）摆到 a → b
+  const orient = (obj, a, b, axis) => {
+    const z = b.clone().sub(a).normalize(), y = z.clone().cross(axis).normalize(), x = y.clone().cross(z).normalize();
+    obj.position.copy(a); obj.quaternion.setFromRotationMatrix(new THREE.Matrix4().makeBasis(x, y, z));
+  };
+
+  P.applyRobotPose = function (state) {
+    if (!state) return; this.robotState = state; this.setPlatformQuiet(state.platform || this.platform);
+    const st = STATIONS[this.platform], p = state.tool;
+    this.armBase.position.set(st.x, st.y, 0);
+    // 夹具：参考点在砖底，绕竖轴转到砖的朝向
+    this.zCarriage.position.set(p.x, p.y, p.z); this.wrist.rotation.z = p.yaw;
+    for (const jaw of this.jaws) jaw.position.y = jaw.userData.side * (69.5 + p.open);
+    const b = state.brick; this.carriedBrick.position.set(b.x, b.y, b.z); this.carriedBrick.rotation.z = b.yaw;
+    this.targetBed.scale.z = (state.mortarHeight || 10) / 10; this.targetMarkers.visible = !state.brick.placed;
+    // 回转：底座转向手腕所在方位；两段臂在竖直平面里求肘部位置（肘部朝上）
+    const T = new THREE.Vector3(st.x + TURRET_DX, st.y, 0), W = new THREE.Vector3(p.x, p.y, p.z + WRIST);
+    const heading = Math.atan2(W.y - T.y, W.x - T.x);
+    this.armTurret.rotation.z = heading;
+    const S = new THREE.Vector3(T.x, T.y, SHOULDER_Z), rad = new THREE.Vector3(Math.cos(heading), Math.sin(heading), 0);
+    const rr = Math.hypot(W.x - S.x, W.y - S.y), hh = W.z - S.z, dist = Math.min(L1 + L2 - 1, Math.max(60, Math.hypot(rr, hh)));
+    const ur = rr / dist, uh = hh / dist, a = (L1 * L1 - L2 * L2 + dist * dist) / (2 * dist), h = Math.sqrt(Math.max(0, L1 * L1 - a * a));
+    const er = a * ur - h * uh, eh = a * uh + h * ur;
+    const E = S.clone().addScaledVector(rad, er).add(new THREE.Vector3(0, 0, eh));
+    const axis = new THREE.Vector3(-Math.sin(heading), Math.cos(heading), 0);
+    orient(this.armUpper, S, E, axis); orient(this.armFore, E, W, axis);
+    for (const j of [this.armShoulder, this.armElbow, this.armWristJoint]) { j.position.copy(j === this.armShoulder ? S : j === this.armElbow ? E : W); j.quaternion.setFromUnitVectors(new THREE.Vector3(0, 1, 0), axis); }
+
+    // 手腕竖直段：从夹具顶到手腕关节
+    const top = 138, len = Math.max(10, WRIST - top);
+    this.wristHousing.position.set(0, 0, top); this.wristHousing.scale.z = len;
+    this.armPose = {shoulder: S.toArray(), elbow: E.toArray(), wrist: W.toArray(), reach: Math.hypot(rr, hh), reachLimit: L1 + L2, heading};
+  };
+
+  P.setPlatformQuiet = function (p) { this.platform = p === 'mobile' ? 'mobile' : 'fixed'; if (this.stationTrace) this.stationTrace.visible = this.platform === 'mobile'; };
+  P.setPlatform = function (p) { this.setPlatformQuiet(p); if (this.robotState) this.applyRobotPose({...this.robotState, platform: this.platform}); this.draw(); };
+
+  const setTheme = P.setTheme;
+  P.setTheme = function (dark) {
+    const pal = PALETTE[dark ? 'dark' : 'light'];
+    for (const [k, v] of Object.entries(pal)) this.mat[k]?.color.setHex(v);
+    setTheme.call(this, dark);
+  };
+})();
 
 /* 砂浆机械工位：在同一个三维教学台上加一台倾翻式滚筒砂浆搅拌机、一辆灰车和砌筑位的灰槽。
  * 沿用 MasonryScene 的材质、灯光、毫米尺度和取景方式；只在 mode === 'mortar' 时显示。
@@ -2016,9 +2230,7 @@ window.MasonryScene=MasonryScene;
     const M = k => 'm_' + k;
 
     /* 教学台面（与机器人工作台同一做法） */
-    this.box(3000, 1300, 32, 0, 0, -35, 'base', r, 'mortar-plate', 8); this.box(2988, 1288, 3, 0, 0, -3, 'hi', r, 'mortar-plate-top', .7);
-    for (const x of [-1440, 1440]) for (const y of [-590, 590]) this.bolt(x, y, 0, r, 6);
-    for (const x of [-1380, 1380]) for (const y of [-540, 540]) { this.cyl(45, 16, x, y, -86, 'rubber', r); this.cyl(25, 35, x, y, -70, 'steel', r); }
+    // 不再画实验台底板：搅拌机、灰车和墙都放在现场地面上（地面由 MasonryScene 统一铺）
 
     /* 搅拌机：底架、轮子、支腿、拖杆 */
     const mx = MIXER.x;
@@ -2118,7 +2330,7 @@ window.MasonryScene=MasonryScene;
       for (const p of this.pointsOf(r, true)) pts.set(p.map(v => Math.round(v)).join(','), p);
     }
     this.mortarFramePoints = [...pts.values()];
-    const box = new THREE.Box3(); for (const p of this.mortarFramePoints) box.expandByPoint(new THREE.Vector3(...p)); box.min.z = -86;
+    const box = new THREE.Box3(); for (const p of this.mortarFramePoints) box.expandByPoint(new THREE.Vector3(...p)); box.min.z = 0;
     this.mortarBounds = box;
     this.poseMortar({tilt: 0, cart: {pos: 0}, spin: 0});
   };
@@ -2470,7 +2682,7 @@ window.MasonryScene=MasonryScene;
  const CONTENT={manual:{title:'砖怎样摆，才是一面墙？',subtitle:'转一转砖，拼一皮墙，再让上下皮接缝错开。',eye:'MASONRY / LEARN BY BUILDING',panel:'人工砌筑挑战',tag:'人工砌筑试排台',takeaway:'先看方向，再看联系。',a:['顺丁是朝向','砖长边顺着墙长是顺砖，垂直墙长是丁砖。'],b:['平侧是放置面','平砌与侧砌改变砖的底面，不能把丁砖理解为立起来的砖。'],c:['组砌要有联系','既看上下皮错缝，也看墙厚方向拉结。先试排，再铺灰。']},
  mortar:{title:'砂浆是怎样拌出来的？',subtitle:'投料、开机搅拌、倾翻出料，再把砂浆送到砌筑位。',eye:'MORTAR / MIX · POUR · DELIVER',panel:'砂浆机械',tag:'滚筒砂浆搅拌机 · 教学模型',takeaway:'砌筑离不开稳定的砂浆。',a:['机器代替手拌','砂浆搅拌机把水泥、砂、水拌成砂浆，是砌筑里最早机械化的环节。'],b:['拌匀再出料','没拌匀或稀稠不合适的料，铺灰厚度和灰缝都难控制。'],c:['供料不能断','砂浆要连续送到砌筑位，人工和机器人砌筑都一样。']},
  issues:{title:'人工砌筑，难在哪里？',subtitle:'移动一个参数，看小偏差如何变成一面墙的问题。',eye:'CRAFT / FIND THE DIFFICULTY',panel:'把问题放大看',tag:'直墙中部观察窗口',takeaway:'重复动作，也要持续判断。',a:['体力与节拍','搬砖、铺灰、放砖反复进行。搅拌与运输机械先减轻备料负担。'],b:['基准与材料','砖型、皮数、灰缝和控制线共同约束位置。只看坐标不够。'],c:['节点与复核','洞口、转角和收口更复杂，需要工艺安排与现场判断。']},
- robot:{title:'外形不同，砌砖的核心相同。',subtitle:'观察同一块砖的位移、转向与释放，再用偏差实验理解反馈。',eye:'ROBOTICS / POSITION · ORIENTATION · FEEDBACK',panel:'机器人共性原理',tag:'XYZ + 旋转夹具 · 教学机构',takeaway:'目标、动作、反馈要连起来。',a:['位置 + 姿态','目标不只是落点。顺丁朝向、放置高度和工具接近方向都要确定。'],b:['材料 + 执行','供砖、结合材料与取放相互配合。力控、视觉等是不同设备的实现选择。'],c:['测量 + 人工','移动后重新定位；落砖后复测。材料、节点和成墙质量仍需人工检查。']}};
+ robot:{title:'外形不同，砌砖的核心相同。',subtitle:'观察同一块砖的位移、转向与释放，再用偏差实验理解反馈。',eye:'ROBOTICS / POSITION · ORIENTATION · FEEDBACK',panel:'机器人共性原理',tag:'移动底盘 + 机械臂 · 教学模型',takeaway:'目标、动作、反馈要连起来。',a:['位置 + 姿态','目标不只是落点。顺丁朝向、放置高度和工具接近方向都要确定。'],b:['材料 + 执行','供砖、结合材料与取放相互配合。力控、视觉等是不同设备的实现选择。'],c:['测量 + 人工','移动后重新定位；落砖后复测。材料、节点和成墙质量仍需人工检查。']}};
  try{if(new URLSearchParams(location.search).has('fallback'))throw new Error('requested fallback');scene=new MasonryScene($('stage'),{onPick:id=>manual?.selectSlot(id)});}catch(error){$('stage').replaceChildren();scene=new AnatomyFallback($('stage'),{onPick:id=>manual?.selectSlot(id)});$('fallbackNotice').hidden=false;state.fallback=true;}
  function metrics(labels,values){labels.forEach((s,i)=>text('metricLabel'+i,s));values.forEach((s,i)=>text('metric'+i,s));}
  function renderManual(s){if(state.tab!=='manual')return;scene.setManual(s);text('title',s.title||CONTENT.manual.title);text('subtitle',s.caption||CONTENT.manual.subtitle);text('sceneTag',s.lesson===0?'砖样与墙长基准':'人工砌筑试排台 · '+(s.width===365?'一砖半墙':'24墙'));
@@ -2506,7 +2718,7 @@ window.MasonryScene=MasonryScene;
  $('phaseList').innerHTML=RobotModel.PHASES.map((p,i)=>`<button data-phase="${i}" aria-pressed="${i===0}">${i+1} ${['接近','夹紧','提升','转向','搬运','落砖','松夹','复测'][i]}</button>`).join('');
  document.querySelectorAll('[data-phase]').forEach(b=>b.onclick=()=>{pause();state.t=+b.dataset.phase+.5;renderRobot();});
  $('play').onclick=play;$('step').onclick=()=>{pause();state.t=Math.min(8,Math.floor(state.t)+1);renderRobot();};$('timeline').oninput=e=>{pause();state.t=+e.target.value;renderRobot();};$('speed').onchange=e=>state.speed=+e.target.value;
- document.querySelectorAll('[data-platform]').forEach(b=>b.onclick=()=>{pause();state.platform=b.dataset.platform;state.corrected=false;state.t=0;scene.setPlatform(state.platform);text('platformNote',state.platform==='mobile'?'移动到新工位后，先稳定支承，再重新测量设备与墙体的相对位置。换站定位不等于自动省略。':'固定架先安装找正，取料点与墙体目标都在同一基准中表达。');document.querySelectorAll('[data-platform]').forEach(q=>q.setAttribute('aria-pressed',q===b));renderRobot();});
+ document.querySelectorAll('[data-platform]').forEach(b=>b.onclick=()=>{pause();state.platform=b.dataset.platform;state.corrected=false;state.t=0;scene.setPlatform(state.platform);text('platformNote',state.platform==='mobile'?'底盘开到新站位后，先放下支腿稳住，再重新测量基准；换站后这一步不能省。':'底盘停稳、放下支腿，再测出机器人与墙体基准的相对位置，取料点和墙上目标都按这个基准表达。');document.querySelectorAll('[data-platform]').forEach(q=>q.setAttribute('aria-pressed',q===b));renderRobot();});
  $('datumFault').onchange=e=>{pause();state.fault=e.target.checked;state.corrected=false;state.t=0;renderRobot();};$('calibrate').onclick=()=>{pause();state.corrected=true;state.t=0;renderRobot();};
  $('explode').oninput=e=>{pause();scene.setExplode(+e.target.value);text('explodeValue',Math.round(+e.target.value*100)+'%');};
  document.querySelectorAll('[data-issue]').forEach(b=>b.onclick=()=>{state.issue=b.dataset.issue;state.issueAmount=IssuesModel.ISSUES[state.issue].start;renderIssue();});$('issueAmount').oninput=e=>{state.issueAmount=+e.target.value;renderIssue();};$('fixIssue').onclick=()=>{state.issueAmount=IssuesModel.ISSUES[state.issue].fix;renderIssue();};
@@ -2952,9 +3164,9 @@ window.MasonryScene=MasonryScene;
   };
 })();
 
-/* 任务 6-1 砌筑机器人 —— 原页面的三维工作台、砌筑闯关和机器人取放演示保持不变，搬进统一外壳。
- * 原来的三个学习阶段（先亲手砌一砌 / 发现人工难点 / 再让机器人介入）成为工位，中间加一个“拌砂浆”工位（砂浆搅拌机）。
- * 三维区上方放“选研究对象”：闯关的三关、三种施工问题、固定/移动工位；面板里是原有的改变条件的控件和试一试。
+/* 任务 6-1 砌筑机器人 —— 原页面的三维工作台、砌筑闯关、人工难点实验和机器人取放演示保持不变，搬进统一外壳。
+ * 三个工位：人工砌墙（原“先亲手砌一砌”和“发现人工难点”合并为五步）/ 拌砂浆（砂浆搅拌机）/ 机器人取放。
+ * 三维区上方放“选研究对象”：人工砌墙的五步、机器人的原站位/换站位；面板里是原有的改变条件的控件和试一试。
  */
 (() => {
   'use strict';
@@ -2978,49 +3190,79 @@ window.MasonryScene=MasonryScene;
   // 外壳里已有工位名、引子和小标题：原来的阶段标题、“去下一站”链接、重复的小标签收起
   for (const e of all('#issuesToRobot, #issueControls .section-label, #robotControls .section-label, #mortarControls .section-label')) e.setAttribute('hidden', '');
 
-  /* 三维区上方：人工砌筑的三关（原闯关自带的关卡导航每次重绘都会重建，这里另做一排，调用原接口切关） */
-  const LESSONS = ['认识一块砖', '拼出墙厚', '检查上下皮'];
-  const lessonPicker = document.createElement('div');
-  lessonPicker.className = 'c61-picker';
-  lessonPicker.setAttribute('role', 'radiogroup'); lessonPicker.setAttribute('aria-label', '砌筑关卡');
-  const lessonButtons = LESSONS.map((name, i) => {
+  /* 三维区上方：人工砌墙的五步。前两步动手砌（原闯关第 1、2 关），后三步是人工难点：
+   * 通缝 = 原闯关第 3 关（上下皮错缝），灰缝不匀、基准偏移 = 原“人工难点”实验。 */
+  const STEPS = [
+    {name: '摆砖', lesson: 0, goal: '把砖摆成顺砖、丁砖、侧砖'},
+    {name: '拼墙厚', lesson: 1, goal: '用砖拼满一皮墙厚'},
+    {name: '通缝', lesson: 2, hard: true, goal: '让上下皮的竖缝错开'},
+    {name: '灰缝不匀', issue: 'mortar', hard: true, goal: '每皮差一点，墙顶差多少？'},
+    {name: '基准偏移', issue: 'datum', hard: true, goal: '把墙拉回地上的基准线'},
+  ];
+  const stepPicker = document.createElement('div');
+  stepPicker.className = 'c61-picker c61-steps';
+  stepPicker.setAttribute('role', 'radiogroup'); stepPicker.setAttribute('aria-label', '人工砌墙的步骤');
+  const stepButtons = STEPS.map((st, i) => {
     const b = document.createElement('button');
     b.type = 'button'; b.setAttribute('role', 'radio');
-    b.innerHTML = `<b>${i + 1}</b><span>${name}</span>`;
-    b.addEventListener('click', () => game()?.setLesson(i));
-    lessonPicker.append(b);
+    b.innerHTML = `<b>${i + 1}</b><span>${st.name}</span>${st.hard ? '<em>难点</em>' : ''}`;
+    b.addEventListener('click', () => goStep(i));
+    stepPicker.append(b);
     return b;
   });
-  const syncLessons = s => lessonButtons.forEach((b, i) => {
-    b.setAttribute('aria-checked', String(s.lesson === i));
-    b.classList.toggle('done', Boolean(s.completed?.[i]));
-    b.querySelector('b').textContent = s.completed?.[i] ? '✓' : String(i + 1);
-  });
+  const goStep = i => {
+    const st = STEPS[i], L = lab(); if (!L) return;
+    if (st.issue) {
+      if (L.snapshot().tab !== 'issues') L.setTab('issues');
+      document.querySelector(`[data-issue="${st.issue}"]`)?.click();
+    } else {
+      if (L.snapshot().tab !== 'manual') L.setTab('manual');
+      game()?.setLesson(st.lesson);
+    }
+    // 不等外壳下一次轮询，立刻刷新面板分组和步骤条
+    try { window.c2Lab?.ctx?._state(poll()); } catch {}
+  };
+  const stepOf = s => s.tab === 'issues' ? (s.issue === 'datum' ? 4 : 3) : s.manual.lesson;
+  // 三维区左上角：当前这一步要做什么（代替原来的场景名）
+  const goal = document.createElement('div');
+  goal.className = 'c61-goal'; goal.setAttribute('aria-live', 'polite');
+  EL.stage?.append(goal);
+  const stepDone = s => [s.manual.completed[0], built.size > 0, s.manual.completed[2], fixed.mortar, fixed.datum];
 
-  // 挑战用到的“做到过”标记（原状态只记当前值）
-  let built = new Set(), sawMortar = false, sawDatum = false, robot = {};
+  // 挑战和步骤勾选用到的“做到过”标记（原状态只记当前值）
+  let built = new Set(), sawMortar = false, sawDatum = false, fixed = {}, robot = {};
   const clearMarks = id => {
-    if (id === 'manual') built = new Set();
-    if (id === 'issues') { sawMortar = false; sawDatum = false; }
+    if (id === 'manual') { built = new Set(); sawMortar = false; sawDatum = false; fixed = {}; }
     if (id === 'robot') robot = {};
   };
 
   const STATIONS = [
     {
-      id: 'manual', name: '亲手砌一砌', lead: '在上方选一关：转砖、拼墙厚、让接缝错开。',
+      id: 'manual', name: '人工砌墙', lead: '亲手砌一段墙，找出人工最容易出错的地方。',
       build(c) {
         const g = c.section('砌筑台');
         c.adopt(EL.manual, g);
+        const g1 = c.section('改变它');
+        c.adopt(EL.issueSlider, g1);
+        const g2 = c.section('现场会发生什么');
+        c.adopt(EL.observation, g2);
+        const g3 = c.section('机器人怎样介入');
+        c.adopt(EL.connection, g3);
         c.challenges([
-          {id: 'orient', icon: '🧱', title: '分清顺、丁、侧', hint: '第 1 关：三种摆法', check: s => s.manual.completed[0],
-            result: '顺丁看长边朝哪，平侧看哪个面朝下：丁砖不是立起来的砖。'},
-          {id: 'w240', icon: '📏', title: '拼出 24 墙', hint: '第 2 关：240 mm', check: () => built.has(240),
-            result: '一块丁砖的长边正好跨过 240 mm 墙厚。'},
-          {id: 'w365', icon: '📐', title: '拼出一砖半墙', hint: '第 2 关：365 mm', check: () => built.has(365),
-            result: '240 + 10 + 115 = 365 mm：丁砖、灰缝、顺砖拼成一砖半厚。'},
-          {id: 'bond', icon: '🧩', title: '让上下皮错缝', hint: '第 3 关：调偏移和灰缝', check: s => s.manual.completed[2],
-            result: '顺丁换皮、错开 62.5 mm，竖缝不再上下连通，墙才连成一体。'},
+          {id: 'thick', icon: '📏', title: '拼出墙厚', hint: '第 2 步：240 或 365 mm', check: () => built.size > 0,
+            result: '24 墙一块丁砖正好跨过墙厚；一砖半墙是 240 + 10 + 115 = 365 mm。'},
+          {id: 'bond', icon: '🧩', title: '消掉通缝', hint: '第 3 步：换皮并错开', check: s => s.manual.completed[2],
+            result: '顺丁换皮、错开 62.5 mm，竖缝不再上下连通。机器人也要先排好砖，再给每块砖一个目标。'},
+          {id: 'mortar', icon: '〰', title: '把灰缝调匀', hint: '第 4 步：先放大，再归零', check: () => fixed.mortar,
+            result: '每皮差一点，几皮下来就累计成明显的高差；要靠材料和标高一起控制。'},
+          {id: 'datum', icon: '🎯', title: '对准基准', hint: '第 5 步：把墙拉回基准线', check: () => fixed.datum,
+            result: '基准偏了，每块砖都会稳定地放偏。机器人也一样：先对准共同基准，动作才有意义。'},
         ]);
+        const show = s => {
+          const issue = s.tab === 'issues';
+          g.hidden = issue; g1.hidden = g2.hidden = g3.hidden = !issue;
+        };
+        c.lab.onState(show);
       },
     },
     {
@@ -3045,26 +3287,7 @@ window.MasonryScene=MasonryScene;
       },
     },
     {
-      id: 'issues', name: '人工难点', lead: '在上方选一个问题，先放大它，再修正回来。',
-      build(c) {
-        const g = c.section('改变它');
-        c.adopt(EL.issueSlider, g);
-        const g2 = c.section('现场会发生什么');
-        c.adopt(EL.observation, g2);
-        const g3 = c.section('机器人怎样介入');
-        c.adopt(EL.connection, g3);
-        c.challenges([
-          {id: 'joints', icon: '🧱', title: '消掉通缝', hint: '上下皮通缝：把上皮错开', check: s => s.issue === 'joints' && s.issueAmount >= 10,
-            result: '上皮错开后竖缝不再连通；具体搭接量还要按组砌方案复核。'},
-          {id: 'mortar', icon: '〰', title: '把灰缝调匀', hint: '灰缝不均：先放大，再归零', check: s => sawMortar && s.issue === 'mortar' && s.issueAmount === 0,
-            result: '每层差一点，几皮下来就累计成明显的高差；要靠材料和标高一起控制。'},
-          {id: 'datum', icon: '🎯', title: '对准基准', hint: '基准偏移：把墙拉回基准带', check: s => sawDatum && s.issue === 'datum' && s.issueAmount === 0,
-            result: '基准偏了，每块砖都会稳定地放偏；先对准共同基准，动作才有意义。'},
-        ]);
-      },
-    },
-    {
-      id: 'robot', name: '机器人取放', lead: '在上方选工位，一步步看它取砖、转向、落砖。',
+      id: 'robot', name: '机器人取放', lead: '在上方选站位，一步步看机械臂取砖、转向、落砖。',
       build(c) {
         const g = c.section('拆开一次取放');
         if (EL.platformNote) { EL.platformNote.classList.add('c61-note'); c.adopt(EL.platformNote, g); }
@@ -3077,7 +3300,7 @@ window.MasonryScene=MasonryScene;
         c.challenges([
           {id: 'full', icon: '▶', title: '完整看一次取放', hint: '播放到“复测”', check: () => robot.full,
             result: '先夹紧再提升，先有支承再松夹：位置和姿态都要对。'},
-          {id: 'mobile', icon: '🚚', title: '移动工位也走一遍', hint: '上方换“移动工位”', check: () => robot.mobile,
+          {id: 'mobile', icon: '🚚', title: '换个站位再砌', hint: '上方点“换站位”', check: () => robot.mobile,
             result: '移动到新站位后要先稳住、重新测量，才能用同一套目标。'},
           {id: 'fault', icon: '⚠', title: '找出 18 mm 偏差', hint: '勾选站位偏差，播到复测', check: () => robot.fault,
             result: '动作一样准地重复，砖照样放偏：问题出在基准上。'},
@@ -3088,50 +3311,88 @@ window.MasonryScene=MasonryScene;
     },
   ];
 
+  const syncSteps = s => {
+    const cur = stepOf(s), done = stepDone(s), next = done.findIndex(d => !d);
+    stepButtons.forEach((b, i) => {
+      b.setAttribute('aria-checked', String(i === cur));
+      b.classList.toggle('done', Boolean(done[i]));
+      b.classList.toggle('next', i === next && i !== cur);
+      b.querySelector('b').textContent = done[i] ? '✓' : String(i + 1);
+    });
+    const html = `<b>第 ${cur + 1} 步</b><span>${STEPS[cur].goal}</span>${done[cur] ? '<i>✓ 做到了</i>' : ''}`;
+    if (goal.innerHTML !== html) goal.innerHTML = html;
+  };
+
+  /* 第 1、2 步只有一两块砖：台面按一段 740 mm 长的墙来画，砖放在墙的中间，
+   * 墙长、墙厚的基准线和“墙长方向”标牌一起入画，砖不再是撑满画面的一块蓝色方块。 */
+  const scene = lab()?.scene;
+  if (scene?.setManual) {
+    const setManual = scene.setManual.bind(scene);
+    // 灰缝、基准两个难点：原来把右半段整片涂成高亮蓝，改为统一的砖色，偏差靠灰缝厚度和基准线本身看出来
+    const shift = (b, dx) => b && {...b, x: b.x + dx};
+    scene.setManual = d => setManual(d?.single ? {...d, length: 740, width: 240,
+      bricks: d.bricks.map(b => ({...b, selected: false, x: (740 - b.w) / 2, y: (240 - b.d) / 2}))}
+      // 第 2 步同理：一皮墙厚小样放在一段墙的中间
+      : d?.lesson === 1 && d.length < 740 ? {...d, length: 740, bricks: d.bricks.map(b => shift(b, (740 - d.length) / 2)),
+        slots: d.slots?.map(b => shift(b, (740 - d.length) / 2)), ghost: shift(d.ghost, (740 - d.length) / 2)}
+      : d?.issue === 'mortar' || d?.issue === 'datum' ? {...d, bricks: d.bricks.map(b => ({...b, selected: false}))} : d);
+    if (lab().snapshot().tab === 'manual') game()?.emit();
+  }
+
+  function poll() {
+    const s = lab().snapshot(), m = s.manual, r = s.robot;
+    if (m.lesson === 1 && m.completed[1]) built.add(m.width);
+    if (s.tab === 'issues' && s.issue === 'mortar') { if (s.issueAmount > 0) sawMortar = true; else if (sawMortar) fixed.mortar = true; }
+    if (s.tab === 'issues' && s.issue === 'datum') { if (s.issueAmount > 0) sawDatum = true; else if (sawDatum) fixed.datum = true; }
+    if (s.tab === 'robot' && r.measured) {
+      robot.full = true;
+      if (r.platform === 'mobile') robot.mobile = true;
+      if (r.fault && !r.corrected && r.error > 0) robot.fault = true;
+      if (r.fault && r.corrected && r.error === 0) robot.fixed = true;
+    }
+    return s;
+  }
+
   let lastFeedback = '', lastNoteAt = 0;
   NativeShell.start({
     task: '6-1', title: '砌筑工程与机器人',
     stage: EL.stage,
-    stageTop: [lessonPicker, EL.issuePicker, EL.platformPicker],
+    stageTop: [stepPicker, EL.platformPicker],
     stations: STATIONS,
     hint: '拖动旋转 · 滚轮缩放',
-    current: () => lab()?.snapshot().tab,
-    select: id => lab()?.setTab(id),
+    current: () => { const t = lab()?.snapshot().tab; return t === 'issues' ? 'manual' : t; },
+    select(id) {
+      const t = lab()?.snapshot().tab;
+      if (id === 'manual' && (t === 'manual' || t === 'issues')) return;
+      lab()?.setTab(id);
+    },
     reset(id) {
       clearMarks(id);
       if (id === 'manual') {
         const g = game(); if (!g) return;
         g.width = 240; g.kind = 'header';
         for (const i of [2, 1, 0]) { g.lesson = i; g.reset(); }
+        if (lab().snapshot().tab === 'issues') {
+          for (const k of ['datum', 'mortar']) { document.querySelector(`[data-issue="${k}"]`)?.click(); EL.reset?.click(); }
+          lab().setTab('manual');
+        }
         g.setLesson(0);
       }
       EL.reset?.click();
     },
-    poll() {
-      const s = lab().snapshot(), m = s.manual, r = s.robot;
-      if (m.lesson === 1 && m.completed[1]) built.add(m.width);
-      if (s.issue === 'mortar' && s.issueAmount > 0) sawMortar = true;
-      if (s.issue === 'datum' && s.issueAmount > 0) sawDatum = true;
-      if (s.tab === 'robot' && r.measured) {
-        robot.full = true;
-        if (r.platform === 'mobile') robot.mobile = true;
-        if (r.fault && !r.corrected && r.error > 0) robot.fault = true;
-        if (r.fault && r.corrected && r.error === 0) robot.fixed = true;
-      }
-      return s;
-    },
+    poll,
     build(c) {
       const id = c.station.id;
-      lessonPicker.hidden = id !== 'manual';
-      if (EL.issuePicker) EL.issuePicker.hidden = id !== 'issues';
+      stepPicker.hidden = id !== 'manual';
+      goal.hidden = id !== 'manual';
       if (EL.platformPicker) EL.platformPicker.hidden = id !== 'robot';
       c.stripAdopt([EL.metrics, EL.live]);
       // 原闯关的文字反馈改为三维区上方的提示条
       lastFeedback = game()?.feedback || '';
       c.lab.onState(s => {
-        if (id === 'manual') syncLessons(s.manual);
+        if (id === 'manual') syncSteps(s);
         const g = game(), text = g?.feedback || '';
-        if (id === 'manual' && text && text !== lastFeedback) c.feedback(text, g.feedbackTone === 'retry' ? 'warn' : 'info');
+        if (id === 'manual' && s.tab === 'manual' && text && text !== lastFeedback) c.feedback(text, g.feedbackTone === 'retry' ? 'warn' : g.feedbackTone === 'success' ? 'ok' : 'info');
         lastFeedback = text;
         // 搅拌机的提示（投料、出料、送料）同样转成提示条
         const m = s.mortar;
