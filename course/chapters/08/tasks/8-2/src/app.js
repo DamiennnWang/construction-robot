@@ -1,18 +1,55 @@
-(() => {
- 'use strict';const W=Workshop,$=W.$,M=MaintenanceModel,B=CourseMachines,stage=new CourseStage($('scene'));W.stage=stage;let state=M.initial(),model,residue=[];
- const materials={sprayer:[['compatible','案例资料指定清洗介质'],['unknown','来源不明的溶剂'],['wrong','未核对的替代介质']],pump:[['compatible','案例指定受控清洗方案'],['unknown','清洗路径与回收方式不明'],['wrong','任意加压冲洗']],engine:[['compatible','型号资料指定维护方案'],['unknown','未知机油或冷却介质'],['wrong','不核对型号直接替换']],bearing:[['compatible','案例卡指定润滑品种'],['unknown','标签不明的润滑脂'],['wrong','随意混合不同润滑脂']]};
- function build(){const station=M.stations.find(s=>s.id===state.station);model=B.make(station.model);residue=[];const pos={sprayer:[.65,.7,.1],pump:[2.7,1.8,0],engine:[-.8,1,.92],bearing:[0,1.4,.2]}[state.station];for(let i=0;i<12;i++){const a=i*Math.PI/6;const drop=B.sphere(model.root,state.station==='pump'?.11:.045,'orange',pos[0]+Math.cos(a)*.22,pos[1]+Math.sin(a)*.22,pos[2]);residue.push(drop);}stage.set(model);update();}
- function dispatch(event){const previousStation=state.station;state=M.reduce(state,event);try{localStorage.setItem('course-maintenance-v1',JSON.stringify(state));}catch{}if(previousStation!==state.station)build();render();update();}
- function update(){const w=state.work[state.station];model.pose(0,{clean:w.progress>=1,lubricated:w.progress>=1});residue.forEach((o,i)=>{if(state.station==='bearing'){o.visible=true;o.material.color.setHex(i<w.progress*12?0x2b9e8d:0xd57f36);}else o.visible=i>=w.progress*12;});model.parts.forEach(p=>stage.mark(p.id,w.verified));stage.render();}
- function render(){const s=state,w=s.work[s.station],station=M.stations.find(x=>x.id===s.station);W.tabs(M.stations.map(x=>({id:x.id,label:x.label})),s.station,id=>dispatch({type:'station',value:id}));W.panel(station.label,M.finding(s.station,w),w.handoff?'已移交 · 问题未解决':w.verified?'案例已复查':'班后维护案例');
-  W.select('case','载入情境',M.cases[s.station],w.scenario,value=>dispatch({type:'case',value}));W.button('inspect','检查并记录现象',()=>dispatch({type:'inspect'}),{primary:true});W.button('read','核对型号与案例资料',()=>dispatch({type:'read'}));W.row([['isolate','确认停用与隔离',()=>dispatch({type:'isolate'})],['energy','核对能量确认记录',()=>dispatch({type:'energy'})]]);
-  W.select('material',s.station==='bearing'?'润滑品种':'材料或处理方案',materials[s.station],w.material,value=>dispatch({type:'material',value}));
-  W.button('service',s.station==='bearing'?'按案例条件逐步润滑':s.station==='engine'?'按案例方案逐步维护':'按案例方案逐步清理',()=>dispatch({type:'service'}));W.row([['verify','处理后复查',()=>dispatch({type:'verify'})],['handoff','保留问题并移交',()=>dispatch({type:'handoff'})]]);
-  W.button('export-record','导出课堂维护交接卡',()=>{const blob=new Blob([JSON.stringify({scope:'课堂案例，不是维修许可',records:state.records,work:state.work},null,2)],{type:'application/json'});const url=URL.createObjectURL(blob),a=document.createElement('a');a.href=url;a.download='课堂维护交接卡.json';a.click();setTimeout(()=>URL.revokeObjectURL(url),1000);});
-  W.button('reset-all','清空记录并重新开始',()=>{state=M.initial();try{localStorage.removeItem('course-maintenance-v1');}catch{}build();render();});
-  const completed=Object.values(s.work).filter(x=>x.verified).length,pending=(s.records||[]).filter(x=>!x.resolved).length;W.metrics([['处理进度',Math.round(w.progress*100)+'%','观察部件残留或润滑变化'],['案例复查',completed+' / 4','仅指给定课堂条件'],['移交未解决',pending+' 项','切换案例仍保留记录']]);W.feedback(s.message,s.error);
-  W.details('<ul class="check-list">'+[['现象已记录',w.inspected],['资料已核对',w.read],['停用与隔离已核对',w.isolated],['能量条件已核对',w.energyChecked],['处理后已复查',w.verified]].map(([l,v])=>`<li class="${v?'checked':''}">${l}</li>`).join('')+'</ul><div class="summary-box"><b>案例资料卡</b><br>'+W.esc(w.scenario==='unknown'?'型号/材料资料缺失，请保持待确认。':'本案例指定采用列表中的“案例资料指定”材料/方案，作业前核对停用、隔离和能量记录。资料未给出通用换油周期或润滑用量。')+'<br>残余压力：'+(w.pressure?'待核对':'无/已确认')+'；温热状态：'+(w.hot?'待确认':'案例条件已知')+(w.handoff?'<br><b>待处理：</b>'+w.unresolved.map(W.esc).join('；'):'')+'</div>');
-  $('scene-label').textContent=station.label+' · '+M.cases[s.station].find(x=>x[0]===w.scenario)[1];
- }
- stage.onPart=p=>{stage.focus(p.id);W.feedback(p.description||'观察当前部件，再记录现象和核对案例资料。');};window.MaintenanceLab={dispatch,state:()=>JSON.parse(JSON.stringify(state)),stage:()=>({webgl:!!stage.renderer,...stage.stats})};try{const saved=JSON.parse(localStorage.getItem('course-maintenance-v1'));if(saved&&M.stations.some(s=>s.id===saved.station)&&M.stations.every(s=>saved.work?.[s.id])&&Array.isArray(saved.records))state=saved;}catch{}build();render();
+/* 任务 8-2：状态 + 存储 + 三维场景的连接。对外接口 window.MaintLab（供 stations.js 和验收脚本使用）。 */
+(function () {
+  'use strict';
+  const M = window.MaintModel, KEY = 'course-maintenance-v2';
+  let state = M.initial();
+  try {
+    const saved = JSON.parse(localStorage.getItem(KEY) || 'null');
+    if (saved && M.IDS.includes(saved.station) && M.IDS.every(id => saved.work?.[id]) && Array.isArray(saved.records)) {
+      state = {...M.initial(), ...saved, message: '', error: false, last: null};
+    }
+  } catch {}
+  const listeners = new Set();
+  const save = () => { try { localStorage.setItem(KEY, JSON.stringify({...state, message: '', error: false})); } catch {} };
+  const scene = window.MaintScene.create(document.getElementById('m82Stage'));
+
+  function dispatch(event) {
+    state = M.reduce(state, event);
+    save();
+    scene?.sync(state, event);
+    listeners.forEach(fn => { try { fn(state, event); } catch (e) { console.warn(e); } });
+    return state;
+  }
+  if (scene) {
+    scene.onPoint = id => {
+      const w = state.work[state.station];
+      // 检查完的点再点一次：挖掘机工位加注；其他情况只是把镜头拉近
+      if (w.checked[id] && state.station === 'excavator' && !w.done[id]) dispatch({type: 'service', point: id});
+      else if (w.checked[id]) { scene.focus(id); listeners.forEach(fn => fn(state, {type: 'look', point: id})); }
+      else dispatch({type: 'inspect', point: id});
+    };
+    scene.sync(state, null);
+  }
+
+  function exportRecord() {
+    const data = {说明: '课堂案例交接卡，不是维修许可', 记录: state.records.map(r => ({
+      工位: M.STATIONS[r.station].label, 情境: M.label(M.STATIONS[r.station].cases, r.scenario),
+      结果: r.resolved ? '已复查' : '已移交 · 未解决', 待处理: r.unresolved,
+    }))};
+    const url = URL.createObjectURL(new Blob([JSON.stringify(data, null, 2)], {type: 'application/json'}));
+    const a = document.createElement('a'); a.href = url; a.download = '班后维护交接卡.json'; a.click();
+    setTimeout(() => URL.revokeObjectURL(url), 1000);
+  }
+
+  window.MaintLab = {
+    state: () => JSON.parse(JSON.stringify(state)),
+    dispatch, exportRecord,
+    onChange(fn) { listeners.add(fn); return () => listeners.delete(fn); },
+    focus: id => scene?.focus(id),
+    frame: () => scene?.frame(),
+    top: () => scene?.top(),
+    readouts: () => scene?.readouts() || {temp: state.work.engine.temp, pressure: state.work.excavator.pressure, crank: 0},
+    stats: () => scene?.stats() || {webgl: false},
+    reset() { state = M.initial(); save(); scene?.sync(state, {type: 'case'}); listeners.forEach(fn => fn(state, {type: 'reset-all'})); },
+  };
 })();

@@ -37,7 +37,7 @@
 .c8-found span.on { border:1px solid var(--ok-line); background:var(--ok-soft); color:var(--ok); font-weight:700; }
 
 /* 现场运行状态 + 急停 */
-.c8-run { display:grid; grid-template-columns:auto 1fr; grid-template-rows:auto auto; column-gap:10px; align-items:center; padding:9px 12px; border-radius:12px; background:var(--surface-2); border:1px solid var(--hair); }
+.c8-run { display:grid; grid-template-columns:auto 1fr; grid-template-rows:auto auto; column-gap:10px; align-items:center; padding:7px 12px; border-radius:12px; background:var(--surface-2); border:1px solid var(--hair); }
 .c8-run i { grid-row:span 2; width:12px; height:12px; border-radius:50%; background:var(--course-muted); }
 .c8-run.on i { background:var(--ok); box-shadow:0 0 0 4px var(--ok-soft); animation:c8-pulse 1.2s ease-in-out infinite; }
 .c8-run.ready i { background:var(--course-accent); box-shadow:0 0 0 4px var(--blue-soft); }
@@ -54,18 +54,34 @@
 
 /* 复位前核对 */
 .c8-checks { display:grid; grid-template-columns:1fr 1fr; gap:6px; }
-.c8-check { display:flex; flex-direction:column; gap:2px; padding:7px 10px; border-radius:10px; background:var(--surface-2); border:1px solid var(--hair); font-size:12.5px; color:var(--course-muted); }
+.c8-check { display:flex; flex-direction:column; gap:1px; padding:5px 10px; border-radius:10px; background:var(--surface-2); border:1px solid var(--hair); font-size:12.5px; color:var(--course-muted); }
 .c8-check b { font-size:14px; color:var(--course-ink); }
 .c8-check.ok { border-color:var(--ok-line); background:var(--ok-soft); }
 .c8-check.ok b { color:var(--ok); }
 .c8-check.no b { color:var(--warn); }
 
-/* 原页面的复查记录（#details）搬进面板 */
-.c2-panel #details .check-list { display:none; gap:12px; margin:0; padding:0; font-size:12.5px; line-height:1.6; color:var(--course-muted); }
-.c2-panel #details .check-list li::before { color:var(--course-muted); }
-.c2-panel #details .check-list li.checked { color:var(--ok); }
-.c2-panel #details .check-list li.checked::before { color:var(--ok); }
-.c2-panel #details .summary-box { margin-top:0; padding:9px 11px; border-radius:10px; border:1px solid var(--hair); background:var(--surface-2); font-size:12.5px; line-height:1.65; color:var(--course-ink); }
+/* 未找到的危险：问号 */
+.c8-hazards .c8-ico.q { display:grid; place-items:center; width:20px; height:20px; border-radius:50%; background:var(--hair); color:var(--course-muted); font-size:12px; font-weight:800; }
+.c8-hazards button:not(.found) b { color:var(--course-muted); font-weight:500; }
+.c8-card.empty p { margin:0; color:var(--course-muted); }
+.c8-card .c8-do.ev span { background:var(--ok-soft); color:var(--ok); }
 
-/* 原 ui.css 的场景底色在外壳里铺满 */
-html.lab-native #scene.c2-native-stage { min-height:0 !important; flex:none; }
+/* 能量隔离三行 */
+.c8-energy { display:grid; gap:6px; }
+.c8-erow { display:grid; grid-template-columns:auto 1fr auto; align-items:center; gap:10px; padding:6px 10px; border-radius:12px; border:1px solid var(--hair); background:var(--surface-2); }
+.c8-erow.no { border-color:color-mix(in srgb, var(--warn) 45%, var(--hair)); }
+.c8-erow.ok { border-color:var(--ok-line); background:var(--ok-soft); }
+.c8-eico { font-size:20px; line-height:1; }
+.c8-einfo { display:flex; flex-direction:column; min-width:0; }
+.c8-einfo b { font-size:14px; }
+.c8-einfo span { font-size:12.5px; color:var(--warn); }
+.c8-erow.ok .c8-einfo span { color:var(--ok); }
+.c8-erow .c2-btn { min-width:84px; }
+
+/* 复查进度：六格 */
+.c8-steps { display:grid; grid-template-columns:repeat(6, 1fr); gap:5px; }
+.c8-steps span { display:grid; place-items:center; height:30px; border-radius:9px; border:1px dashed var(--course-line); font-size:15px; opacity:.45; }
+.c8-steps span.f { opacity:1; border:1px solid color-mix(in srgb, var(--warn) 55%, transparent); background:var(--warn-soft); }
+.c8-steps span.mid { opacity:1; border:1px solid color-mix(in srgb, var(--course-accent) 55%, transparent); background:var(--blue-soft); }
+.c8-steps span.ok { opacity:1; border:1px solid var(--ok-line); background:var(--ok-soft); }
+.c8-check.no b { color:var(--warn); }

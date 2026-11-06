@@ -1,1 +1,2074 @@
-<!doctype html><html lang="zh-CN"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><meta name="color-scheme" content="light dark"><title>安全操作 · 现场暂停推演｜智能建筑机械与机器人</title><link rel="stylesheet" href="../../../../../shared/workshop/ui.css"><script data-course-navigation src="../../../../../shared/navigation.js"></script><link data-course-theme rel="stylesheet" href="../../../../../shared/styles/theme.css"><script data-course-theme src="../../../../../shared/theme.js"></script></head><body><noscript>此课堂需要 JavaScript。请在浏览器中启用脚本后打开。</noscript><script>window.WorkshopPage={"mode": "safety", "title": "安全操作 · 现场暂停推演", "kicker": "TASK 8-1 / SITE SAFETY", "lead": "暂停现场，找出六类危险。处理问题后复查，再区分复位与重新启动。", "boundary": "危险区域与能量状态均为课堂案例，不给通用安全距离，也不生成真实作业放行。", "help": "点击场景标记发现风险，按当前条件选择处理动作。急停复位不会自动启动；仍有待处理危险时不能重新运行。", "chapterTitle": "第八章 · 安全操作与维护", "id": "8-1", "chapter": 8, "chapterEntry": "course/chapters/08/overview/index.html", "nav": [{"id": "8-1", "label": "8-1 安全操作", "file": "course/chapters/08/tasks/8-1/index.html"}, {"id": "8-2", "label": "8-2 保养排查", "file": "course/chapters/08/tasks/8-2/index.html"}]};</script><script src="../../../../../shared/vendor/three-r160.min.js"></script><script src="../../../../../shared/navigation.js"></script><script src="../../../../../shared/workshop/shell.js"></script><script src="../../../../../shared/workshop/machines.js"></script><script src="../../../../../shared/workshop/machine-models.js"></script><script src="../../../../../shared/workshop/stage.js"></script><script src="./src/model.js"></script><script src="./src/app.js"></script><link data-lab-shell rel="stylesheet" href="../../../../../shared/lab-shell/lab-shell.css"><link data-lab-shell rel="stylesheet" href="../../../../../shared/lab-shell/native.css"><link data-lab-shell rel="stylesheet" href="src/stations.css"><script data-lab-shell>window.CHAPTER_LAYOUT={"task":"8-1","page":"","nav":"8-1","chapter":{"title":"第八章 · 安全操作与维护","href":"course/chapters/08/overview/index.html","tasks":[{"id":"8-1","label":"8-1","short":"安全操作","href":"course/chapters/08/tasks/8-1/index.html"},{"id":"8-2","label":"8-2","short":"保养排查","href":"course/chapters/08/tasks/8-2/index.html"}]}};</script><script data-lab-shell src="../../../../../shared/lab-shell/lab-shell.js"></script><script data-lab-shell src="../../../../../shared/lab-shell/native.js"></script><script data-lab-shell src="src/stations.js"></script></body></html>
+<!doctype html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<meta name="color-scheme" content="light dark">
+<title>8-1 安全操作｜智能建筑机械与机器人</title>
+<style>/* 8-1 页面自身样式：三维现场铺满外壳三维区；危险标签、载入提示。外壳样式在 shared/lab-shell。 */
+html, body { margin:0; height:100%; }
+.c8-site { position:relative; width:100%; height:100vh; overflow:hidden; background:#dfe9f3; touch-action:none; outline:none; }
+.c8-site canvas { display:block; width:100%; height:100%; cursor:grab; }
+.c8-site:focus-visible { box-shadow:inset 0 0 0 3px rgba(36,103,201,.5); }
+.c8-labels { position:absolute; inset:0; pointer-events:none; z-index:2; }
+.c8-labels[hidden] { display:none; }
+.c8-pin {
+  position:absolute; left:0; top:0; pointer-events:auto; cursor:pointer; white-space:nowrap;
+  padding:4px 10px; border-radius:999px; border:1.5px solid #f0a020; background:rgba(255,250,238,.94); color:#7a4b00;
+  font:600 12.5px/1.3 "PingFang SC","Microsoft YaHei",sans-serif; box-shadow:0 2px 10px rgba(30,40,60,.18);
+}
+.c8-pin::after { content:""; position:absolute; left:50%; bottom:-7px; width:2px; height:6px; margin-left:-1px; background:#f0a020; }
+.c8-pin.fixed { border-color:#2467c9; color:#1c4f9a; background:rgba(238,245,255,.95); }
+.c8-pin.fixed::after { background:#2467c9; }
+.c8-pin.ok { border-color:#1f8a5b; color:#15663f; background:rgba(234,248,240,.95); }
+.c8-pin.ok::after { background:#1f8a5b; }
+.c8-pin.on { box-shadow:0 0 0 3px rgba(240,160,32,.35), 0 2px 10px rgba(30,40,60,.2); transform-origin:center; font-size:13.5px; }
+.c8-loading, .c8-fallback {
+  position:absolute; left:50%; top:50%; transform:translate(-50%,-50%); z-index:3; margin:0;
+  padding:10px 16px; border-radius:12px; background:rgba(255,255,255,.9); color:#29435d; font:14px "PingFang SC","Microsoft YaHei",sans-serif; box-shadow:0 4px 18px rgba(20,40,70,.15);
+}
+.c8-fallback { max-width:80%; text-align:center; }
+.c8-loading { top:auto; bottom:16px; transform:translateX(-50%); font-size:13px; }
+html[data-theme="dark"] .c8-site { background:#1b2738; }
+html[data-theme="dark"] .c8-pin { background:rgba(46,36,16,.92); color:#ffd391; }
+html[data-theme="dark"] .c8-pin.fixed { background:rgba(20,36,60,.92); color:#a9ccff; border-color:#8abaff; }
+html[data-theme="dark"] .c8-pin.ok { background:rgba(16,44,32,.92); color:#8fe0b6; border-color:#5cc597; }
+html[data-theme="dark"] :is(.c8-loading, .c8-fallback) { background:rgba(20,32,48,.9); color:#d7e5f5; }
+</style>
+<style data-lab-shell>/* 第二章任务页：一屏放下（16:9 屏幕不出现纵向滚动），菜单两层，蓝白配色。 */
+:root {
+  --course-bg:#edf4fc; --course-surface:#fff; --course-ink:#193550; --course-muted:#57718b;
+  --course-line:#cbdbea; --course-accent:#2467c9; --blue-soft:#e6f0ff;
+  --accent-2:#1c55ad; --surface-2:#f5f8fd; --hair:#e1eaf4;
+  --ok:#1f8a5b; --ok-soft:#e5f6ee; --ok-line:#a8dcc2; --warn:#c77a12; --warn-soft:#fdf2e1; --bad:#c2413b; --bad-soft:#fbe7e5;
+  --focus:#f0a020;
+  --shadow-sm:0 1px 2px rgba(18,44,78,.06);
+  --shadow:0 1px 2px rgba(18,44,78,.05), 0 6px 22px rgba(18,44,78,.08);
+  --shadow-lg:0 10px 34px rgba(18,44,78,.18);
+  --page-bg:linear-gradient(180deg,#eef4fc 0%,#e7eff9 100%);
+}
+html[data-theme="dark"] {
+  --accent-2:#b5d3ff; --surface-2:#1d324b; --hair:#2b4562;
+  --ok:#5cc597; --ok-soft:#173a2d; --ok-line:#2f6b51; --warn:#f0b35a; --warn-soft:#3b2d16; --bad:#f08079; --bad-soft:#3d1f1f;
+  --shadow-sm:0 1px 2px rgba(0,0,0,.25); --shadow:0 1px 2px rgba(0,0,0,.25), 0 8px 24px rgba(0,0,0,.28); --shadow-lg:0 12px 34px rgba(0,0,0,.45);
+  --page-bg:linear-gradient(180deg,#112035 0%,#0d1a2b 100%);
+}
+* { box-sizing:border-box; }
+[hidden] { display:none !important; }
+html, body { margin:0; height:100%; }
+body {
+  display:grid; grid-template-rows:auto auto minmax(0,1fr); height:100vh; height:100dvh; overflow:hidden;
+  background:var(--page-bg); color:var(--course-ink);
+  font:14px/1.5 "Microsoft YaHei","PingFang SC","Hiragino Sans GB","Segoe UI",sans-serif;
+  -webkit-font-smoothing:antialiased;
+}
+button, input, select { font:inherit; color:inherit; }
+button { cursor:pointer; transition:background .15s, border-color .15s, color .15s, box-shadow .15s, transform .15s; }
+:focus-visible { outline:3px solid color-mix(in srgb, var(--course-accent) 60%, transparent); outline-offset:2px; }
+
+/* —— 页头：本章任务 —— */
+.c2-top {
+  display:flex; align-items:center; gap:14px; height:50px; padding:0 18px;
+  background:var(--course-surface); border-bottom:1px solid var(--hair); box-shadow:var(--shadow-sm);
+}
+.c2-back {
+  display:inline-flex; align-items:center; gap:6px; height:32px; padding:0 12px 0 10px; border-radius:16px;
+  color:var(--course-ink); text-decoration:none; font-weight:700; white-space:nowrap; font-size:14px; background:var(--surface-2);
+}
+.c2-back:hover { color:var(--course-accent); background:var(--blue-soft); }
+.c2-tasks { display:flex; gap:2px; margin:0 auto; padding:3px; border-radius:12px; background:var(--surface-2); overflow-x:auto; }
+.c2-tasks a { padding:5px 16px; border-radius:9px; color:var(--course-muted); text-decoration:none; white-space:nowrap; font-size:14px; }
+.c2-tasks a:hover { color:var(--course-accent); }
+.c2-tasks a[aria-current="page"] { background:var(--course-surface); color:var(--course-accent); font-weight:700; box-shadow:var(--shadow-sm); }
+.c2-top .course-theme-toggle { margin-left:0 !important; height:32px !important; min-height:32px !important; border-radius:16px !important; }
+
+/* —— 工位条 —— */
+.c2-bar { display:flex; align-items:center; gap:20px; padding:12px 18px 10px; }
+.c2-title { display:flex; align-items:center; gap:10px; min-width:0; }
+.c2-task-id {
+  display:inline-flex; align-items:center; height:26px; padding:0 10px; border-radius:13px;
+  background:var(--course-accent); color:#fff; font-weight:700; font-size:13px; white-space:nowrap;
+}
+html[data-theme="dark"] .c2-task-id { color:#0f1d2e; }
+.c2-title h1 { margin:0; font-size:22px; line-height:1.2; font-weight:800; letter-spacing:.5px; white-space:nowrap; }
+.c2-stations { display:flex; gap:8px; margin-left:auto; }
+.c2-station {
+  display:flex; align-items:center; gap:9px; height:42px; padding:0 16px 0 7px;
+  border:1px solid var(--hair); border-radius:12px; background:var(--course-surface); box-shadow:var(--shadow-sm);
+  color:var(--course-ink); font-size:15px; white-space:nowrap;
+}
+.c2-station:hover { border-color:var(--course-accent); transform:translateY(-1px); }
+.c2-station[aria-selected="true"] {
+  background:linear-gradient(135deg,#3a82e4,#1f5bbd); border-color:transparent; color:#fff; font-weight:700;
+  box-shadow:0 6px 16px rgba(36,103,201,.32);
+}
+html[data-theme="dark"] .c2-station[aria-selected="true"] { background:linear-gradient(135deg,#8abaff,#5f97ea); color:#0f1d2e; }
+.c2-num { display:grid; place-items:center; width:28px; height:28px; border-radius:9px; background:var(--blue-soft); color:var(--course-accent); font-size:14px; font-weight:800; }
+.c2-station[aria-selected="true"] .c2-num { background:rgba(255,255,255,.22); color:inherit; }
+.c2-check { display:none; width:18px; height:18px; border-radius:50%; background:var(--ok); color:#fff; font-size:11px; font-weight:800; place-items:center; }
+.c2-station.done .c2-check { display:grid; }
+.c2-station[aria-selected="true"].done .c2-check { background:#fff; color:var(--ok); }
+
+/* —— 主体：三维区 + 面板 —— */
+.c2-main { display:grid; grid-template-columns:minmax(0,1fr) clamp(340px,25vw,410px); gap:14px; padding:0 18px 16px; min-height:0; }
+.c2-stage {
+  display:flex; flex-direction:column; min-height:0; overflow:hidden; border-radius:16px;
+  border:1px solid var(--hair); background:var(--course-surface); box-shadow:var(--shadow);
+}
+.c2-view { position:relative; flex:1 1 auto; min-height:0; background:var(--course-bg); }
+.c2-frame { position:absolute; inset:0; width:100%; height:100%; border:0; display:block; background:transparent; }
+.c2-loading {
+  position:absolute; inset:0; display:flex; flex-direction:column; align-items:center; justify-content:center; gap:12px;
+  color:var(--course-muted); font-size:15px; background:var(--course-bg); pointer-events:none; z-index:1;
+}
+.c2-spinner { width:30px; height:30px; border-radius:50%; border:3px solid var(--blue-soft); border-top-color:var(--course-accent); animation:c2-spin .8s linear infinite; }
+@keyframes c2-spin { to { transform:rotate(360deg); } }
+.c2-tools { position:absolute; left:12px; top:12px; display:flex; gap:6px; flex-wrap:wrap; max-width:64%; z-index:2; }
+.c2-tool {
+  height:32px; padding:0 12px; border-radius:10px; border:1px solid color-mix(in srgb, var(--hair) 70%, transparent);
+  background:color-mix(in srgb, var(--course-surface) 88%, transparent); backdrop-filter:blur(8px);
+  color:var(--course-ink); font-size:13px; white-space:nowrap; box-shadow:var(--shadow-sm);
+}
+.c2-tool:hover { border-color:var(--course-accent); color:var(--course-accent); }
+.c2-tool[aria-pressed="true"] { background:var(--blue-soft); border-color:color-mix(in srgb, var(--course-accent) 55%, transparent); color:var(--course-accent); font-weight:700; }
+.c2-toolseg {
+  padding:3px; border-color:color-mix(in srgb, var(--hair) 70%, transparent) !important;
+  background:color-mix(in srgb, var(--course-surface) 88%, transparent) !important; backdrop-filter:blur(8px); box-shadow:var(--shadow-sm);
+}
+.c2-toolseg button { height:26px; font-size:13px; padding:0 10px; }
+.c2-hint {
+  position:absolute; right:12px; bottom:10px; color:var(--course-muted); font-size:12px; pointer-events:none; z-index:2;
+  max-width:60%; white-space:nowrap; overflow:hidden; text-overflow:ellipsis;
+  background:color-mix(in srgb, var(--course-surface) 72%, transparent); padding:2px 10px; border-radius:10px;
+}
+.c2-part {
+  position:absolute; right:12px; top:12px; z-index:3; width:min(300px,42%); padding:11px 34px 11px 13px; border-radius:12px;
+  background:var(--course-surface); border:1px solid var(--hair); border-left:4px solid var(--focus);
+  box-shadow:var(--shadow-lg); display:flex; flex-direction:column; gap:3px;
+}
+.c2-part strong { font-size:15px; }
+.c2-part span { color:var(--course-muted); font-size:13px; line-height:1.5; }
+.c2-x { position:absolute; right:6px; top:4px; border:0; background:none; font-size:18px; color:var(--course-muted); }
+
+/* 三维区底部：运行控制 + 读数（不压在模型上） */
+.c2-strip {
+  flex:0 0 auto; display:flex; align-items:stretch; gap:10px; padding:8px 10px;
+  border-top:1px solid var(--hair); background:var(--course-surface);
+}
+.c2-strip:has(.c2-transport:empty):has(.c2-readouts:empty) { display:none; }
+.c2-transport { display:flex; align-items:center; gap:6px; flex:0 0 auto; padding-right:4px; }
+.c2-transport:empty { display:none; }
+.c2-transport .c2-tool { box-shadow:none; background:var(--surface-2); border-color:transparent; backdrop-filter:none; height:34px; }
+.c2-transport .c2-tool:hover { background:var(--blue-soft); }
+.c2-play {
+  height:38px; min-width:96px; padding:0 16px; border-radius:11px; border:0;
+  background:linear-gradient(135deg,#3a82e4,#1f5bbd); color:#fff; font-weight:700; font-size:14.5px;
+  box-shadow:0 4px 12px rgba(36,103,201,.3);
+}
+.c2-play:hover { transform:translateY(-1px); box-shadow:0 6px 16px rgba(36,103,201,.36); }
+.c2-play[aria-pressed="true"] { background:linear-gradient(135deg,#4c5f78,#33465e); box-shadow:0 4px 12px rgba(30,45,65,.25); }
+html[data-theme="dark"] .c2-play { background:linear-gradient(135deg,#8abaff,#5f97ea); color:#0f1d2e; }
+.c2-readouts { display:flex; gap:6px; flex:1 1 auto; min-width:0; }
+.c2-read {
+  flex:1 1 0; min-width:84px; display:flex; flex-direction:column; justify-content:center; padding:4px 12px;
+  border-radius:11px; background:var(--surface-2);
+}
+.c2-read-label { color:var(--course-muted); font-size:12px; white-space:nowrap; }
+.c2-val { display:flex; align-items:baseline; gap:4px; white-space:nowrap; overflow:hidden; }
+.c2-val b { font-size:21px; line-height:1.2; font-weight:800; font-variant-numeric:tabular-nums; color:var(--course-ink); }
+.c2-val small { color:var(--course-muted); font-size:12px; }
+
+/* —— 操作面板 —— */
+.c2-panel {
+  display:flex; flex-direction:column; gap:12px; min-height:0; overflow:auto; padding:16px 16px 14px;
+  border-radius:16px; border:1px solid var(--hair); background:var(--course-surface); box-shadow:var(--shadow); scrollbar-width:thin;
+}
+.c2-head-row { display:flex; align-items:center; justify-content:space-between; gap:8px; }
+.c2-head-name { display:flex; align-items:center; gap:9px; min-width:0; }
+.c2-head-num {
+  flex:0 0 30px; height:30px; border-radius:10px; display:grid; place-items:center; font-weight:800; font-size:15px; color:#fff;
+  background:linear-gradient(135deg,#3a82e4,#1f5bbd); box-shadow:0 3px 8px rgba(36,103,201,.3);
+}
+html[data-theme="dark"] .c2-head-num { color:#0f1d2e; background:linear-gradient(135deg,#8abaff,#5f97ea); }
+.c2-panel-head h2 { margin:0; font-size:19px; font-weight:800; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; }
+.c2-panel-head p { margin:6px 0 0; color:var(--course-muted); font-size:13.5px; line-height:1.55; }
+.c2-redo { height:30px; padding:0 11px; border-radius:15px; border:1px solid var(--hair); background:var(--surface-2); color:var(--course-muted); font-size:12.5px; white-space:nowrap; }
+.c2-redo:hover { color:var(--course-accent); border-color:var(--course-accent); }
+.c2-panel-body { display:flex; flex-direction:column; gap:14px; }
+.c2-group { display:flex; flex-direction:column; gap:8px; }
+.c2-group h3 { margin:0; font-size:13px; color:var(--accent-2); font-weight:700; display:flex; justify-content:space-between; align-items:center; gap:8px; }
+.c2-h3-text { display:flex; align-items:center; gap:7px; }
+.c2-h3-text::before { content:""; width:4px; height:14px; border-radius:2px; background:var(--course-accent); }
+.c2-row { display:flex; gap:6px; align-items:center; flex-wrap:wrap; }
+.c2-grid2 { display:grid; grid-template-columns:1fr 1fr; gap:8px 14px; }
+.c2-btn {
+  height:36px; padding:0 14px; border-radius:10px; border:1px solid var(--hair);
+  background:var(--course-surface); color:var(--course-ink); white-space:nowrap; box-shadow:var(--shadow-sm);
+}
+.c2-btn:hover:not(:disabled) { border-color:var(--course-accent); color:var(--course-accent); }
+.c2-btn:disabled { opacity:.45; cursor:not-allowed; }
+.c2-btn.c2-primary { background:linear-gradient(135deg,#3a82e4,#1f5bbd); border-color:transparent; color:#fff; font-weight:700; box-shadow:0 4px 12px rgba(36,103,201,.28); }
+.c2-btn.c2-primary:hover:not(:disabled) { color:#fff; transform:translateY(-1px); }
+html[data-theme="dark"] .c2-btn.c2-primary { background:linear-gradient(135deg,#8abaff,#5f97ea); color:#0f1d2e; }
+.c2-btn.c2-small { height:32px; padding:0 12px; }
+.c2-btn[aria-pressed="true"] { background:var(--blue-soft); border-color:var(--course-accent); color:var(--course-accent); font-weight:700; }
+.c2-seg { display:flex; padding:3px; gap:3px; border-radius:11px; background:var(--surface-2); border:1px solid var(--hair); }
+.c2-seg button { flex:1; height:32px; padding:0 8px; border:0; border-radius:8px; background:none; color:var(--course-muted); white-space:nowrap; }
+.c2-seg button:hover { color:var(--course-accent); }
+.c2-seg button[aria-checked="true"] { background:var(--course-surface); color:var(--course-accent); font-weight:700; box-shadow:0 1px 4px rgba(18,44,78,.14); }
+.c2-speed { padding:2px; border-radius:10px; }
+.c2-speed button { height:30px; padding:0 10px; font-size:13px; }
+
+/* 滑块：已走过的一段用主色填充 */
+.c2-slider { display:flex; flex-direction:column; gap:3px; min-width:0; }
+.c2-slider-top { display:flex; justify-content:space-between; align-items:center; gap:8px; font-size:13.5px; }
+.c2-slider output {
+  font-weight:700; color:var(--course-accent); font-variant-numeric:tabular-nums; white-space:nowrap;
+  background:var(--blue-soft); padding:0 8px; border-radius:8px; font-size:13px; line-height:22px;
+}
+.c2-slider input[type="range"] {
+  -webkit-appearance:none; appearance:none; width:100%; height:22px; margin:0; background:transparent; cursor:pointer; --p:50%;
+}
+.c2-slider input[type="range"]::-webkit-slider-runnable-track {
+  height:6px; border-radius:3px; background:linear-gradient(to right, var(--course-accent) var(--p), var(--hair) var(--p));
+}
+.c2-slider input[type="range"]::-moz-range-track { height:6px; border-radius:3px; background:var(--hair); }
+.c2-slider input[type="range"]::-moz-range-progress { height:6px; border-radius:3px; background:var(--course-accent); }
+.c2-slider input[type="range"]::-webkit-slider-thumb {
+  -webkit-appearance:none; width:18px; height:18px; margin-top:-6px; border-radius:50%;
+  background:#fff; border:3px solid var(--course-accent); box-shadow:0 2px 6px rgba(18,44,78,.25);
+}
+.c2-slider input[type="range"]::-moz-range-thumb { width:14px; height:14px; border-radius:50%; background:#fff; border:3px solid var(--course-accent); }
+.c2-slider input[type="range"]:hover::-webkit-slider-thumb { transform:scale(1.12); }
+
+.c2-switch {
+  display:inline-flex; align-items:center; gap:7px; height:32px; padding:0 10px 0 6px; border-radius:10px;
+  border:1px solid var(--hair); background:var(--course-surface); font-size:13.5px; white-space:nowrap;
+}
+.c2-knob { position:relative; width:30px; height:18px; border-radius:10px; background:var(--course-line); transition:background .15s; }
+.c2-knob::after { content:""; position:absolute; left:2px; top:2px; width:14px; height:14px; border-radius:50%; background:#fff; transition:transform .15s; box-shadow:0 1px 2px rgba(0,0,0,.25); }
+.c2-switch[aria-checked="true"] .c2-knob { background:var(--course-accent); }
+.c2-switch[aria-checked="true"] .c2-knob::after { transform:translateX(12px); }
+.c2-chips { display:flex; flex-wrap:wrap; gap:6px; }
+.c2-chip { height:30px; padding:0 12px; border-radius:15px; border:1px solid var(--hair); background:var(--course-surface); font-size:13px; white-space:nowrap; box-shadow:var(--shadow-sm); }
+.c2-chip:hover { border-color:var(--course-accent); color:var(--course-accent); }
+.c2-chip[aria-pressed="true"] { background:var(--focus); border-color:var(--focus); color:#2b1a00; font-weight:700; }
+.c2-chip.done { background:var(--ok-soft); border-color:var(--ok-line); color:var(--ok); font-weight:700; }
+
+/* 试一试：挑战卡 */
+.c2-count { font-weight:800; color:var(--course-accent); font-size:13px; font-variant-numeric:tabular-nums; }
+.c2-progress { height:5px; border-radius:3px; background:var(--hair); overflow:hidden; }
+.c2-progress span { display:block; height:100%; width:0; border-radius:3px; background:linear-gradient(90deg,#3fb27f,#1f8a5b); transition:width .4s ease; }
+.c2-challenges { display:grid; grid-template-columns:1fr 1fr; gap:8px; }
+.c2-challenge {
+  display:flex; gap:9px; align-items:flex-start; padding:9px 10px; border-radius:12px; min-width:0;
+  border:1px solid var(--hair); background:var(--course-surface); box-shadow:var(--shadow-sm);
+  transition:border-color .2s, background .2s, transform .2s;
+}
+.c2-mark {
+  flex:0 0 30px; height:30px; border-radius:9px; display:grid; place-items:center; font-size:16px; line-height:1;
+  background:linear-gradient(135deg,#eaf2ff,#d9e8ff); color:var(--course-accent); font-weight:800;
+}
+html[data-theme="dark"] .c2-mark { background:var(--blue-soft); }
+.c2-ch-text { display:flex; flex-direction:column; gap:1px; min-width:0; }
+.c2-ch-text b { font-size:13.5px; line-height:1.35; font-weight:700; }
+.c2-ch-text span { color:var(--course-muted); font-size:12px; line-height:1.4; display:-webkit-box; -webkit-line-clamp:2; -webkit-box-orient:vertical; overflow:hidden; }
+.c2-ch-go {
+  align-self:flex-start; margin-top:5px; height:26px; padding:0 10px; border-radius:13px; border:0;
+  background:var(--course-accent); color:#fff; font-size:12.5px; font-weight:700;
+}
+html[data-theme="dark"] .c2-ch-go { color:#0f1d2e; }
+.c2-challenge.done { background:var(--ok-soft); border-color:var(--ok-line); }
+.c2-challenge.done .c2-mark { background:var(--ok); color:#fff; animation:c2-pop .45s ease; }
+.c2-challenge.done .c2-ch-text span { color:var(--ok); font-weight:700; }
+.c2-challenge.done .c2-ch-go { display:none; }
+@keyframes c2-pop { 0% { transform:scale(.6); } 60% { transform:scale(1.18); } 100% { transform:scale(1); } }
+
+.c2-choice, .c2-predict { display:flex; flex-direction:column; gap:6px; padding:10px 12px; border-radius:12px; background:var(--surface-2); border:1px solid var(--hair); }
+.c2-prompt { margin:0; font-weight:700; font-size:14px; }
+.c2-options { display:flex; gap:6px; flex-wrap:wrap; }
+.c2-opt { flex:1 1 auto; min-height:34px; padding:4px 12px; border-radius:9px; border:1px solid var(--hair); background:var(--course-surface); }
+.c2-opt:hover:not(:disabled) { border-color:var(--course-accent); }
+.c2-opt.right { background:var(--ok-soft); border-color:var(--ok); color:var(--ok); font-weight:700; }
+.c2-opt.wrong { background:var(--bad-soft); border-color:var(--bad); color:var(--bad); text-decoration:line-through; }
+.c2-opt:disabled:not(.right):not(.wrong) { opacity:.5; }
+.c2-predict.c2-inline { flex-direction:row; align-items:center; justify-content:space-between; flex-wrap:wrap; padding:8px 12px; }
+.c2-predict.c2-inline .c2-row { flex-wrap:nowrap; }
+.c2-predict.c2-inline input { width:72px; }
+.c2-predict input { width:100px; height:34px; padding:0 10px; border-radius:9px; border:1px solid var(--hair); background:var(--course-surface); font-size:16px; font-weight:700; }
+.c2-predict input.right { border-color:var(--ok); background:var(--ok-soft); }
+.c2-predict input.wrong { border-color:var(--bad); background:var(--bad-soft); }
+.c2-unit { color:var(--course-muted); }
+.c2-note { margin:0; color:var(--course-muted); font-size:12.5px; line-height:1.45; }
+.c2-big { font-size:15px; font-weight:700; }
+.c2-banner {
+  display:flex; align-items:center; justify-content:space-between; gap:8px; padding:9px 12px; border-radius:12px;
+  background:linear-gradient(135deg,#fff4dc,#ffe9bf); border:1px solid #f3cf87; color:#6b4300; font-size:13px; font-weight:700;
+}
+html[data-theme="dark"] .c2-banner { background:#3b2d16; border-color:#6b5124; color:#f6d38f; }
+.c2-quiet { color:var(--course-muted); }
+
+/* 提示条：在三维区下方弹出，几秒后收起 */
+.c2-feedback {
+  position:absolute; left:50%; top:56px; transform:translateX(-50%); z-index:4; max-width:min(640px,80%);
+  display:flex; align-items:center; gap:10px; font-size:14px; line-height:1.55; border-radius:14px;
+}
+.c2-feedback:empty { display:none; }
+.c2-feedback:not(:empty) {
+  padding:10px 14px 10px 10px; background:var(--course-surface); color:var(--course-ink);
+  border:1px solid var(--hair); box-shadow:var(--shadow-lg); animation:c2-rise .25s ease;
+}
+@keyframes c2-rise { from { opacity:0; transform:translate(-50%,-8px); } to { opacity:1; transform:translate(-50%,0); } }
+.c2-toast-icon { flex:0 0 26px; height:26px; border-radius:50%; display:grid; place-items:center; font-weight:800; font-size:14px; background:var(--blue-soft); color:var(--course-accent); }
+.c2-feedback.ok .c2-toast-icon { background:var(--ok); color:#fff; }
+.c2-feedback.warn .c2-toast-icon { background:var(--warn); color:#fff; }
+.c2-feedback .c2-next { margin:0 0 0 4px; flex:0 0 auto; height:32px; }
+
+/* 外壳布局写死：放进第三章等已有页面时，不受页面里 main / aside / header / section 等通用规则影响 */
+html.lab-shell body > .c2-top { grid-row:1; position:static; width:auto; max-width:none; margin:0; }
+html.lab-shell body > .c2-bar { grid-row:2; position:static; width:auto; max-width:none; margin:0; }
+html.lab-shell body > .c2-main {
+  grid-row:3; grid-template-rows:minmax(0,1fr); grid-template-areas:none; grid-auto-flow:row;
+  position:static; width:auto; max-width:none; height:auto; max-height:none; margin:0;
+}
+html.lab-shell .c2-main > :is(.c2-stage, .c2-panel) {
+  grid-row:1; grid-area:auto; position:relative; width:auto; height:auto; max-height:none; min-width:0; margin:0; float:none;
+}
+html.lab-shell .c2-main > .c2-stage { grid-column:1; }
+html.lab-shell .c2-main > .c2-panel { grid-column:2; }
+
+/* 较矮的 16:9 窗口（如 1366×640）：压缩间距，保证整页不滚动 */
+@media (max-height:720px) and (min-width:901px) {
+  .c2-top { height:44px; }
+  .c2-bar { padding:8px 18px 7px; }
+  .c2-title h1 { font-size:20px; }
+  .c2-station { height:38px; font-size:14px; }
+  .c2-num { width:26px; height:26px; }
+  .c2-main { padding-bottom:12px; gap:12px; }
+  .c2-panel { gap:9px; padding:12px 13px 11px; }
+  .c2-panel-head p { margin-top:3px; }
+  .c2-panel-body { gap:10px; }
+  .c2-group { gap:6px; }
+  .c2-challenge { padding:7px 8px; }
+  .c2-mark { flex-basis:26px; height:26px; font-size:14px; }
+  .c2-panel-head p { display:-webkit-box; -webkit-line-clamp:1; -webkit-box-orient:vertical; overflow:hidden; }
+  .c2-ch-text span { -webkit-line-clamp:1; }
+  .c2-ch-go { margin-top:3px; height:22px; font-size:12px; }
+  .c2-head-num { flex-basis:26px; height:26px; font-size:14px; }
+  .c2-panel-head h2 { font-size:18px; }
+  .c2-panel { gap:8px; padding:10px 12px 10px; }
+  .c2-panel-body { gap:8px; }
+  .c2-group { gap:5px; }
+  .c2-seg button { height:29px; }
+  .c2-challenges { gap:6px; }
+  .c2-slider input[type="range"] { height:20px; }
+  .c2-val b { font-size:19px; }
+  .c2-btn, .c2-play { height:34px; }
+  .c2-strip { padding:6px 8px; }
+  .c2-read { padding:3px 10px; }
+}
+
+/* 窄屏：上下排列，允许整页滚动 */
+@media (max-width:900px) {
+  body { display:block; height:auto; overflow:auto; }
+  .c2-top { flex-wrap:wrap; height:auto; padding:8px 12px; gap:6px; }
+  .c2-tasks { margin:0; order:3; width:100%; }
+  .c2-bar { flex-direction:column; align-items:stretch; gap:8px; padding:10px 12px; }
+  .c2-title h1 { white-space:normal; }
+  .c2-stations { margin:0; overflow-x:auto; }
+  .c2-station { flex:1 0 auto; }
+  .c2-main { display:flex; flex-direction:column; padding:0 12px 16px; }
+  .c2-stage { height:64vh; min-height:380px; }
+  .c2-panel { overflow:visible; }
+  .c2-strip { flex-wrap:wrap; }
+  .c2-readouts { flex-wrap:wrap; }
+  .c2-read { flex:1 1 40%; }
+  .c2-hint { display:none; }
+}
+@media (prefers-reduced-motion:reduce) { * { transition:none !important; animation:none !important; } }
+
+/* 第三章：原页面元素放进统一外壳后的补充样式。外壳本身的样式在 shared/lab-shell/lab-shell.css。 */
+
+/* 原页面的三维区铺满外壳三维区 */
+html.lab-native .c2-native-stage {
+  position:absolute !important; inset:0 !important; width:100% !important; height:100% !important;
+  max-width:none !important; max-height:none !important; min-height:0 !important;
+  margin:0 !important; border:0 !important; border-radius:0 !important; box-shadow:none !important;
+}
+html.lab-native .c2-view { background:transparent; }
+
+/* 三维区上方一排：模型选择 */
+.c2-stage-top {
+  flex:0 0 auto; display:flex; align-items:stretch; gap:8px; padding:8px 10px;
+  border-bottom:1px solid var(--hair); background:var(--course-surface); overflow-x:auto; scrollbar-width:thin;
+}
+.c2-stage-top:empty, .c2-stage-top:not(:has(> :not([hidden]))) { display:none; }
+.c2-stage-top > * { margin:0 !important; }
+
+/* 面板里的原有控件：统一字体与圆角，去掉原来的卡片外框 */
+html.lab-native .c2-panel :is(button, input, select) { font-family:inherit; }
+html.lab-native .c2-panel [data-c2-adopted] { margin-left:0; margin-right:0; max-width:100%; }
+html.lab-native .c2-group > [data-c2-adopted]:is(section, div, aside) { box-shadow:none; }
+html.lab-native .c2-panel .c3-note { margin:0; color:var(--course-muted); font-size:12.5px; line-height:1.5; }
+
+/* 停止按钮：始终醒目 */
+html.lab-native .c2-panel .c3-stop { width:100%; }
+
+/* 3-1：关节点动行在较矮窗口里收紧 */
+@media (max-height:720px) {
+  html.lab-native .c2-panel .joint-row { min-height:0 !important; padding-top:1px !important; padding-bottom:1px !important; }
+  html.lab-native .c2-panel .constraint-cards button { padding-top:4px !important; padding-bottom:4px !important; }
+}
+
+/* ===== 统一控件样式：搬进面板和底栏的原控件，与第二章同一套外观 ===== */
+html.lab-native :is(.c2-panel, .c2-strip) :is(button.primary, button.outline, button.text-button, .compare-buttons button, .path-buttons button, .target-buttons button, .teach-toolbar button, .challenge-actions button) {
+  height:34px; padding:0 14px; border-radius:10px; font-size:13.5px; font-weight:600; white-space:nowrap;
+  display:inline-flex; align-items:center; justify-content:center; gap:4px; margin:0; cursor:pointer;
+  transition:background .15s, border-color .15s, color .15s, box-shadow .15s, transform .15s;
+}
+html.lab-native :is(.c2-panel, .c2-strip) button.primary {
+  border:0; color:#fff; background:linear-gradient(135deg,#3a82e4,#1f5bbd); box-shadow:0 4px 12px rgba(36,103,201,.28);
+}
+html.lab-native :is(.c2-panel, .c2-strip) button.primary:hover:not(:disabled) { transform:translateY(-1px); }
+html[data-theme="dark"].lab-native :is(.c2-panel, .c2-strip) button.primary { background:linear-gradient(135deg,#8abaff,#5f97ea); color:#0f1d2e; }
+html.lab-native :is(.c2-panel, .c2-strip) button.outline {
+  border:1px solid var(--hair); background:var(--course-surface); color:var(--course-ink); box-shadow:var(--shadow-sm);
+}
+html.lab-native :is(.c2-panel, .c2-strip) button.outline:hover:not(:disabled) { border-color:var(--course-accent); color:var(--course-accent); }
+html.lab-native :is(.c2-panel, .c2-strip) button.text-button {
+  height:30px; padding:0 10px; border:0; background:var(--surface-2); color:var(--course-accent); box-shadow:none; font-weight:600;
+}
+html.lab-native :is(.c2-panel, .c2-strip) button.text-button:hover:not(:disabled) { background:var(--blue-soft); }
+html.lab-native :is(.c2-panel, .c2-strip) button:disabled { opacity:.45; cursor:not-allowed; transform:none; }
+html.lab-native :is(.c2-panel, .c2-strip) :is(.compare-buttons, .path-buttons, .target-buttons, .teach-toolbar, .challenge-actions) {
+  display:flex; flex-wrap:wrap; gap:6px; margin:0;
+}
+
+/* 停止：所有页面同一种红色按钮 */
+html.lab-native :is(.c2-panel, .c2-strip) :is(button.stop, button.stop-button, .c3-stop) {
+  height:36px; padding:0 14px; border-radius:10px; border:1px solid #f1b8b4; background:var(--bad-soft); color:var(--bad);
+  font-size:14px; font-weight:700; display:flex; align-items:center; justify-content:center; gap:8px; box-shadow:none; cursor:pointer;
+}
+html.lab-native :is(.c2-panel, .c2-strip) :is(button.stop, button.stop-button):hover { background:var(--bad); color:#fff; }
+html.lab-native :is(.c2-panel, .c2-strip) :is(button.stop, button.stop-button) kbd {
+  font:600 10.5px/1 "Segoe UI",sans-serif; padding:3px 5px; border-radius:5px; border:1px solid currentColor; opacity:.7; background:none;
+}
+html[data-theme="dark"].lab-native :is(.c2-panel, .c2-strip) :is(button.stop, button.stop-button) { border-color:#6b3434; }
+
+/* 滑轨：已走过的一段填主色（--p 由 chapter3-shell.js 跟随数值更新） */
+html.lab-native :is(.c2-panel, .c2-strip) input[type="range"] {
+  -webkit-appearance:none; appearance:none; height:22px; margin:0; background:transparent; cursor:pointer; --p:50%; min-width:0;
+}
+html.lab-native :is(.c2-panel, .c2-strip) input[type="range"]::-webkit-slider-runnable-track {
+  height:6px; border-radius:3px; background:linear-gradient(to right, var(--course-accent) var(--p), var(--hair) var(--p));
+}
+html.lab-native :is(.c2-panel, .c2-strip) input[type="range"]::-moz-range-track { height:6px; border-radius:3px; background:var(--hair); }
+html.lab-native :is(.c2-panel, .c2-strip) input[type="range"]::-moz-range-progress { height:6px; border-radius:3px; background:var(--course-accent); }
+html.lab-native :is(.c2-panel, .c2-strip) input[type="range"]::-webkit-slider-thumb {
+  -webkit-appearance:none; width:16px; height:16px; margin-top:-5px; border-radius:50%;
+  background:#fff; border:3px solid var(--course-accent); box-shadow:0 2px 5px rgba(18,44,78,.25);
+}
+html.lab-native :is(.c2-panel, .c2-strip) input[type="range"]::-moz-range-thumb { width:12px; height:12px; border-radius:50%; background:#fff; border:3px solid var(--course-accent); }
+
+/* 输入框、下拉框、读数 */
+html.lab-native :is(.c2-panel, .c2-strip) :is(select, input[type="number"], input[type="text"]) {
+  height:32px; padding:0 8px; border-radius:9px; border:1px solid var(--hair); background:var(--course-surface); color:var(--course-ink); font-size:13.5px; min-width:0;
+}
+html.lab-native :is(.c2-panel, .c2-strip) :is(select, input[type="number"], input[type="text"]):focus { outline:none; border-color:var(--course-accent); box-shadow:0 0 0 3px var(--blue-soft); }
+html.lab-native :is(.c2-panel, .c2-strip) input[type="checkbox"] { width:16px; height:16px; accent-color:var(--course-accent); }
+html.lab-native :is(.c2-panel, .c2-strip) output { font-weight:700; color:var(--course-accent); font-variant-numeric:tabular-nums; }
+
+/* 小号原地切换（如“按住连续 / 单步点动”） */
+html.lab-native :is(.c2-panel, .c2-strip) .segmented { display:flex; gap:3px; padding:3px; border-radius:10px; background:var(--surface-2); border:1px solid var(--hair); }
+html.lab-native :is(.c2-panel, .c2-strip) .segmented button { flex:1; height:26px; padding:0 10px; border:0; border-radius:7px; background:none; color:var(--course-muted); font-size:13px; white-space:nowrap; cursor:pointer; }
+html.lab-native :is(.c2-panel, .c2-strip) .segmented button.active { background:var(--course-surface); color:var(--course-accent); font-weight:700; box-shadow:0 1px 3px rgba(18,44,78,.14); }
+
+/* 点动行（3-1 关节行；3-2 在底栏另有排法） */
+html.lab-native .c2-panel .joint-rows { display:flex; flex-direction:column; gap:5px; }
+html.lab-native .c2-panel .joint-row {
+  border-radius:10px !important; background:var(--surface-2) !important; border:1px solid transparent !important; box-shadow:none !important;
+}
+html.lab-native .c2-panel .joint-row:is(.active, .selected) { border-color:var(--course-accent) !important; background:var(--blue-soft) !important; }
+html.lab-native :is(.c2-panel, .c2-strip) :is(.jog, .jog-button) {
+  border-radius:8px; border:1px solid var(--hair); background:var(--course-surface); color:var(--course-ink); box-shadow:var(--shadow-sm); cursor:pointer;
+}
+html.lab-native :is(.c2-panel, .c2-strip) :is(.jog, .jog-button):hover { border-color:var(--course-accent); color:var(--course-accent); }
+html.lab-native :is(.c2-panel, .c2-strip) :is(.jog, .jog-button):active { background:var(--course-accent); color:#fff; }
+html.lab-native .c2-panel .joint-top { display:flex; justify-content:space-between; align-items:center; font-size:12px; color:var(--course-muted); }
+
+/* 卡片式选择（约束连接、六轴卡片）：与挑战卡同一种卡片 */
+html.lab-native .c2-panel :is(.constraint-cards, .axis-cards) button {
+  border-radius:12px !important; border:1px solid var(--hair) !important; background:var(--course-surface) !important; box-shadow:var(--shadow-sm) !important; cursor:pointer;
+}
+html.lab-native .c2-panel :is(.constraint-cards, .axis-cards) button.active { border-color:var(--course-accent) !important; background:var(--blue-soft) !important; box-shadow:0 0 0 1px var(--course-accent) inset !important; }
+html.lab-native .c2-panel .constraint-cards { display:grid; grid-template-columns:1fr 1fr; gap:6px; }
+html.lab-native .c2-panel .constraint-cards button { display:grid; grid-template-columns:auto 1fr; align-items:center; gap:0 8px; padding:6px 9px; text-align:left; }
+html.lab-native .c2-panel .constraint-cards b { grid-row:1 / span 2; font-size:20px; font-weight:800; color:var(--course-accent); }
+html.lab-native .c2-panel .constraint-cards small { color:var(--course-muted); font-size:11.5px; }
+
+/* 区间控件、目标点、障碍编辑 */
+html.lab-native .c2-panel .range-control label { display:flex; justify-content:space-between; font-size:13.5px; }
+html.lab-native .c2-panel .range-control input { width:100%; }
+html.lab-native .c2-panel .range-control p { margin:0; font-size:12px; color:var(--course-muted); }
+html.lab-native .c2-panel .target-inputs { display:grid; grid-template-columns:repeat(3,1fr); gap:6px; }
+html.lab-native .c2-panel .target-inputs label { display:flex; align-items:center; gap:4px; font-weight:700; font-size:13px; color:var(--course-muted); }
+html.lab-native .c2-panel .target-inputs input { width:100%; }
+html.lab-native .c2-panel .target-panel { display:flex; flex-direction:column; gap:6px; }
+html.lab-native .c2-panel :is(#targetInfo, #pathInfo) { margin:0; font-size:12px; color:var(--course-muted); }
+html.lab-native .c2-panel .path-results { display:flex; flex-wrap:wrap; gap:4px 10px; font-size:12.5px; }
+html.lab-native .c2-panel .path-results span { padding:2px 8px; border-radius:8px; background:var(--surface-2); }
+html.lab-native .c2-panel .path-controls { display:flex; flex-direction:column; gap:6px; }
+html.lab-native .c2-panel .obstacle-editor { display:flex; flex-direction:column; gap:4px; }
+html.lab-native .c2-panel .obstacle-editor > div { display:flex; align-items:center; gap:8px; font-size:13px; }
+html.lab-native .c2-panel .obstacle-editor label { display:grid; grid-template-columns:22px 1fr 40px; align-items:center; gap:6px; font-size:13px; font-weight:700; color:var(--course-muted); }
+html.lab-native .c2-panel .obstacle-editor label input { width:100%; }
+
+/* 原卡片自带的高度、比例在面板里取消 */
+html.lab-native .c2-panel .constraint-cards button { min-height:0 !important; height:auto !important; aspect-ratio:auto !important; padding:6px 9px !important; display:grid !important; grid-template-columns:auto 1fr !important; grid-template-rows:auto auto !important; text-align:left !important; }
+html.lab-native .c2-panel .constraint-cards strong { font-size:13px; line-height:1.3; }
+html.lab-native .c2-panel .constraint-cards small { display:block; line-height:1.3; }
+html.lab-native .c2-panel :is(.target-buttons, .path-buttons, .compare-buttons, .teach-toolbar, .challenge-actions) button { padding:0 10px; }
+html.lab-native .c2-panel .target-buttons { flex-wrap:nowrap; }
+@media (max-height:720px) {
+  html.lab-native .c2-panel .range-control p { display:none; }
+  html.lab-native .c2-panel :is(button.primary, button.outline) { height:32px; }
+  html.lab-native .c2-panel button.text-button { height:28px; }
+  html.lab-native .c2-panel :is(button.stop, button.stop-button) { height:32px; }
+  html.lab-native .c2-panel :is(select, input[type="number"], input[type="text"]) { height:30px; }
+}
+html.lab-native .c2-panel .constraint-cards { height:auto !important; min-height:0 !important; max-height:none !important; flex:none !important; grid-template-rows:none !important; grid-auto-rows:auto !important; align-content:start !important; }
+
+/* 8-1：三维区上方的六类危险选择条 */
+.c8-hazards { display:grid; grid-template-columns:repeat(6, minmax(0, 1fr)); gap:6px; width:100%; }
+.c8-hazards[hidden] { display:none; }
+.c8-hazards button {
+  display:grid; grid-template-columns:auto 1fr; grid-template-rows:auto auto; column-gap:7px; align-items:center;
+  min-width:0; height:auto; padding:6px 9px; margin:0; text-align:left; cursor:pointer;
+  border-radius:12px; border:1px solid var(--hair); background:var(--course-surface); color:var(--course-ink);
+  box-shadow:var(--shadow-sm); font:inherit; transition:border-color .15s, background .15s;
+}
+.c8-hazards button:hover { border-color:var(--course-accent); }
+.c8-hazards button[aria-checked="true"] { border-color:var(--course-accent); background:var(--blue-soft); box-shadow:0 0 0 1px var(--course-accent) inset; }
+.c8-hazards .c8-ico { grid-row:span 2; font-size:18px; line-height:1; }
+.c8-hazards b { font-size:13px; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; }
+.c8-hazards button[aria-checked="true"] b { color:var(--course-accent); }
+.c8-dots { display:flex; gap:3px; font-style:normal; }
+.c8-dots em { width:14px; height:4px; border-radius:2px; background:var(--hair); }
+.c8-dots em.on { background:var(--warn); }
+.c8-hazards button.ok .c8-dots em { background:var(--ok); }
+
+/* 面板：当前危险卡 */
+.c8-card { padding:11px 12px; border-radius:12px; background:var(--surface-2); border:1px solid var(--hair); }
+.c8-card-head { display:flex; align-items:center; gap:8px; }
+.c8-card-head .c8-ico { font-size:18px; }
+.c8-card-head b { font-size:15px; }
+.c8-tag { margin-left:auto; padding:2px 8px; border-radius:10px; font-size:12px; background:var(--hair); color:var(--course-muted); }
+.c8-tag.mid { background:var(--warn-soft); color:var(--warn); }
+.c8-tag.ok { background:var(--ok-soft); color:var(--ok); }
+.c8-card p { margin:6px 0 0; font-size:13.5px; line-height:1.55; color:var(--course-ink); }
+.c8-card .c8-do { display:flex; gap:8px; color:var(--course-muted); }
+.c8-card .c8-do span { flex:none; padding:0 6px; border-radius:6px; font-size:12px; line-height:20px; background:var(--blue-soft); color:var(--course-accent); }
+.c2-group .c2-row { margin-top:8px; }
+.c2-group .c2-row .c2-btn { flex:1; }
+
+/* 发现记录：六格 */
+.c8-found { display:grid; grid-template-columns:repeat(3, 1fr); gap:6px; }
+.c8-found span { padding:6px 4px; border-radius:9px; border:1px dashed var(--course-line); text-align:center; font-size:12.5px; color:var(--course-muted); }
+.c8-found span.on { border:1px solid var(--ok-line); background:var(--ok-soft); color:var(--ok); font-weight:700; }
+
+/* 现场运行状态 + 急停 */
+.c8-run { display:grid; grid-template-columns:auto 1fr; grid-template-rows:auto auto; column-gap:10px; align-items:center; padding:7px 12px; border-radius:12px; background:var(--surface-2); border:1px solid var(--hair); }
+.c8-run i { grid-row:span 2; width:12px; height:12px; border-radius:50%; background:var(--course-muted); }
+.c8-run.on i { background:var(--ok); box-shadow:0 0 0 4px var(--ok-soft); animation:c8-pulse 1.2s ease-in-out infinite; }
+.c8-run.ready i { background:var(--course-accent); box-shadow:0 0 0 4px var(--blue-soft); }
+.c8-run.off i { background:var(--bad); }
+.c8-run b { font-size:14px; }
+.c8-run span { font-size:12.5px; color:var(--course-muted); }
+@keyframes c8-pulse { 50% { opacity:.45; } }
+@media (prefers-reduced-motion: reduce) { .c8-run.on i { animation:none; } }
+.c2-group .c2-row:has(> .c8-run) { margin-top:0; align-items:stretch; flex-wrap:nowrap; }
+.c2-group .c2-row > .c8-run { flex:1; }
+.c2-group .c2-row .c2-btn.c8-stop { flex:0 0 84px; height:auto; min-height:44px; font-size:15px; letter-spacing:2px; }
+.c2-btn.c8-stop { border-color:#c2413b; background:#c2413b; color:#fff; font-weight:700; }
+.c2-btn.c8-stop:hover:not(:disabled) { color:#fff; border-color:#c2413b; filter:brightness(1.08); }
+
+/* 复位前核对 */
+.c8-checks { display:grid; grid-template-columns:1fr 1fr; gap:6px; }
+.c8-check { display:flex; flex-direction:column; gap:1px; padding:5px 10px; border-radius:10px; background:var(--surface-2); border:1px solid var(--hair); font-size:12.5px; color:var(--course-muted); }
+.c8-check b { font-size:14px; color:var(--course-ink); }
+.c8-check.ok { border-color:var(--ok-line); background:var(--ok-soft); }
+.c8-check.ok b { color:var(--ok); }
+.c8-check.no b { color:var(--warn); }
+
+/* 未找到的危险：问号 */
+.c8-hazards .c8-ico.q { display:grid; place-items:center; width:20px; height:20px; border-radius:50%; background:var(--hair); color:var(--course-muted); font-size:12px; font-weight:800; }
+.c8-hazards button:not(.found) b { color:var(--course-muted); font-weight:500; }
+.c8-card.empty p { margin:0; color:var(--course-muted); }
+.c8-card .c8-do.ev span { background:var(--ok-soft); color:var(--ok); }
+
+/* 能量隔离三行 */
+.c8-energy { display:grid; gap:6px; }
+.c8-erow { display:grid; grid-template-columns:auto 1fr auto; align-items:center; gap:10px; padding:6px 10px; border-radius:12px; border:1px solid var(--hair); background:var(--surface-2); }
+.c8-erow.no { border-color:color-mix(in srgb, var(--warn) 45%, var(--hair)); }
+.c8-erow.ok { border-color:var(--ok-line); background:var(--ok-soft); }
+.c8-eico { font-size:20px; line-height:1; }
+.c8-einfo { display:flex; flex-direction:column; min-width:0; }
+.c8-einfo b { font-size:14px; }
+.c8-einfo span { font-size:12.5px; color:var(--warn); }
+.c8-erow.ok .c8-einfo span { color:var(--ok); }
+.c8-erow .c2-btn { min-width:84px; }
+
+/* 复查进度：六格 */
+.c8-steps { display:grid; grid-template-columns:repeat(6, 1fr); gap:5px; }
+.c8-steps span { display:grid; place-items:center; height:30px; border-radius:9px; border:1px dashed var(--course-line); font-size:15px; opacity:.45; }
+.c8-steps span.f { opacity:1; border:1px solid color-mix(in srgb, var(--warn) 55%, transparent); background:var(--warn-soft); }
+.c8-steps span.mid { opacity:1; border:1px solid color-mix(in srgb, var(--course-accent) 55%, transparent); background:var(--blue-soft); }
+.c8-steps span.ok { opacity:1; border:1px solid var(--ok-line); background:var(--ok-soft); }
+.c8-check.no b { color:var(--warn); }
+</style><script data-course-navigation src="../../../../../shared/navigation.js"></script><link data-course-theme rel="stylesheet" href="../../../../../shared/styles/theme.css"><script data-course-theme src="../../../../../shared/theme.js"></script></head>
+<body>
+<main class="c8-page">
+  <div id="site" class="c8-site" role="application" aria-label="三维施工现场：拖动旋转，滚轮缩放，点击设备查找危险"></div>
+</main>
+<script src="../../../../../shared/vendor/three-r160.min.js"></script>
+<script src="../../../../../shared/vendor/gltf-r160/BufferGeometryUtils.js"></script>
+<script src="../../../../../shared/vendor/gltf-r160/GLTFLoader.js"></script>
+<script src="../../../../../shared/workshop/imported-machinery.js"></script>
+<script>/* 8-1 安全操作：现场暂停推演的状态模型（纯函数，三维场景和面板都只读它）。
+ * 流程：巡查找出六处危险 → 急停 → 能量隔离（断电挂锁、泄压、吊物落地）→ 逐项处置并复查 → 撤锁送电、急停复位、单独启动。
+ * 所有危险与处置均为课堂案例，不给通用安全距离，也不代表真实作业放行。
+ */
+(function (g) {
+  'use strict';
+  const hazards = [
+    {id: 'electric', label: '临时用电', icon: '⚡',
+      finding: '配电箱引出的电缆外皮破损，泡在积水里。',
+      fix: '更换破损电缆，架空敷设',
+      needs: 'power', evidence: '新电缆已架空，离开积水；绝缘外皮完好。'},
+    {id: 'swing', label: '回转碰撞', icon: '🚜',
+      finding: '人员通道穿过挖掘机回转范围。',
+      fix: '设回转隔离围挡，人员通道改道',
+      evidence: '围挡把回转范围圈起来，新通道绕开了它。'},
+    {id: 'belt', label: '外露传动', icon: '⚙',
+      finding: '钢筋加工机的皮带轮防护罩拆下没装回。',
+      fix: '装回皮带防护罩',
+      needs: 'power', evidence: '防护罩已装回并固定，手够不到皮带和带轮。'},
+    {id: 'load', label: '悬吊物', icon: '🏗',
+      finding: '塔吊吊着钢筋捆，下方就是人员通道。',
+      fix: '吊物落在垫木上，拉警戒带',
+      needs: 'load', evidence: '钢筋捆已平稳落在垫木上，下方区域已拉警戒。'},
+    {id: 'opening', label: '楼面洞口', icon: '🕳',
+      finding: '楼面预留洞口没有盖板和护栏。',
+      fix: '盖上盖板，四周装防护栏杆',
+      evidence: '盖板已固定，四周防护栏杆封闭。'},
+    {id: 'pressure', label: '残余压力', icon: '💨',
+      finding: '喷涂机已关，管路压力表仍有读数，接头在渗漏。',
+      fix: '更换渗漏的管路接头',
+      needs: 'pressure', evidence: '压力表回零后更换接头，复查无渗漏。'},
+  ];
+  const ids = hazards.map(h => h.id);
+  const map = (v) => Object.fromEntries(ids.map(id => [id, v]));
+  const byId = id => hazards.find(h => h.id === id);
+
+  const initial = () => ({
+    running: true, latched: false, armed: false, started: false,
+    power: 'on', pressure: true, load: 'hung',
+    found: map(false), fixed: map(false), verified: map(false),
+    selected: null, message: '现场还在运行。先别动手，找出六处危险。', error: false, seq: 0,
+  });
+
+  const count = (s, k) => ids.filter(id => s[k][id]).length;
+  const allVerified = s => ids.every(id => s.verified[id]);
+  const energyLeft = s => (s.power === 'on' ? 1 : 0) + (s.pressure ? 1 : 0) + (s.load === 'hung' ? 1 : 0);
+
+  function reduce(state, ev) {
+    if (ev.type === 'restart-case') return initial();
+    const s = JSON.parse(JSON.stringify(state));
+    s.seq = (state.seq || 0) + 1; s.error = false; s.code = '';
+    const ok = msg => { s.message = msg; return s; };
+    const fail = (msg, code) => { s.message = msg; s.error = true; s.code = code || 'blocked'; return s; };
+    const h = ev.id ? byId(ev.id) : null;
+
+    switch (ev.type) {
+      case 'select':
+        if (!h) return s;
+        s.selected = h.id;
+        return ok(s.found[h.id] ? h.finding : '这处还没在巡查里找到。');
+      case 'find':
+        if (!h) return ok('这里没有发现问题，再看看别处。');
+        s.selected = h.id;
+        if (s.found[h.id]) return ok(h.finding);
+        s.found[h.id] = true;
+        return ok('找到了：' + h.finding);
+      case 'estop':
+        if (!s.running && s.latched) return ok('急停已经按下并锁住了。');
+        s.running = false; s.latched = true; s.armed = false;
+        return ok('急停按下：机械全部停住。但电、压力和吊物还在，要分别隔离。');
+      case 'isolate': {
+        if (s.running) return fail('设备还在运行：先按急停，再动手隔离。', 'running');
+        if (ev.target === 'power') {
+          if (s.power === 'locked') return ok('配电箱已经断电挂锁。');
+          s.power = 'locked'; return ok('断开总闸，挂上个人锁和“禁止合闸”牌。');
+        }
+        if (ev.target === 'pressure') {
+          if (!s.pressure) return ok('管路已经泄压，压力表为零。');
+          if (s.power !== 'locked') return fail('先断电挂锁，防止喷涂机在泄压时被再次启动。', 'order');
+          s.pressure = false; return ok('打开泄压阀，压力表指针回到零。');
+        }
+        if (ev.target === 'load') {
+          if (s.load === 'down') return ok('钢筋捆已经落在垫木上。');
+          s.load = 'down'; return ok('吊钩慢慢下放，钢筋捆平稳落在垫木上。');
+        }
+        return s;
+      }
+      case 'fix': {
+        if (!h) return s;
+        if (!s.found[h.id]) return fail('这处危险还没在巡查里找到。', 'notfound');
+        if (s.running) return fail('设备还在运行，不能上去处置：先按急停。', 'running');
+        if (h.needs === 'power' && s.power !== 'locked') return fail('电还没断：先到配电箱断电挂锁。', 'energy');
+        if (h.needs === 'pressure' && s.pressure) return fail('管路还有压力，拆接头会喷出来：先泄压。', 'energy');
+        if (h.needs === 'load' && s.load !== 'down') return fail('钢筋捆还吊在空中：先让吊物落地。', 'energy');
+        if (s.fixed[h.id]) return ok(h.label + '已处置，去核对复查。');
+        s.fixed[h.id] = true; s.verified[h.id] = false;
+        return ok(h.fix + '。处置完了，还要复查。');
+      }
+      case 'verify':
+        if (!h) return s;
+        if (!s.fixed[h.id]) return fail('还没处置，不能只点“复查”把危险勾掉。', 'notfixed');
+        s.verified[h.id] = true;
+        return ok('复查通过：' + h.evidence);
+      case 'unlock':
+        if (s.power === 'on') return ok('电源本来就是通的。');
+        if (!allVerified(s)) return fail('还有危险没复查，不能撤锁送电。', 'unverified');
+        s.power = 'on'; return ok('确认人员撤离，本人取下自己的锁，合闸送电。');
+      case 'reset':
+        if (!s.latched) return ok(s.running ? '设备在运行，没有需要复位的急停。' : '急停已经复位。');
+        if (!allVerified(s)) return fail('还有危险没复查，急停复位被拦下。', 'unverified');
+        s.latched = false; s.armed = true; s.running = false;
+        return ok('急停已复位：设备仍然静止，等单独的启动指令。');
+      case 'start':
+        if (s.latched) return fail('急停还锁着：先复位。', 'latched');
+        if (!s.armed) return fail('还没复位，不能启动。', 'latched');
+        if (s.power !== 'on') return fail('配电箱还挂着锁，没有送电。', 'power');
+        if (s.running) return ok('现场已经在运行。');
+        s.running = true; s.started = true;
+        return ok('鸣笛示警后启动：现场按新通道恢复作业。');
+      default:
+        return s;
+    }
+  }
+
+  const api = {hazards, ids, initial, reduce, count, allVerified, energyLeft};
+  g.SafetyModel = api;
+  if (typeof module !== 'undefined') module.exports = api;
+})(typeof window === 'undefined' ? globalThis : window);
+</script>
+<script>/* 8-1 三维施工现场：一块 40 m × 28 m 的楼面，按真实尺寸（米）布置。
+ * 挖掘机、塔吊用课程已有网格（与 1-2 同款，shared/workshop/imported-machinery.js），其余设备在这里用实体零件搭建。
+ * 场景只读 SafetyModel 的状态；交互（点选、视角）通过回调交给 app.js。
+ */
+(function (global) {
+  'use strict';
+  const T = THREE, V = (x = 0, y = 0, z = 0) => new T.Vector3(x, y, z), rad = d => d * Math.PI / 180;
+  const clamp = (x, a, b) => Math.min(b, Math.max(a, x));
+
+  /* —— 布局（米）：x 向右，z 向镜头 —— */
+  const L = {
+    excavator: V(-7.5, 0, -4), mast: V(13.2, 0, -9), loadAt: V(2.5, 0, -2.8), hungY: 5.2,
+    opening: {x: -.4, z: -8.2, w: 2.4, d: 1.8}, box: V(-4.2, 0, 5), puddle: V(-.2, 0, 5.6),
+    bender: V(6.2, 0, 4.8), spray: V(-11, 0, 5.2), estop: V(5.2, 0, 10.1),
+  };
+  // 原有通道（穿过回转范围、吊物下方、洞口边）与改道后的通道
+  const ROUTE_A = [V(10, 0, 8.6), V(10, 0, -2.8), V(2.5, 0, -2.8), V(-.2, 0, -6.6), V(-4.6, 0, -2), V(-4.6, 0, 2.6), V(-2.2, 0, 8.6)];
+  const ROUTE_B = [V(10, 0, 8.6), V(10, 0, 1.2), V(-2.6, 0, 1.2), V(-2.6, 0, 8.6)];
+
+  /* —— 贴图 —— */
+  function canvasTex(w, h, draw, repeat) {
+    const c = document.createElement('canvas'); c.width = w; c.height = h; draw(c.getContext('2d'), w, h);
+    const t = new T.CanvasTexture(c); t.colorSpace = T.SRGBColorSpace; t.anisotropy = 8;
+    if (repeat) { t.wrapS = t.wrapT = T.RepeatWrapping; t.repeat.set(repeat[0], repeat[1]); }
+    return t;
+  }
+  const noise = (x, w, h, n, base, spread, alpha) => {
+    for (let i = 0; i < n; i++) {
+      const v = base + Math.random() * spread | 0;
+      x.fillStyle = `rgba(${v},${v - 3},${v - 9},${Math.random() * alpha})`;
+      x.fillRect(Math.random() * w, Math.random() * h, 1 + Math.random() * 2.5, 1 + Math.random() * 2.5);
+    }
+  };
+  const concreteTex = () => canvasTex(512, 512, (x, w, h) => {
+    x.fillStyle = '#c8c4bb'; x.fillRect(0, 0, w, h);
+    for (let i = 0; i < 26; i++) {
+      const g = x.createRadialGradient(Math.random() * w, Math.random() * h, 0, Math.random() * w, Math.random() * h, 60 + Math.random() * 120);
+      const d = Math.random() < .5 ? '120,114,104' : '232,228,220';
+      g.addColorStop(0, `rgba(${d},.10)`); g.addColorStop(1, `rgba(${d},0)`); x.fillStyle = g; x.fillRect(0, 0, w, h);
+    }
+    noise(x, w, h, 14000, 150, 90, .32);
+    x.strokeStyle = 'rgba(95,88,80,.45)'; x.lineWidth = 2.5; x.strokeRect(1, 1, w - 2, h - 2);
+  }, [1 / 6, 1 / 6]);
+  const dirtTex = () => canvasTex(512, 512, (x, w, h) => {
+    x.fillStyle = '#8e826d'; x.fillRect(0, 0, w, h);
+    noise(x, w, h, 22000, 90, 90, .5);
+  }, [24, 24]);
+  const stripeTex = (a, b, n = 6, vertical = false) => canvasTex(128, 128, (x, w, h) => {
+    for (let i = 0; i < n; i++) { x.fillStyle = i % 2 ? b : a; vertical ? x.fillRect(0, i * h / n, w, h / n) : x.fillRect(i * w / n, 0, w / n, h); }
+  });
+  const hazardStripe = () => canvasTex(256, 64, (x, w, h) => {
+    x.fillStyle = '#f2c230'; x.fillRect(0, 0, w, h); x.fillStyle = '#1d1d1f';
+    for (let i = -2; i < 10; i++) { x.beginPath(); x.moveTo(i * 32, h); x.lineTo(i * 32 + 16, h); x.lineTo(i * 32 + 32 + 16, 0); x.lineTo(i * 32 + 32, 0); x.fill(); }
+  }, [3, 1]);
+  const textTex = (text, bg, fg, w = 256, h = 128, size = 64) => canvasTex(w, h, (x) => {
+    x.fillStyle = bg; x.fillRect(0, 0, w, h); x.fillStyle = fg;
+    x.font = `700 ${size}px "PingFang SC","Microsoft YaHei",sans-serif`; x.textAlign = 'center'; x.textBaseline = 'middle'; x.fillText(text, w / 2, h / 2 + 2);
+  });
+  const warnTex = () => canvasTex(128, 128, (x) => {
+    x.fillStyle = '#f2c230'; x.strokeStyle = '#1d1d1f'; x.lineWidth = 9; x.lineJoin = 'round';
+    x.beginPath(); x.moveTo(64, 10); x.lineTo(120, 112); x.lineTo(8, 112); x.closePath(); x.fill(); x.stroke();
+    x.fillStyle = '#1d1d1f'; x.beginPath(); x.moveTo(70, 36); x.lineTo(48, 78); x.lineTo(64, 78); x.lineTo(56, 102); x.lineTo(82, 64); x.lineTo(66, 64); x.lineTo(76, 36); x.fill();
+  });
+  const gaugeTex = () => canvasTex(256, 256, (x) => {
+    x.fillStyle = '#f7f7f3'; x.beginPath(); x.arc(128, 128, 124, 0, 7); x.fill();
+    x.lineWidth = 16; x.strokeStyle = '#39a96b'; x.beginPath(); x.arc(128, 128, 96, rad(135), rad(200)); x.stroke();
+    x.strokeStyle = '#e7a325'; x.beginPath(); x.arc(128, 128, 96, rad(200), rad(330)); x.stroke();
+    x.strokeStyle = '#cf3b30'; x.beginPath(); x.arc(128, 128, 96, rad(330), rad(405)); x.stroke();
+    x.strokeStyle = '#222'; x.lineWidth = 4;
+    for (let i = 0; i <= 10; i++) { const a = rad(135 + i * 27); x.beginPath(); x.moveTo(128 + Math.cos(a) * 80, 128 + Math.sin(a) * 80); x.lineTo(128 + Math.cos(a) * 104, 128 + Math.sin(a) * 104); x.stroke(); }
+    x.fillStyle = '#222'; x.font = '700 30px sans-serif'; x.textAlign = 'center'; x.fillText('0', 70, 200);
+  });
+
+  /* —— 材质 —— */
+  function materials() {
+    const S = (color, o = {}) => new T.MeshStandardMaterial({color, roughness: .6, metalness: .05, ...o});
+    return {
+      concrete: S(0xffffff, {map: concreteTex(), roughness: .93}),
+      concreteCol: S(0xbdb8ae, {roughness: .9}),
+      pit: S(0x4b4740, {roughness: 1}),
+      dirt: S(0xffffff, {map: dirtTex(), roughness: 1}),
+      steel: S(0x8e979e, {metalness: .75, roughness: .36}),
+      darkSteel: S(0x41484f, {metalness: .6, roughness: .45}),
+      galv: S(0xb9c0c5, {metalness: .65, roughness: .42}),
+      rebar: S(0x7a5a45, {metalness: .55, roughness: .62}),
+      yellow: S(0xe2a822, {roughness: .45, metalness: .15}),
+      red: S(0xc5362c, {roughness: .4}),
+      orange: S(0xe8661c, {roughness: .5}),
+      white: S(0xf1f1ec, {roughness: .55}),
+      rubber: S(0x23272b, {roughness: .82}),
+      cableNew: S(0xe8721f, {roughness: .55}),
+      copper: S(0xd17c3e, {metalness: .85, roughness: .3}),
+      timber: S(0xa8774a, {roughness: .88}),
+      plywood: S(0xd2ab72, {roughness: .8}),
+      machine: S(0x2f6f8f, {roughness: .42, metalness: .2}),
+      machine2: S(0x3c4c5a, {roughness: .5, metalness: .25}),
+      hoarding: S(0x2f5f9a, {roughness: .6}),
+      hoardingWhite: S(0xeef1f4, {roughness: .6}),
+      water: new T.MeshStandardMaterial({map: canvasTex(256, 256, (x, w, h) => {
+        const g = x.createRadialGradient(w * .45, h * .45, 8, w / 2, h / 2, w * .55); g.addColorStop(0, '#3f6683'); g.addColorStop(.75, '#6f93ad'); g.addColorStop(1, '#a9bccb');
+        x.fillStyle = g; x.fillRect(0, 0, w, h); x.strokeStyle = 'rgba(255,255,255,.35)'; x.lineWidth = 3;
+        for (let i = 0; i < 6; i++) { x.beginPath(); x.ellipse(w * (.3 + Math.random() * .4), h * (.3 + Math.random() * .4), 18 + i * 9, 8 + i * 4, 0, 0, Math.PI * 1.2); x.stroke(); }
+      }), roughness: .04, metalness: .1, transparent: true, opacity: .78}),
+      lane: new T.MeshStandardMaterial({color: 0x2f9e5b, roughness: .7}),
+      laneFill: new T.MeshStandardMaterial({color: 0x52b77d, roughness: .8, transparent: true, opacity: .18, depthWrite: false}),
+      hivis: S(0xd4ec2a, {roughness: .7, emissive: 0x2a3300}),
+      reflect: S(0xdfe6ea, {roughness: .2, metalness: .6}),
+      jeans: S(0x34475f, {roughness: .85}),
+      skin: S(0xc99773, {roughness: .7}),
+      helmet: S(0xf5f3ec, {roughness: .35}),
+      boots: S(0x2b2622, {roughness: .8}),
+      stripes: S(0xffffff, {map: stripeTex('#d23a2f', '#f4f4f0', 8, true), roughness: .5}),
+      hazard: S(0xffffff, {map: hazardStripe(), roughness: .5}),
+      beacon: new T.MeshStandardMaterial({color: 0xffa21a, emissive: 0xff8a00, emissiveIntensity: .2, transparent: true, opacity: .85, roughness: .2}),
+      mushroom: new T.MeshStandardMaterial({color: 0xd12a22, emissive: 0x7a0000, emissiveIntensity: 0, roughness: .3}),
+      lamp: new T.MeshStandardMaterial({color: 0x39c46e, emissive: 0x39c46e, emissiveIntensity: .8}),
+      ring: new T.MeshBasicMaterial({color: 0xf0a020, transparent: true, opacity: .75, depthWrite: false, side: T.DoubleSide}),
+      ringOk: new T.MeshBasicMaterial({color: 0x1f8a5b, transparent: true, opacity: .7, depthWrite: false, side: T.DoubleSide}),
+      mist: new T.MeshBasicMaterial({color: 0xe8eef2, transparent: true, opacity: .55, depthWrite: false}),
+    };
+  }
+
+  function create(host) {
+    const api = {onPick: null, ready: null, webgl: true};
+    let renderer;
+    try {
+      renderer = new T.WebGLRenderer({antialias: true, preserveDrawingBuffer: true});
+    } catch (e) { api.webgl = false; host.classList.add('no-webgl'); api.update = () => {}; api.view = () => {}; api.focus = () => {}; api.ready = Promise.resolve(); return api; }
+    renderer.setPixelRatio(Math.min(devicePixelRatio, 1.75));
+    renderer.outputColorSpace = T.SRGBColorSpace; renderer.toneMapping = T.ACESFilmicToneMapping; renderer.toneMappingExposure = 1.05;
+    renderer.shadowMap.enabled = true; renderer.shadowMap.type = T.PCFSoftShadowMap;
+    host.append(renderer.domElement); renderer.domElement.setAttribute('aria-hidden', 'true');
+    const overlay = document.createElement('div'); overlay.className = 'c8-labels'; host.append(overlay);
+
+    const scene = new T.Scene(), M = materials();
+    const camera = new T.PerspectiveCamera(36, 1, .2, 500);
+    const hemi = new T.HemisphereLight(0xeaf3ff, 0x8a7f6c, 1.25); scene.add(hemi);
+    const sun = new T.DirectionalLight(0xfff1dc, 2.6); sun.position.set(22, 38, 20); sun.castShadow = true;
+    Object.assign(sun.shadow.camera, {left: -26, right: 26, top: 22, bottom: -22, near: 5, far: 100});
+    sun.shadow.mapSize.set(2048, 2048); sun.shadow.bias = -.0004; sun.shadow.normalBias = .03; scene.add(sun, sun.target);
+    const fill = new T.DirectionalLight(0xbcd6f0, .55); fill.position.set(-20, 14, -10); scene.add(fill);
+
+    const mesh = (parent, geo, mat, x = 0, y = 0, z = 0, rx = 0, ry = 0, rz = 0) => {
+      const m = new T.Mesh(geo, mat); m.position.set(x, y, z); m.rotation.set(rx, ry, rz); m.castShadow = true; m.receiveShadow = true; parent.add(m); return m;
+    };
+    const box = (p, w, h, d, mat, x, y, z, ry = 0) => mesh(p, new T.BoxGeometry(w, h, d), mat, x, y, z, 0, ry);
+    const cyl = (p, r, h, mat, x, y, z, seg = 20, r2 = r) => mesh(p, new T.CylinderGeometry(r, r2, h, seg), mat, x, y, z);
+    const rod = (p, a, b, r, mat, seg = 10) => {
+      const d = b.clone().sub(a), m = mesh(p, new T.CylinderGeometry(r, r, d.length(), seg), mat);
+      m.position.copy(a).addScaledVector(d, .5); m.quaternion.setFromUnitVectors(V(0, 1, 0), d.normalize()); return m;
+    };
+    const tube = (p, pts, r, mat, closed = false, seg = 80) => mesh(p, new T.TubeGeometry(new T.CatmullRomCurve3(pts, closed), seg, r, 10, closed), mat);
+    const group = (parent = scene, pick) => { const g = new T.Group(); if (pick) g.userData.pick = pick; parent.add(g); return g; };
+
+    /* —— 地面、楼板与洞口 —— */
+    const ground = mesh(scene, new T.PlaneGeometry(220, 220), M.dirt, 0, -.32, 0, -Math.PI / 2); ground.castShadow = false;
+    const o = L.opening, shape = new T.Shape();
+    shape.moveTo(-15, -11); shape.lineTo(15, -11); shape.lineTo(15, 11); shape.lineTo(-15, 11); shape.closePath();
+    const hole = new T.Path(); // 形状坐标 y 对应世界 -z
+    hole.moveTo(o.x - o.w / 2, -o.z - o.d / 2); hole.lineTo(o.x - o.w / 2, -o.z + o.d / 2); hole.lineTo(o.x + o.w / 2, -o.z + o.d / 2); hole.lineTo(o.x + o.w / 2, -o.z - o.d / 2); hole.closePath();
+    shape.holes.push(hole);
+    const slabGeo = new T.ExtrudeGeometry(shape, {depth: .3, bevelEnabled: false}); slabGeo.rotateX(-Math.PI / 2); slabGeo.translate(0, -.3, 0);
+    mesh(scene, slabGeo, M.concrete);
+    const pitG = group(scene, 'opening');
+    box(pitG, o.w, .1, o.d, M.pit, o.x, -3.2, o.z);
+    for (const [w, d, x, z] of [[o.w, .1, 0, -o.d / 2], [o.w, .1, 0, o.d / 2], [.1, o.d, -o.w / 2, 0], [.1, o.d, o.w / 2, 0]]) box(pitG, w, 3, d, M.pit, o.x + x, -1.75, o.z + z);
+    for (let i = 0; i < 7; i++) rod(pitG, V(o.x - o.w / 2 + .2 + i * .33, -.15, o.z - o.d / 2), V(o.x - o.w / 2 + .2 + i * .33, -.15, o.z - o.d / 2 + .16), .008, M.rebar);
+    const pitHit = box(pitG, o.w, .02, o.d, new T.MeshBasicMaterial({visible: false}), o.x, -.05, o.z); pitHit.castShadow = false;
+
+    /* —— 围挡、柱子、材料堆 —— */
+    const hoard = group();
+    const panel = (x, z, ry) => { box(hoard, 2.95, 2.2, .06, M.hoarding, x, 1.1 - .32, z, ry); box(hoard, 2.95, .25, .07, M.hoardingWhite, x, 1.95 - .32, z, ry); };
+    for (let x = -16.5; x <= 16.5; x += 3) panel(x, -13.5, 0);
+    for (let z = -12; z <= 9; z += 3) { panel(-18.5, z, Math.PI / 2); panel(18.5, z, Math.PI / 2); }
+    for (const x of [-12, -4, 4]) {
+      box(scene, .6, 3.6, .6, M.concreteCol, x, 1.8, -10.6);
+      for (const [dx, dz] of [[-.22, -.22], [.22, -.22], [-.22, .22], [.22, .22]]) rod(scene, V(x + dx, 3.5, -10.6 + dz), V(x + dx, 4.4, -10.6 + dz), .014, M.rebar, 6);
+    }
+    const stackG = group();
+    for (let i = 0; i < 3; i++) for (let j = 0; j < 5; j++) box(stackG, 2.44, .018, 1.22, M.plywood, 12.6 + (i % 2) * .05, .1 + (i * 5 + j) * .02, 9.2 + i * .02);
+    for (const dz of [-.4, 0, .4]) box(stackG, 2.6, .1, .1, M.timber, 12.6, .05, 9.2 + dz);
+    // 钢筋原料架
+    const rack = group();
+    // 钢筋原料：几捆钢筋码在垫木上
+    for (const x of [11, 12.8, 14.6]) box(rack, .14, .12, 1.6, M.timber, x, .06, 4.7);
+    for (let k = 0; k < 3; k++) {
+      const z0 = 4.2 + k * .45;
+      for (let i = 0; i < 15; i++) { const y = .14 + (i / 5 | 0) * .034, z = z0 + (i % 5 - 2) * .036 + (i / 5 | 0) * .018; rod(rack, V(10.2, y, z), V(15.4, y, z), .016, M.rebar, 6); }
+      for (const x of [11.4, 14.2]) { const w = mesh(rack, new T.TorusGeometry(.11, .008, 6, 16), M.darkSteel, x, .18, z0, 0, Math.PI / 2); w.scale.set(1, .7, 1); }
+    }
+
+    /* —— 人员通道 —— */
+    const lanes = {A: group(), B: group()};
+    for (const [key, route] of [['A', ROUTE_A], ['B', ROUTE_B]]) {
+      for (let i = 0; i < route.length - 1; i++) {
+        const a = route[i], b = route[i + 1], d = b.clone().sub(a), len = d.length(), ang = Math.atan2(d.x, d.z), mid = a.clone().addScaledVector(d, .5);
+        const n = V(Math.cos(ang), 0, -Math.sin(ang)).multiplyScalar(.7);
+        for (const s of [-1, 1]) { const e = box(lanes[key], .09, .006, len + .09, M.lane, mid.x + n.x * s, .004, mid.z + n.z * s, ang); e.castShadow = false; }
+        const f = box(lanes[key], 1.4, .003, len, M.laneFill, mid.x, .003, mid.z, ang); f.castShadow = false;
+      }
+    }
+    lanes.B.visible = false;
+
+    /* —— 配电箱、电缆、积水 —— */
+    const elec = group(scene, 'electric'), bx = L.box;
+    for (const dx of [-.28, .28]) box(elec, .06, 1.9, .06, M.galv, bx.x + dx, .95, bx.z - .05);
+    box(elec, .7, .06, .5, M.galv, bx.x, .06, bx.z);
+    box(elec, .62, .82, .26, M.machine2, bx.x, 1.45, bx.z);
+    const door = box(elec, .58, .78, .02, M.galv, bx.x, 1.45, bx.z + .14);
+    const sign = mesh(elec, new T.PlaneGeometry(.2, .2), new T.MeshStandardMaterial({map: warnTex(), transparent: true}), bx.x, 1.62, bx.z + .152); sign.castShadow = false;
+    box(elec, .7, .05, .34, M.galv, bx.x, 1.89, bx.z);
+    const lamp = cyl(elec, .025, .03, M.lamp, bx.x + .2, 1.3, bx.z + .16, 12); lamp.rotation.x = Math.PI / 2;
+    const handle = group(elec); handle.position.set(bx.x + .34, 1.45, bx.z);
+    box(handle, .04, .04, .04, M.darkSteel, .02, 0, 0); box(handle, .03, .2, .03, M.red, .05, .09, 0);
+    const lockout = group(elec); lockout.position.set(bx.x + .4, 1.36, bx.z + .02); lockout.visible = false;
+    box(lockout, .07, .08, .03, M.red, 0, 0, 0); mesh(lockout, new T.TorusGeometry(.025, .006, 8, 16, Math.PI), M.steel, 0, .04, 0);
+    const tag = mesh(lockout, new T.PlaneGeometry(.12, .2), new T.MeshStandardMaterial({map: textTex('禁止合闸', '#c5362c', '#fff', 128, 220, 26), side: T.DoubleSide}), 0, -.16, .02); tag.castShadow = false;
+    const pd = L.puddle, pShape = new T.Shape();
+    for (let i = 0; i <= 28; i++) { const a = i / 28 * Math.PI * 2, r = 1 + .22 * Math.sin(a * 3 + 1) + .12 * Math.sin(a * 5); i ? pShape.lineTo(Math.cos(a) * r * 1.6, Math.sin(a) * r) : pShape.moveTo(Math.cos(a) * r * 1.6, Math.sin(a) * r); }
+    const pGeo = new T.ShapeGeometry(pShape), pPos = pGeo.attributes.position, pUv = pGeo.attributes.uv;
+    for (let i = 0; i < pPos.count; i++) pUv.setXY(i, (pPos.getX(i) + 2) / 4, (pPos.getY(i) + 1.4) / 2.8);
+    const puddle = mesh(elec, pGeo, M.water, pd.x, .006, pd.z, -Math.PI / 2); puddle.castShadow = false;
+    const oldCable = group(elec);
+    const cPts = [V(bx.x + .1, 1.05, bx.z), V(bx.x + .1, .1, bx.z + .15), V(bx.x + .9, .03, bx.z + .6), V(pd.x - 1.2, .03, pd.z + .1), V(pd.x - .2, .03, pd.z - .05), V(pd.x + 1.4, .03, pd.z + .1), V(L.bender.x - 1.6, .03, L.bender.z + .4), V(L.bender.x - .62, .3, L.bender.z + .1)];
+    tube(oldCable, cPts, .024, M.rubber);
+    for (let i = 0; i < 5; i++) rod(oldCable, V(pd.x - .25 + i * .03, .035, pd.z - .05), V(pd.x - .19 + i * .035, .05 + i * .006, pd.z + .02), .004, M.copper, 5);
+    const spark = mesh(oldCable, new T.SphereGeometry(.05, 10, 8), new T.MeshBasicMaterial({color: 0x9fd8ff, transparent: true, opacity: 0}), pd.x - .2, .08, pd.z); spark.castShadow = false;
+    const newCable = group(elec); newCable.visible = false;
+    const poleXs = [bx.x + 1.8, pd.x, pd.x + 3.2];
+    for (const x of poleXs) { box(newCable, .1, 2.4, .1, M.timber, x, 1.2, bx.z + .7); mesh(newCable, new T.TorusGeometry(.05, .01, 8, 14), M.white, x, 2.3, bx.z + .78); }
+    tube(newCable, [V(bx.x + .1, 1.05, bx.z + .1), V(bx.x + .4, 1.95, bx.z + .4), V(poleXs[0], 2.3, bx.z + .78), V((poleXs[0] + poleXs[1]) / 2, 2.0, bx.z + .78), V(poleXs[1], 2.3, bx.z + .78), V((poleXs[1] + poleXs[2]) / 2, 2.0, bx.z + .78), V(poleXs[2], 2.3, bx.z + .78), V(L.bender.x - .9, 1.6, L.bender.z + .4), V(L.bender.x - .62, .45, L.bender.z + .1)], .022, M.cableNew, false, 140);
+
+    /* —— 钢筋加工机（皮带传动）—— */
+    const ben = group(scene, 'belt'), bp = L.bender;
+    box(ben, 1.3, .78, .9, M.machine, bp.x, .39 + .05, bp.z);
+    box(ben, 1.42, .05, 1.02, M.darkSteel, bp.x, .86, bp.z);
+    for (const [dx, dz] of [[-.55, -.38], [.55, -.38], [-.55, .38], [.55, .38]]) box(ben, .1, .05, .1, M.rubber, bp.x + dx, .025, bp.z + dz);
+    const disk = group(ben); disk.position.set(bp.x + .15, .9, bp.z);
+    cyl(disk, .26, .04, M.steel, 0, 0, 0, 32); cyl(disk, .045, .12, M.galv, 0, .07, 0); cyl(disk, .04, .12, M.galv, .17, .07, 0); cyl(disk, .04, .12, M.galv, -.17, .07, .08);
+    box(ben, .5, .07, .06, M.galv, bp.x - .35, .92, bp.z - .2);
+    const motor = group(ben); motor.position.set(bp.x - .2, .3, bp.z + .62);
+    const mBody = cyl(motor, .16, .42, M.machine2, 0, 0, 0, 24); mBody.rotation.z = Math.PI / 2;
+    for (let i = 0; i < 8; i++) { const f = box(motor, .4, .015, .34, M.machine2, 0, 0, 0); f.rotation.x = i * Math.PI / 8; }
+    box(motor, .38, .08, .36, M.darkSteel, 0, -.18, 0);
+    // 两只带轮和 V 带：外露在机身侧面
+    const pulleys = [];
+    const pulley = (x, y, r) => {
+      const p = group(ben); p.position.set(x, y, bp.z + .66);
+      const rim = cyl(p, r, .06, M.galv, 0, 0, 0, 32); rim.rotation.x = Math.PI / 2;
+      const grooveMat = M.darkSteel; const gr = mesh(p, new T.TorusGeometry(r - .01, .012, 8, 32), grooveMat); gr.position.z = 0;
+      for (let i = 0; i < 4; i++) { const s = box(p, r * 1.7, .02, .02, M.darkSteel, 0, 0, .035); s.rotation.z = i * Math.PI / 4; }
+      pulleys.push(p); return p;
+    };
+    pulley(bp.x + .02, .3, .09); pulley(bp.x + .25, .66, .17);
+    const beltPts = [];
+    for (let i = 0; i <= 40; i++) { const a = i / 40 * Math.PI * 2, big = Math.sin(a) > -.1; beltPts.push(big ? V(bp.x + .25 + Math.cos(a) * .17, .66 + Math.sin(a) * .17, bp.z + .66) : V(bp.x + .02 + Math.cos(a) * .09, .3 + Math.sin(a) * .09, bp.z + .66)); }
+    tube(ben, beltPts.slice(0, -1), .012, M.rubber, true, 120);
+    const guard = group(ben);
+    const guardMat = new T.MeshStandardMaterial({color: 0xf0b62c, roughness: .5, metalness: .2, transparent: true, opacity: .55});
+    box(guard, .52, .74, .015, guardMat, 0, 0, .1); box(guard, .52, .015, .12, M.yellow, 0, .37, .05); box(guard, .52, .015, .12, M.yellow, 0, -.37, .05);
+    box(guard, .015, .74, .12, M.yellow, -.26, 0, .05); box(guard, .015, .74, .12, M.yellow, .26, 0, .05);
+    for (let i = 1; i < 6; i++) box(guard, .5, .008, .01, M.yellow, 0, -.37 + i * .123, .105);
+    const guardOn = {p: V(bp.x + .14, .48, bp.z + .62), r: V(0, 0, 0)}, guardOff = {p: V(bp.x + 1.2, .07, bp.z + 1.1), r: V(-Math.PI / 2, 0, .4)};
+
+    /* —— 喷涂机、压力表、管路 —— */
+    const spr = group(scene, 'pressure'), sp = L.spray;
+    box(spr, .9, .05, .55, M.darkSteel, sp.x, .42, sp.z);
+    for (const s of [-1, 1]) { const w = cyl(spr, .19, .07, M.rubber, sp.x - .3, .19, sp.z + s * .32, 24); w.rotation.x = Math.PI / 2; const hb = cyl(spr, .07, .08, M.galv, sp.x - .3, .19, sp.z + s * .32, 16); hb.rotation.x = Math.PI / 2; }
+    box(spr, .06, .4, .06, M.darkSteel, sp.x + .38, .22, sp.z);
+    rod(spr, V(sp.x + .4, .45, sp.z - .22), V(sp.x + .55, 1.15, sp.z - .22), .018, M.darkSteel); rod(spr, V(sp.x + .4, .45, sp.z + .22), V(sp.x + .55, 1.15, sp.z + .22), .018, M.darkSteel);
+    rod(spr, V(sp.x + .55, 1.15, sp.z - .24), V(sp.x + .55, 1.15, sp.z + .24), .018, M.rubber);
+    const sm = cyl(spr, .17, .42, M.red, sp.x - .05, .66, sp.z, 24); sm.rotation.x = Math.PI / 2;
+    box(spr, .26, .2, .3, M.darkSteel, sp.x + .22, .55, sp.z);
+    const pumpCyl = cyl(spr, .06, .3, M.steel, sp.x + .22, .78, sp.z, 16);
+    const gauge = group(spr); gauge.position.set(sp.x + .22, 1.0, sp.z + .12);
+    const gFace = cyl(gauge, .085, .03, M.galv, 0, 0, 0, 28); gFace.rotation.x = Math.PI / 2;
+    const dial = mesh(gauge, new T.CircleGeometry(.075, 32), new T.MeshStandardMaterial({map: gaugeTex(), roughness: .3}), 0, 0, .017); dial.castShadow = false;
+    const needle = group(gauge); needle.position.z = .02; box(needle, .006, .062, .004, M.red, 0, .027, 0);
+    rod(spr, V(sp.x + .22, .93, sp.z), V(sp.x + .22, .93, sp.z + .12), .01, M.galv);
+    const valve = group(spr); valve.position.set(sp.x + .35, .55, sp.z + .16);
+    cyl(valve, .02, .06, M.galv, 0, 0, 0); box(valve, .12, .015, .02, M.red, .04, .03, 0);
+    // 喷涂工人站在墙前，喷枪握在右手，软管从手里垂到地面再接回喷涂机
+    const sprayer = worker(); const sprayAt = V(sp.x - 2.5, 0, sp.z - 3.1);
+    sprayer.position.copy(sprayAt); sprayer.rotation.y = -Math.PI / 2;
+    const sArm = sprayer.userData.arms[1]; sArm.rotation.x = -1.15;
+    const gun = group(sArm); gun.position.set(0, -.64, .03);
+    box(gun, .045, .12, .05, M.darkSteel, 0, .02, -.05); box(gun, .035, .34, .035, M.galv, 0, -.16, 0); box(gun, .05, .04, .05, M.red, 0, -.34, 0);
+    sprayer.updateMatrixWorld(true);
+    const hoseEnd = gun.localToWorld(V(0, .05, -.06));
+    const coupling = V(sp.x - 1.5, .06, sp.z - 1.6);
+    tube(spr, [V(sp.x + .3, .5, sp.z + .2), V(sp.x + .1, .1, sp.z + .9), V(sp.x - 1.1, .04, sp.z + .3), coupling], .022, M.rubber);
+    tube(spr, [coupling, V(sp.x - 2.1, .04, sp.z - 2.4), V(sprayAt.x + .25, .05, sprayAt.z + .3), V(sprayAt.x + .1, .5, sprayAt.z + .35), hoseEnd], .02, M.rubber, false, 120);
+    const couplingMat = new T.MeshStandardMaterial({color: 0xb97d31, metalness: .7, roughness: .35});
+    const cpl = cyl(spr, .04, .12, couplingMat, coupling.x, coupling.y, coupling.z, 14); cpl.rotation.z = Math.PI / 2; cpl.rotation.y = .7;
+    const mist = group(spr); mist.position.copy(coupling);
+    const drops = Array.from({length: 14}, () => { const d = mesh(mist, new T.SphereGeometry(.02 + Math.random() * .025, 8, 6), M.mist); d.castShadow = false; d.userData.seed = Math.random() * 10; return d; });
+    const wet = mesh(spr, new T.CircleGeometry(.5, 24), M.water, coupling.x + .1, .005, coupling.z + .2, -Math.PI / 2); wet.castShadow = false;
+    // 墙边待喷涂的砌块墙
+    const wall = group();
+    box(wall, .2, 2.6, 4.6, M.concreteCol, sp.x - 3.7, 1.3, sp.z - 3.6);
+
+    /* —— 急停桩与警示灯 —— */
+    const es = group(scene, 'estop'), ep = L.estop;
+    box(es, .16, 1.0, .16, M.yellow, ep.x, .5, ep.z); box(es, .26, .22, .2, M.yellow, ep.x, 1.1, ep.z);
+    const mushroom = group(es); mushroom.position.set(ep.x, 1.1, ep.z + .1);
+    const mr = cyl(mushroom, .075, .05, M.mushroom, 0, 0, .04, 24); mr.rotation.x = Math.PI / 2;
+    const mstem = cyl(mushroom, .03, .05, M.mushroom, 0, 0, 0, 12); mstem.rotation.x = Math.PI / 2;
+    cyl(es, .05, 1.6, M.galv, ep.x + .5, .8, ep.z, 12);
+    const beacon = group(es); beacon.position.set(ep.x + .5, 1.72, ep.z);
+    cyl(beacon, .09, .06, M.darkSteel, 0, -.06, 0, 20); cyl(beacon, .085, .2, M.beacon, 0, .07, 0, 24);
+    const reflector = box(beacon, .14, .1, .01, M.galv, 0, .07, 0);
+    const horn = mesh(es, new T.RingGeometry(.2, .26, 40), new T.MeshBasicMaterial({color: 0xffb020, transparent: true, opacity: 0, side: T.DoubleSide, depthWrite: false}), ep.x + .5, 1.8, ep.z); horn.castShadow = false;
+
+    /* —— 处置后才出现的防护 —— */
+    const swingFence = group(scene, 'swing'); swingFence.visible = false;
+    const ringR = 6.2, ringN = 22, ringPts = [];
+    for (let i = 0; i < ringN; i++) {
+      const a = i / ringN * Math.PI * 2, x = L.excavator.x - 1.3 + Math.cos(a) * ringR, z = L.excavator.z + Math.sin(a) * ringR;
+      if (z < -10.8) continue;
+      cyl(swingFence, .05, 1.05, M.stripes, x, .52, z, 12); cyl(swingFence, .2, .06, M.rubber, x, .03, z, 16);
+      ringPts.push(V(x, .92, z));
+    }
+    for (let i = 0; i < ringPts.length - 1; i++) if (ringPts[i].distanceTo(ringPts[i + 1]) < 2.5) rod(swingFence, ringPts[i], ringPts[i + 1], .014, M.stripes, 6);
+    const loadCordon = group(scene, 'load'); loadCordon.visible = false;
+    const la = L.loadAt, cps = [V(la.x - 3.6, 0, la.z - 2), V(la.x + 3.6, 0, la.z - 2), V(la.x + 3.6, 0, la.z + 2), V(la.x - 3.6, 0, la.z + 2)];
+    for (const c of cps) { cyl(loadCordon, .03, .55, M.orange, c.x, .3, c.z, 14, .17); box(loadCordon, .36, .03, .36, M.rubber, c.x, .015, c.z); }
+    for (let i = 0; i < 4; i++) { const a = cps[i].clone().setY(.55), b = cps[(i + 1) % 4].clone().setY(.55); rod(loadCordon, a, b, .012, M.stripes, 6); }
+    const dunnage = group(scene, 'load');
+    for (const dx of [-2.2, 0, 2.2]) box(dunnage, .15, .15, 1.4, M.timber, la.x + dx, .075, la.z);
+    const openFix = group(scene, 'opening'); openFix.visible = false;
+    box(openFix, o.w + .5, .04, o.d + .5, M.plywood, o.x, .02, o.z);
+    const coverTxt = mesh(openFix, new T.PlaneGeometry(1.2, .6), new T.MeshStandardMaterial({map: textTex('洞口 · 勿移', '#d2ab72', '#b3261e', 256, 128, 40), transparent: true}), o.x, .042, o.z, -Math.PI / 2); coverTxt.castShadow = false;
+    const gW = o.w + 1, gD = o.d + 1;
+    for (const [x, z] of [[-1, -1], [1, -1], [1, 1], [-1, 1]]) box(openFix, .06, 1.2, .06, M.yellow, o.x + x * gW / 2, .6, o.z + z * gD / 2);
+    for (const [y, h] of [[1.17, .05], [.6, .04], [.1, .2]]) {
+      box(openFix, gW, h, .03, M.hazard, o.x, y, o.z - gD / 2); box(openFix, gW, h, .03, M.hazard, o.x, y, o.z + gD / 2);
+      box(openFix, .03, h, gD, M.hazard, o.x - gW / 2, y, o.z); box(openFix, .03, h, gD, M.hazard, o.x + gW / 2, y, o.z);
+    }
+
+    /* —— 吊物（塔吊的小车、钢丝绳、吊钩和钢筋捆在这里搭，可升降）—— */
+    const loadG = group(scene, 'load');
+    const hook = group(loadG);
+    cyl(hook, .22, .32, M.yellow, 0, .5, 0, 20); box(hook, .5, .18, .14, M.yellow, 0, .75, 0);
+    mesh(hook, new T.TorusGeometry(.13, .035, 10, 24, Math.PI * 1.4), M.darkSteel, 0, .18, 0, 0, 0, -Math.PI * .2);
+    const bundle = group(loadG);
+    for (let i = 0; i < 24; i++) { const r = .016, x = (i % 6 - 2.5) * .04, y = (i / 6 | 0) * .036; const b = cyl(bundle, r, 6, M.rebar, 0, y, x, 6); b.rotation.z = Math.PI / 2; }
+    for (const dx of [-2, 0, 2]) { const w = mesh(bundle, new T.TorusGeometry(.14, .008, 6, 18), M.darkSteel, dx, .06, 0, 0, Math.PI / 2); w.scale.set(1, .75, 1); }
+    const slingA = mesh(loadG, new T.CylinderGeometry(.012, .012, 1, 6), M.darkSteel), slingB = mesh(loadG, new T.CylinderGeometry(.012, .012, 1, 6), M.darkSteel);
+    const rope = mesh(scene, new T.CylinderGeometry(.014, .014, 1, 6), M.darkSteel); rope.userData.pick = 'load';
+    const trolley = group(scene, 'load');
+    box(trolley, .9, .35, .7, M.yellow, 0, 0, 0); for (const s of [-1, 1]) cyl(trolley, .1, .06, M.darkSteel, s * .3, .2, 0, 14).rotation.x = Math.PI / 2;
+
+    /* —— 工人 —— */
+    function worker(vest = M.hivis) {
+      const g = new T.Group(), legs = [];
+      for (const s of [-1, 1]) {
+        const leg = new T.Group(); leg.position.set(s * .11, .86, 0); g.add(leg);
+        mesh(leg, new T.CapsuleGeometry(.075, .62, 4, 10), M.jeans, 0, -.4, 0); box(leg, .13, .1, .26, M.boots, 0, -.81, .05); legs.push(leg);
+      }
+      mesh(g, new T.CapsuleGeometry(.19, .36, 4, 12), M.jeans, 0, 1.12, 0).scale.set(1, 1, .7);
+      mesh(g, new T.CapsuleGeometry(.205, .34, 4, 12), vest, 0, 1.24, 0).scale.set(1, 1, .72);
+      for (const y of [1.12, 1.3]) mesh(g, new T.CylinderGeometry(.208, .208, .035, 18), M.reflect, 0, y, 0).scale.set(1, 1, .72);
+      const arms = [];
+      for (const s of [-1, 1]) { const arm = new T.Group(); arm.position.set(s * .26, 1.42, 0); g.add(arm); mesh(arm, new T.CapsuleGeometry(.06, .5, 4, 8), vest, 0, -.3, 0); mesh(arm, new T.SphereGeometry(.055, 10, 8), M.skin, 0, -.62, 0); arms.push(arm); }
+      mesh(g, new T.CylinderGeometry(.06, .07, .08, 10), M.skin, 0, 1.55, 0);
+      mesh(g, new T.SphereGeometry(.12, 18, 14), M.skin, 0, 1.68, 0);
+      mesh(g, new T.SphereGeometry(.15, 20, 12, 0, Math.PI * 2, 0, Math.PI / 2), M.helmet, 0, 1.72, 0);
+      mesh(g, new T.CylinderGeometry(.17, .17, .015, 24), M.helmet, 0, 1.72, .02);
+      g.userData = {legs, arms}; g.traverse(x => { if (x.isMesh) x.castShadow = true; }); scene.add(g); return g;
+    }
+    const walker = worker(), operator = worker();
+    operator.position.set(L.bender.x - .9, 0, L.bender.z - .1); operator.rotation.y = Math.PI / 2;
+
+    /* —— 外部网格：挖掘机、塔吊 —— */
+    const machines = {excavator: null, crane: null};
+    const craneG = group(scene, null); craneG.position.copy(L.mast);
+    const dir = L.loadAt.clone().sub(L.mast).setY(0), R = dir.length(), theta = Math.atan2(-dir.z, dir.x);
+    craneG.rotation.y = theta;
+    const local = (r, y) => V(Math.cos(theta) * r, y, -Math.sin(theta) * r).add(L.mast);
+    let jibY = 23.9;
+    const loading = document.createElement('div'); loading.className = 'c8-loading'; loading.textContent = '正在载入挖掘机和塔吊模型…'; host.append(loading);
+    const placeMachine = (m, at, ry) => {
+      const s = m.root.scale.x, wrap = new T.Group(); wrap.scale.setScalar(1 / s); wrap.add(m.root); wrap.position.copy(at); wrap.rotation.y = ry; return wrap;
+    };
+    api.ready = (async () => {
+      try {
+        const ex = await CourseImportedMachinery.load('excavator');
+        const w = placeMachine(ex, L.excavator, 0); w.userData.pick = 'swing'; scene.add(w); machines.excavator = ex;
+        const cr = await CourseImportedMachinery.load('crane');
+        const s = cr.root.scale.x, mastLocal = -1.44 / s;
+        const cw = placeMachine(cr, V(-mastLocal, 0, 0), 0); craneG.add(cw); machines.crane = cr;
+        scene.updateMatrixWorld(true);
+        // 原模型的小车和吊钩位置固定：取它的顶部高度放自绘小车，再把原吊钩藏起来
+        const hb = new T.Box3(); cr.root.traverse(n => { if (n.name === 'hook') { hb.union(new T.Box3().setFromObject(n)); n.visible = false; } });
+        if (!hb.isEmpty()) jibY = hb.max.y - .35;
+        cr.pose(0, {manual: {slew: 0}}); ex.pose(0, {manual: {slew: 0}});
+      } catch (err) { console.warn('8-1 外部模型未能载入', err); loading.textContent = '挖掘机/塔吊模型未能载入；其余现场照常可用。'; return; }
+      loading.remove(); dirty = true;
+    })();
+
+    /* —— 危险定位：标签、地面光圈、近看位置 —— */
+    const anchors = {
+      electric: V(pd.x - .2, .9, pd.z), swing: L.excavator.clone().add(V(-1.2, 4.2, 0)), belt: V(bp.x, 1.5, bp.z + .3),
+      load: V(la.x, 0, la.z), opening: V(o.x, .9, o.z), pressure: V(sp.x, 1.5, sp.z),
+    };
+    const focusAt = {electric: [V(pd.x - 1.5, .5, pd.z), 9], swing: [L.excavator.clone().add(V(0, 1.5, 0)), 20], belt: [V(bp.x, .6, bp.z + .3), 5.5],
+      load: [V(la.x, 3, la.z), 17], opening: [V(o.x, 0, o.z), 9], pressure: [V(sp.x - 1.2, .4, sp.z - 1.2), 7.5]};
+    const ringAt = {electric: [pd, 2.2], swing: [L.excavator.clone().add(V(-1.3, 0, 0)), 6.4], belt: [bp, 1.4], load: [la, 3.2], opening: [V(o.x, 0, o.z), 1.9], pressure: [V(sp.x - 1, 0, sp.z - 1), 2.4]};
+    const rings = {}, labels = {};
+    for (const id of Object.keys(anchors)) {
+      const [c, r] = ringAt[id];
+      const ring = mesh(scene, new T.RingGeometry(r - .12, r, 64), M.ring, c.x, .02, c.z, -Math.PI / 2); ring.castShadow = false; ring.receiveShadow = false; ring.visible = false; rings[id] = ring;
+      const el = document.createElement('button'); el.type = 'button'; el.className = 'c8-pin'; el.hidden = true; el.dataset.id = id;
+      el.addEventListener('click', e => { e.stopPropagation(); api.onPick?.(id, true); });
+      overlay.append(el); labels[id] = el;
+    }
+
+    /* —— 相机：拖动旋转、滚轮缩放、平滑切换视角 —— */
+    const cam = {target: V(-1, .5, .3), dist: 33, az: .5, el: .56};
+    const want = {target: cam.target.clone(), dist: cam.dist, az: cam.az, el: cam.el};
+    const VIEWS = {home: {target: V(-1, .5, .3), dist: 33, az: .5, el: .56}, top: {target: V(-.5, 0, 0), dist: 40, az: .02, el: 1.45}};
+    api.view = name => { const v = VIEWS[name] || VIEWS.home; want.target.copy(v.target); want.dist = v.dist; want.az = v.az; want.el = v.el; dirty = true; };
+    api.focus = id => { const f = focusAt[id]; if (!f) return; want.target.copy(f[0]); want.dist = f[1]; want.el = clamp(want.el, .35, .75); dirty = true; };
+    const placeCam = () => {
+      camera.position.set(cam.target.x + Math.sin(cam.az) * Math.cos(cam.el) * cam.dist, cam.target.y + Math.sin(cam.el) * cam.dist, cam.target.z + Math.cos(cam.az) * Math.cos(cam.el) * cam.dist);
+      camera.lookAt(cam.target);
+    };
+    const el = renderer.domElement; let drag = null;
+    host.addEventListener('pointerdown', e => { if (e.target !== el) return; drag = {x: e.clientX, y: e.clientY, sx: e.clientX, sy: e.clientY}; el.setPointerCapture?.(e.pointerId); });
+    host.addEventListener('pointermove', e => {
+      if (!drag) { hover(e); return; }
+      want.az -= (e.clientX - drag.x) * .006; want.el = clamp(want.el + (e.clientY - drag.y) * .005, .08, 1.48);
+      drag.x = e.clientX; drag.y = e.clientY; dirty = true;
+    });
+    host.addEventListener('pointerup', e => { if (drag && Math.hypot(e.clientX - drag.sx, e.clientY - drag.sy) < 6) pick(e); drag = null; });
+    host.addEventListener('pointercancel', () => { drag = null; });
+    host.addEventListener('wheel', e => { e.preventDefault(); want.dist = clamp(want.dist * Math.exp(e.deltaY * .0012), 4, 80); dirty = true; }, {passive: false});
+    host.tabIndex = 0;
+    host.addEventListener('keydown', e => {
+      const k = e.key; if (!['ArrowLeft', 'ArrowRight', 'ArrowUp', 'ArrowDown', '+', '-', '=', 'Home'].includes(k)) return; e.preventDefault();
+      if (k === 'Home') api.view('home'); if (k === 'ArrowLeft') want.az += .12; if (k === 'ArrowRight') want.az -= .12;
+      if (k === 'ArrowUp') want.el = clamp(want.el + .1, .08, 1.48); if (k === 'ArrowDown') want.el = clamp(want.el - .1, .08, 1.48);
+      if (k === '+' || k === '=') want.dist = clamp(want.dist * .88, 4, 80); if (k === '-') want.dist = clamp(want.dist * 1.12, 4, 80); dirty = true;
+    });
+    const ray = new T.Raycaster(), ptr = new T.Vector2();
+    const hit = e => {
+      const r = el.getBoundingClientRect(); ptr.set((e.clientX - r.left) / r.width * 2 - 1, -(e.clientY - r.top) / r.height * 2 + 1);
+      ray.setFromCamera(ptr, camera);
+      for (const h of ray.intersectObjects(scene.children, true)) {
+        if (!h.object.visible || h.object === ground) return {id: null};
+        let n = h.object; while (n && !n.userData.pick) n = n.parent;
+        let vis = true; for (let p = h.object; p; p = p.parent) if (!p.visible) vis = false;
+        if (!vis) continue;
+        return {id: n ? n.userData.pick : null};
+      }
+      return {id: null};
+    };
+    function pick(e) { api.onPick?.(hit(e).id, false); }
+    let hoverT = 0;
+    function hover(e) { const now = performance.now(); if (now - hoverT < 60) return; hoverT = now; el.style.cursor = hit(e).id ? 'pointer' : 'grab'; }
+
+    /* —— 状态 → 画面 —— */
+    let S = null, lastSeq = -1, hornT = 9, siteT = 0, dirty = true, walkT = 0, loadY = L.hungY, needleA = .62, valveA = 0, guardK = 0;
+    api.update = state => {
+      const prev = S; S = state; dirty = true;
+      lockout.visible = S.power === 'locked';
+      lamp.material.emissiveIntensity = S.power === 'on' ? .9 : 0; lamp.material.color.setHex(S.power === 'on' ? 0x39c46e : 0x55606a);
+      oldCable.visible = !S.fixed.electric; newCable.visible = S.fixed.electric;
+      swingFence.visible = S.fixed.swing; lanes.A.visible = !S.fixed.swing; lanes.B.visible = S.fixed.swing;
+      loadCordon.visible = S.fixed.load; openFix.visible = S.fixed.opening; pitG.children.forEach(c => { if (c !== pitHit) c.visible = !S.fixed.opening; });
+      couplingMat.color.setHex(S.fixed.pressure ? 0x7fae8f : 0xb97d31); wet.visible = !S.fixed.pressure;
+      M.mushroom.emissiveIntensity = S.latched ? .9 : 0; mushroom.position.z = L.estop.z + (S.latched ? .07 : .1);
+      if (prev && S.started && !prev.started) hornT = 0;
+      lastSeq = S.seq;
+      for (const id of Object.keys(rings)) {
+        const f = S.found[id], v = S.verified[id];
+        rings[id].visible = f; rings[id].material = v ? M.ringOk : M.ring;
+        const lab = labels[id]; lab.hidden = !f;
+        const h = SafetyModel.hazards.find(x => x.id === id);
+        lab.className = 'c8-pin' + (v ? ' ok' : S.fixed[id] ? ' fixed' : '') + (S.selected === id ? ' on' : '');
+        const txt = (v ? '✓ ' : h.icon + ' ') + h.label; if (lab.textContent !== txt) lab.textContent = txt;
+      }
+    };
+    api.labelsVisible = on => { overlay.hidden = !on; };
+
+    /* —— 渲染循环 —— */
+    const routeLen = r => r.reduce((s, p, i) => i ? s + p.distanceTo(r[i - 1]) : 0, 0) + r[r.length - 1].distanceTo(r[0]);
+    const along = (r, d) => {
+      const n = r.length; let t = d % routeLen(r);
+      for (let i = 0; i < n; i++) { const a = r[i], b = r[(i + 1) % n], l = a.distanceTo(b); if (t <= l) return {p: a.clone().lerp(b, t / l), dir: b.clone().sub(a).normalize()}; t -= l; }
+      return {p: r[0].clone(), dir: V(1, 0, 0)};
+    };
+    function resize() {
+      const w = host.clientWidth || 1, h = host.clientHeight || 1;
+      renderer.setSize(w, h, false); el.style.width = '100%'; el.style.height = '100%'; camera.aspect = w / h; camera.updateProjectionMatrix(); dirty = true;
+    }
+    new ResizeObserver(resize).observe(host); resize();
+    const tmp = V();
+    function frame(dt) {
+      const running = !!S?.running, motion = !(api.paused);
+      if (running && motion) siteT += dt;
+      // 相机缓动
+      const k = 1 - Math.pow(.0015, dt);
+      const before = cam.dist + cam.az + cam.el + cam.target.x + cam.target.y + cam.target.z;
+      cam.target.lerp(want.target, k); cam.dist += (want.dist - cam.dist) * k; cam.az += (want.az - cam.az) * k; cam.el += (want.el - cam.el) * k;
+      const moving = Math.abs(before - (cam.dist + cam.az + cam.el + cam.target.x + cam.target.y + cam.target.z)) > 1e-4;
+      placeCam();
+      // 机械动作
+      if (machines.excavator) machines.excavator.pose(0, {manual: {slew: 58 * Math.sin(siteT * .45)}});
+      for (const [i, p] of pulleys.entries()) if (running && S.power === 'on' && motion) p.rotation.z -= dt * (i ? 9 : 17);
+      if (running && motion) disk.rotation.y += dt * .8;
+      // 吊物升降与摆动
+      const targetY = S?.load === 'down' ? .22 : L.hungY; loadY += (targetY - loadY) * (1 - Math.pow(.25, dt));
+      const sway = running ? Math.sin(siteT * 1.3) * .05 : 0;
+      loadG.position.set(la.x, loadY, la.z); loadG.rotation.set(sway * .3, 0, sway);
+      hook.position.set(0, 1.9, 0); bundle.position.set(0, -.05, 0);
+      const hookTop = loadG.localToWorld(V(0, 2.75, 0));
+      const tp = local(R, jibY); trolley.position.copy(tp).add(V(0, .1, 0)); trolley.rotation.y = theta;
+      rope.position.copy(tp).add(hookTop).multiplyScalar(.5); rope.scale.y = tp.distanceTo(hookTop); rope.quaternion.setFromUnitVectors(V(0, 1, 0), tp.clone().sub(hookTop).normalize());
+      for (const [sl, x] of [[slingA, -2.2], [slingB, 2.2]]) { const a = V(0, 2.05, 0), b = V(x, .1, 0); sl.position.copy(a).add(b).multiplyScalar(.5); sl.scale.y = a.distanceTo(b); sl.quaternion.setFromUnitVectors(V(0, 1, 0), b.clone().sub(a).normalize()); }
+      // 压力表、泄压阀、渗漏
+      const press = S?.pressure !== false;
+      needleA += ((press ? .62 + (running ? Math.sin(siteT * 9) * .03 : 0) : -1.18) - needleA) * (1 - Math.pow(.05, dt));
+      needle.rotation.z = -needleA - .58;
+      valveA += ((press ? 0 : -Math.PI / 2) - valveA) * (1 - Math.pow(.05, dt)); valve.rotation.y = valveA;
+      mist.visible = press && !S?.fixed.pressure;
+      if (mist.visible) for (const d of drops) { const t = (performance.now() / 1000 * (running ? 1.4 : .6) + d.userData.seed) % 1; d.position.set(Math.sin(d.userData.seed * 7) * .12 * t, .05 + t * .5, Math.cos(d.userData.seed * 5) * .12 * t); d.scale.setScalar(.6 + t * 1.6); }
+      M.mist.opacity = .45;
+      pumpCyl.position.y = .78 + (running && press ? Math.sin(siteT * 14) * .02 : 0);
+      // 防护罩：处置后从地上装回
+      guardK += ((S?.fixed.belt ? 1 : 0) - guardK) * (1 - Math.pow(.02, dt));
+      guard.position.lerpVectors(guardOff.p, guardOn.p, guardK); guard.rotation.set(guardOff.r.x * (1 - guardK), 0, guardOff.r.z * (1 - guardK));
+      // 电缆火花
+      spark.material.opacity = (!S?.fixed.electric && S?.power === 'on' && Math.random() < .08) ? .9 : 0;
+      // 警示灯与鸣笛
+      if (running && motion) reflector.rotation.y += dt * 6;
+      M.beacon.emissiveIntensity = running ? 1.4 + Math.sin(performance.now() / 120) * .6 : .05;
+      hornT += dt; horn.material.opacity = hornT < 1.6 ? (1 - hornT / 1.6) * .8 : 0; horn.scale.setScalar(1 + hornT * 3); horn.lookAt(camera.position);
+      // 工人
+      const route = S?.fixed.swing ? ROUTE_B : ROUTE_A;
+      if (running && motion) walkT += dt * 1.25;
+      const w = along(route, walkT); walker.position.copy(w.p); walker.rotation.y = Math.atan2(w.dir.x, w.dir.z);
+      const step = running && motion ? Math.sin(walkT * 5.2) : 0;
+      walker.userData.legs[0].rotation.x = step * .5; walker.userData.legs[1].rotation.x = -step * .5; walker.userData.arms[0].rotation.x = -step * .4; walker.userData.arms[1].rotation.x = step * .4;
+      const work = running && motion ? Math.sin(siteT * 3) : 0;
+      operator.userData.arms[0].rotation.x = -.9 + work * .2; operator.userData.arms[1].rotation.x = -.9 - work * .2;
+      // 标签跟随
+      const r = el.getBoundingClientRect();
+      for (const id in labels) {
+        const lab = labels[id]; if (lab.hidden) continue;
+        tmp.copy(id === 'load' ? V(la.x, loadY + 2.9, la.z) : anchors[id]).project(camera);
+        const behind = tmp.z > 1; lab.style.visibility = behind ? 'hidden' : '';
+        lab.style.transform = `translate(${(tmp.x * .5 + .5) * r.width}px, ${(-tmp.y * .5 + .5) * r.height}px) translate(-50%, -120%)`;
+      }
+      for (const id in rings) if (rings[id].visible) rings[id].material.opacity = S?.verified[id] ? .6 : .45 + Math.sin(performance.now() / 260) * .3;
+      return running || moving || hornT < 1.6 || Math.abs(loadY - targetY) > .005 || Math.abs(guardK - (S?.fixed.belt ? 1 : 0)) > .002;
+    }
+    let last = 0, lastRaf = 0;
+    const draw = dt => { const active = frame(dt); renderer.render(scene, camera); api.frames = (api.frames || 0) + 1; dirty = active; };
+    const loop = now => {
+      requestAnimationFrame(loop); lastRaf = performance.now();
+      const dt = Math.min((now - (last || now)) / 1000, .05); last = now;
+      if (document.hidden) return;
+      draw(dt);
+    };
+    requestAnimationFrame(loop);
+    // 面板被隐藏或后台节流时 requestAnimationFrame 会停：退回定时器，画面不至于空白
+    setInterval(() => { if (performance.now() - lastRaf > 400) { last = 0; draw(.1); } }, 200);
+
+    /* —— 深浅色 —— */
+    api.theme = dark => {
+      scene.background = new T.Color(dark ? 0x1b2738 : 0xdfe9f3);
+      scene.fog = new T.Fog(dark ? 0x1b2738 : 0xdfe9f3, 80, 190);
+      hemi.intensity = dark ? .8 : 1.25; sun.intensity = dark ? 1.8 : 2.6; renderer.toneMappingExposure = dark ? .9 : .98; dirty = true;
+    };
+    api.debug = {scene, camera, gun, sprayer};
+    api.renderNow = (dt = 0) => { frame(dt); renderer.render(scene, camera); };
+    api.stats = () => ({webgl: true, frames: api.frames || 0, machines: Object.keys(machines).filter(k => machines[k]).length});
+    return api;
+  }
+
+  global.SiteScene = {create};
+})(window);
+</script>
+<script>/* 8-1：把状态模型和三维现场接起来，对外提供 window.SafetyLab（面板 stations.js 只通过它读写）。 */
+(() => {
+  'use strict';
+  const M = window.SafetyModel, host = document.getElementById('site');
+  let state = M.initial();
+  const listeners = new Set();
+  const scene = window.SiteScene.create(host);
+  if (!scene.webgl) {
+    const note = document.createElement('p'); note.className = 'c8-fallback';
+    note.textContent = '这台设备打不开三维画面。可以在上方逐个点危险名称来巡查，右侧面板照常操作。';
+    host.append(note);
+  }
+
+  function dispatch(ev) {
+    state = M.reduce(state, ev);
+    scene.update(state);
+    listeners.forEach(fn => { try { fn(state, ev); } catch (err) { console.warn(err); } });
+    return state;
+  }
+
+  // 三维里点到的东西：急停桩直接急停；危险设备算“找到”；空地给一句提示；点标签只是选中并近看
+  scene.onPick = (id, fromLabel) => {
+    if (id === 'estop') { dispatch({type: 'estop'}); return; }
+    if (fromLabel) { dispatch({type: 'select', id}); scene.focus(id); return; }
+    dispatch({type: 'find', id});
+  };
+
+  const theme = () => scene.theme?.(document.documentElement.dataset.theme === 'dark');
+  theme();
+  addEventListener('course-theme-change', () => setTimeout(theme));
+  new MutationObserver(theme).observe(document.documentElement, {attributes: true, attributeFilter: ['data-theme']});
+
+  scene.update(state);
+  window.SafetyLab = {
+    model: M, scene,
+    state: () => JSON.parse(JSON.stringify(state)),
+    dispatch,
+    onChange(fn) { listeners.add(fn); return () => listeners.delete(fn); },
+    stage: () => scene.stats?.() || {webgl: false},
+  };
+})();
+</script>
+<script data-lab-shell>window.CHAPTER_LAYOUT={"task":"8-1","page":"","nav":"8-1","chapter":{"title":"第八章 · 安全操作与维护","href":"course/chapters/08/overview/index.html","tasks":[{"id":"8-1","label":"8-1","short":"安全操作","href":"course/chapters/08/tasks/8-1/index.html"},{"id":"8-2","label":"8-2","short":"保养排查","href":"course/chapters/08/tasks/8-2/index.html"}]}};
+/* 课程任务页外壳（第二章起使用）：页头（本章任务）→ 工位条 → 三维区 + 操作面板。
+ * 两种用法：
+ *   LabShell.embedded(cfg)  三维区放原版实验页（iframe，嵌入模式只显示三维视图），面板通过 postMessage 驱动原模型。（第二章）
+ *   LabShell.native(cfg)    页面自己的三维区与原有控件直接搬进外壳，面板里重新编排，状态由 cfg.poll() 读取。（第三章）
+ * 菜单只有两层；面板里没有标签页，也没有“学习目标/学习任务”。设计规范见 course/设计规范.md。
+ */
+(() => {
+  'use strict';
+  const h = (tag, cls, text) => { const e = document.createElement(tag); if (cls) e.className = cls; if (text != null) e.textContent = text; return e; };
+  const href = p => (window.courseHref ? window.courseHref(p) : p);
+  const fmt = (v, n = 0) => (Number.isFinite(v) ? (Math.abs(v) < Math.pow(10, -n) / 2 ? 0 : v).toFixed(n) : '—');
+
+  function start(cfg) {
+    const native = Boolean(cfg.native);
+    document.title = `${cfg.task} ${cfg.title}｜智能建筑机械与机器人`;
+    document.documentElement.dataset.c2Lab = cfg.task;
+    document.documentElement.classList.add('lab-shell', native ? 'lab-native' : 'lab-embedded');
+    const store = 'c2-progress-' + (cfg.progressKey || cfg.task);
+    let progress = {};
+    try { progress = JSON.parse(localStorage.getItem(store) || '{}') || {}; } catch {}
+    const save = () => { try { localStorage.setItem(store, JSON.stringify(progress)); } catch {} };
+
+    /* 页头 */
+    const top = h('header', 'c2-top course-nav');
+    const back = h('a', 'c2-back', '← ' + cfg.chapter.title); back.href = href(cfg.chapter.href);
+    const tasks = h('nav', 'c2-tasks'); tasks.setAttribute('aria-label', '本章任务');
+    for (const t of cfg.tasks) {
+      const a = h('a', '', `${t.label || t.id} ${t.short || t.title}`); a.href = href(t.href);
+      if (t.id === (cfg.taskNav || cfg.task)) a.setAttribute('aria-current', 'page');
+      tasks.append(a);
+    }
+    top.append(back, tasks);
+
+    /* 工位条 */
+    const bar = h('div', 'c2-bar');
+    const title = h('div', 'c2-title');
+    title.append(h('span', 'c2-task-id', '任务 ' + cfg.task), h('h1', '', cfg.title));
+    const tabs = h('div', 'c2-stations'); tabs.setAttribute('role', 'tablist'); tabs.setAttribute('aria-label', '工位');
+    bar.append(title, tabs);
+
+    /* 三维区 */
+    const main = h('main', 'c2-main');
+    const stageBox = h('section', 'c2-stage'); stageBox.setAttribute('aria-label', '三维模型');
+    const view = h('div', 'c2-view');
+    const loading = h('div', 'c2-loading'); loading.append(h('span', 'c2-spinner'), h('span', '', '正在载入三维模型…'));
+    const tools = h('div', 'c2-tools');
+    const card = h('div', 'c2-part'); card.hidden = true; card.setAttribute('role', 'status');
+    const hint = h('div', 'c2-hint');
+    view.append(loading, tools, card, hint);
+    const strip = h('div', 'c2-strip');
+    const transportBox = h('div', 'c2-transport');
+    const readBox = h('div', 'c2-readouts');
+    strip.append(transportBox, readBox);
+    stageBox.append(view, strip);
+
+    /* 面板 */
+    const panel = h('aside', 'c2-panel'); panel.setAttribute('aria-label', '操作面板');
+    const head = h('div', 'c2-panel-head');
+    const body = h('div', 'c2-panel-body');
+    const feedback = h('div', 'c2-feedback'); feedback.setAttribute('role', 'status'); feedback.setAttribute('aria-live', 'polite');
+    const redo = h('button', 'c2-redo', '↺ 重来'); redo.type = 'button'; redo.title = '把这个工位恢复到开始的样子';
+    const next = h('button', 'c2-btn c2-primary c2-next', '去下一站 →'); next.type = 'button';
+    panel.append(head, body);
+    view.append(feedback);
+    let toastTimer = 0;
+    main.append(stageBox, panel);
+    /* 原页面里暂时不用的控件停放处（仍在文档里，原有程序照常工作） */
+    const parking = h('div', 'c2-parking'); parking.hidden = true;
+    document.body.append(top, bar, main, parking);
+    if (native) {
+      loading.hidden = true;
+      if (cfg.stage) { cfg.stage.classList.add('c2-native-stage'); view.prepend(cfg.stage); }
+      if (cfg.stageTop) { const topRow = h('div', 'c2-stage-top'); topRow.append(...[].concat(cfg.stageTop).filter(Boolean)); stageBox.prepend(topRow); }
+      if (cfg.redo === false) redo.hidden = true;
+    }
+
+    let current = -1, ctx = null, frame = null, cleanup = [];
+    const tabButtons = cfg.stations.map((s, i) => {
+      const b = h('button', 'c2-station'); b.type = 'button'; b.setAttribute('role', 'tab');
+      b.append(h('span', 'c2-num', String(i + 1)), h('span', 'c2-name', s.name), h('span', 'c2-check', '✓'));
+      b.addEventListener('click', () => select(i));
+      b.addEventListener('keydown', e => {
+        if (e.key !== 'ArrowRight' && e.key !== 'ArrowLeft') return;
+        e.preventDefault(); const j = (i + (e.key === 'ArrowRight' ? 1 : -1) + cfg.stations.length) % cfg.stations.length;
+        select(j); tabButtons[j].focus();
+      });
+      tabs.append(b);
+      return b;
+    });
+    const syncTabs = () => tabButtons.forEach((b, i) => {
+      b.setAttribute('aria-selected', String(i === current)); b.tabIndex = i === current ? 0 : -1;
+      b.classList.toggle('done', Boolean(progress[cfg.stations[i].id]));
+    });
+
+    /* 嵌入模式：与原版实验页通信（只用 postMessage，file:// 打开也能用） */
+    window.addEventListener('message', e => {
+      const d = e.data;
+      if (!d || d.c2 !== 'lab' || !frame || e.source !== frame.contentWindow) return;
+      if (d.type === 'ready' || (d.type === 'state' && ctx && !ctx.lab.ready)) { loading.hidden = true; sendTheme(); ctx?._ready(); }
+      if (d.type === 'state') ctx?._state(d.data);
+    });
+    const sendTheme = () => frame?.contentWindow?.postMessage({c2: 'cmd', op: 'theme', value: window.CourseTheme?.get?.() || 'light'}, '*');
+    window.addEventListener('course-theme-change', sendTheme);
+
+    // 原页面的控件始终留在文档里（原程序可能随时读写它们），换工位时先放回停放处
+    function parkAll() { for (const root of [body, readBox]) root.querySelectorAll('[data-c2-adopted]').forEach(n => parking.append(n)); }
+
+    function select(i, fromHash, fromPage) {
+      if (i === current) return;
+      cleanup.forEach(f => f()); cleanup = [];
+      current = i;
+      const s = cfg.stations[i];
+      if (!fromHash) history.replaceState(null, '', '#' + s.id);
+      const ht = h('div', 'c2-head-row'), name = h('div', 'c2-head-name');
+      name.append(h('span', 'c2-head-num', String(i + 1)), h('h2', '', s.name));
+      ht.append(name, redo);
+      head.replaceChildren(ht, h('p', '', s.lead || ''));
+      parkAll();
+      body.replaceChildren(); clearTimeout(toastTimer); feedback.textContent = ''; feedback.className = 'c2-feedback';
+      transportBox.replaceChildren(); readBox.replaceChildren(); tools.replaceChildren(); card.hidden = true;
+      hint.textContent = (s.note ? s.note + '　' : '') + (s.hint ?? cfg.hint ?? '拖动旋转 · 滚轮缩放');
+      hint.hidden = !hint.textContent;
+      if (native) {
+        if (!fromPage) cfg.select?.(s.id);
+      } else {
+        frame?.remove();
+        frame = h('iframe', 'c2-frame'); frame.title = s.name + '三维模型';
+        frame.src = s.src; loading.hidden = false;
+        view.prepend(frame);
+      }
+      ctx = makeContext(s, i);
+      cfg.build?.(ctx, s);
+      s.build?.(ctx, s);
+      if (native) ctx._ready();
+      syncTabs();
+      // 原页面的渲染器按容器尺寸重新取景；布局稳定后再通知一次
+      dispatchEvent(new Event('resize'));
+      if (native) for (const t of [60, 300, 900]) setTimeout(() => dispatchEvent(new Event('resize')), t);
+    }
+    redo.addEventListener('click', () => { const i = current; current = -1; cfg.reset?.(cfg.stations[i].id); select(i); });
+    next.addEventListener('click', () => select(Math.min(current + 1, cfg.stations.length - 1)));
+
+    function makeContext(s, index) {
+      const stateFns = new Set(), readyFns = new Set();
+      let latest = null, ready = false;
+      const send = msg => frame?.contentWindow?.postMessage({c2: 'cmd', ...msg}, '*');
+      const c = {
+        h, fmt, station: s, index, body, native,
+        /* —— 原模型 —— */
+        lab: {
+          click: (sel, i = 0) => send({op: 'click', sel, index: i}),
+          clickText: (sel, text) => send({op: 'clickText', sel, text}),
+          set: (sel, value) => send({op: 'set', sel, value}),
+          call: (path, ...args) => send({op: 'call', path, args}),
+          event: name => send({op: 'event', name}),
+          get state() { return latest; },
+          get ready() { return ready; },
+          onState(fn) { stateFns.add(fn); if (latest) fn(latest); },
+          onReady(fn) { readyFns.add(fn); if (ready) fn(); },
+        },
+        _state(data) { latest = data; stateFns.forEach(f => { try { f(data); } catch (err) { console.warn(err); } }); },
+        _ready() { if (ready) return; ready = true; readyFns.forEach(f => f()); },
+        /** 把原页面里的一个控件（或一组）搬进面板；换工位时自动放回停放处。 */
+        adopt(nodes, into) {
+          const list = (Array.isArray(nodes) ? nodes : [nodes]).map(n => (typeof n === 'string' ? document.querySelector(n) : n)).filter(Boolean);
+          list.forEach(n => { n.dataset.c2Adopted = '1'; n.hidden = false; (into || body).append(n); });
+          return list[0];
+        },
+        /* —— 反馈 —— */
+        /** 反馈以提示条形式出现在三维区上方，几秒后自动收起，不挤占面板。 */
+        feedback(text, kind = 'info', keep = false) {
+          clearTimeout(toastTimer);
+          feedback.replaceChildren();
+          if (text) feedback.append(h('span', 'c2-toast-icon', kind === 'ok' ? '✓' : kind === 'warn' ? '!' : 'i'), h('span', 'c2-toast-text', text));
+          feedback.className = 'c2-feedback ' + kind;
+          if (!keep && text) toastTimer = setTimeout(() => { feedback.textContent = ''; feedback.className = 'c2-feedback'; }, kind === 'warn' ? 5000 : 7000);
+        },
+        showPart(name, desc) {
+          if (!name) { card.hidden = true; return; }
+          card.replaceChildren(h('strong', '', name), h('span', '', desc || ''));
+          const x = h('button', 'c2-x', '×'); x.type = 'button'; x.setAttribute('aria-label', '关闭'); x.onclick = () => { card.hidden = true; };
+          card.append(x); card.hidden = false;
+        },
+        /* —— 面板控件 —— */
+        section(titleText, extra, into = body) {
+          const sec = h('section', 'c2-group');
+          if (titleText) { const t = h('h3', ''); t.append(h('span', 'c2-h3-text', titleText)); if (extra) t.append(extra); sec.append(t); }
+          into.append(sec); return sec;
+        },
+        button(text, fn, opts = {}) {
+          const b = h('button', 'c2-btn' + (opts.primary ? ' c2-primary' : '') + (opts.small ? ' c2-small' : ''), text);
+          b.type = 'button'; b.addEventListener('click', fn); if (opts.title) b.title = opts.title; return b;
+        },
+        row(...items) { const r = h('div', 'c2-row'); r.append(...items); return r; },
+        segmented(options, value, onChange, label) {
+          const wrap = h('div', 'c2-seg'); wrap.setAttribute('role', 'radiogroup'); if (label) wrap.setAttribute('aria-label', label);
+          let currentValue = value;
+          const buttons = options.map(o => {
+            const b = h('button', '', o.label); b.type = 'button'; b.setAttribute('role', 'radio'); if (o.title) b.title = o.title;
+            b.addEventListener('click', () => { set(o.value); onChange(o.value); });
+            wrap.append(b); return [o.value, b];
+          });
+          const set = v => { currentValue = v; buttons.forEach(([val, b]) => b.setAttribute('aria-checked', String(val === v))); };
+          set(value);
+          return {el: wrap, set, get: () => currentValue};
+        },
+        slider({label, min, max, step = 1, value, unit = '', format, onInput}) {
+          const wrap = h('label', 'c2-slider');
+          const t = h('span', 'c2-slider-top'), name = h('span', '', label), out = h('output', '');
+          t.append(name, out);
+          const input = h('input'); input.type = 'range'; Object.assign(input, {min, max, step, value});
+          const show = v => {
+            out.textContent = (format ? format(+v) : v) + (unit ? ' ' + unit : '');
+            input.style.setProperty('--p', ((+v - min) / (max - min || 1) * 100).toFixed(1) + '%');
+          };
+          let touching = 0;
+          input.addEventListener('input', () => { touching = performance.now(); show(input.value); onInput(+input.value); });
+          show(value); wrap.append(t, input);
+          return {
+            el: wrap, input,
+            /** 跟随模型同步显示；用户正在拖动时不打断。 */
+            sync(v) { if (performance.now() - touching < 700 || !Number.isFinite(v)) return; if (Math.abs(+input.value - v) > 1e-9) { input.value = v; show(input.value); } },
+            set(v) { input.value = v; show(v); }, get: () => +input.value,
+          };
+        },
+        toggle(label, value, onChange) {
+          const b = h('button', 'c2-switch'); b.type = 'button'; b.setAttribute('role', 'switch');
+          b.append(h('span', 'c2-knob'), h('span', '', label));
+          const set = v => b.setAttribute('aria-checked', String(Boolean(v)));
+          b.addEventListener('click', () => { const v = b.getAttribute('aria-checked') !== 'true'; set(v); onChange(v); });
+          set(value);
+          return {el: b, set};
+        },
+        /** 部件快捷：点一下镜头飞过去。 */
+        chips(items, onPick) {
+          const wrap = h('div', 'c2-chips');
+          const buttons = items.map(it => {
+            const b = h('button', 'c2-chip', it.label); b.type = 'button';
+            b.addEventListener('click', () => { buttons.forEach(x => x.setAttribute('aria-pressed', String(x === b))); onPick(it); });
+            wrap.append(b); return b;
+          });
+          return {el: wrap, buttons, clear: () => buttons.forEach(x => x.setAttribute('aria-pressed', 'false'))};
+        },
+        /** 小问题：只用在“看过结果之后”。 */
+        choice({prompt, options, answer, onRight, wrong}) {
+          const box = h('div', 'c2-choice');
+          if (prompt) box.append(h('p', 'c2-prompt', prompt));
+          const row = h('div', 'c2-options');
+          options.forEach((o, i) => {
+            const b = h('button', 'c2-opt', o); b.type = 'button';
+            b.addEventListener('click', () => {
+              if (box.dataset.solved) return;
+              if (i === answer) { b.classList.add('right'); box.dataset.solved = '1'; [...row.children].forEach(x => { x.disabled = x !== b; }); onRight?.(); }
+              else { b.classList.add('wrong'); b.disabled = true; c.feedback(typeof wrong === 'function' ? wrong(i) : (wrong || '再看看模型，再选一次。'), 'warn'); }
+            });
+            row.append(b);
+          });
+          box.append(row);
+          return box;
+        },
+        /** 先猜一个数，再让模型跑给你看。onGuess 返回 true/false/undefined。 */
+        predict({prompt, unit, onGuess, inline}) {
+          const box = h('div', 'c2-predict' + (inline ? ' c2-inline' : ''));
+          box.append(h('p', 'c2-prompt', prompt));
+          const r = h('div', 'c2-row'), input = h('input'); input.type = 'number'; input.inputMode = 'decimal'; input.setAttribute('aria-label', prompt);
+          const go = c.button('试试看', () => {
+            const v = parseFloat(input.value);
+            if (!Number.isFinite(v)) { c.feedback('先填一个数。', 'warn'); return; }
+            const ok = onGuess(v); input.classList.toggle('right', ok === true); input.classList.toggle('wrong', ok === false);
+          }, {small: true});
+          input.addEventListener('keydown', e => { if (e.key === 'Enter') go.click(); });
+          r.append(input, h('span', 'c2-unit', unit || ''), go); box.append(r);
+          return {el: box, input};
+        },
+        /** 试一试：几张挑战卡，不分先后；模型状态满足条件就自动打勾。 */
+        challenges(list, titleText = '试一试', into = body) {
+          const counter = h('span', 'c2-count');
+          const sec = c.section(titleText, counter, into);
+          const bar = h('div', 'c2-progress'); const fill = h('span'); bar.append(fill);
+          const grid = h('div', 'c2-challenges'); sec.append(bar, grid);
+          const done = new Set();
+          const items = list.map(ch => {
+            const li = h('div', 'c2-challenge');
+            const mark = h('span', 'c2-mark', ch.icon || '★');
+            const txt = h('div', 'c2-ch-text');
+            txt.append(h('b', '', ch.title));
+            const sub = h('span', '', ch.hint || ''); txt.append(sub);
+            li.append(mark, txt);
+            if (ch.action) {
+              const go = h('button', 'c2-ch-go', ch.action.label); go.type = 'button';
+              go.addEventListener('click', e => { e.stopPropagation(); ch.action.fn(); });
+              txt.append(go);
+            }
+            grid.append(li);
+            return {ch, li, sub, mark};
+          });
+          const update = () => { counter.textContent = `${done.size} / ${list.length}`; fill.style.width = (done.size / list.length * 100) + '%'; };
+          const complete = id => {
+            if (done.has(id)) return;
+            const it = items.find(x => x.ch.id === id); if (!it) return;
+            done.add(id); it.li.classList.add('done'); it.mark.textContent = '✓';
+            if (it.ch.result) c.feedback(it.ch.title + '：' + it.ch.result, 'ok');
+            it.sub.textContent = '完成';
+            update();
+            if (done.size === list.length) {
+              progress[s.id] = true; save(); syncTabs();
+              setTimeout(() => {
+                if (ctx !== c) return;
+                c.feedback(current < cfg.stations.length - 1 ? '这一站的挑战都完成了！' : '本任务的挑战都完成了！还可以接着随便调一调。', 'ok', current < cfg.stations.length - 1);
+                if (current < cfg.stations.length - 1) feedback.append(next);
+              }, 2600);
+            }
+          };
+          c.lab.onState(st => { for (const it of items) if (!done.has(it.ch.id)) { try { if (it.ch.check?.(st)) complete(it.ch.id); } catch {} } });
+          update();
+          return {complete, isDone: id => done.has(id), section: sec};
+        },
+        /* —— 三维区：工具、播放、读数 —— */
+        view(text, fn, titleText) { const b = h('button', 'c2-tool', text); b.type = 'button'; if (titleText) b.title = titleText; b.addEventListener('click', fn); tools.append(b); return b; },
+        /** 三维区左上角的一组单选（如 剖开 / 完整 / 去掉外壳）。 */
+        toolSeg(options, value, onChange, label) {
+          const seg = c.segmented(options, value, onChange, label); seg.el.classList.add('c2-toolseg'); tools.append(seg.el); return seg;
+        },
+        tool(text, onToggle, pressed = false) {
+          const b = h('button', 'c2-tool', text); b.type = 'button'; b.setAttribute('aria-pressed', String(pressed));
+          b.addEventListener('click', () => { const p = b.getAttribute('aria-pressed') !== 'true'; b.setAttribute('aria-pressed', String(p)); onToggle(p); });
+          tools.append(b); return {el: b, set: p => b.setAttribute('aria-pressed', String(Boolean(p)))};
+        },
+        transport({onToggle, onStep, onReset, stepText = '单步', extra, speeds, onSpeed, speed}) {
+          const play = h('button', 'c2-play', ''); play.type = 'button';
+          const set = p => { play.textContent = p ? '❚❚ 暂停' : '▶ 运行'; play.setAttribute('aria-pressed', String(Boolean(p))); };
+          play.addEventListener('click', () => { const p = play.getAttribute('aria-pressed') !== 'true'; set(p); onToggle(p); });
+          set(false); transportBox.append(play);
+          if (onStep) { const st = h('button', 'c2-tool', stepText); st.type = 'button'; st.addEventListener('click', onStep); transportBox.append(st); }
+          if (onReset) { const rs = h('button', 'c2-tool', '复位'); rs.type = 'button'; rs.addEventListener('click', onReset); transportBox.append(rs); }
+          let speedSeg = null;
+          if (speeds) { speedSeg = c.segmented(speeds.map(([v, l]) => ({value: v, label: l})), speed ?? speeds[0][0], onSpeed, '快慢'); speedSeg.el.classList.add('c2-speed'); transportBox.append(speedSeg.el); }
+          if (extra) transportBox.append(extra);
+          return {setPlaying: set, setSpeed: v => speedSeg?.set(v)};
+        },
+        /** 把原页面的元素放进三维区底部一栏。 */
+        stripAdopt(nodes) { const list = (Array.isArray(nodes) ? nodes : [nodes]).map(n => (typeof n === 'string' ? document.querySelector(n) : n)).filter(Boolean); list.forEach(n => { n.dataset.c2Adopted = '1'; readBox.append(n); }); },
+        readouts(defs) {
+          const cells = {};
+          readBox.replaceChildren();
+          for (const d of defs) {
+            const cell = h('div', 'c2-read'), v = h('b', '', '—'), u = h('small', '', d.unit || '');
+            const val = h('span', 'c2-val'); val.append(v, u);
+            cell.append(h('span', 'c2-read-label', d.label), val);
+            readBox.append(cell); cells[d.id] = {v, u, cell};
+          }
+          return (id, value, unit) => {
+            const x = cells[id]; if (!x) return;
+            if (x.v.textContent !== String(value)) x.v.textContent = value;
+            if (unit != null && x.u.textContent !== unit) x.u.textContent = unit;
+          };
+        },
+        onCleanup(fn) { cleanup.push(fn); },
+      };
+      return c;
+    }
+
+    /* 原地模式：定时读原页面状态；原页面自己切换了活动时，工位条跟着变 */
+    if (native) {
+      setInterval(() => {
+        let st = null;
+        try { st = cfg.poll?.(); } catch (err) { /* 页面尚未就绪 */ }
+        if (st && ctx) ctx._state(st);
+        const pageStation = cfg.current?.();
+        if (pageStation) { const j = cfg.stations.findIndex(s => s.id === pageStation); if (j >= 0 && j !== current) select(j, false, true); }
+      }, 200);
+    }
+
+    const fromHash = () => {
+      const id = location.hash.slice(1), i = cfg.stations.findIndex(s => s.id === id);
+      return i >= 0 ? i : 0;
+    };
+    window.addEventListener('hashchange', () => select(fromHash(), true));
+    select(fromHash(), true);
+    window.c2Lab = {select, get ctx() { return ctx; }, get frame() { return frame; }, get current() { return current; }};
+  }
+
+  window.LabShell = {
+    embedded: start,
+    native: cfg => start({...cfg, native: true}),
+  };
+  window.C2Lab = {start};
+})();
+
+/* 原地模式的统一任务页外壳（全课程共用）：把原页面装进 lab-shell。
+ * 原页面的全部元素先移入一个隐藏容器（仍在文档里，原有程序照常工作），
+ * 各任务的 src/stations.js 再把需要的三维区和控件搬进外壳。
+ * 章节标题和本章任务列表来自 shared/lab-shell/chapters.json，由 native-layout.mjs 写进 window.CHAPTER_LAYOUT。
+ */
+(() => {
+  'use strict';
+  const $ = s => document.querySelector(s);
+  const all = s => [...document.querySelectorAll(s)];
+
+  // 外壳里的原有滑轨：已走过的一段用主色填充，跟随拖动和程序改值
+  const fill = input => {
+    const min = +input.min || 0, max = input.max === '' ? 100 : +input.max, v = +input.value;
+    input.style.setProperty('--p', (((v - min) / ((max - min) || 1)) * 100).toFixed(1) + '%');
+  };
+  document.addEventListener('input', e => { if (e.target.matches?.('input[type="range"]')) fill(e.target); }, true);
+  setInterval(() => document.querySelectorAll('.c2-panel input[type="range"], .c2-strip input[type="range"]').forEach(fill), 250);
+
+  window.NativeShell = window.C3Shell = {
+    $, all,
+    start(cfg) {
+      const layout = window.CHAPTER_LAYOUT || {}, chapter = layout.chapter || {};
+      const legacy = document.createElement('div');
+      legacy.className = 'c3-legacy'; legacy.hidden = true;
+      [...document.body.children]
+        .filter(e => !['SCRIPT', 'STYLE', 'DIALOG', 'TEMPLATE'].includes(e.tagName) && e.id !== 'toast' && !e.matches('.course-theme-toggle'))
+        .forEach(e => legacy.append(e));
+      document.body.append(legacy);
+      document.documentElement.dataset.c3Task = layout.task || '';
+      LabShell.native({
+        chapter: {title: chapter.title, href: chapter.href},
+        tasks: chapter.tasks || [], taskNav: layout.nav, hint: '', progressKey: layout.nav,
+        ...cfg,
+      });
+    },
+  };
+})();
+
+/* 任务 8-1 安全操作 —— 统一任务页外壳的四个工位。
+ * 三维现场（scene.js）和状态（model.js）都由 app.js 接好，这里只通过 window.SafetyLab 读状态、发事件。
+ * 四个工位就是一次“现场暂停”的四步：巡查找危险 → 急停隔离 → 处置复查 → 复位重启；状态一路带过去。
+ */
+(() => {
+  'use strict';
+  const byId = id => document.getElementById(id);
+  const esc = s => String(s).replace(/[&<>"']/g, c => ({'&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;'}[c]));
+
+  function boot() {
+    const lab = window.SafetyLab, M = lab.model, H = M.hazards, scene = lab.scene;
+    const send = ev => lab.dispatch(ev);
+    const count = (s, k) => M.count(s, k);
+
+    // 事件里的“被拦住”只出现一次，记下来给试一试用
+    const flags = {};
+    const resetFlags = () => { for (const k of Object.keys(flags)) delete flags[k]; };
+    lab.onChange((s, ev) => {
+      if (s.error) flags[ev.type + ':' + s.code] = true;
+      // 不等外壳 200 ms 一次的轮询：状态一变就推给当前工位，按钮和卡片立即跟上
+      setTimeout(() => window.c2Lab?.ctx?._state(lab.state()));
+    });
+
+    /* —— 三维区上方：六处危险（找到之前只显示问号）—— */
+    const picker = document.createElement('div');
+    picker.className = 'c8-hazards'; picker.setAttribute('role', 'radiogroup'); picker.setAttribute('aria-label', '六处危险');
+    let toast = null;
+    const chips = H.map(h => {
+      const b = document.createElement('button'); b.type = 'button'; b.dataset.id = h.id; b.setAttribute('role', 'radio');
+      b.addEventListener('click', () => {
+        const s = lab.state();
+        if (!s.found[h.id]) {
+          if (!scene.webgl) { send({type: 'find', id: h.id}); return; }
+          toast?.('这一处还没找到：在三维现场里点出来。', 'info'); return;
+        }
+        send({type: 'select', id: h.id}); scene.focus(h.id);
+      });
+      picker.append(b); return b;
+    });
+    const paintPicker = s => chips.forEach((b, i) => {
+      const h = H[i], f = s.found[h.id], v = s.verified[h.id], x = s.fixed[h.id];
+      const html = f ? `<span class="c8-ico">${h.icon}</span><b>${esc(h.label)}</b><i class="c8-dots"><em class="on"></em><em class="${x ? 'on' : ''}"></em><em class="${v ? 'on' : ''}"></em></i>`
+        : `<span class="c8-ico q">?</span><b>未找到</b><i class="c8-dots"><em></em><em></em><em></em></i>`;
+      if (b.dataset.html !== html) { b.innerHTML = html; b.dataset.html = html; }
+      b.classList.toggle('found', f); b.classList.toggle('ok', v);
+      b.setAttribute('aria-checked', String(s.selected === h.id));
+      b.title = !f ? '还没找到' : v ? '已复查' : x ? '已处置，待复查' : '已找到，待处置';
+    });
+
+    /* —— 小部件 —— */
+    const statusRow = (c, into) => {
+      const st = c.h('div', 'c8-run'), stop = c.button('急停', () => send({type: 'estop'}));
+      stop.classList.add('c8-stop'); into.append(c.row(st, stop));
+      c.lab.onState(s => {
+        const [cls, b, t] = s.running ? ['on', s.started ? '已重新启动' : '现场运行中', s.started ? '按新通道恢复作业' : '挖掘机在回转，皮带在转']
+          : s.armed ? ['ready', '已复位，静止', '等单独的启动指令'] : ['off', '急停已按下', '机械停住，能量还在'];
+        const html = `<i></i><b>${b}</b><span>${t}</span>`;
+        st.className = 'c8-run ' + cls; if (st.innerHTML !== html) st.innerHTML = html;
+      });
+    };
+    const hazardCard = (c, into, mode) => {
+      const card = c.h('div', 'c8-card'); into.append(card);
+      let key = '';
+      c.lab.onState(s => {
+        const id = s.selected, h = H.find(x => x.id === id);
+        const k = [id, s.found[id], s.fixed[id], s.verified[id], mode].join();
+        if (k === key) return; key = k;
+        if (!h || !s.found[id]) {
+          card.className = 'c8-card empty';
+          card.innerHTML = mode === 'find' ? '<p>在三维现场里点一处你觉得危险的地方。</p>' : '<p>在上方选一处已找到的危险。</p>';
+          return;
+        }
+        const tag = s.verified[id] ? ['ok', '已复查'] : s.fixed[id] ? ['mid', '待复查'] : ['', '待处置'];
+        card.className = 'c8-card';
+        card.innerHTML = `<div class="c8-card-head"><span class="c8-ico">${h.icon}</span><b>${esc(h.label)}</b>${mode === 'find' ? '' : `<span class="c8-tag ${tag[0]}">${tag[1]}</span>`}</div>`
+          + `<p>${esc(h.finding)}</p>`
+          + (mode === 'fix' ? `<p class="c8-do"><span>处置</span>${esc(h.fix)}</p>` : '')
+          + (mode === 'fix' && s.verified[id] ? `<p class="c8-do ev"><span>复查</span>${esc(h.evidence)}</p>` : '');
+      });
+    };
+
+    const STATIONS = [
+      {
+        id: 'find', name: '巡查找危险', lead: '现场还在干活。拖动看一圈，在三维里点出你觉得危险的地方。',
+        build(c) {
+          const g = c.section('刚找到的');
+          hazardCard(c, g, 'find');
+          const g2 = c.section('巡查记录');
+          const grid = c.h('div', 'c8-found'); g2.append(grid);
+          const cells = H.map(h => { const e = c.h('span', ''); grid.append(e); return [h, e]; });
+          c.lab.onState(s => cells.forEach(([h, e]) => {
+            const t = s.found[h.id] ? h.icon + ' ' + h.label : '？';
+            if (e.textContent !== t) e.textContent = t; e.classList.toggle('on', s.found[h.id]);
+          }));
+          const tip = c.button('看哪里', () => {
+            const s = lab.state(), left = H.filter(h => !s.found[h.id]);
+            if (!left.length) { c.feedback('六处都找到了，去下一站。', 'ok'); return; }
+            scene.focus(left[Math.floor(Math.random() * left.length)].id); c.feedback('镜头移过去了：仔细看看这附近。', 'info');
+          });
+          g2.append(c.row(tip, c.button('回到全景', () => scene.view('home'))));
+          c.challenges([
+            {id: 'first', icon: '🔍', title: '找到第一处', hint: '在三维里点设备或地面', check: s => count(s, 'found') >= 1,
+              result: '先看清、先记下，不急着动手。'},
+            {id: 'three', icon: '👀', title: '找到三处', hint: '转一转视角再找', check: s => count(s, 'found') >= 3,
+              result: '危险分散在现场各处：用电、机械、高处、压力都要看。'},
+            {id: 'opening', icon: '🕳', title: '发现脚下的洞口', hint: '俯视看得更清楚', check: s => s.found.opening,
+              result: '洞口紧挨通道，没盖板没护栏，一脚踩空就是坠落。'},
+            {id: 'all', icon: '📋', title: '六处都找到', hint: '还有藏在小设备上的', check: s => count(s, 'found') === 6,
+              result: '六处都记下了。光找到不会让危险消失，下一站先停机。'},
+          ]);
+        },
+      },
+      {
+        id: 'isolate', name: '急停隔离', lead: '先按急停让现场停下来，再把电、压力、吊物三股能量分别隔离。',
+        build(c) {
+          const g = c.section('现场');
+          statusRow(c, g);
+          const g2 = c.section('能量隔离');
+          const rows = [
+            {key: 'power', icon: '⚡', name: '配电箱', act: '断电挂锁', focus: 'electric', state: s => s.power === 'locked' ? ['ok', '已断电挂锁'] : ['no', '有电']},
+            {key: 'pressure', icon: '💨', name: '喷涂机管路', act: '打开泄压', focus: 'pressure', state: s => s.pressure ? ['no', '有残余压力'] : ['ok', '压力表归零']},
+            {key: 'load', icon: '🏗', name: '塔吊吊物', act: '落钩着地', focus: 'load', state: s => s.load === 'down' ? ['ok', '已落在垫木上'] : ['no', '悬在空中']},
+          ];
+          const list = c.h('div', 'c8-energy'); g2.append(list);
+          const els = rows.map(r => {
+            const row = c.h('div', 'c8-erow'), info = c.h('div', 'c8-einfo');
+            const b = c.button(r.act, () => { scene.focus(r.focus); send({type: 'isolate', target: r.key}); }, {small: true});
+            row.append(c.h('span', 'c8-eico', r.icon), info, b); list.append(row);
+            return {r, row, info, b};
+          });
+          c.lab.onState(s => els.forEach(({r, row, info, b}) => {
+            const [cls, t] = r.state(s), html = `<b>${r.name}</b><span>${t}</span>`;
+            if (info.innerHTML !== html) info.innerHTML = html; row.className = 'c8-erow ' + cls; b.disabled = cls === 'ok';
+          }));
+          c.challenges([
+            {id: 'early', icon: '⛔', title: '没停机先隔离', hint: '急停前点一次“断电挂锁”', check: () => flags['isolate:running'],
+              result: '机械还在动就上手，会被拦下：先急停。'},
+            {id: 'lock', icon: '🔒', title: '断电并挂锁', hint: '锁和“禁止合闸”牌都挂上', check: s => s.power === 'locked',
+              result: '挂上自己的锁，别人就合不上闸。'},
+            {id: 'bleed', icon: '💨', title: '让压力表回零', hint: '断电后再泄压', check: s => !s.pressure,
+              result: '机器关了，管里的压力还在；泄压后才能拆接头。'},
+            {id: 'load', icon: '🏗', title: '让吊物落地', hint: '放到垫木上', check: s => s.load === 'down',
+              result: '急停只让吊钩停住，吊物还悬着；落地后才没有坠落能量。'},
+          ]);
+        },
+      },
+      {
+        id: 'fix', name: '处置复查', lead: '在上方选一处危险，先处置，再核对复查：处置过的标签变蓝，复查过的变绿。',
+        build(c) {
+          const g = c.section('当前危险');
+          hazardCard(c, g, 'fix');
+          const fixB = c.button('处置', () => { const s = lab.state(); if (s.selected) { send({type: 'fix', id: s.selected}); scene.focus(s.selected); } else c.feedback('先在上方选一处危险。', 'warn'); }, {primary: true});
+          const verB = c.button('核对复查', () => { const s = lab.state(); if (s.selected) send({type: 'verify', id: s.selected}); else c.feedback('先在上方选一处危险。', 'warn'); });
+          const nextB = c.button('下一处', () => {
+            const s = lab.state(), list = H.filter(h => s.found[h.id] && !s.verified[h.id]);
+            const h = list.find(x => x.id !== s.selected) || list[0];
+            if (!h) { c.feedback(count(s, 'found') < 6 ? '还有没找到的危险：回第一站接着找。' : '六处都复查过了。', 'info'); return; }
+            send({type: 'select', id: h.id}); scene.focus(h.id);
+          });
+          g.append(c.row(fixB, verB, nextB));
+          c.lab.onState(s => { const id = s.selected; fixB.disabled = !id || !s.found[id] || s.fixed[id]; verB.disabled = !id || !s.found[id] || s.verified[id]; });
+          const g2 = c.section('复查进度');
+          const bar = c.h('div', 'c8-steps'); g2.append(bar);
+          const steps = H.map(h => { const e = c.h('span', '', h.icon); e.title = h.label; bar.append(e); return [h, e]; });
+          c.lab.onState(s => steps.forEach(([h, e]) => { e.className = s.verified[h.id] ? 'ok' : s.fixed[h.id] ? 'mid' : s.found[h.id] ? 'f' : ''; }));
+          c.challenges([
+            {id: 'one', icon: '🛠', title: '处置第一处', hint: '选一处，点“处置”', check: s => count(s, 'fixed') >= 1,
+              result: '处置完还不算完，要回头核对一遍。'},
+            {id: 'belt', icon: '⚙', title: '装回皮带罩', hint: '断电后才能装', check: s => s.fixed.belt,
+              result: '皮带和带轮被罩住，手和衣角就卷不进去。'},
+            {id: 'opening', icon: '🕳', title: '盖好洞口', hint: '盖板加四周护栏', check: s => s.fixed.opening,
+              result: '盖板固定、护栏封闭，人和东西都掉不下去。'},
+            {id: 'all', icon: '✅', title: '六处都复查', hint: '每处：处置 → 核对复查', check: s => M.allVerified(s),
+              result: '每处都有处置、有复查，现场才算恢复安全状态。'},
+          ]);
+        },
+      },
+      {
+        id: 'restart', name: '复位重启', lead: '复位不等于开机：撤锁送电、急停复位、鸣笛启动，一步一步来。',
+        build(c) {
+          const g = c.section('现场');
+          statusRow(c, g);
+          const g2 = c.section('重新启动');
+          g2.append(c.row(
+            c.button('撤锁送电', () => { scene.focus('electric'); send({type: 'unlock'}); }),
+            c.button('急停复位', () => { scene.view('home'); send({type: 'reset'}); }),
+            c.button('鸣笛启动', () => { scene.view('home'); send({type: 'start'}); }, {primary: true}),
+          ));
+          const g3 = c.section('启动前核对');
+          const list = c.h('div', 'c8-checks'); g3.append(list);
+          const rows = [
+            ['六处复查', s => `${count(s, 'verified')} / 6`, s => M.allVerified(s)],
+            ['电源', s => s.power === 'on' ? '已送电' : '挂锁中', s => s.power === 'on'],
+            ['急停', s => s.latched ? '锁住' : '已复位', s => !s.latched],
+            ['吊物 / 压力', s => (s.load === 'down' ? '落地' : '悬空') + ' · ' + (s.pressure ? '有压' : '零压'), s => s.load === 'down' && !s.pressure],
+          ].map(([label, val, ok]) => { const r = c.h('div', 'c8-check'); r.innerHTML = `<span>${label}</span><b></b>`; list.append(r); return {r, val, ok}; });
+          c.lab.onState(s => rows.forEach(({r, val, ok}) => { r.className = 'c8-check ' + (ok(s) ? 'ok' : 'no'); const t = val(s), b = r.querySelector('b'); if (b.textContent !== t) b.textContent = t; }));
+          c.challenges([
+            {id: 'blocked', icon: '🚫', title: '复位被拦住', hint: '没复查完时试“急停复位”', check: () => flags['reset:unverified'] || flags['unlock:unverified'],
+              result: '还有危险没复查，复位和送电都会被拦下。'},
+            {id: 'still', icon: '🔓', title: '复位后它会动吗', hint: '复查完后点“急停复位”', check: s => s.armed && !s.running,
+              result: '复位只是解开急停，设备照样静止。'},
+            {id: 'power', icon: '🔌', title: '没送电启动不了', hint: '挂着锁时点“鸣笛启动”', check: () => flags['start:power'],
+              result: '锁还挂在配电箱上，谁也启动不了——这正是挂锁的用处。'},
+            {id: 'start', icon: '📢', title: '鸣笛后单独启动', hint: '送电、复位，再启动', check: s => s.started && s.running,
+              result: '启动是一条单独的指令，先鸣笛提醒，人员走新通道。'},
+          ]);
+        },
+      },
+    ];
+
+    let lastSeq = -1;
+    NativeShell.start({
+      task: '8-1', title: '安全操作',
+      stage: byId('site'),
+      stageTop: picker,
+      stations: STATIONS,
+      hint: '拖动旋转 · 滚轮缩放 · 点击设备',
+      poll: () => lab.state(),
+      reset() { send({type: 'restart-case'}); resetFlags(); scene.view('home'); },
+      build(c) {
+        toast = c.feedback;
+        picker.hidden = c.station.id === 'restart';
+        c.view('全景', () => scene.view('home'));
+        c.view('俯视', () => scene.view('top'));
+        c.view('近看', () => { const s = lab.state(); if (s.selected) scene.focus(s.selected); else c.feedback('先选一处危险。', 'info'); });
+        const pause = c.tool('暂停画面', p => { scene.paused = p; });
+        pause.set(!!scene.paused);
+        const read = c.readouts([
+          {id: 'found', label: '已找到'}, {id: 'ver', label: '已复查'}, {id: 'run', label: '现场'}, {id: 'energy', label: '未隔离能量'},
+        ]);
+        lastSeq = lab.state().seq;
+        c.lab.onState(s => {
+          paintPicker(s);
+          read('found', count(s, 'found'), '/ 6'); read('ver', count(s, 'verified'), '/ 6');
+          read('run', s.running ? '运行' : s.armed ? '已复位' : '急停', '');
+          read('energy', M.energyLeft(s), '项');
+        });
+        const off = lab.onChange((s, ev) => {
+          if (s.seq === lastSeq) return; lastSeq = s.seq;
+          if (ev.type === 'select' && !s.error) return;
+          if (s.message) c.feedback(s.message, s.error ? 'warn' : 'info');
+        });
+        c.onCleanup(off);
+      },
+    });
+  }
+
+  (function wait(n) {
+    if (window.SafetyLab && window.NativeShell && document.getElementById('site')) boot();
+    else if (n < 200) setTimeout(() => wait(n + 1), 50);
+  })(0);
+})();
+</script></body>
+</html>

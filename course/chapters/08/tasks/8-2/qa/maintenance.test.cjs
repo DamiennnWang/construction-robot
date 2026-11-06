@@ -1,10 +1,73 @@
-const {test}=require('node:test'),assert=require('node:assert/strict'),M=require('../src/model.js');
-function prepared(station='sprayer',scenario='normal'){let s=M.initial();s=M.reduce(s,{type:'station',value:station});s=M.reduce(s,{type:'case',value:scenario});for(const type of ['inspect','read','isolate','energy'])s=M.reduce(s,{type});return s;}
-test('servicing and verification are blocked before prerequisites',()=>{let s=M.reduce(M.initial(),{type:'service'});assert(s.error);s=M.reduce(s,{type:'verify'});assert(s.error);assert.equal(s.work.sprayer.progress,0);});
-test('isolation does not stand in for pressure confirmation',()=>{let s=M.initial();for(const type of ['inspect','read','isolate'])s=M.reduce(s,{type});assert(s.work.sprayer.pressure);s=M.reduce(s,{type:'service'});assert(s.error);s=M.reduce(s,{type:'energy'});assert(!s.work.sprayer.pressure);});
-for(const [station,scenario]of [['sprayer','blocked'],['pump','leak'],['bearing','damage']])test(station+' abnormal case must stay unresolved on handoff',()=>{let s=prepared(station,scenario);s=M.reduce(s,{type:'service'});assert(s.error);s=M.reduce(s,{type:'handoff'});assert(s.work[station].handoff);assert(!s.work[station].verified);assert.equal(s.work[station].progress,0);assert(s.work[station].unresolved.length);});
-test('unknown materials do not become a guessed maintenance procedure',()=>{let s=prepared('sprayer','unknown');assert(s.error);s=M.reduce(s,{type:'handoff'});assert(s.work.sprayer.unresolved.length);});
-test('incompatible lubricant cannot advance the bearing case',()=>{let s=prepared('bearing');s=M.reduce(s,{type:'material',value:'wrong'});s=M.reduce(s,{type:'service'});assert(s.error);assert.equal(s.work.bearing.progress,0);});
-test('successful two-stage service needs final verification and retains station records',()=>{let s=prepared();s=M.reduce(s,{type:'service'});assert.equal(s.work.sprayer.progress,.5);s=M.reduce(s,{type:'service'});assert(!s.work.sprayer.verified);s=M.reduce(s,{type:'verify'});assert(s.work.sprayer.verified);s=M.reduce(s,{type:'station',value:'engine'});assert(s.work.sprayer.verified);});
-test('hot engine case requires independent energy/temperature confirmation',()=>{let s=M.initial();s=M.reduce(s,{type:'station',value:'engine'});s=M.reduce(s,{type:'case',value:'hot'});for(const type of ['inspect','read','isolate'])s=M.reduce(s,{type});assert(s.work.engine.hot);s=M.reduce(s,{type:'service'});assert(s.error);s=M.reduce(s,{type:'energy'});assert(!s.work.engine.hot);});
-test('handoff survives loading another case at the same station',()=>{let s=prepared('sprayer','blocked');s=M.reduce(s,{type:'handoff'});s=M.reduce(s,{type:'case',value:'normal'});assert(s.records.some(r=>r.scenario==='blocked'&&!r.resolved&&r.unresolved.length));assert.equal(s.work.sprayer.scenario,'normal');});
+const {test} = require('node:test'), assert = require('node:assert/strict'), M = require('../src/maint.model.js');
+const run = (s, ...events) => events.reduce((x, e) => M.reduce(x, typeof e === 'string' ? {type: e} : e), s);
+const at = (station, scenario = 'normal') => run(M.initial(), {type: 'station', value: station}, {type: 'case', value: scenario});
+const ready = (station, scenario) => run(at(station, scenario), 'prepare', 'isolate', 'energy');
+const inspectAll = (s, station) => run(s, ...M.STATIONS[station].points.map(([point]) => ({type: 'inspect', point})));
+
+test('两个工位共用同一条流程：准备 → 隔离 → 能量确认，顺序不能跳', () => {
+  for (const id of M.IDS) {
+    let s = run(at(id), 'isolate'); assert(s.error); assert(!s.work[id].isolated);
+    s = run(at(id), 'energy'); assert(s.error);
+    s = ready(id); assert(s.work[id].prepared && s.work[id].isolated && s.work[id].energy);
+  }
+});
+
+test('发动机还烫时开冷却液盖被拦下，并记为“抢步”尝试', () => {
+  let s = run(at('engine'), 'prepare', 'isolate', {type: 'inspect', point: 'coolant'});
+  assert(s.error); assert(!s.work.engine.checked.coolant); assert(s.tried.engine.early);
+  assert(s.work.engine.temp > M.SAFE_TEMP);
+  s = run(s, 'energy'); assert(s.work.engine.temp <= M.SAFE_TEMP);
+  s = run(s, {type: 'inspect', point: 'coolant'}); assert(!s.error); assert(s.work.engine.checked.coolant);
+});
+
+test('挖掘机铲斗未落地就去检查铰点被拦下', () => {
+  const s = run(at('excavator'), {type: 'inspect', point: 'bucketPin'});
+  assert(s.error); assert(s.tried.excavator.early); assert(!s.work.excavator.checked.bucketPin);
+});
+
+test('正常案例：检查全部点、核对资料、用指定材料处理后才能复查', () => {
+  for (const id of M.IDS) {
+    let s = ready(id);
+    s = run(s, 'service'); assert(s.error, id + ' 未检查完不能处理');
+    s = inspectAll(s, id); s = run(s, 'service'); assert(s.error, id + ' 未核对资料不能处理');
+    s = run(s, 'read', {type: 'material', value: 'mixed'}, 'service'); assert(s.error); assert(s.tried[id].material);
+    s = run(s, {type: 'material', value: 'spec'});
+    s = run(s, 'verify'); assert(s.error, id + ' 处理没做完不能复查');
+    for (let i = 0; i < M.STATIONS[id].points.length; i++) s = run(s, 'service');
+    assert.equal(s.work[id].progress, 1);
+    s = run(s, 'verify'); assert(s.work[id].verified);
+    assert(s.records.some(r => r.station === id && r.scenario === 'normal' && r.resolved));
+  }
+});
+
+test('挖掘机逐点加注：每个点只加一次，进度按点数计算', () => {
+  let s = run(inspectAll(ready('excavator'), 'excavator'), 'read', {type: 'service', point: 'boomFoot'}, {type: 'service', point: 'boomFoot'});
+  assert.equal(s.work.excavator.progress, 1 / 6);
+});
+
+for (const [id, scenario, point] of [['engine', 'leak', 'under'], ['engine', 'belt', 'belt'], ['excavator', 'seep', 'boomRod'], ['excavator', 'loose', 'bucketPin']]) {
+  test(`${id}/${scenario}：发现异常后不能常规处理，移交后保留未解决`, () => {
+    let s = run(ready(id, scenario), {type: 'inspect', point});
+    assert(s.error); assert(s.work[id].checked[point]);
+    s = run(inspectAll(s, id), 'read', 'service'); assert(s.error); assert.equal(s.work[id].progress, 0);
+    s = run(s, 'handoff'); assert(s.work[id].handoff); assert(!s.work[id].verified);
+    const r = s.records.find(x => x.id === id + ':' + scenario); assert(r && !r.resolved && r.unresolved.length);
+  });
+}
+
+test('资料不明：核对资料后不能补加/加注，只能移交', () => {
+  for (const id of M.IDS) {
+    let s = run(inspectAll(ready(id, 'unknown'), id), 'read');
+    assert(s.error);
+    s = run(s, 'service'); assert(s.error); assert.equal(s.work[id].progress, 0);
+    s = run(s, 'handoff');
+    assert(s.records.find(r => r.id === id + ':unknown' && !r.resolved && r.unresolved.some(u => u.includes('资料缺失'))));
+  }
+});
+
+test('换情境、换工位都保留交接记录；清空才归零', () => {
+  let s = run(ready('engine', 'leak'), {type: 'inspect', point: 'under'}, 'handoff', {type: 'case', value: 'normal'}, {type: 'station', value: 'excavator'});
+  assert(s.records.some(r => r.id === 'engine:leak'));
+  assert.equal(s.work.engine.scenario, 'normal');
+  s = run(s, 'reset-all'); assert.equal(s.records.length, 0);
+});
