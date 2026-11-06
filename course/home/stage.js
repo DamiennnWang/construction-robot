@@ -9,7 +9,7 @@
   let renderer = null;
   try {
     if (T && E) {
-      renderer = new T.WebGLRenderer({antialias: true, powerPreference: 'high-performance'});
+      renderer = new T.WebGLRenderer({antialias: true, alpha: true, powerPreference: 'high-performance'});
       if (!renderer.getContext()) renderer = null;
     }
   } catch { renderer = null; }
@@ -27,6 +27,7 @@
   renderer.setPixelRatio(Math.min(devicePixelRatio || 1, 1.75));
   renderer.outputColorSpace = T.SRGBColorSpace;
   renderer.toneMapping = T.ACESFilmicToneMapping;
+  renderer.setClearColor(0x000000, 0);
   renderer.shadowMap.enabled = true;
   renderer.shadowMap.type = T.PCFSoftShadowMap;
   renderer.domElement.setAttribute('aria-hidden', 'true');
@@ -42,20 +43,34 @@
   Object.assign(sun.shadow.camera, {left: -16, right: 16, top: 12, bottom: -12, near: 4, far: 60});
   const fill = new T.DirectionalLight(0xc4ddff, .9); fill.position.set(12, 8, R - 8); scene.add(fill);
 
-  /* 地面：底色随雾消失在远处；正前方一圈柔光作为展台。 */
-  const floor = new T.Mesh(new T.CircleGeometry(700, 96), new T.MeshBasicMaterial({color: 0xdfe9f5}));
-  floor.rotation.x = -Math.PI / 2; floor.position.y = -.02; scene.add(floor);
+  /* 画布透明：背景（渐变、图纸网格、章节大数字）由页面绘制，三维里只留阴影、主展品脚下的光斑和转台上的刻度盘。 */
   const shadow = new T.Mesh(new T.PlaneGeometry(60, 40), new T.ShadowMaterial({opacity: .16}));
-  shadow.rotation.x = -Math.PI / 2; shadow.position.set(0, -.005, R - 2); shadow.receiveShadow = true; scene.add(shadow);
+  shadow.rotation.x = -Math.PI / 2; shadow.position.set(0, -.005, R - 2); shadow.receiveShadow = true; shadow.renderOrder = 3; scene.add(shadow);
   const glowCanvas = document.createElement('canvas'); glowCanvas.width = glowCanvas.height = 256;
   const glowTexture = new T.CanvasTexture(glowCanvas); glowTexture.colorSpace = T.SRGBColorSpace;
-  const glow = new T.Mesh(new T.CircleGeometry(1, 64), new T.MeshBasicMaterial({map: glowTexture, transparent: true, depthWrite: false}));
-  glow.rotation.x = -Math.PI / 2; glow.position.set(0, -.01, R); glow.scale.setScalar(7.5); scene.add(glow);
+  const glow = new T.Mesh(new T.CircleGeometry(1, 64), new T.MeshBasicMaterial({map: glowTexture, transparent: true, depthWrite: false, toneMapped: false, fog: false}));
+  glow.rotation.x = -Math.PI / 2; glow.position.set(0, -.01, R); glow.scale.setScalar(7.5); glow.renderOrder = 2; scene.add(glow);
+  /* 刻度盘：画在转台地面上，跟着转台一起转。八个工位各有一道长刻度，展品就站在刻度圈上。 */
+  const DIAL = R + 4.6, dialCanvas = document.createElement('canvas'); dialCanvas.width = dialCanvas.height = 2048;
+  const dialTexture = new T.CanvasTexture(dialCanvas); dialTexture.colorSpace = T.SRGBColorSpace; dialTexture.anisotropy = renderer.capabilities.getMaxAnisotropy();
+  const dial = new T.Mesh(new T.PlaneGeometry(DIAL * 2, DIAL * 2), new T.MeshBasicMaterial({map: dialTexture, transparent: true, depthWrite: false, toneMapped: false}));
+  dial.rotation.x = -Math.PI / 2; dial.position.y = -.015; dial.renderOrder = 1;
+  function paintDial() {
+    const g = dialCanvas.getContext('2d'), size = dialCanvas.width, c = size / 2, k = c / DIAL, rgb = theme.dark ? '150,192,255' : '36,103,201';
+    const ink = a => `rgba(${rgb},${a})`, circle = (r, a, w, dash) => { g.beginPath(); g.setLineDash(dash || []); g.arc(c, c, r * k, 0, Math.PI * 2); g.lineWidth = w; g.strokeStyle = ink(a); g.stroke(); g.setLineDash([]); };
+    const tick = (angle, r0, r1, a, w) => { const sx = Math.sin(angle), cz = Math.cos(angle); g.beginPath(); g.moveTo(c + sx * r0 * k, c + cz * r0 * k); g.lineTo(c + sx * r1 * k, c + cz * r1 * k); g.lineWidth = w; g.strokeStyle = ink(a); g.stroke(); };
+    g.clearRect(0, 0, size, size);
+    const disc = g.createRadialGradient(c, c, (R - 3.4) * k, c, c, (R + 3.5) * k);
+    disc.addColorStop(0, ink(0)); disc.addColorStop(.5, ink(theme.dark ? .07 : .045)); disc.addColorStop(1, ink(0));
+    g.fillStyle = disc; g.beginPath(); g.arc(c, c, (R + 3.5) * k, 0, Math.PI * 2); g.fill();
+    circle(R, .34, 3, [10, 14]); circle(R + 3.5, .3, 3); circle(R + 3.86, .14, 2); circle(R - 3.4, .2, 2.5); circle(1.1, .2, 2.5);
+    for (let d = 0; d < 360; d += 3) { const major = d % 45 === 0, mid = d % 15 === 0; tick(d * Math.PI / 180, R + 3.5, R + 3.5 + (major ? .62 : mid ? .34 : .18), major ? .6 : mid ? .36 : .22, major ? 5 : 2.5); }
+    for (let i = 0; i < COUNT; i++) { const a = i * Math.PI * 2 / COUNT; tick(a, 1.1, R - 3.4, .1, 2); tick(a, R - 3.4, R - 2.9, .5, 4); tick(a + Math.PI / COUNT, R - 3.4, R - 3.15, .26, 2.5); }
+    tick(0, -.5, .5, .3, 2.5); tick(Math.PI / 2, -.5, .5, .3, 2.5);
+    dialTexture.needsUpdate = true; dirty = true;
+  }
 
-  /* 天空：自上而下的渐变；雾色取地平线附近的颜色，远处的展品与地面自然消失在里面 */
-  const skyCanvas = document.createElement('canvas'); skyCanvas.width = 4; skyCanvas.height = 256;
-  const skyTexture = new T.CanvasTexture(skyCanvas); skyTexture.colorSpace = T.SRGBColorSpace; scene.background = skyTexture;
-  const theme = {dark: false, tint: '#6aa8e8', bg: new T.Color(), floor: new T.Color(), pedestal: new T.Color(), rim: new T.Color(), accent: new T.Color()};
+  const theme = {dark: false, tint: '#6aa8e8', bg: new T.Color(), pedestal: new T.Color(), rim: new T.Color(), accent: new T.Color()};
   /* 主展品脚下的光斑带一点本章的颜色 */
   function paintGlow() {
     const dark = theme.dark, c = new T.Color(theme.tint), r = Math.round(c.r * 255), g0 = Math.round(c.g * 255), b = Math.round(c.b * 255);
@@ -68,20 +83,16 @@
   }
   function paintTheme(name) {
     const dark = name === 'dark'; theme.dark = dark;
-    theme.bg.setHex(dark ? 0x10223a : 0xe2ebf6);
-    theme.floor.setHex(dark ? 0x11243b : 0xdce7f3);
-    theme.pedestal.setHex(dark ? 0x2d4a69 : 0xfbfdff);
-    theme.rim.setHex(dark ? 0x1b324c : 0xcfdcea);
+    theme.bg.setHex(dark ? 0x0e1d30 : 0xe9f0f9);
+    theme.pedestal.setHex(dark ? 0x2f4d6e : 0xffffff);
+    theme.rim.setHex(dark ? 0x1d3651 : 0xd3e0ee);
     theme.accent.setHex(dark ? 0x8abaff : 0x2467c9);
-    const sky = skyCanvas.getContext('2d'), sg = sky.createLinearGradient(0, 0, 0, 256);
-    sg.addColorStop(0, dark ? '#0a1729' : '#f2f6fc'); sg.addColorStop(.16, dark ? '#10223a' : '#e2ebf6'); sg.addColorStop(1, dark ? '#10223a' : '#e2ebf6');
-    sky.fillStyle = sg; sky.fillRect(0, 0, 4, 256); skyTexture.needsUpdate = true;
-    scene.fog.color.copy(theme.bg); floor.material.color.copy(theme.floor);
-    hemi.intensity = dark ? 1.35 : 2.2; hemi.groundColor.setHex(dark ? 0x1b2c40 : 0x8aa2b8);
+    scene.fog.color.copy(theme.bg);
+    hemi.intensity = dark ? 1.4 : 2.45; hemi.groundColor.setHex(dark ? 0x1b2c40 : 0x8aa2b8);
     sun.intensity = dark ? 2.1 : 2.7; fill.intensity = dark ? .6 : .9;
-    renderer.toneMappingExposure = dark ? 1.0 : 1.1;
-    shadow.material.opacity = dark ? .32 : .16;
-    paintGlow();
+    renderer.toneMappingExposure = dark ? 1.02 : 1.2;
+    shadow.material.opacity = dark ? .34 : .15;
+    paintGlow(); paintDial();
     pedestals.forEach(p => { p.top.material.color.copy(theme.pedestal); p.side.material.color.copy(theme.rim); });
     islands.forEach(island => { island.applied = -1; });
     dirty = true;
@@ -132,7 +143,7 @@
   /* 需要的展品排到队首：当前章的主展品与任务展品优先 */
   function hurry(items) { for (const item of [...items].reverse()) { const i = buildQueue.indexOf(item); if (i > 0) { buildQueue.splice(i, 1); buildQueue.unshift(item); } } }
 
-  const table = new T.Group(); scene.add(table);
+  const table = new T.Group(); scene.add(table); table.add(dial);
   const islands = data.chapters.map((chapter, i) => {
     const angle = i * Math.PI * 2 / COUNT, group = new T.Group();
     group.position.set(Math.sin(angle) * R, 0, Math.cos(angle) * R); group.rotation.y = angle;
@@ -149,12 +160,12 @@
   /* 非聚焦展品褪色：颜色向灰度与背景色靠拢。 */
   const grey = new T.Color();
   function desaturate(island) {
-    const k = (1 - island.w) * .5;
+    const k = (1 - island.w) * .34;
     if (Math.abs(k - island.applied) < .004) return;
     island.applied = k;
     for (const {m, base} of island.mats) {
       const l = base.r * .3 + base.g * .59 + base.b * .11;
-      grey.setRGB(l, l, l).lerp(theme.bg, .42);
+      grey.setRGB(l, l, l).lerp(theme.bg, .3);
       m.color.copy(base).lerp(grey, k);
     }
   }
@@ -218,29 +229,23 @@
     return island.tasks;
   }
 
-  /* 章节镜头里任务展品的摆法（只用书名/任务列表右侧的画幅）：
-   * 三件以内平铺成一道浅弧；四件以上主展品在前居中，其余沿身后一道弧排开；竖屏改为网格。 */
+  /* 章节镜头里任务展品的摆法（只用左栏右侧的画幅）：主展品在前居中，其余沿身后一道弧排开；竖屏改为网格。 */
   function arrange(island) {
     const n = island.tasks.length, left = state?.layout.cover.left || 0, aspect = Math.max(200, width - left) / height;
     island.tasks.forEach(item => { item.slotScale = 1; item.slotYaw = 0; });
-    if (aspect >= .9 && n <= 3) {
-      island.mode = 'row';
-      island.tasks.forEach((item, j) => {
-        const x = (j - (n - 1) / 2) * SLOT;
-        item.slot = new T.Vector3(x, 0, -(x * x) / (2 * ARC));
-        item.slotYaw = -x / ARC * .9;
-      });
-      island.width = (n - 1) * SLOT + 5.2;
-    } else if (aspect >= .9) {
+    if (aspect >= .9) {
+      /* 和封面一样：主展品在前居中，其余沿身后一道弧排开（左右对称，整体居中） */
       island.mode = 'hero';
-      const others = island.tasks.filter(item => item !== island.hero), k = others.length, span = k > 3 ? 1.35 : 1.1;
+      const others = island.tasks.filter(item => item !== island.hero), k = others.length, span = k > 3 ? 1.35 : k === 3 ? 1.15 : .95;
       island.hero.slot = new T.Vector3(0, 0, 1.8); island.hero.slotScale = 1.2;
       others.forEach((item, j) => {
-        const a = k === 1 ? .9 : -span + 2 * span * j / (k - 1);
+        const a = k === 1 ? .95 : -span + 2 * span * j / (k - 1);
         item.slot = new T.Vector3(6.3 * Math.sin(a), 0, -3.4 * Math.cos(a));
         item.slotYaw = -a * .35; item.slotScale = .82;
       });
-      island.width = 2 * 6.3 * Math.sin(span) + 4.6;
+      const xs = island.tasks.map(item => item.slot.x), mid = (Math.max(...xs) + Math.min(...xs)) / 2;
+      island.tasks.forEach(item => { item.slot.x -= mid; });
+      island.width = Math.max(...xs) - Math.min(...xs) + 5.2;
     } else {
       island.mode = 'grid';
       const cols = Math.min(n, aspect < .7 ? 2 : 3), rows = Math.ceil(n / cols);
@@ -287,9 +292,9 @@
     const vfov = camera.fov * Math.PI / 180, aspect = state.viewW / height, tanV = Math.tan(vfov / 2), tanH = tanV * aspect;
     const o = state.layout.overview, oz = Math.max(160, height - o.top - o.bottom);
     /* 概览：主展品在前、占画面主体，其余七章围在后面一圈，整圈都留在书名右侧的画幅里 */
-    let d = Math.max(8.2 * height / (oz * 2 * tanV), (R + 1.9) / (.92 * tanH) - R * .7);
-    camOver.target.set(0, 2.3, R * .7);
-    camOver.pos.set(0, 2.3 + Math.sin(.36) * d, R * .7 + Math.cos(.36) * d);
+    let d = Math.max(9.4 * height / (oz * 2 * tanV), (R + 1.6) / (1.0 * tanH) - R * .7);
+    camOver.target.set(0, 1.7, R * .7);
+    camOver.pos.set(0, 1.7 + Math.sin(.36) * d, R * .7 + Math.cos(.36) * d);
     const island = islands[(state.chapter || state.focus) - 1], c = state.layout.cover, cz = Math.max(160, height - c.top - c.bottom);
     const w = island.width || 10, zmid = island.zmid || 0, mode = island.mode || 'row';
     const tilt = {row: .36, hero: .46, grid: .62}[mode], tall = {row: 3.9, hero: 5.6, grid: 4.3}[mode];
@@ -310,8 +315,8 @@
     if (state.zoom > .5 && state.chapter) return ensureTasks(islands[state.chapter - 1]).filter(i => i.holder.visible);
     return islands.filter(i => i.group.visible && i.away < .5).map(i => i.hero);
   }
-  function screenBox(item) {
-    box.setFromObject(item.holder);
+  function screenBox(item, modelOnly = false) {
+    box.setFromObject(modelOnly && item.model ? item.model : item.holder);
     let l = Infinity, t = Infinity, r = -Infinity, b = -Infinity;
     for (let k = 0; k < 8; k++) {
       tmp.set(k & 1 ? box.max.x : box.min.x, k & 2 ? box.max.y : box.min.y, k & 4 ? box.max.z : box.min.z).project(camera);
@@ -340,24 +345,40 @@
     state.hover = key; renderer.domElement.style.cursor = item ? 'pointer' : '';
     emit('hover', item ? (state.zoom > .5 ? {task: item.task, chapter: item.chapter} : {chapter: item.chapter}) : null);
   }
+  /* 概览：按住鼠标左右拖动转台，松手吸附到最近的一章；拖动中目录高亮跟着变。轻点仍是选择或进入。 */
   let down = null;
-  const canvas = renderer.domElement;
-  canvas.addEventListener('pointerdown', e => { down = {x: e.clientX, y: e.clientY, id: e.pointerId}; });
+  const canvas = renderer.domElement, STEP = Math.PI * 2 / COUNT;
+  const nearest = rot => ((Math.round(-rot / STEP) % COUNT) + COUNT) % COUNT + 1;
+  canvas.addEventListener('pointerdown', e => {
+    down = {x: e.clientX, y: e.clientY, rot: state.rot, drag: false, overview: state.zoom < .5};
+    canvas.setPointerCapture?.(e.pointerId);
+  });
   canvas.addEventListener('pointermove', e => {
-    if (down && e.pointerType !== 'mouse') return;
-    if (e.buttons) return;
-    setHover(pick(e.clientX, e.clientY));
+    if (down) {
+      const dx = e.clientX - down.x;
+      if (down.overview && (down.drag || Math.abs(dx) > 6)) {
+        down.drag = true; canvas.style.cursor = 'grabbing'; setHover(null);
+        state.rot = state.rotTarget = down.rot + dx * Math.PI * 2 / Math.max(600, state.viewW * 1.25);
+        const n = nearest(state.rot);
+        if (n !== state.focus) { state.focus = n; theme.tint = E.chapters[n].tint; paintGlow(); hurry([islands[n - 1].hero]); emit('focus', n); }
+        dirty = true;
+      }
+      return;
+    }
+    const item = pick(e.clientX, e.clientY);
+    setHover(item);
+    if (!item) canvas.style.cursor = state.zoom < .5 ? 'grab' : '';
   });
   canvas.addEventListener('pointerleave', () => { if (!down) setHover(null); });
   canvas.addEventListener('pointerup', e => {
     if (!down) return;
-    const dx = e.clientX - down.x, dy = e.clientY - down.y; down = null;
-    if (Math.abs(dx) > 60 && Math.abs(dx) > Math.abs(dy) * 1.4) { emit('swipe', dx < 0 ? 1 : -1); return; }
+    const {drag} = down, dx = e.clientX - down.x, dy = e.clientY - down.y; down = null;
+    if (drag) { focus(nearest(state.rot)); canvas.style.cursor = 'grab'; return; }
     if (Math.hypot(dx, dy) > 8) return;
     const item = pick(e.clientX, e.clientY); if (!item) return;
     emit('pick', state.zoom > .5 ? {task: item.task, chapter: item.chapter} : {chapter: item.chapter});
   });
-  canvas.addEventListener('pointercancel', () => { down = null; });
+  canvas.addEventListener('pointercancel', () => { if (down?.drag) focus(nearest(state.rot)); down = null; });
   canvas.addEventListener('webglcontextlost', e => { e.preventDefault(); emit('lost'); });
 
   /* 每帧 */
@@ -403,6 +424,7 @@
         island.group.getWorldPosition(tmp).project(camera);
         page = smooth(((tmp.x + 1) / 2 * width - state.layout.overview.left * (1 - ez) + 10) / 150);
       }
+      island.page = page;
       const s = (.58 + .82 * smooth(island.w) * (1 - .3 * ez)) * (1 - .9 * smooth(island.away)) * page;
       island.group.scale.setScalar(Math.max(.001, s));
       island.group.position.y = -2.4 * smooth(island.away);
@@ -438,6 +460,7 @@
       if (island.tasks && ez > .02) island.tasks.forEach(item => item.step(t));
     }
     glow.scale.set(7.5 + 9 * ez, 7.5 + 2 * ez, 1);
+    dial.material.opacity = 1 - .72 * ez;
 
     /* 镜头：概览只用书名右侧的区域（虚拟画幅），进入章节后铺满整屏 */
     const o = state.layout.overview, c = state.layout.cover;
@@ -486,7 +509,34 @@
       if (!island?.tasks) return [];
       return island.tasks.map(item => ({task: item.task, ...anchor(item)}));
     },
+    /* 概览里每章展品的编号牌位置：底座朝镜头一侧的边缘 */
+    marks() {
+      const fade = 1 - smooth(state.zoom * 2.5), front = screenBox(islands[state.focus - 1].hero, true);
+      return islands.map(island => {
+        island.group.getWorldPosition(tmp);
+        const s = island.group.scale.x, dx = camera.position.x - tmp.x, dz = camera.position.z - tmp.z, len = Math.hypot(dx, dz) || 1;
+        tmp.x += dx / len * 2.2 * s; tmp.z += dz / len * 2.2 * s; tmp.project(camera);
+        const x = (tmp.x + 1) / 2 * width, y = (1 - tmp.y) / 2 * height;
+        /* 被当前主展品挡住的编号牌先收起来，不压在主展品身上 */
+        const hidden = island.id !== state.focus && x > front.l - 30 && x < front.r + 30 && y > front.t - 16 && y < front.b + 16;
+        island.mark = (island.mark ?? 1) + ((hidden ? 0 : 1) - (island.mark ?? 1)) * .18;
+        return {chapter: island.id, x, y, alpha: fade * (island.page ?? 1) * island.mark, scale: s};
+      });
+    },
     state: () => ({focus: state.focus, chapter: state.chapter, zoom: Number(state.zoom.toFixed(3)), rotating: Math.abs(state.rotTarget - state.rot) > .01, camera: camera.position.toArray().map(v => Number(v.toFixed(2))), size: [width, height], calls: renderer.info.render.calls, time: state.time, built: islands.filter(i => i.tasks).map(i => i.id), reducedMotion: reduce.matches, pending: buildQueue.length}),
-    targets() { return candidates().map(item => { const s = screenBox(item); return {chapter: item.chapter, task: item.task, x: (s.l + s.r) / 2, y: (s.t + s.b) / 2}; }); }
+    /* 每件展品返回一个真正点得到它的屏幕点（被前面的展品挡住时，在它的投影框里找露出来的地方） */
+    targets() {
+      const rect = renderer.domElement.getBoundingClientRect();
+      return candidates().map(item => {
+        const s = screenBox(item); let x = (s.l + s.r) / 2, y = (s.t + s.b) / 2;
+        if (pick(rect.left + x, rect.top + y) !== item) {
+          search: for (let gy = .2; gy <= .85; gy += .13) for (let gx = .5, k = 0; k < 7; k++, gx = .5 + (k % 2 ? 1 : -1) * Math.ceil(k / 2) * .12) {
+            const px = s.l + (s.r - s.l) * gx, py = s.t + (s.b - s.t) * gy;
+            if (pick(rect.left + px, rect.top + py) === item) { x = px; y = py; break search; }
+          }
+        }
+        return {chapter: item.chapter, task: item.task, x: rect.left + x, y: rect.top + y};
+      });
+    }
   };
 })();
