@@ -1,9 +1,3 @@
-/* 7-2：原页面的配色变量接到外壳（主色统一为课程蓝，状态色用外壳的绿/橙） */
-html.lab-shell.lab-native {
-  --bg:var(--course-bg); --paper:var(--course-surface); --ink:var(--course-ink); --muted:var(--course-muted);
-  --line:var(--hair); --wash:var(--surface-2); --accent:var(--course-accent); --accent-wash:var(--blue-soft);
-  --good:var(--ok); --good-wash:var(--ok-soft);
-}
 html.lab-native #toast { display:none !important; }
 
 /* ===== 三维区：原场景铺满，图注和底部说明收起，视角切换放左上角 ===== */
@@ -152,3 +146,31 @@ html.lab-native .c2-panel .decision-group label { justify-content:center; text-a
 html.lab-native .c2-panel .decision-group input { position:absolute; inset:0; width:100%; height:100%; margin:0; opacity:0; cursor:pointer; }
 html.lab-native .c2-panel .decision-group label:has(input:focus-visible) { outline:2px solid var(--course-accent); outline-offset:2px; }
 html.lab-native .c2-panel #review-form textarea { min-height:44px; }
+
+/* 7-2：期末作业——面板里的作业卡，三维区里的作业要求单 */
+html.lab-native .c2-panel .c7-hw-card { display:flex; flex-direction:column; gap:6px; padding:11px 12px; border-radius:12px; border:1px solid var(--hair); background:linear-gradient(135deg, var(--blue-soft), var(--course-surface)); }
+html.lab-native .c2-panel .c7-hw-card > b { font-size:14.5px; color:var(--course-ink); }
+html.lab-native .c2-panel .c7-hw-card > p { margin:0; font-size:12.5px; line-height:1.5; color:var(--course-muted); }
+html.lab-native .c2-panel .c7-hw-card .c2-row > * { flex:1 1 0; }
+html.lab-native .c2-panel .c7-dl { display:inline-flex; align-items:center; justify-content:center; text-decoration:none; }
+html.lab-native .scene-card:not([data-c7-station="report"]) .c7-homework,
+html.lab-native .scene-card:not([data-c7-homework="1"]) .c7-homework,
+html.lab-native .scene-card[data-c7-homework="1"] .c7-ledger { display:none !important; }
+html.lab-native .c7-homework { left:12px; right:12px; top:12px; bottom:12px; display:flex; flex-direction:column; }
+html.lab-native .c7-homework > header { display:flex; justify-content:space-between; align-items:center; padding:12px 16px 10px; border-bottom:1px solid var(--hair); }
+html.lab-native .c7-homework h2 { margin:2px 0 0; font-size:17px; }
+html.lab-native .c7-hw-tag { display:inline-block; padding:1px 9px; border-radius:9px; font-size:12px; font-weight:700; color:#fff; background:linear-gradient(135deg,#3a82e4,#1f5bbd); }
+html.lab-native .c7-hw-close { width:30px; height:30px; border-radius:50%; border:1px solid var(--hair); background:var(--surface-2); color:var(--course-muted); font-size:18px; line-height:1; padding:0; }
+html.lab-native .c7-hw-body { flex:1 1 auto; min-height:0; overflow:auto; padding:10px 16px 14px; display:grid; grid-template-columns:repeat(2, minmax(0,1fr)); gap:10px 18px; align-content:start; font-size:13px; line-height:1.6; }
+html.lab-native .c7-hw-body > section:nth-child(2) { grid-row:span 3; }
+html.lab-native .c7-hw-body h3 { margin:0 0 3px; font-size:13.5px; color:var(--accent-2); }
+html.lab-native .c7-hw-body p, html.lab-native .c7-hw-body ul { margin:0; }
+html.lab-native .c7-hw-body ul { padding-left:18px; }
+html.lab-native .c7-hw-body li { margin-top:3px; }
+html.lab-native .c7-hw-body li > b:first-child { margin-right:4px; color:var(--course-ink); }
+html.lab-native .c7-hw-fields { display:flex; flex-wrap:wrap; gap:4px; margin:2px 0 6px !important; }
+html.lab-native .c7-hw-fields span { padding:1px 8px; border-radius:8px; font-size:12px; background:var(--blue-soft); color:var(--course-accent); }
+html.lab-native .c7-hw-body table { width:100%; border-collapse:collapse; font-size:12.5px; }
+html.lab-native .c7-hw-body td { padding:3px 6px; border-bottom:1px solid var(--hair); }
+html.lab-native .c7-hw-body td:nth-child(2) { font-weight:800; color:var(--course-accent); text-align:right; width:36px; }
+@media (max-width:900px) { html.lab-native .c7-hw-body { grid-template-columns:1fr; } html.lab-native .c7-hw-body > section:nth-child(2) { grid-row:auto; } }

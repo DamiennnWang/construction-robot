@@ -65,15 +65,15 @@ export function computeCapture(params = {}) {
   const issueCodes = [];
   if (gsd > CLASSROOM_LIMITS.maxGsd + 1e-10) {
     issueCodes.push('detail');
-    issues.push('细节采样偏粗：减小拍摄距离后重新比较；现场距离仍须服从实际作业条件。');
+    issues.push('照片太粗：一格（一个像素）代表的墙面超过 2.5 毫米，细线会看不清。靠近一些再拍；现场距离仍须服从实际作业条件。');
   }
   if (blurPx > CLASSROOM_LIMITS.maxBlurPx + 1e-10) {
     issueCodes.push('motion');
-    issues.push('移动拖影偏大：降低移动速度或使用更快快门；靠近后也要同步检查拖影。');
+    issues.push('拖影太长：拍摄瞬间画面拖出超过 1.5 格。飞慢一点或换更快的快门；靠近后也要再看拖影。');
   }
   if (p.angle > CLASSROOM_LIMITS.maxAngle + 1e-10) {
     issueCodes.push('angle');
-    issues.push('偏拍过大：形变和遮挡风险增加，调整到接近正视后补拍。');
+    issues.push('斜得太多：超过 25° 后墙面被压扁、细节变粗，转到接近正对墙面再拍。');
   }
   return {
     gsd, baseGsd, blurPx, obliquity,
@@ -199,6 +199,6 @@ export function assessMeasurement({referenceMm,referencePx,widthPx,samePlane = f
   if (invalid) return {valid:false,value:null,unit:'mm',feedback:'标定长度、标定像素和断面像素必须为有效正数。'};
   if (!samePlane) return {valid:false,value:null,unit:'mm',feedback:'标尺和目标不共面，不能直接用该比例换算。'};
   if (!sharp) return {valid:false,value:null,unit:'mm',feedback:'边界不清晰，先获得清晰的近距图像。'};
-  if (width < CLASSROOM_LIMITS.minWidthPx) return {valid:false,value:null,unit:'mm',feedback:'目标不足 3 像素，本课不输出宽度读数；放大显示不会增加原始细节。'};
+  if (width < CLASSROOM_LIMITS.minWidthPx) return {valid:false,value:null,unit:'mm',feedback:'裂缝在照片上不足 3 格宽，本课不给宽度读数；放大显示不会多出细节。'};
   return {valid:true,value:mm/ref*width,unit:'mm',feedback:'这是同平面、清晰图像的比例换算练习值，仍受标定和选点误差影响。',mmPerPixel:mm/ref};
 }
