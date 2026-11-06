@@ -25,8 +25,47 @@
   const get = () => (cache && cache.theme === theme() ? cache : (cache = read()));
   addEventListener('course-theme-change', () => { cache = null; });
 
+  /* 电脑上（鼠标操作、宽屏）让三维画布保留最后一帧，“保存三维截图”随时读得到；
+     不少页面是“画面有变化才重画”，不保留的话读到的是空白。手机上不开，省一次每帧拷贝。 */
+  try {
+    if (matchMedia('(pointer:fine) and (min-width:901px)').matches) {
+      const original = HTMLCanvasElement.prototype.getContext;
+      HTMLCanvasElement.prototype.getContext = function (type, attrs) {
+        return original.call(this, type, /^(webgl|webgl2|experimental-webgl)$/.test(type) ? {...(attrs || {}), preserveDrawingBuffer: true} : attrs);
+      };
+    }
+  } catch { /* 保持默认 */ }
+
+  /* 三维截图：把 root 里正在显示的三维画布存成一张 PNG（铺统一底色，不含页面上的按钮和文字标签）。
+     画布内容只在“刚画完的那一帧”里读得到，所以排在页面自己的绘制之后读；读到空白就催一次重绘、下一帧再试。 */
+  const blank = canvas => {
+    const probe = document.createElement('canvas'); probe.width = probe.height = 24;
+    const g = probe.getContext('2d', {willReadFrequently: true}); g.drawImage(canvas, 0, 0, 24, 24);
+    const d = g.getImageData(0, 0, 24, 24).data;
+    for (let i = 3; i < d.length; i += 4) if (d[i]) return false;
+    return true;
+  };
+  function capture(scope = document.body, {scale = 1} = {}) {
+    const list = [...scope.querySelectorAll('canvas')].filter(c => { const r = c.getBoundingClientRect(); return r.width > 80 && r.height > 80 && getComputedStyle(c).visibility !== 'hidden'; });
+    const canvas = list.sort((a, b) => (b.dataset.engine ? 1 : 0) - (a.dataset.engine ? 1 : 0) || b.width * b.height - a.width * a.height)[0];
+    return new Promise(resolve => {
+      if (!canvas) return resolve(null);
+      let tries = 0;
+      const grab = () => {
+        try {
+          if (blank(canvas) && ++tries < 8) { if (tries === 1 || tries === 4) dispatchEvent(new Event('resize')); return requestAnimationFrame(grab); }
+          const out = document.createElement('canvas'); out.width = Math.round(canvas.width * scale); out.height = Math.round(canvas.height * scale);
+          const g = out.getContext('2d'); g.fillStyle = get().bg; g.fillRect(0, 0, out.width, out.height);
+          g.imageSmoothingQuality = 'high'; g.drawImage(canvas, 0, 0, out.width, out.height);
+          resolve(out.toDataURL('image/png'));
+        } catch { resolve(null); }
+      };
+      requestAnimationFrame(grab);
+    });
+  }
+
   window.StageTone = {
-    get,
+    get, capture,
     bg: () => get().bg,
     floor: () => get().floor,
     /** 底色的 THREE.Color（传入页面自己的 THREE，模块化页面也能用）。 */
@@ -724,6 +763,111 @@ html.lab-shell .c2-main > :is(.c2-stage, .c2-panel) {
 html.lab-shell .c2-main > .c2-stage { grid-column:1; }
 html.lab-shell .c2-main > .c2-panel { grid-column:2; }
 
+/* ===== 视觉润色（与首页同一套语言）：图纸网格底、玻璃页头、柔和分层投影 ===== */
+:root { --grid-line:rgba(36,103,201,.045); --shadow:0 1px 2px rgba(18,44,78,.05), 0 10px 30px rgba(18,44,78,.09); }
+html[data-theme="dark"] { --grid-line:rgba(138,186,255,.04); }
+body::before {
+  content:""; position:fixed; inset:0; z-index:-1; pointer-events:none;
+  background:linear-gradient(var(--grid-line) 1px,transparent 1px) 0 -1px/28px 28px, linear-gradient(90deg,var(--grid-line) 1px,transparent 1px) -1px 0/28px 28px;
+  -webkit-mask-image:linear-gradient(180deg,#000,transparent 70%); mask-image:linear-gradient(180deg,#000,transparent 70%);
+}
+.c2-top { background:color-mix(in srgb, var(--course-surface) 82%, transparent); backdrop-filter:blur(14px) saturate(1.2); -webkit-backdrop-filter:blur(14px) saturate(1.2); }
+.c2-tasks { border:1px solid var(--hair); }
+.c2-tasks a { transition:color .15s, background .15s; }
+.c2-task-id { font-family:var(--font-num); font-size:15px; letter-spacing:.02em; box-shadow:0 3px 8px rgba(36,103,201,.28); background:linear-gradient(135deg,#3a82e4,#1f5bbd); }
+html[data-theme="dark"] .c2-task-id { background:linear-gradient(135deg,#8abaff,#5f97ea); }
+.c2-title h1 { letter-spacing:.02em; }
+.c2-stage, .c2-panel { border-radius:18px; border-color:color-mix(in srgb, var(--hair) 80%, transparent); }
+.c2-station { border-radius:13px; }
+.c2-station .c2-num { transition:background .15s; }
+/* 面板标题下一道淡淡的分隔，标题区和控件区分开 */
+.c2-panel-head { padding-bottom:12px; border-bottom:1px solid var(--hair); }
+.c2-h3-text::before { height:15px; background:linear-gradient(180deg,#3a82e4,#1f5bbd); }
+.c2-challenge { border-radius:13px; }
+.c2-challenge:hover { border-color:color-mix(in srgb, var(--course-accent) 45%, var(--hair)); transform:translateY(-1px); box-shadow:0 6px 16px rgba(18,44,78,.08); }
+.c2-read { border:1px solid color-mix(in srgb, var(--hair) 70%, transparent); }
+.c2-progress { height:6px; }
+
+/* 保存三维截图：在全屏按钮下面，鼠标移进三维区才出现；全屏时停手 2.5 秒，两个按钮一起隐去 */
+.c2-shot {
+  position:absolute; right:12px; top:52px; z-index:5; width:34px; height:34px; padding:0; display:grid; place-items:center;
+  border-radius:10px; border:1px solid var(--stage-chip-line); background:var(--stage-chip); backdrop-filter:blur(8px);
+  color:var(--course-ink); box-shadow:var(--shadow-sm); opacity:0; transition:opacity .2s, color .15s, border-color .15s;
+}
+.c2-shot svg { width:18px; height:18px; fill:none; stroke:currentColor; stroke-width:1.8; stroke-linecap:round; stroke-linejoin:round; }
+.c2-view:hover .c2-shot, .c2-shot:focus-visible, .c2-shot.busy { opacity:1; }
+.c2-shot:hover { color:var(--course-accent); border-color:var(--course-accent); }
+.c2-shot.busy { pointer-events:none; color:var(--course-accent); }
+.c2-view:has(.c2-part:not([hidden])) .c2-shot { display:none; }
+.c2-fs { transition:opacity .3s, color .15s, border-color .15s; }
+.c2-stage.c2-full.c2-idle :is(.c2-fs, .c2-shot) { opacity:0; }
+
+/* ===== 大屏（1680px 以上的教室大屏、投影、外接显示器）：整体放大一档，面板加宽，不再显得又小又空 ===== */
+@media (min-width:1680px) and (min-height:860px) {
+  body { font-size:16.5px; }
+  .c2-top { height:60px; padding:0 28px; gap:18px; }
+  .c2-back { height:38px; padding:0 15px 0 13px; border-radius:19px; font-size:16.5px; }
+  .c2-back-chapter { font-size:15px; }
+  .c2-tasks { padding:4px; border-radius:14px; }
+  .c2-tasks a { padding:7px 20px; border-radius:10px; font-size:16.5px; }
+  .c2-top .course-theme-toggle { height:38px !important; min-height:38px !important; border-radius:19px !important; font-size:15px !important; }
+  .c2-bar { padding:16px 28px 14px; gap:24px; }
+  .c2-task-id { height:32px; padding:0 13px; border-radius:16px; font-size:17px; }
+  .c2-title { gap:13px; }
+  .c2-title h1 { font-size:29px; }
+  .c2-stations { gap:10px; }
+  .c2-station { height:50px; padding:0 20px 0 9px; gap:11px; font-size:18px; border-radius:15px; }
+  .c2-num { width:33px; height:33px; border-radius:10px; font-size:20px; }
+  .c2-main { grid-template-columns:minmax(0,1fr) clamp(470px,27vw,560px); gap:18px; padding:0 28px 24px; }
+  .c2-tools { left:16px; top:16px; gap:8px; }
+  .c2-tool { height:40px; padding:0 15px; border-radius:12px; font-size:15.5px; }
+  .c2-toolseg button { height:32px; font-size:15.5px; padding:0 13px; }
+  .c2-hint { top:18px; font-size:15.5px; padding:6px 17px; }
+  .c2-fs { right:16px; top:16px; width:40px; height:40px; border-radius:12px; }
+  .c2-shot { right:16px; top:62px; width:40px; height:40px; border-radius:12px; }
+  .c2-fs svg, .c2-shot svg { width:21px; height:21px; }
+  .c2-part { right:16px; top:68px; width:min(360px,42%); padding:14px 38px 14px 16px; }
+  .c2-part strong { font-size:18px; }
+  .c2-part span { font-size:15.5px; }
+  .c2-feedback { top:68px; font-size:16.5px; }
+  .c2-strip { padding:11px 13px; gap:12px; }
+  .c2-play { height:46px; min-width:116px; font-size:17.5px; border-radius:13px; }
+  .c2-transport .c2-tool { height:42px; }
+  .c2-read { padding:7px 16px; border-radius:13px; min-width:100px; }
+  .c2-read-label, .c2-val small { font-size:15px; }
+  .c2-val b { font-size:30px; }
+  .c2-panel { padding:22px 22px 18px; gap:15px; }
+  .c2-head-num { flex-basis:36px; height:36px; border-radius:11px; font-size:21px; }
+  .c2-panel-head h2 { font-size:25px; }
+  .c2-panel-head p { font-size:16.5px; margin-top:8px; }
+  .c2-redo { height:34px; padding:0 14px; border-radius:17px; font-size:15px; }
+  .c2-panel-body { gap:18px; }
+  .c2-group { gap:10px; }
+  .c2-group h3 { font-size:17px; }
+  .c2-h3-text::before { height:17px; }
+  .c2-btn { height:42px; padding:0 17px; border-radius:11px; }
+  .c2-btn.c2-small { height:36px; }
+  .c2-seg button { height:38px; }
+  .c2-speed button { height:34px; font-size:15.5px; }
+  .c2-slider-top { font-size:16.5px; }
+  .c2-slider output { font-size:18px; line-height:27px; padding:0 10px; }
+  .c2-slider input[type="range"] { height:26px; }
+  .c2-switch { height:38px; font-size:16px; }
+  .c2-chip { height:36px; padding:0 15px; border-radius:18px; font-size:16px; }
+  .c2-count { font-size:19px; }
+  .c2-challenges { gap:10px; }
+  .c2-challenge { padding:12px 13px; gap:11px; }
+  .c2-mark { flex-basis:36px; height:36px; border-radius:10px; font-size:19px; }
+  .c2-ch-text b { font-size:16.5px; }
+  .c2-ch-text span { font-size:15px; }
+  .c2-ch-go { height:30px; padding:0 13px; border-radius:15px; font-size:15px; }
+  .c2-prompt { font-size:16.5px; }
+  .c2-note { font-size:15.5px; }
+  .c2-big { font-size:18px; }
+  .c2-banner, .c2-credit-pop { font-size:15.5px; }
+  .c2-credit-btn { font-size:15px; }
+}
+
 /* 较矮的 16:9 窗口（如 1366×640）：压缩间距，保证整页不滚动 */
 @media (max-height:720px) and (min-width:901px) {
   .c2-top { height:44px; }
@@ -760,7 +904,7 @@ html.lab-shell .c2-main > .c2-panel { grid-column:2; }
    三维区在上、读数两列、面板在下，整页上下滚动。字号放大一档，按钮与滑块按手指大小。 */
 @media (max-width:900px) {
   html { -webkit-text-size-adjust:100%; text-size-adjust:100%; }
-  body { display:block; height:auto; min-height:100dvh; overflow:auto; font-size:16px; }
+  body { display:block; height:auto; min-height:100dvh; overflow:auto; font-size:15px; }
   .c2-top { position:sticky; top:0; z-index:30; flex-wrap:wrap; height:auto; padding:8px 12px; gap:8px; justify-content:space-between; }
   .c2-back { height:38px; padding:0 14px 0 12px; border-radius:19px; font-size:15px !important; }
   .c2-back-chapter { display:none; }
@@ -770,13 +914,17 @@ html.lab-shell .c2-main > .c2-panel { grid-column:2; }
   .c2-tasks a { flex:1 0 auto; padding:8px 14px; text-align:center; scroll-snap-align:center; }
   .c2-bar { flex-direction:column; align-items:stretch; gap:10px; padding:12px 12px 10px; }
   .c2-title { flex-wrap:wrap; row-gap:4px; }
-  .c2-title h1 { white-space:normal; font-size:22px; }
+  .c2-title h1 { white-space:normal; font-size:20px; }
   .c2-stations { margin:0 -12px; padding:2px 12px 4px; overflow-x:auto; scrollbar-width:none; scroll-snap-type:x proximity; }
-  .c2-station { flex:1 0 auto; height:46px; scroll-snap-align:center; }
+  .c2-station { flex:1 0 auto; height:42px; font-size:15px; scroll-snap-align:center; }
   .c2-main { display:flex; flex-direction:column; gap:12px; padding:0 12px calc(18px + env(safe-area-inset-bottom)); }
   .c2-stage { height:auto; min-height:0; }
-  .c2-view { flex:none; height:clamp(300px,58vh,480px); }
-  .c2-tools { left:8px; top:8px; max-width:calc(100% - 60px); gap:5px; }
+  .c2-view { flex:none; height:clamp(320px,60vh,520px); }
+  /* 视角按钮排成一行、横向滑动，不再折成几行压在模型上 */
+  .c2-tools { left:8px; top:8px; max-width:calc(100% - 60px); gap:5px; flex-wrap:nowrap; overflow-x:auto; scrollbar-width:none; padding-bottom:2px; }
+  .c2-tools::-webkit-scrollbar { display:none; }
+  .c2-tools > * { flex:0 0 auto; }
+  .c2-tools .c2-seg { flex-wrap:nowrap; }
   .c2-tool { height:36px; }
   .c2-toolseg button { height:30px; }
   .c2-fs { right:8px; top:8px; width:38px; height:38px; }
@@ -784,38 +932,41 @@ html.lab-shell .c2-main > .c2-panel { grid-column:2; }
   .c2-feedback { top:52px; max-width:calc(100% - 16px); width:max-content; }
   .c2-strip { flex-wrap:wrap; padding:10px; }
   .c2-transport { flex:1 1 100%; flex-wrap:wrap; padding-right:0; }
-  .c2-play { height:44px; flex:1 1 auto; font-size:16px; }
-  .c2-transport .c2-tool { height:44px; padding:0 14px; }
+  .c2-play { height:42px; flex:1 1 auto; font-size:15px; }
+  .c2-transport .c2-tool { height:42px; padding:0 14px; }
   .c2-readouts { flex-wrap:wrap; flex:1 1 100%; }
-  .c2-read { flex:1 1 40%; padding:7px 12px; }
-  .c2-panel { overflow:visible; padding:18px 16px 16px; gap:14px; }
+  .c2-read { flex:1 1 40%; padding:6px 12px; }
+  .c2-read-label, .c2-val small { font-size:13px; }
+  .c2-val b { font-size:22px; }
+  .c2-panel { overflow:visible; padding:16px 14px 14px; gap:12px; }
+  .c2-panel-head h2 { font-size:19px; }
   .c2-panel-head h2 { white-space:normal; }
-  .c2-panel-head p { font-size:16px; }
-  .c2-redo { height:36px; padding:0 14px; border-radius:18px; font-size:14.5px; }
-  .c2-group h3 { font-size:16px; }
-  .c2-btn { height:44px; padding:0 16px; }
-  .c2-btn.c2-small { height:40px; }
-  .c2-seg button { height:40px; }
-  .c2-speed button { height:36px; font-size:15px; }
-  .c2-slider-top { font-size:16px; }
+  .c2-panel-head p { font-size:14.5px; }
+  .c2-redo { height:34px; padding:0 13px; border-radius:17px; font-size:13.5px; }
+  .c2-group h3 { font-size:15px; }
+  .c2-btn { height:42px; padding:0 16px; }
+  .c2-btn.c2-small { height:38px; }
+  .c2-seg button { height:38px; }
+  .c2-speed button { height:34px; font-size:14px; }
+  .c2-slider-top { font-size:15px; }
   .c2-slider input[type="range"] { height:34px; }
   .c2-slider input[type="range"]::-webkit-slider-thumb { width:26px; height:26px; margin-top:-10px; }
   .c2-slider input[type="range"]::-moz-range-thumb { width:20px; height:20px; }
-  .c2-switch { height:40px; font-size:15.5px; }
-  .c2-chip { height:38px; padding:0 15px; border-radius:19px; font-size:15.5px; }
-  .c2-challenge { padding:12px; gap:11px; }
-  .c2-mark { flex-basis:36px; height:36px; font-size:18px; }
-  .c2-ch-text b { font-size:16px; }
-  .c2-ch-text span { font-size:14.5px; -webkit-line-clamp:3; }
-  .c2-ch-go { height:34px; padding:0 14px; border-radius:17px; font-size:14.5px; }
+  .c2-switch { height:38px; font-size:14.5px; }
+  .c2-chip { height:36px; padding:0 14px; border-radius:18px; font-size:14.5px; }
+  .c2-challenge { padding:10px 11px; gap:10px; }
+  .c2-mark { flex-basis:32px; height:32px; font-size:17px; }
+  .c2-ch-text b { font-size:15px; }
+  .c2-ch-text span { font-size:13.5px; -webkit-line-clamp:3; }
+  .c2-ch-go { height:32px; padding:0 13px; border-radius:16px; font-size:13.5px; }
   .c2-opt { min-height:44px; }
-  .c2-note { font-size:15px; }
-  .c2-credit-btn { height:34px; font-size:14.5px; }
+  .c2-note { font-size:14px; }
+  .c2-credit-btn { height:32px; font-size:13.5px; }
+  .c2-shot { display:none; }
   .c2-hint { display:none; }
 }
-/* 小手机：挑战卡改一列，读数保持两列 */
+/* 小手机：读数保持两列 */
 @media (max-width:520px) {
-  .c2-challenges { grid-template-columns:1fr; }
   .c2-grid2 { grid-template-columns:1fr; }
   .c2-station { padding-right:14px; }
 }
@@ -985,22 +1136,38 @@ html.lab-native .c2-panel [data-c2-adopted] { line-height:1.5; }
 html.lab-native .c2-panel :is(h3, h4, h5, strong, b, label, summary) { letter-spacing:0; }
 html.lab-native .c2-stage-top :is(button, label, a) { font-family:inherit; }
 
-/* ===== 手机：原控件按手指大小，横排控件允许换行，整块不撑出屏幕 ===== */
+/* ===== 手机：原控件按手指大小（高 40px 左右），字号不再额外放大；三维区上方的选择条横向滑动，每一项保持完整宽度 ===== */
 @media (max-width:900px) {
-  html.lab-native :is(.c2-panel, .c2-strip) :is(button.primary, button.outline, button.text-button, .compare-buttons button, .path-buttons button, .target-buttons button, .teach-toolbar button, .challenge-actions button) { height:44px; padding:0 16px; font-size:15.5px; white-space:normal; }
-  html.lab-native :is(.c2-panel, .c2-strip) :is(button.stop, button.stop-button, .c3-stop) { height:46px; font-size:16px; }
-  html.lab-native :is(.c2-panel, .c2-strip) :is(button, select, [role="button"], summary) { min-height:40px; }
-  html.lab-native :is(.c2-panel, .c2-strip) :is(select, input[type="number"], input[type="text"]) { height:44px; font-size:16px; }
-  html.lab-native :is(.c2-panel, .c2-strip) input[type="checkbox"] { width:22px; height:22px; }
-  html.lab-native :is(.c2-panel, .c2-strip) input[type="range"] { height:36px; }
-  html.lab-native :is(.c2-panel, .c2-strip) input[type="range"]::-webkit-slider-thumb { width:26px; height:26px; margin-top:-10px; }
-  html.lab-native :is(.c2-panel, .c2-strip) input[type="range"]::-moz-range-thumb { width:20px; height:20px; }
-  html.lab-native :is(.c2-panel, .c2-strip) .segmented button { height:40px; font-size:15px; }
+  html.lab-native :is(.c2-panel, .c2-strip) :is(button.primary, button.outline, button.text-button, .compare-buttons button, .path-buttons button, .target-buttons button, .teach-toolbar button, .challenge-actions button) { height:40px; padding:0 14px; font-size:14.5px; }
+  html.lab-native :is(.c2-panel, .c2-strip) :is(button.stop, button.stop-button, .c3-stop) { height:42px; font-size:15px; }
+  html.lab-native .c2-panel :is(button, select, summary) { min-height:36px; }
+  html.lab-native :is(.c2-panel, .c2-strip) :is(select, input[type="number"], input[type="text"]) { height:40px; font-size:16px; }
+  html.lab-native :is(.c2-panel, .c2-strip) input[type="checkbox"] { width:20px; height:20px; }
+  html.lab-native :is(.c2-panel, .c2-strip) input[type="range"] { height:34px; }
+  html.lab-native :is(.c2-panel, .c2-strip) input[type="range"]::-webkit-slider-thumb { width:24px; height:24px; margin-top:-9px; }
+  html.lab-native :is(.c2-panel, .c2-strip) input[type="range"]::-moz-range-thumb { width:18px; height:18px; }
+  html.lab-native :is(.c2-panel, .c2-strip) .segmented button { height:36px; font-size:14px; }
   html.lab-native .c2-panel .target-buttons { flex-wrap:wrap; }
-  html.lab-native :is(.c2-panel, .c2-strip, .c2-stage-top) [data-c2-adopted] { max-width:100%; min-width:0; }
+  html.lab-native :is(.c2-panel, .c2-strip) [data-c2-adopted] { max-width:100%; min-width:0; }
   html.lab-native .c2-strip { overflow-x:auto; }
+  /* 选择条：不再把几张卡片硬挤进一屏（字被挤成竖排），改成一排横向滑动 */
   html.lab-native .c2-stage-top { padding:8px; gap:6px; scroll-snap-type:x proximity; scrollbar-width:none; }
   html.lab-native .c2-stage-top::-webkit-scrollbar { display:none; }
+  html.lab-native .c2-stage-top > :not([hidden]) { flex:0 0 auto !important; flex-direction:row !important; flex-wrap:nowrap !important; width:max-content !important; max-width:none !important; height:auto !important; gap:6px !important; grid-auto-flow:column !important; grid-template-columns:none !important; grid-template-rows:none !important; grid-auto-columns:max-content !important; align-items:stretch !important; }
+  html.lab-native .c2-stage-top > * > :is(button, label, a) { flex:0 0 auto !important; width:auto !important; min-width:104px; max-width:220px; scroll-snap-align:start; white-space:nowrap; }
+  /* 三维区里的原有浮层：手机上收小一号、贴边，尽量不压模型 */
+  html.lab-native .c2-native-stage :is(button, label, output, small, span, p, strong, b) { letter-spacing:0; }
+}
+/* 大屏：原控件跟着外壳放大一档 */
+@media (min-width:1680px) and (min-height:860px) {
+  html.lab-native :is(.c2-panel, .c2-strip) :is(button.primary, button.outline, button.text-button, .compare-buttons button, .path-buttons button, .target-buttons button, .teach-toolbar button, .challenge-actions button) { height:42px; padding:0 17px; font-size:16.5px; border-radius:11px; }
+  html.lab-native :is(.c2-panel, .c2-strip) button.text-button { height:36px; }
+  html.lab-native :is(.c2-panel, .c2-strip) :is(button.stop, button.stop-button, .c3-stop) { height:44px; font-size:17px; }
+  html.lab-native :is(.c2-panel, .c2-strip) :is(select, input[type="number"], input[type="text"]) { height:38px; font-size:16.5px; }
+  html.lab-native :is(.c2-panel, .c2-strip) input[type="checkbox"] { width:19px; height:19px; }
+  html.lab-native :is(.c2-panel, .c2-strip) input[type="range"] { height:26px; }
+  html.lab-native :is(.c2-panel, .c2-strip) .segmented button { height:34px; font-size:16px; }
+  html.lab-native .c2-stage-top { padding:10px 13px; gap:10px; }
 }
 
 /* 3-3：底栏放原页面的运行按钮和输入/输出/传动比读数 */
@@ -1522,7 +1689,10 @@ for(const event of ['pointerdown','keydown','wheel'])document.addEventListener(e
     const fs = h('button', 'c2-fs'); fs.type = 'button';
     fs.innerHTML = '<svg class="c2-fs-in" viewBox="0 0 24 24" aria-hidden="true"><path d="M4 9V4h5M20 9V4h-5M4 15v5h5M20 15v5h-5"/></svg>'
       + '<svg class="c2-fs-out" viewBox="0 0 24 24" aria-hidden="true"><path d="M9 4v5H4M15 4v5h5M9 20v-5H4M15 20v-5h5"/></svg>';
-    view.append(loading, tools, card, hint, fs);
+    /* 保存三维截图：只存三维画面（统一底色，不带按钮和提示），给做课件、排教材用 */
+    const shot = h('button', 'c2-shot'); shot.type = 'button'; shot.title = '保存三维截图（PNG）'; shot.setAttribute('aria-label', '保存三维截图');
+    shot.innerHTML = '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 8h3l1.6-2.4h6.8L17 8h3v11H4z"/><circle cx="12" cy="13.2" r="3.4"/></svg>';
+    view.append(loading, tools, card, hint, fs, shot);
     const strip = h('div', 'c2-strip');
     const transportBox = h('div', 'c2-transport');
     const readBox = h('div', 'c2-readouts');
@@ -1569,6 +1739,25 @@ for(const event of ['pointerdown','keydown','wheel'])document.addEventListener(e
       stageBox.classList.toggle('c2-full-fallback', on); syncFs(); relayout();
     };
     fs.addEventListener('click', () => setFull(!full()));
+    /* 全屏时停手 2.5 秒，右上角按钮自动隐去——整屏截图里只有模型和它自己的标注 */
+    let idleTimer = 0;
+    const wake = () => { stageBox.classList.remove('c2-idle'); clearTimeout(idleTimer); idleTimer = setTimeout(() => stageBox.classList.add('c2-idle'), 2500); };
+    for (const name of ['pointermove', 'pointerdown', 'keydown']) stageBox.addEventListener(name, wake, {passive: true});
+    wake();
+    const saveShot = url => {
+      shot.classList.remove('busy');
+      if (!url) { ctx?.feedback?.('这个画面暂时存不了，试试全屏后用系统截图。', 'warn'); return; }
+      const stamp = new Date(), two = n => String(n).padStart(2, '0');
+      const a = document.createElement('a'); a.href = url;
+      a.download = `${cfg.task}-${cfg.stations[current]?.name || '三维'}-${two(stamp.getHours())}${two(stamp.getMinutes())}${two(stamp.getSeconds())}.png`;
+      document.body.append(a); a.click(); a.remove();
+      ctx?.feedback?.('三维截图已保存。想要更大的图，先点全屏再存。', 'ok');
+    };
+    shot.addEventListener('click', () => {
+      shot.classList.add('busy');
+      if (frame) frame.contentWindow?.postMessage({c2: 'cmd', op: 'capture'}, '*');
+      else (window.StageTone?.capture?.(view) || Promise.resolve(null)).then(saveShot);
+    });
     document.addEventListener('fullscreenchange', () => { syncFs(); relayout(); });
     document.addEventListener('keydown', e => { if (e.key === 'Escape' && stageBox.classList.contains('c2-full-fallback')) setFull(false); });
     syncFs();
@@ -1604,6 +1793,7 @@ for(const event of ['pointerdown','keydown','wheel'])document.addEventListener(e
       if (!d || d.c2 !== 'lab' || !frame || e.source !== frame.contentWindow) return;
       if (d.type === 'ready' || (d.type === 'state' && ctx && !ctx.lab.ready)) { loading.hidden = true; sendTheme(); ctx?._ready(); }
       if (d.type === 'state') ctx?._state(d.data);
+      if (d.type === 'shot') saveShot(d.url);
     });
     // 主题和三维区底色一起传给原版实验页，嵌入的三维视图与外壳同一底色
     const sendTheme = () => frame?.contentWindow?.postMessage({c2: 'cmd', op: 'theme', value: window.CourseTheme?.get?.() || 'light', stage: stageTones()}, '*');
@@ -1887,16 +2077,16 @@ for(const event of ['pointerdown','keydown','wheel'])document.addEventListener(e
     }
 
     /* 字号下限与字体统一（原地模式）：搬进外壳的原页面文字——面板、三维区里的浮层与 SVG 标注。
-       电脑上不小于 13px、面板段落不小于 14px；手机（宽度 ≤ 900px）上各加 1px。SVG 标注按屏幕实际大小计，不小于 12px。
+       不小于 13px、面板段落不小于 14px（手机同此）；大屏（≥ 1680×860）上为 14.5 / 15.5px。SVG 标注按屏幕实际大小计，不小于 12px。
        原页面按 1600×900 整页缩放设计，常有 7～11px 的小字，这里统一放大到可读、可投影的字号；
        低价值的小字（英文小标、图号、重复的操作提示）由各任务 stations.css 直接隐藏。
        字体：原页面各用各的（Consolas、Segoe UI、Arial、自带等宽字体……），这里统一成外壳的两种——
        等宽字体写的数字、读数、编号换成 --font-num，其余换成正文字体。 */
-    const narrow = matchMedia('(max-width:900px)');
+    const big = matchMedia('(min-width:1680px) and (min-height:860px)');
     const MONO = /mono|consolas|cascadia|courier|menlo|sf mono/i, OURS = /^"?(PingFang SC|Microsoft YaHei|DIN Alternate)/i;
     const floorText = root => {
       if (!root?.querySelectorAll) return;
-      const MIN_TEXT = narrow.matches ? 14 : 13, MIN_PARA = narrow.matches ? 15 : 14;
+      const MIN_TEXT = big.matches ? 14.5 : 13, MIN_PARA = big.matches ? 15.5 : 14;
       for (const el of [root, ...root.querySelectorAll('*')]) {
         if (el.closest('.c2-parking, .c3-legacy, script, style')) continue;
         if (![...el.childNodes].some(n => n.nodeType === 3 && n.textContent.trim())) continue;

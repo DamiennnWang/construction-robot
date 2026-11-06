@@ -278,8 +278,47 @@ html[data-c2=mechanisms] .viewbar { margin: 6px 12px; min-height: 0; }
   const get = () => (cache && cache.theme === theme() ? cache : (cache = read()));
   addEventListener('course-theme-change', () => { cache = null; });
 
+  /* 电脑上（鼠标操作、宽屏）让三维画布保留最后一帧，“保存三维截图”随时读得到；
+     不少页面是“画面有变化才重画”，不保留的话读到的是空白。手机上不开，省一次每帧拷贝。 */
+  try {
+    if (matchMedia('(pointer:fine) and (min-width:901px)').matches) {
+      const original = HTMLCanvasElement.prototype.getContext;
+      HTMLCanvasElement.prototype.getContext = function (type, attrs) {
+        return original.call(this, type, /^(webgl|webgl2|experimental-webgl)$/.test(type) ? {...(attrs || {}), preserveDrawingBuffer: true} : attrs);
+      };
+    }
+  } catch { /* 保持默认 */ }
+
+  /* 三维截图：把 root 里正在显示的三维画布存成一张 PNG（铺统一底色，不含页面上的按钮和文字标签）。
+     画布内容只在“刚画完的那一帧”里读得到，所以排在页面自己的绘制之后读；读到空白就催一次重绘、下一帧再试。 */
+  const blank = canvas => {
+    const probe = document.createElement('canvas'); probe.width = probe.height = 24;
+    const g = probe.getContext('2d', {willReadFrequently: true}); g.drawImage(canvas, 0, 0, 24, 24);
+    const d = g.getImageData(0, 0, 24, 24).data;
+    for (let i = 3; i < d.length; i += 4) if (d[i]) return false;
+    return true;
+  };
+  function capture(scope = document.body, {scale = 1} = {}) {
+    const list = [...scope.querySelectorAll('canvas')].filter(c => { const r = c.getBoundingClientRect(); return r.width > 80 && r.height > 80 && getComputedStyle(c).visibility !== 'hidden'; });
+    const canvas = list.sort((a, b) => (b.dataset.engine ? 1 : 0) - (a.dataset.engine ? 1 : 0) || b.width * b.height - a.width * a.height)[0];
+    return new Promise(resolve => {
+      if (!canvas) return resolve(null);
+      let tries = 0;
+      const grab = () => {
+        try {
+          if (blank(canvas) && ++tries < 8) { if (tries === 1 || tries === 4) dispatchEvent(new Event('resize')); return requestAnimationFrame(grab); }
+          const out = document.createElement('canvas'); out.width = Math.round(canvas.width * scale); out.height = Math.round(canvas.height * scale);
+          const g = out.getContext('2d'); g.fillStyle = get().bg; g.fillRect(0, 0, out.width, out.height);
+          g.imageSmoothingQuality = 'high'; g.drawImage(canvas, 0, 0, out.width, out.height);
+          resolve(out.toDataURL('image/png'));
+        } catch { resolve(null); }
+      };
+      requestAnimationFrame(grab);
+    });
+  }
+
   window.StageTone = {
-    get,
+    get, capture,
     bg: () => get().bg,
     floor: () => get().floor,
     /** 底色的 THREE.Color（传入页面自己的 THREE，模块化页面也能用）。 */
@@ -907,6 +946,7 @@ window.createChapterRenderer = options => {
         window.CourseTheme?.set?.(d.value);
       }
       else if (d.op === 'resize') dispatchEvent(new Event('resize'));
+      else if (d.op === 'capture') (window.StageTone?.capture?.(document.body) || Promise.resolve(null)).then(url => post({type: 'shot', url}));
     } catch (err) { console.warn('[c2 bridge]', d, err); }
     setTimeout(send, 30);
   });

@@ -112,3 +112,6 @@ html[data-c3-task="4-2"] .c2-strip { display:none !important; }
 
 /* 三维区：右上角“Z 轴朝上 / 台座与网格是显示参照”去掉（场景已有坐标轴，网格地面已取消） */
 html.lab-native .stage .world-note { display:none !important; }
+
+/* 手机：读数条放到“慢放 / 重扫”按钮上方，两者不再叠在一起 */
+@media (max-width:900px) { html.lab-native .c2-native-stage .stage-readouts { top:auto !important; bottom:94px !important; } }
