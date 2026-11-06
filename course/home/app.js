@@ -26,7 +26,30 @@
   try { focus = Number(sessionStorage.getItem('home-focus')) || 1; } catch {}
   /* 左侧目录：八章。点章名，右侧展台转到这一章，再点一次进入。 */
   const tint = n => window.HomeExhibits?.chapters[n]?.tint || '#4f97e6';
-  $('toc').innerHTML = data.chapters.map(c => `<section class="toc-ch" data-chapter="${c.id}" style="--tint:${tint(c.id)}"><button type="button" data-chapter="${c.id}" aria-label="${ordinal(c.id)} ${esc(c.title)}"><b>${String(c.id).padStart(2, '0')}</b><span>${esc(c.title)}<small>${c.tasks.length} 项任务</small></span><i class="go" aria-hidden="true" title="进入本章">→</i></button></section>`).join('');
+  const pad = n => String(n).padStart(2, '0');
+  /* 每项任务一小段：本机做过的变绿 */
+  $('toc').innerHTML = data.chapters.map(c => {
+    const done = c.tasks.filter(t => progress(t.id)).length;
+    const segs = c.tasks.map(t => `<u${progress(t.id) ? ' class="done"' : ''}></u>`).join('');
+    return `<section class="toc-ch" data-chapter="${c.id}" style="--tint:${tint(c.id)}"><button type="button" data-chapter="${c.id}" aria-label="${ordinal(c.id)} ${esc(c.title)}，${c.tasks.length} 项任务"><b>${pad(c.id)}</b><span class="t"><strong>${esc(c.title)}</strong><small><span class="segs" aria-hidden="true">${segs}</span>${done ? `已体验 ${done} / ${c.tasks.length}` : `${c.tasks.length} 项任务`}</small></span><i class="go" aria-hidden="true" title="进入本章">→</i></button></section>`;
+  }).join('');
+  /* 展台上的编号牌：每章一枚，当前章展开成“章名 + 进入” */
+  $('marks').innerHTML = data.chapters.map(c => `<a class="mark" href="#chapter-${c.id}" data-chapter="${c.id}" tabindex="-1" style="--tint:${tint(c.id)}"><b>${pad(c.id)}</b><span>${esc(c.title)}</span><i>→</i></a>`).join('');
+  const marks = [...$('marks').children];
+  $('marks').addEventListener('click', e => {
+    const a = e.target.closest('.mark'); if (!a) return;
+    const n = Number(a.dataset.chapter);
+    if (n !== focus) { e.preventDefault(); go(n); }
+  });
+  /* 背景大数字与全页识别色跟随当前章 */
+  let ghostValue = '';
+  function setGhost(n) {
+    const g = $('ghost'), value = pad(n);
+    $('app').style.setProperty('--tint', tint(n));
+    if (value === ghostValue) return;
+    ghostValue = value; g.textContent = value;
+    if (!body.classList.contains('boot')) { g.classList.remove('swap'); void g.offsetWidth; g.classList.add('swap'); }
+  }
   /* 小图：三维可用时由展台离屏拍照，拍好一张填一张 */
   function fillThumb(img, url) { if (url) { img.src = url; img.hidden = false; } }
   $('chapter-grid').innerHTML = data.chapters.map(c => `<a href="#chapter-${c.id}" data-chapter="${c.id}"><small>${ordinal(c.id)} · ${c.tasks.length} 项任务</small><strong>${esc(c.title)}</strong><span>${esc(c.description)}</span></a>`).join('');
@@ -34,6 +57,8 @@
   function showFocus(n) {
     focus = n;
     try { sessionStorage.setItem('home-focus', String(n)); } catch {}
+    setGhost(n);
+    marks.forEach(m => m.classList.toggle('on', Number(m.dataset.chapter) === n));
     $('toc').querySelectorAll('.toc-ch').forEach(sec => { const on = Number(sec.dataset.chapter) === n; sec.classList.toggle('on', on); sec.querySelector('button').setAttribute('aria-current', on ? 'true' : 'false'); });
     if (!body.classList.contains('boot')) { const on = $('toc').querySelector('.toc-ch.on'); on?.classList.remove('flash'); void on?.offsetWidth; on?.classList.add('flash'); }
   }
@@ -85,7 +110,8 @@
       else go(target.chapter);
     });
     stage.on('hover', target => {
-      document.querySelectorAll('[data-task].hot').forEach(n => n.classList.remove('hot'));
+      document.querySelectorAll('[data-task].hot,.mark.hot').forEach(n => n.classList.remove('hot'));
+      if (target && !target.task) marks[target.chapter - 1]?.classList.add('hot');
       if (target?.task) document.querySelectorAll(`[data-task="${target.task}"]`).forEach(n => n.classList.add('hot'));
     });
   }
@@ -95,15 +121,17 @@
   function fillCover(n) {
     const c = chapter(n);
     $('cv-kicker').textContent = ordinal(n);
-    $('cv-stats').innerHTML = `<p><strong>${String(c.tasks.length).padStart(2, '0')}</strong><span>互动<br>任务</span></p>`;
+    const tried = c.tasks.filter(t => progress(t.id)).length;
+    $('cv-stats').innerHTML = `<p><strong>${pad(c.tasks.length)}</strong><span>互动<br>任务</span></p>` + (tried ? `<p><strong>${pad(tried)}</strong><span>已经<br>体验</span></p>` : '');
     $('cv-side').style.setProperty('--tint', tint(n));
     $('cv-name').textContent = c.title;
     $('cv-lead').textContent = c.description;
         $('tasks').style.setProperty('--n', c.tasks.length);
     $('tasks').innerHTML = c.tasks.map(t => {
       const done = progress(t.id);
-      return `<a class="task" href="${esc(taskHref(t))}" data-task="${t.id}"><span class="id">${t.id}</span><span class="name">${esc(t.title)}</span><span class="note">${esc(t.note)}</span>${done ? `<em class="done">✓ ${done} 个工位</em>` : ''}<span class="go" aria-hidden="true">→</span></a>`;
+      return `<a class="task" href="${esc(taskHref(t))}" data-task="${t.id}"><i class="thumb"><img alt="" data-shot="${t.id}" hidden></i><span class="name">${esc(t.title)}</span><span class="note"><span class="id">${t.id}</span>${esc(t.note)}${done ? `<em class="done">✓ ${done} 个工位</em>` : ''}</span><span class="go" aria-hidden="true">→</span></a>`;
     }).join('');
+    if (stage.webgl) $('tasks').querySelectorAll('img[data-shot]').forEach(img => stage.thumb(n, img.dataset.shot).then(url => fillThumb(img, url)));
     $('chips').innerHTML = c.tasks.map(t => `<a class="chip" href="${esc(taskHref(t))}" data-task="${t.id}" tabindex="-1"><b>${t.id}</b><span>${esc(t.title)}</span>${progress(t.id) ? '<em>✓</em>' : ''}</a>`).join('');
     $('tasks').querySelectorAll('a').forEach(a => {
       const target = {chapter: n, task: a.dataset.task};
@@ -117,7 +145,7 @@
       a.addEventListener('pointerleave', () => stage.hover(null));
     });
     /* 右上角：上一章、下一章（带该章主展品小图），章节之间直接切换 */
-    $('cv-nav').innerHTML = [[n - 1, '上一章'], [n + 1, '下一章']].filter(([m]) => chapter(m)).map(([m, label]) => `<a class="cv-step ${m < n ? 'is-prev' : 'is-next'}" href="#chapter-${m}" style="--tint:${tint(m)}"><i class="thumb"><img alt="" data-thumb="${m}" hidden></i><span><small>${m < n ? '← ' : ''}${label}${m > n ? ' →' : ''}</small>${ordinal(m)} ${esc(chapter(m).title)}</span></a>`).join('');
+    $('cv-nav').innerHTML = [[n - 1, '上一章'], [n + 1, '下一章']].filter(([m]) => chapter(m)).map(([m, label]) => `<a class="cv-step ${m < n ? 'is-prev' : 'is-next'}" href="#chapter-${m}" style="--tint:${tint(m)}"><i class="thumb"><img alt="" data-thumb="${m}" hidden></i><span><small>${m < n ? '← ' : ''}${label} · ${ordinal(m)}${m > n ? ' →' : ''}</small>${esc(chapter(m).title)}</span></a>`).join('');
     if (stage.webgl) $('cv-nav').querySelectorAll('img[data-thumb]').forEach(img => stage.thumb(Number(img.dataset.thumb)).then(url => fillThumb(img, url)));
     document.title = `${ordinal(n)} ${c.title}｜智能建筑机械与机器人`;
   }
@@ -126,6 +154,7 @@
     $('cover').hidden = !cover;
     $('overview').inert = cover; $('cover').inert = !cover;
     $('back').hidden = !cover; $('top-edition').hidden = cover;
+    setGhost(cover ? shown : focus);
     if (!cover) document.title = '智能建筑机械与机器人';
     measure();
   }
@@ -171,12 +200,20 @@
     if (!wide) { stage.layout({overview: {left: 0, top: 6, bottom: 6}, cover: {left: 0, top: 6, bottom: 6}}); return; }
     const book = $('book').getBoundingClientRect();
     const band = {top: Math.max(64, book.top), bottom: Math.max(24, h - book.bottom)};
-    stage.layout({overview: {left, ...band}, cover: {left, ...band}});
+    /* 概览：底部多留一条给当前章的名称牌 */
+    stage.layout({overview: {left, top: band.top, bottom: band.bottom + 40}, cover: {left, ...band}});
   }
   addEventListener('resize', measure);
 
   /* 名称标签跟着任务展品 */
   if (stage.webgl) stage.on('frame', () => {
+    for (const m of stage.marks()) {
+      const el = marks[m.chapter - 1], on = m.alpha > .02;
+      el.style.visibility = on ? 'visible' : 'hidden';
+      if (!on) continue;
+      el.style.opacity = m.alpha.toFixed(2);
+      el.style.transform = `translate(${m.x.toFixed(1)}px,${(m.y + 6 + 8 * m.scale).toFixed(1)}px) translate(-50%,0)`;
+    }
     if (!shown) return;
     const anchors = stage.anchors();
     for (const a of anchors) {
