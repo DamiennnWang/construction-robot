@@ -136,38 +136,38 @@
     };
   }
 
-  /* 每章：主展品对应的任务、各任务的展品。yaw 让模型以四分之三侧面朝向镜头。 */
+  /* 每章：识别色（小图底色、展台细环、脚下光斑）、主展品对应的任务、各任务的展品。yaw 让模型以四分之三侧面朝向镜头。 */
   const chapters = {
-    1: {hero: '1-2', motion: '挖掘机转身挖一斗、回转卸料', tasks: {
+    1: {tint: '#f0b445', hero: '1-2', motion: '挖掘机转身挖一斗、回转卸料', tasks: {
       '1-2': {make: machine('excavator'), drive: dig, yaw: -1.3, size: 4.4},
       '1-3': {make: machine('six-axis'), yaw: -.5, size: 3.6}}},
-    2: {hero: '2-1', motion: '柴油机运转：活塞上下、曲轴转动', tasks: {
+    2: {tint: '#4f97e6', hero: '2-1', motion: '柴油机运转：活塞上下、曲轴转动', tasks: {
       '2-1': {make: cover(2, 'diesel'), drive: m => t => m.pose(t * 3), yaw: -.45},
       '2-2': {make: cover(2, 'transmission'), yaw: -.45},
       '2-3': {make: cover(2, 'mechanism'), yaw: -.45}}},
-    3: {hero: '3-2', motion: '六轴机械臂在两个料位之间取放料块', tasks: {
+    3: {tint: '#7c83ec', hero: '3-2', motion: '六轴机械臂在两个料位之间取放料块', tasks: {
       '3-1': {make: cover(3, 'gantry'), yaw: -.45},
       '3-2': {make: machine('six-axis'), drive: pickPlace, yaw: -.2, size: 4.3},
       '3-3': {make: cover(3, 'reducer'), yaw: -.35},
       '3-4': {make: cover(3, 'tool'), yaw: -.45},
       '3-5': {make: cover(3, 'chassis'), yaw: -.6}}},
-    4: {hero: '4-2', motion: '激光雷达扫描头旋转扫过四周', tasks: {
+    4: {tint: '#33b39a', hero: '4-2', motion: '激光雷达扫描头旋转扫过四周', tasks: {
       '4-1': {make: cover(4, 'ownState'), yaw: -.45},
       '4-2': {make: cover(4, 'lidar'), drive: sweep, yaw: -.5},
       '4-3': {make: cover(4, 'vision'), yaw: -.35}}},
-    5: {hero: '5-2', motion: '绑扎机械臂在钢筋交叉点之间转动、打结', tasks: {
+    5: {tint: '#6f93c4', hero: '5-2', motion: '绑扎机械臂在钢筋交叉点之间转动、打结', tasks: {
       '5-1': {make: cover(5, 'processing'), yaw: -.45},
       '5-2': {make: cover(5, 'tying'), drive: tie, yaw: -.4},
       '5-3': {make: cover(5, 'concrete'), yaw: -.45}}},
-    6: {hero: '6-4', motion: '喷涂机器人喷枪沿墙面上下往复喷涂', tasks: {
+    6: {tint: '#ec8a62', hero: '6-4', motion: '喷涂机器人喷枪沿墙面上下往复喷涂', tasks: {
       '6-1': {make: cover(6, 'masonry'), yaw: -.4},
       '6-2': {make: cover(6, 'tiling'), yaw: -.45},
       '6-3': {make: cover(6, 'sanding'), yaw: -.4},
       '6-4': {make: cover(6, 'spray'), drive: spray, yaw: -.4}}},
-    7: {hero: '7-2', motion: '无人机沿建筑立面逐行巡检', tasks: {
+    7: {tint: '#5fb86a', hero: '7-2', motion: '无人机沿建筑立面逐行巡检', tasks: {
       '7-1': {make: cover(7, 'bridge'), yaw: -.45},
       '7-2': {make: cover(7, 'facade'), drive: patrol, yaw: -.4}}},
-    8: {hero: '8-1', motion: '警示灯交替闪烁、安全帽在展台上转动', tasks: {
+    8: {tint: '#f08a3c', hero: '8-1', motion: '警示灯交替闪烁、安全帽在展台上转动', tasks: {
       '8-1': {make: machine('safety-exhibit'), drive: alert, yaw: -.4},
       '8-2': {make: machine('engine'), yaw: -.55}}}
   };

@@ -34,7 +34,7 @@
 
   const scene = new T.Scene();
   scene.fog = new T.Fog(0xe9f1fa, 21, 44);
-  const camera = new T.PerspectiveCamera(30, 1, .5, 220);
+  const camera = new T.PerspectiveCamera(30, 1, .5, 900);
   const hemi = new T.HemisphereLight(0xffffff, 0x8aa2b8, 2.2); scene.add(hemi);
   const sun = new T.DirectionalLight(0xfff5e8, 2.7);
   sun.position.set(-9, 19, R + 11); sun.target.position.set(0, 0, R); scene.add(sun, sun.target);
@@ -43,7 +43,7 @@
   const fill = new T.DirectionalLight(0xc4ddff, .9); fill.position.set(12, 8, R - 8); scene.add(fill);
 
   /* 地面：底色随雾消失在远处；正前方一圈柔光作为展台。 */
-  const floor = new T.Mesh(new T.CircleGeometry(90, 64), new T.MeshBasicMaterial({color: 0xdfe9f5}));
+  const floor = new T.Mesh(new T.CircleGeometry(700, 96), new T.MeshBasicMaterial({color: 0xdfe9f5}));
   floor.rotation.x = -Math.PI / 2; floor.position.y = -.02; scene.add(floor);
   const shadow = new T.Mesh(new T.PlaneGeometry(60, 40), new T.ShadowMaterial({opacity: .16}));
   shadow.rotation.x = -Math.PI / 2; shadow.position.set(0, -.005, R - 2); shadow.receiveShadow = true; scene.add(shadow);
@@ -52,47 +52,60 @@
   const glow = new T.Mesh(new T.CircleGeometry(1, 64), new T.MeshBasicMaterial({map: glowTexture, transparent: true, depthWrite: false}));
   glow.rotation.x = -Math.PI / 2; glow.position.set(0, -.01, R); glow.scale.setScalar(7.5); scene.add(glow);
 
-  const theme = {bg: new T.Color(), floor: new T.Color(), pedestal: new T.Color(), rim: new T.Color(), accent: new T.Color()};
+  /* 天空：自上而下的渐变；雾色取地平线附近的颜色，远处的展品与地面自然消失在里面 */
+  const skyCanvas = document.createElement('canvas'); skyCanvas.width = 4; skyCanvas.height = 256;
+  const skyTexture = new T.CanvasTexture(skyCanvas); skyTexture.colorSpace = T.SRGBColorSpace; scene.background = skyTexture;
+  const theme = {dark: false, tint: '#6aa8e8', bg: new T.Color(), floor: new T.Color(), pedestal: new T.Color(), rim: new T.Color(), accent: new T.Color()};
+  /* 主展品脚下的光斑带一点本章的颜色 */
+  function paintGlow() {
+    const dark = theme.dark, c = new T.Color(theme.tint), r = Math.round(c.r * 255), g0 = Math.round(c.g * 255), b = Math.round(c.b * 255);
+    const g = glowCanvas.getContext('2d'), grad = g.createRadialGradient(128, 128, 0, 128, 128, 128);
+    grad.addColorStop(0, dark ? `rgba(${r},${g0},${b},.36)` : 'rgba(255,255,255,.96)');
+    grad.addColorStop(.42, dark ? `rgba(${r},${g0},${b},.16)` : `rgba(${r},${g0},${b},.20)`);
+    grad.addColorStop(.75, dark ? `rgba(${r},${g0},${b},.05)` : `rgba(${r},${g0},${b},.07)`);
+    grad.addColorStop(1, 'rgba(255,255,255,0)');
+    g.clearRect(0, 0, 256, 256); g.fillStyle = grad; g.fillRect(0, 0, 256, 256); glowTexture.needsUpdate = true; dirty = true;
+  }
   function paintTheme(name) {
-    const dark = name === 'dark';
-    theme.bg.setHex(dark ? 0x0d1b2c : 0xe8f0f9);
-    theme.floor.setHex(dark ? 0x0f2135 : 0xdfe9f5);
-    theme.pedestal.setHex(dark ? 0x2a4561 : 0xf8fbfe);
-    theme.rim.setHex(dark ? 0x1d3550 : 0xd6e3f1);
+    const dark = name === 'dark'; theme.dark = dark;
+    theme.bg.setHex(dark ? 0x10223a : 0xe2ebf6);
+    theme.floor.setHex(dark ? 0x11243b : 0xdce7f3);
+    theme.pedestal.setHex(dark ? 0x2d4a69 : 0xfbfdff);
+    theme.rim.setHex(dark ? 0x1b324c : 0xcfdcea);
     theme.accent.setHex(dark ? 0x8abaff : 0x2467c9);
-    renderer.setClearColor(theme.bg, 1); scene.fog.color.copy(theme.bg); floor.material.color.copy(theme.floor);
+    const sky = skyCanvas.getContext('2d'), sg = sky.createLinearGradient(0, 0, 0, 256);
+    sg.addColorStop(0, dark ? '#0a1729' : '#f2f6fc'); sg.addColorStop(.16, dark ? '#10223a' : '#e2ebf6'); sg.addColorStop(1, dark ? '#10223a' : '#e2ebf6');
+    sky.fillStyle = sg; sky.fillRect(0, 0, 4, 256); skyTexture.needsUpdate = true;
+    scene.fog.color.copy(theme.bg); floor.material.color.copy(theme.floor);
     hemi.intensity = dark ? 1.35 : 2.2; hemi.groundColor.setHex(dark ? 0x1b2c40 : 0x8aa2b8);
     sun.intensity = dark ? 2.1 : 2.7; fill.intensity = dark ? .6 : .9;
     renderer.toneMappingExposure = dark ? 1.0 : 1.1;
     shadow.material.opacity = dark ? .32 : .16;
-    const g = glowCanvas.getContext('2d'), grad = g.createRadialGradient(128, 128, 0, 128, 128, 128);
-    grad.addColorStop(0, dark ? 'rgba(70,120,190,.42)' : 'rgba(255,255,255,.95)');
-    grad.addColorStop(.55, dark ? 'rgba(50,95,160,.16)' : 'rgba(255,255,255,.45)');
-    grad.addColorStop(1, 'rgba(255,255,255,0)');
-    g.clearRect(0, 0, 256, 256); g.fillStyle = grad; g.fillRect(0, 0, 256, 256); glowTexture.needsUpdate = true;
-    pedestals.forEach(p => { p.top.material.color.copy(theme.pedestal); p.side.material.color.copy(theme.rim); p.ring.material.color.copy(theme.accent); });
+    paintGlow();
+    pedestals.forEach(p => { p.top.material.color.copy(theme.pedestal); p.side.material.color.copy(theme.rim); });
     islands.forEach(island => { island.applied = -1; });
     dirty = true;
   }
 
-  /* 展台底座：顶面 + 侧面 + 一圈主色细环（聚焦或悬停时亮起）。 */
+  /* 展台底座：两层圆台（下层灰蓝、上层白），上层边缘一圈本章颜色的细环，聚焦或悬停时变实。 */
   const pedestals = [];
-  function pedestal(radius) {
+  function pedestal(radius, tint) {
     const group = new T.Group();
-    const side = new T.Mesh(new T.CylinderGeometry(radius, radius * 1.03, .2, 72), new T.MeshStandardMaterial({color: 0xd6e3f1, roughness: .7}));
-    side.position.y = -.1; side.receiveShadow = true;
-    const top = new T.Mesh(new T.CircleGeometry(radius - .02, 72), new T.MeshStandardMaterial({color: 0xf8fbfe, roughness: .62}));
-    top.rotation.x = -Math.PI / 2; top.position.y = .002; top.receiveShadow = true;
-    const ring = new T.Mesh(new T.RingGeometry(radius - .16, radius - .07, 96), new T.MeshBasicMaterial({color: 0x2467c9, transparent: true, opacity: 0, depthWrite: false}));
-    ring.rotation.x = -Math.PI / 2; ring.position.y = .006;
+    const side = new T.Mesh(new T.CylinderGeometry(radius, radius + .08, .24, 80), new T.MeshStandardMaterial({color: 0xcfdcea, roughness: .78}));
+    side.position.y = -.12; side.receiveShadow = true; side.castShadow = false;
+    const top = new T.Mesh(new T.CylinderGeometry(radius - .16, radius - .1, .08, 80), new T.MeshStandardMaterial({color: 0xfbfdff, roughness: .55}));
+    top.position.y = .04; top.receiveShadow = true;
+    const ring = new T.Mesh(new T.RingGeometry(radius - .1, radius - .02, 96), new T.MeshBasicMaterial({color: new T.Color(tint), transparent: true, opacity: .5, depthWrite: false}));
+    ring.rotation.x = -Math.PI / 2; ring.position.y = .004;
     group.add(side, top, ring);
-    top.material.color.copy(theme.pedestal); side.material.color.copy(theme.rim); ring.material.color.copy(theme.accent);
+    top.material.color.copy(theme.pedestal); side.material.color.copy(theme.rim);
     const p = {group, top, side, ring}; pedestals.push(p); return p;
   }
 
   /* 一件展品（主展品或任务展品）：底座 + 模型，挂在本章展岛下。 */
   function exhibit(chapter, taskId, radius) {
-    const built = E.build(chapter, taskId), base = pedestal(radius), holder = new T.Group();
+    const built = E.build(chapter, taskId), base = pedestal(radius, E.chapters[chapter].tint), holder = new T.Group();
+    built.root.position.y = .08;
     holder.add(base.group, built.root);
     holder.userData.pick = {chapter, task: taskId};
     return {chapter, task: taskId, holder, base, step: built.step, hover: 0, show: 0, label: null, materials: null};
@@ -124,6 +137,52 @@
       grey.setRGB(l, l, l).lerp(theme.bg, .42);
       m.color.copy(base).lerp(grey, k);
     }
+  }
+
+  /* 小图：离屏渲染器给展品拍一张透明底照片，供左侧目录与本章任务条使用；空闲时逐张拍，拍完缓存。 */
+  let thumbRenderer = null;
+  const thumbs = new Map(), queue = [], thumbScene = new T.Scene(), thumbCam = new T.PerspectiveCamera(24, 4 / 3, .1, 120);
+  thumbScene.add(new T.HemisphereLight(0xffffff, 0x8aa2b8, 2.4));
+  const thumbSun = new T.DirectionalLight(0xfff5e8, 2.5); thumbSun.position.set(-5, 9, 7); thumbScene.add(thumbSun);
+  const thumbFill = new T.DirectionalLight(0xc4ddff, .9); thumbFill.position.set(7, 3, -4); thumbScene.add(thumbFill);
+  function shoot(item, island) {
+    if (!thumbRenderer) {
+      try {
+        thumbRenderer = new T.WebGLRenderer({antialias: true, alpha: true, preserveDrawingBuffer: true});
+        thumbRenderer.setPixelRatio(1); thumbRenderer.setSize(320, 240, false); thumbRenderer.setClearColor(0, 0);
+        thumbRenderer.outputColorSpace = T.SRGBColorSpace; thumbRenderer.toneMapping = T.ACESFilmicToneMapping; thumbRenderer.toneMappingExposure = 1.1;
+      } catch { return null; }
+    }
+    const node = item.holder.children[1], parent = node.parent, hero = item === island.hero;
+    const saved = hero ? island.mats.map(x => x.m.color.clone()) : null;
+    if (hero) island.mats.forEach(x => x.m.color.copy(x.base));
+    thumbScene.add(node); node.updateMatrixWorld(true);
+    const bounds = new T.Box3().setFromObject(node), center = bounds.getCenter(new T.Vector3()), size = bounds.getSize(new T.Vector3());
+    const tanV = Math.tan(12 * Math.PI / 180), tanH = tanV * 4 / 3;
+    const d = Math.max(size.y * 1.08 / 2 / tanV, Math.max(size.x, size.z) * .92 / 2 / tanH) + Math.max(size.x, size.z) / 2;
+    thumbCam.position.set(center.x, center.y + d * Math.sin(.3), center.z + d * Math.cos(.3)); thumbCam.lookAt(center);
+    thumbRenderer.render(thumbScene, thumbCam);
+    const url = thumbRenderer.domElement.toDataURL('image/png');
+    parent.add(node);
+    if (hero) island.mats.forEach((x, i) => x.m.color.copy(saved[i]));
+    return url;
+  }
+  let pumping = false;
+  function pump() {
+    if (pumping) return; pumping = true;
+    const idle = window.requestIdleCallback || (fn => setTimeout(fn, 40));
+    const run = () => { const job = queue.shift(); if (!job) { pumping = false; return; } job(); idle(run); };
+    idle(run);
+  }
+  function thumb(chapter, task) {
+    const island = islands[chapter - 1]; if (!island) return Promise.resolve(null);
+    task = task || island.hero.task;
+    const key = chapter + ':' + task;
+    if (!thumbs.has(key)) thumbs.set(key, new Promise(resolve => {
+      queue.push(() => { try { const item = task === island.hero.task ? island.hero : ensureTasks(island).find(i => i.task === task); resolve(item ? shoot(item, island) : null); } catch { resolve(null); } });
+      pump();
+    }));
+    return thumbs.get(key);
   }
 
   /* 本章任务展品：第一次需要时再建（先建主展品，其余按需），按任务编号从左到右排成一道浅弧。 */
@@ -167,7 +226,7 @@
 
   function focus(n, {instant = false} = {}) {
     const island = islands[n - 1]; if (!island) return;
-    state.focus = n;
+    state.focus = n; theme.tint = E.chapters[n].tint; paintGlow();
     state.rotTarget = state.rot + wrap(-island.angle - state.rot);
     if (instant || reduce.matches) state.rot = state.rotTarget;
     if (instant) islands.forEach(i => { i.w = i.id === n ? 1 : 0; });
@@ -270,7 +329,7 @@
 
   /* 每帧 */
   let last = performance.now(), frameId = 0;
-  const ringFor = (item, value) => { item.base.ring.material.opacity = value; };
+  const ringFor = (item, value) => { item.base.ring.material.opacity = .45 + .55 * value; };
   function tick(now) {
     frameId = requestAnimationFrame(tick);
     const dt = Math.min((now - last) / 1000, .05); last = now;
@@ -370,7 +429,7 @@
   }
 
   window.HomeStage = {
-    webgl: true, focus, enter, leave,
+    webgl: true, focus, enter, leave, thumb,
     on(name, fn) { (listeners[name] ||= []).push(fn); },
     layout(value) { Object.assign(state.layout, value); dirty = true; },
     hover(target) {

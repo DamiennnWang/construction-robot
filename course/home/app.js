@@ -25,7 +25,11 @@
   let focus = 1;
   try { focus = Number(sessionStorage.getItem('home-focus')) || 1; } catch {}
   /* 左侧目录：点一章，右侧展台转到这一章；再点一次进入。 */
-  $('toc').innerHTML = data.chapters.map(c => `<button type="button" data-chapter="${c.id}" aria-label="${ordinal(c.id)} ${esc(c.title)}"><b>${c.id}</b><span>${esc(c.title)}</span></button>`).join('');
+  const tint = n => window.HomeExhibits?.chapters[n]?.tint || '#4f97e6';
+  $('toc').innerHTML = data.chapters.map(c => `<button type="button" data-chapter="${c.id}" style="--tint:${tint(c.id)}" aria-label="${ordinal(c.id)} ${esc(c.title)}"><i class="thumb"><img alt="" data-thumb="${c.id}" hidden></i><b>${c.id}</b><span>${esc(c.title)}</span></button>`).join('');
+  /* 小图：三维可用时由展台离屏拍照，拍好一张填一张 */
+  function fillThumb(img, url) { if (url) { img.src = url; img.hidden = false; } }
+  if (stage.webgl) data.chapters.forEach(c => stage.thumb(c.id).then(url => fillThumb($('toc').querySelector(`[data-thumb="${c.id}"]`), url)));
   $('chapter-grid').innerHTML = data.chapters.map(c => `<a href="#chapter-${c.id}" data-chapter="${c.id}"><small>${ordinal(c.id)} · ${c.tasks.length} 项任务</small><strong>${esc(c.title)}</strong><span>${esc(c.description)}</span></a>`).join('');
   $('chapter-grid').hidden = stage.webgl;
   function showFocus(n) {
@@ -37,6 +41,9 @@
     $('ov-desc').textContent = c.description;
     for (const a of [$('ov-name'), $('ov-enter')]) a.href = '#chapter-' + n;
     $('ov-enter').setAttribute('aria-label', `进入${ordinal(n)} ${c.title}`);
+    $('ov-info').style.setProperty('--tint', tint(n));
+    $('ov-tasks').innerHTML = c.tasks.map(t => `<a class="mini" href="${esc(taskHref(t))}" data-task="${t.id}" title="${t.id} ${esc(t.title)}"><i class="thumb"><img alt="" hidden></i><b>${t.id}</b>${progress(t.id) ? '<em>✓</em>' : ''}</a>`).join('');
+    if (stage.webgl) c.tasks.forEach(t => stage.thumb(n, t.id).then(url => { const img = $('ov-tasks').querySelector(`[data-task="${t.id}"] img`); if (img && focus === n) fillThumb(img, url); }));
     $('toc').querySelectorAll('button').forEach(b => { const on = Number(b.dataset.chapter) === n; b.classList.toggle('on', on); b.setAttribute('aria-current', on ? 'true' : 'false'); });
     $('ov-info').classList.remove('swap'); void $('ov-info').offsetWidth; $('ov-info').classList.add('swap');
   }
