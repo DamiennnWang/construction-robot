@@ -1,19 +1,19 @@
 # 任务 1-3 · 认识施工机器人
 
-[打开展厅](index.html) · [第一章封面](../../overview/index.html)
+[打开任务页](index.html) · [第一章封面](../../overview/index.html)
 
-直接选择模型、查看结构和播放动作。展品：无人机、机械臂、人形机器人、机器狗、机械手（Sharpa Wave）。
+统一任务页外壳（与第二～八章相同）：页头本章任务 → 工位条 → 三维区 + 操作面板 + 试一试。
 
-- “学习引导”说明本节目标、观察方法与回顾问题，位于“操作说明”之前。
-- 拖动旋转、滚轮缩放；点击模型编号或部件索引选择部件。
-- 三维区右上角可全屏／恢复，放大时保留视角与动作；Esc 返回展厅。
-- 播放、暂停、单步和时间轴用于观察动作；机构滑杆用于单独调节。
-- “结构观察”可展开总成、近看部件；复位恢复整机和初始姿态。
-- 1600×900 布局随窗口缩放，无整页滚动；窄屏保留模型和局部滚动操作区。
-- 支持主题、键盘、减少动画、离线及无 WebGL 备用投影。
+| 工位 | 展品（三维区上方切换） | 试一试 |
+| --- | --- | --- |
+| ① 机械臂与机械手 | 机械臂、机械手（Sharpa Wave） | 看机械臂逐关节巡游、找到末端法兰、机械手握拳、只伸出食指 |
+| ② 会走会飞 | 机器狗、人形机器人、无人机 | 机器狗踏步、人形机器人挥手、转螺旋桨、把无人机展开看 |
 
-页面没有作业关卡、反馈试验或观察记录。动作是教学结构示意或预制机型演示，不代表实机性能。
+- 三维区左上角：全景、俯视、展开结构、环绕；底部：播放预制动作、单步、复位、快慢和读数。
+- 面板：当前展品的部件按钮、预制动作选择、机构滑杆、试一试；最底下一行是模型来源和许可。
+- 动作是预制教学演示，弯曲百分比是课堂动作量，不代表实机控制、抓握或飞行性能。
 
-展品配置在 src/config.json，学习引导在 src/guide.json；共用展示在 shared/workshop/hero-gallery.js、gallery-workstation.js 和 gallery-workstation.css。构建：`node scripts/build.mjs 1-3`；完整检查：`npm run verify`。当前浏览器检查：scripts/qa/gallery-simple.cjs。
-
-机械手采用 MuJoCo Menagerie 中的 Apache-2.0 许可机型网格，保留原始 STL 与 MJCF；可逐指调节、播放张合或依次活动、展开与复位。弯曲百分比是课堂动作量，不是实机关节读数或抓握性能。详见 [来源与许可](../../../../../shared/models/robots/sharpa-LICENSE.html)。
+展品配置在 `src/config.json`；工位编排在 `src/stations.js`、`src/stations.css`；三维展品和模型仍由 `shared/workshop/hero-gallery.js` 等原展厅脚本提供。
+`src/lesson-models.js` 是保留的历史模型，只被 `shared/workshop/learning.test.cjs` 使用，页面不加载。
+构建：`python scripts/build-workshops.py 1-3`，再 `python scripts/finalize-pages.py`。
+模型来源与许可见 [shared/models/robots/sharpa-LICENSE.html](../../../../../shared/models/robots/sharpa-LICENSE.html) 等各展品许可。
