@@ -153,6 +153,7 @@
         window.CourseTheme?.set?.(d.value);
       }
       else if (d.op === 'resize') dispatchEvent(new Event('resize'));
+      else if (d.op === 'capture') (window.StageTone?.capture?.(document.body) || Promise.resolve(null)).then(url => post({type: 'shot', url}));
     } catch (err) { console.warn('[c2 bridge]', d, err); }
     setTimeout(send, 30);
   });

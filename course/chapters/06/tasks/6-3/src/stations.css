@@ -72,3 +72,6 @@ html[data-theme="dark"][data-c3-task="6-3"] .c2-panel button:not(.c2-btn, .c2-re
 html.lab-native .scene-area .hero-state { right:58px; }
 html.lab-native .scene-area :is(.hero-hint) { display:none !important; }
 html.lab-native .scene-area .hero-state > span { display:none !important; }
+
+/* 手机：暂停演示 / 依据与资料 挪到视角按钮下面一行，不和它们叠在一起 */
+@media (max-width:900px) { html.lab-native .c2-native-stage .hero-state { top:54px !important; bottom:auto !important; right:8px !important; left:auto !important; } }

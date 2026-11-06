@@ -69,7 +69,10 @@
     const fs = h('button', 'c2-fs'); fs.type = 'button';
     fs.innerHTML = '<svg class="c2-fs-in" viewBox="0 0 24 24" aria-hidden="true"><path d="M4 9V4h5M20 9V4h-5M4 15v5h5M20 15v5h-5"/></svg>'
       + '<svg class="c2-fs-out" viewBox="0 0 24 24" aria-hidden="true"><path d="M9 4v5H4M15 4v5h5M9 20v-5H4M15 20v-5h5"/></svg>';
-    view.append(loading, tools, card, hint, fs);
+    /* 保存三维截图：只存三维画面（统一底色，不带按钮和提示），给做课件、排教材用 */
+    const shot = h('button', 'c2-shot'); shot.type = 'button'; shot.title = '保存三维截图（PNG）'; shot.setAttribute('aria-label', '保存三维截图');
+    shot.innerHTML = '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 8h3l1.6-2.4h6.8L17 8h3v11H4z"/><circle cx="12" cy="13.2" r="3.4"/></svg>';
+    view.append(loading, tools, card, hint, fs, shot);
     const strip = h('div', 'c2-strip');
     const transportBox = h('div', 'c2-transport');
     const readBox = h('div', 'c2-readouts');
@@ -116,6 +119,25 @@
       stageBox.classList.toggle('c2-full-fallback', on); syncFs(); relayout();
     };
     fs.addEventListener('click', () => setFull(!full()));
+    /* 全屏时停手 2.5 秒，右上角按钮自动隐去——整屏截图里只有模型和它自己的标注 */
+    let idleTimer = 0;
+    const wake = () => { stageBox.classList.remove('c2-idle'); clearTimeout(idleTimer); idleTimer = setTimeout(() => stageBox.classList.add('c2-idle'), 2500); };
+    for (const name of ['pointermove', 'pointerdown', 'keydown']) stageBox.addEventListener(name, wake, {passive: true});
+    wake();
+    const saveShot = url => {
+      shot.classList.remove('busy');
+      if (!url) { ctx?.feedback?.('这个画面暂时存不了，试试全屏后用系统截图。', 'warn'); return; }
+      const stamp = new Date(), two = n => String(n).padStart(2, '0');
+      const a = document.createElement('a'); a.href = url;
+      a.download = `${cfg.task}-${cfg.stations[current]?.name || '三维'}-${two(stamp.getHours())}${two(stamp.getMinutes())}${two(stamp.getSeconds())}.png`;
+      document.body.append(a); a.click(); a.remove();
+      ctx?.feedback?.('三维截图已保存。想要更大的图，先点全屏再存。', 'ok');
+    };
+    shot.addEventListener('click', () => {
+      shot.classList.add('busy');
+      if (frame) frame.contentWindow?.postMessage({c2: 'cmd', op: 'capture'}, '*');
+      else (window.StageTone?.capture?.(view) || Promise.resolve(null)).then(saveShot);
+    });
     document.addEventListener('fullscreenchange', () => { syncFs(); relayout(); });
     document.addEventListener('keydown', e => { if (e.key === 'Escape' && stageBox.classList.contains('c2-full-fallback')) setFull(false); });
     syncFs();
@@ -151,6 +173,7 @@
       if (!d || d.c2 !== 'lab' || !frame || e.source !== frame.contentWindow) return;
       if (d.type === 'ready' || (d.type === 'state' && ctx && !ctx.lab.ready)) { loading.hidden = true; sendTheme(); ctx?._ready(); }
       if (d.type === 'state') ctx?._state(d.data);
+      if (d.type === 'shot') saveShot(d.url);
     });
     // 主题和三维区底色一起传给原版实验页，嵌入的三维视图与外壳同一底色
     const sendTheme = () => frame?.contentWindow?.postMessage({c2: 'cmd', op: 'theme', value: window.CourseTheme?.get?.() || 'light', stage: stageTones()}, '*');
@@ -434,16 +457,16 @@
     }
 
     /* 字号下限与字体统一（原地模式）：搬进外壳的原页面文字——面板、三维区里的浮层与 SVG 标注。
-       电脑上不小于 13px、面板段落不小于 14px；手机（宽度 ≤ 900px）上各加 1px。SVG 标注按屏幕实际大小计，不小于 12px。
+       不小于 13px、面板段落不小于 14px（手机同此）；大屏（≥ 1680×860）上为 14.5 / 15.5px。SVG 标注按屏幕实际大小计，不小于 12px。
        原页面按 1600×900 整页缩放设计，常有 7～11px 的小字，这里统一放大到可读、可投影的字号；
        低价值的小字（英文小标、图号、重复的操作提示）由各任务 stations.css 直接隐藏。
        字体：原页面各用各的（Consolas、Segoe UI、Arial、自带等宽字体……），这里统一成外壳的两种——
        等宽字体写的数字、读数、编号换成 --font-num，其余换成正文字体。 */
-    const narrow = matchMedia('(max-width:900px)');
+    const big = matchMedia('(min-width:1680px) and (min-height:860px)');
     const MONO = /mono|consolas|cascadia|courier|menlo|sf mono/i, OURS = /^"?(PingFang SC|Microsoft YaHei|DIN Alternate)/i;
     const floorText = root => {
       if (!root?.querySelectorAll) return;
-      const MIN_TEXT = narrow.matches ? 14 : 13, MIN_PARA = narrow.matches ? 15 : 14;
+      const MIN_TEXT = big.matches ? 14.5 : 13, MIN_PARA = big.matches ? 15.5 : 14;
       for (const el of [root, ...root.querySelectorAll('*')]) {
         if (el.closest('.c2-parking, .c3-legacy, script, style')) continue;
         if (![...el.childNodes].some(n => n.nodeType === 3 && n.textContent.trim())) continue;

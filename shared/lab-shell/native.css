@@ -160,20 +160,36 @@ html.lab-native .c2-panel [data-c2-adopted] { line-height:1.5; }
 html.lab-native .c2-panel :is(h3, h4, h5, strong, b, label, summary) { letter-spacing:0; }
 html.lab-native .c2-stage-top :is(button, label, a) { font-family:inherit; }
 
-/* ===== 手机：原控件按手指大小，横排控件允许换行，整块不撑出屏幕 ===== */
+/* ===== 手机：原控件按手指大小（高 40px 左右），字号不再额外放大；三维区上方的选择条横向滑动，每一项保持完整宽度 ===== */
 @media (max-width:900px) {
-  html.lab-native :is(.c2-panel, .c2-strip) :is(button.primary, button.outline, button.text-button, .compare-buttons button, .path-buttons button, .target-buttons button, .teach-toolbar button, .challenge-actions button) { height:44px; padding:0 16px; font-size:15.5px; white-space:normal; }
-  html.lab-native :is(.c2-panel, .c2-strip) :is(button.stop, button.stop-button, .c3-stop) { height:46px; font-size:16px; }
-  html.lab-native :is(.c2-panel, .c2-strip) :is(button, select, [role="button"], summary) { min-height:40px; }
-  html.lab-native :is(.c2-panel, .c2-strip) :is(select, input[type="number"], input[type="text"]) { height:44px; font-size:16px; }
-  html.lab-native :is(.c2-panel, .c2-strip) input[type="checkbox"] { width:22px; height:22px; }
-  html.lab-native :is(.c2-panel, .c2-strip) input[type="range"] { height:36px; }
-  html.lab-native :is(.c2-panel, .c2-strip) input[type="range"]::-webkit-slider-thumb { width:26px; height:26px; margin-top:-10px; }
-  html.lab-native :is(.c2-panel, .c2-strip) input[type="range"]::-moz-range-thumb { width:20px; height:20px; }
-  html.lab-native :is(.c2-panel, .c2-strip) .segmented button { height:40px; font-size:15px; }
+  html.lab-native :is(.c2-panel, .c2-strip) :is(button.primary, button.outline, button.text-button, .compare-buttons button, .path-buttons button, .target-buttons button, .teach-toolbar button, .challenge-actions button) { height:40px; padding:0 14px; font-size:14.5px; }
+  html.lab-native :is(.c2-panel, .c2-strip) :is(button.stop, button.stop-button, .c3-stop) { height:42px; font-size:15px; }
+  html.lab-native .c2-panel :is(button, select, summary) { min-height:36px; }
+  html.lab-native :is(.c2-panel, .c2-strip) :is(select, input[type="number"], input[type="text"]) { height:40px; font-size:16px; }
+  html.lab-native :is(.c2-panel, .c2-strip) input[type="checkbox"] { width:20px; height:20px; }
+  html.lab-native :is(.c2-panel, .c2-strip) input[type="range"] { height:34px; }
+  html.lab-native :is(.c2-panel, .c2-strip) input[type="range"]::-webkit-slider-thumb { width:24px; height:24px; margin-top:-9px; }
+  html.lab-native :is(.c2-panel, .c2-strip) input[type="range"]::-moz-range-thumb { width:18px; height:18px; }
+  html.lab-native :is(.c2-panel, .c2-strip) .segmented button { height:36px; font-size:14px; }
   html.lab-native .c2-panel .target-buttons { flex-wrap:wrap; }
-  html.lab-native :is(.c2-panel, .c2-strip, .c2-stage-top) [data-c2-adopted] { max-width:100%; min-width:0; }
+  html.lab-native :is(.c2-panel, .c2-strip) [data-c2-adopted] { max-width:100%; min-width:0; }
   html.lab-native .c2-strip { overflow-x:auto; }
+  /* 选择条：不再把几张卡片硬挤进一屏（字被挤成竖排），改成一排横向滑动 */
   html.lab-native .c2-stage-top { padding:8px; gap:6px; scroll-snap-type:x proximity; scrollbar-width:none; }
   html.lab-native .c2-stage-top::-webkit-scrollbar { display:none; }
+  html.lab-native .c2-stage-top > :not([hidden]) { flex:0 0 auto !important; flex-direction:row !important; flex-wrap:nowrap !important; width:max-content !important; max-width:none !important; height:auto !important; gap:6px !important; grid-auto-flow:column !important; grid-template-columns:none !important; grid-template-rows:none !important; grid-auto-columns:max-content !important; align-items:stretch !important; }
+  html.lab-native .c2-stage-top > * > :is(button, label, a) { flex:0 0 auto !important; width:auto !important; min-width:104px; max-width:220px; scroll-snap-align:start; white-space:nowrap; }
+  /* 三维区里的原有浮层：手机上收小一号、贴边，尽量不压模型 */
+  html.lab-native .c2-native-stage :is(button, label, output, small, span, p, strong, b) { letter-spacing:0; }
+}
+/* 大屏：原控件跟着外壳放大一档 */
+@media (min-width:1680px) and (min-height:860px) {
+  html.lab-native :is(.c2-panel, .c2-strip) :is(button.primary, button.outline, button.text-button, .compare-buttons button, .path-buttons button, .target-buttons button, .teach-toolbar button, .challenge-actions button) { height:42px; padding:0 17px; font-size:16.5px; border-radius:11px; }
+  html.lab-native :is(.c2-panel, .c2-strip) button.text-button { height:36px; }
+  html.lab-native :is(.c2-panel, .c2-strip) :is(button.stop, button.stop-button, .c3-stop) { height:44px; font-size:17px; }
+  html.lab-native :is(.c2-panel, .c2-strip) :is(select, input[type="number"], input[type="text"]) { height:38px; font-size:16.5px; }
+  html.lab-native :is(.c2-panel, .c2-strip) input[type="checkbox"] { width:19px; height:19px; }
+  html.lab-native :is(.c2-panel, .c2-strip) input[type="range"] { height:26px; }
+  html.lab-native :is(.c2-panel, .c2-strip) .segmented button { height:34px; font-size:16px; }
+  html.lab-native .c2-stage-top { padding:10px 13px; gap:10px; }
 }

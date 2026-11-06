@@ -88,3 +88,6 @@ html.lab-native .c2-panel .gravity-control > span { padding-left:22px; margin:0;
 
 /* 三维区右上角的状态读数让出全屏按钮的位置 */
 html.lab-native #viewport .scene-stamp { right:60px; }
+
+/* 手机：场景读数挪到三维区右下角，不和左上角的视角按钮叠在一起 */
+@media (max-width:900px) { html.lab-native .c2-native-stage .scene-stamp { top:auto !important; bottom:10px !important; right:10px !important; left:auto !important; } }
