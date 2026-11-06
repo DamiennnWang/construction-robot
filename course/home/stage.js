@@ -218,29 +218,23 @@
     return island.tasks;
   }
 
-  /* 章节镜头里任务展品的摆法（只用书名/任务列表右侧的画幅）：
-   * 三件以内平铺成一道浅弧；四件以上主展品在前居中，其余沿身后一道弧排开；竖屏改为网格。 */
+  /* 章节镜头里任务展品的摆法（只用左栏右侧的画幅）：主展品在前居中，其余沿身后一道弧排开；竖屏改为网格。 */
   function arrange(island) {
     const n = island.tasks.length, left = state?.layout.cover.left || 0, aspect = Math.max(200, width - left) / height;
     island.tasks.forEach(item => { item.slotScale = 1; item.slotYaw = 0; });
-    if (aspect >= .9 && n <= 3) {
-      island.mode = 'row';
-      island.tasks.forEach((item, j) => {
-        const x = (j - (n - 1) / 2) * SLOT;
-        item.slot = new T.Vector3(x, 0, -(x * x) / (2 * ARC));
-        item.slotYaw = -x / ARC * .9;
-      });
-      island.width = (n - 1) * SLOT + 5.2;
-    } else if (aspect >= .9) {
+    if (aspect >= .9) {
+      /* 和封面一样：主展品在前居中，其余沿身后一道弧排开（左右对称，整体居中） */
       island.mode = 'hero';
-      const others = island.tasks.filter(item => item !== island.hero), k = others.length, span = k > 3 ? 1.35 : 1.1;
+      const others = island.tasks.filter(item => item !== island.hero), k = others.length, span = k > 3 ? 1.35 : k === 3 ? 1.15 : .95;
       island.hero.slot = new T.Vector3(0, 0, 1.8); island.hero.slotScale = 1.2;
       others.forEach((item, j) => {
-        const a = k === 1 ? .9 : -span + 2 * span * j / (k - 1);
+        const a = k === 1 ? .95 : -span + 2 * span * j / (k - 1);
         item.slot = new T.Vector3(6.3 * Math.sin(a), 0, -3.4 * Math.cos(a));
         item.slotYaw = -a * .35; item.slotScale = .82;
       });
-      island.width = 2 * 6.3 * Math.sin(span) + 4.6;
+      const xs = island.tasks.map(item => item.slot.x), mid = (Math.max(...xs) + Math.min(...xs)) / 2;
+      island.tasks.forEach(item => { item.slot.x -= mid; });
+      island.width = Math.max(...xs) - Math.min(...xs) + 5.2;
     } else {
       island.mode = 'grid';
       const cols = Math.min(n, aspect < .7 ? 2 : 3), rows = Math.ceil(n / cols);
@@ -287,9 +281,9 @@
     const vfov = camera.fov * Math.PI / 180, aspect = state.viewW / height, tanV = Math.tan(vfov / 2), tanH = tanV * aspect;
     const o = state.layout.overview, oz = Math.max(160, height - o.top - o.bottom);
     /* 概览：主展品在前、占画面主体，其余七章围在后面一圈，整圈都留在书名右侧的画幅里 */
-    let d = Math.max(8.2 * height / (oz * 2 * tanV), (R + 1.9) / (.92 * tanH) - R * .7);
-    camOver.target.set(0, 2.3, R * .7);
-    camOver.pos.set(0, 2.3 + Math.sin(.36) * d, R * .7 + Math.cos(.36) * d);
+    let d = Math.max(9.4 * height / (oz * 2 * tanV), (R + 1.6) / (1.0 * tanH) - R * .7);
+    camOver.target.set(0, 1.7, R * .7);
+    camOver.pos.set(0, 1.7 + Math.sin(.36) * d, R * .7 + Math.cos(.36) * d);
     const island = islands[(state.chapter || state.focus) - 1], c = state.layout.cover, cz = Math.max(160, height - c.top - c.bottom);
     const w = island.width || 10, zmid = island.zmid || 0, mode = island.mode || 'row';
     const tilt = {row: .36, hero: .46, grid: .62}[mode], tall = {row: 3.9, hero: 5.6, grid: 4.3}[mode];
@@ -340,24 +334,40 @@
     state.hover = key; renderer.domElement.style.cursor = item ? 'pointer' : '';
     emit('hover', item ? (state.zoom > .5 ? {task: item.task, chapter: item.chapter} : {chapter: item.chapter}) : null);
   }
+  /* 概览：按住鼠标左右拖动转台，松手吸附到最近的一章；拖动中目录高亮跟着变。轻点仍是选择或进入。 */
   let down = null;
-  const canvas = renderer.domElement;
-  canvas.addEventListener('pointerdown', e => { down = {x: e.clientX, y: e.clientY, id: e.pointerId}; });
+  const canvas = renderer.domElement, STEP = Math.PI * 2 / COUNT;
+  const nearest = rot => ((Math.round(-rot / STEP) % COUNT) + COUNT) % COUNT + 1;
+  canvas.addEventListener('pointerdown', e => {
+    down = {x: e.clientX, y: e.clientY, rot: state.rot, drag: false, overview: state.zoom < .5};
+    canvas.setPointerCapture?.(e.pointerId);
+  });
   canvas.addEventListener('pointermove', e => {
-    if (down && e.pointerType !== 'mouse') return;
-    if (e.buttons) return;
-    setHover(pick(e.clientX, e.clientY));
+    if (down) {
+      const dx = e.clientX - down.x;
+      if (down.overview && (down.drag || Math.abs(dx) > 6)) {
+        down.drag = true; canvas.style.cursor = 'grabbing'; setHover(null);
+        state.rot = state.rotTarget = down.rot + dx * Math.PI * 2 / Math.max(600, state.viewW * 1.25);
+        const n = nearest(state.rot);
+        if (n !== state.focus) { state.focus = n; theme.tint = E.chapters[n].tint; paintGlow(); hurry([islands[n - 1].hero]); emit('focus', n); }
+        dirty = true;
+      }
+      return;
+    }
+    const item = pick(e.clientX, e.clientY);
+    setHover(item);
+    if (!item) canvas.style.cursor = state.zoom < .5 ? 'grab' : '';
   });
   canvas.addEventListener('pointerleave', () => { if (!down) setHover(null); });
   canvas.addEventListener('pointerup', e => {
     if (!down) return;
-    const dx = e.clientX - down.x, dy = e.clientY - down.y; down = null;
-    if (Math.abs(dx) > 60 && Math.abs(dx) > Math.abs(dy) * 1.4) { emit('swipe', dx < 0 ? 1 : -1); return; }
+    const {drag} = down, dx = e.clientX - down.x, dy = e.clientY - down.y; down = null;
+    if (drag) { focus(nearest(state.rot)); canvas.style.cursor = 'grab'; return; }
     if (Math.hypot(dx, dy) > 8) return;
     const item = pick(e.clientX, e.clientY); if (!item) return;
     emit('pick', state.zoom > .5 ? {task: item.task, chapter: item.chapter} : {chapter: item.chapter});
   });
-  canvas.addEventListener('pointercancel', () => { down = null; });
+  canvas.addEventListener('pointercancel', () => { if (down?.drag) focus(nearest(state.rot)); down = null; });
   canvas.addEventListener('webglcontextlost', e => { e.preventDefault(); emit('lost'); });
 
   /* 每帧 */
@@ -487,6 +497,19 @@
       return island.tasks.map(item => ({task: item.task, ...anchor(item)}));
     },
     state: () => ({focus: state.focus, chapter: state.chapter, zoom: Number(state.zoom.toFixed(3)), rotating: Math.abs(state.rotTarget - state.rot) > .01, camera: camera.position.toArray().map(v => Number(v.toFixed(2))), size: [width, height], calls: renderer.info.render.calls, time: state.time, built: islands.filter(i => i.tasks).map(i => i.id), reducedMotion: reduce.matches, pending: buildQueue.length}),
-    targets() { return candidates().map(item => { const s = screenBox(item); return {chapter: item.chapter, task: item.task, x: (s.l + s.r) / 2, y: (s.t + s.b) / 2}; }); }
+    /* 每件展品返回一个真正点得到它的屏幕点（被前面的展品挡住时，在它的投影框里找露出来的地方） */
+    targets() {
+      const rect = renderer.domElement.getBoundingClientRect();
+      return candidates().map(item => {
+        const s = screenBox(item); let x = (s.l + s.r) / 2, y = (s.t + s.b) / 2;
+        if (pick(rect.left + x, rect.top + y) !== item) {
+          search: for (let gy = .2; gy <= .85; gy += .13) for (let gx = .5, k = 0; k < 7; k++, gx = .5 + (k % 2 ? 1 : -1) * Math.ceil(k / 2) * .12) {
+            const px = s.l + (s.r - s.l) * gx, py = s.t + (s.b - s.t) * gy;
+            if (pick(rect.left + px, rect.top + py) === item) { x = px; y = py; break search; }
+          }
+        }
+        return {chapter: item.chapter, task: item.task, x: rect.left + x, y: rect.top + y};
+      });
+    }
   };
 })();

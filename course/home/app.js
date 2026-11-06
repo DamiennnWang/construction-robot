@@ -26,7 +26,7 @@
   try { focus = Number(sessionStorage.getItem('home-focus')) || 1; } catch {}
   /* 左侧目录：八章。点章名，右侧展台转到这一章，再点一次进入。 */
   const tint = n => window.HomeExhibits?.chapters[n]?.tint || '#4f97e6';
-  $('toc').innerHTML = data.chapters.map(c => `<section class="toc-ch" data-chapter="${c.id}" style="--tint:${tint(c.id)}"><button type="button" data-chapter="${c.id}" aria-label="${ordinal(c.id)} ${esc(c.title)}"><b>${c.id}</b><span>${esc(c.title)}<small>${c.tasks.length} 项任务</small></span></button></section>`).join('');
+  $('toc').innerHTML = data.chapters.map(c => `<section class="toc-ch" data-chapter="${c.id}" style="--tint:${tint(c.id)}"><button type="button" data-chapter="${c.id}" aria-label="${ordinal(c.id)} ${esc(c.title)}"><b>${String(c.id).padStart(2, '0')}</b><span>${esc(c.title)}<small>${c.tasks.length} 项任务</small></span><i class="go" aria-hidden="true" title="进入本章">→</i></button></section>`).join('');
   /* 小图：三维可用时由展台离屏拍照，拍好一张填一张 */
   function fillThumb(img, url) { if (url) { img.src = url; img.hidden = false; } }
   $('chapter-grid').innerHTML = data.chapters.map(c => `<a href="#chapter-${c.id}" data-chapter="${c.id}"><small>${ordinal(c.id)} · ${c.tasks.length} 项任务</small><strong>${esc(c.title)}</strong><span>${esc(c.description)}</span></a>`).join('');
@@ -34,22 +34,14 @@
   function showFocus(n) {
     focus = n;
     try { sessionStorage.setItem('home-focus', String(n)); } catch {}
-    const c = chapter(n);
-    $('ov-kicker').textContent = `${ordinal(n)} · ${c.tasks.length} 项任务`;
-    $('ov-name').textContent = c.title;
-    for (const a of [$('ov-name'), $('ov-enter')]) a.href = '#chapter-' + n;
-    $('ov-enter').setAttribute('aria-label', `进入${ordinal(n)} ${c.title}`);
-    $('ov-info').style.setProperty('--tint', tint(n));
     $('toc').querySelectorAll('.toc-ch').forEach(sec => { const on = Number(sec.dataset.chapter) === n; sec.classList.toggle('on', on); sec.querySelector('button').setAttribute('aria-current', on ? 'true' : 'false'); });
-    if (!body.classList.contains('boot')) { $('ov-info').classList.remove('swap'); void $('ov-info').offsetWidth; $('ov-info').classList.add('swap'); }
+    if (!body.classList.contains('boot')) { const on = $('toc').querySelector('.toc-ch.on'); on?.classList.remove('flash'); void on?.offsetWidth; on?.classList.add('flash'); }
   }
   function go(n) {
     n = ((n - 1 + 8) % 8) + 1;
     if (stage.webgl) stage.focus(n); else showFocus(n);
   }
   if (stage.webgl) stage.on('focus', showFocus);
-  $('prev').onclick = () => go(focus - 1);
-  $('next').onclick = () => go(focus + 1);
   $('toc').addEventListener('click', e => {
     const b = e.target.closest('button[data-chapter]'); if (!b) return;
     const n = Number(b.dataset.chapter);
@@ -86,7 +78,7 @@
     }
   });
   if (stage.webgl) {
-    stage.on('swipe', dir => { if (body.classList.contains('is-overview')) go(focus + dir); });
+    /* 拖动转台时随时更新目录高亮 */
     stage.on('pick', target => {
       if (target.task) { location.href = taskHref(chapter(target.chapter).tasks.find(t => t.id === target.task)); return; }
       if (target.chapter === focus) location.hash = '#chapter-' + target.chapter;
@@ -102,7 +94,8 @@
   let shown = null, cameFromOverview = false, token = 0;
   function fillCover(n) {
     const c = chapter(n);
-    $('cv-kicker').innerHTML = `${ordinal(n)}<span>${c.tasks.length} 项互动任务</span>`;
+    $('cv-kicker').textContent = ordinal(n);
+    $('cv-stats').innerHTML = `<p><strong>${String(c.tasks.length).padStart(2, '0')}</strong><span>互动<br>任务</span></p><p><strong>${String(n).padStart(2, '0')}</strong><span>第${numerals[n - 1]}章<br>共八章</span></p>`;
     $('cv-side').style.setProperty('--tint', tint(n));
     $('cv-name').textContent = c.title;
     $('cv-lead').textContent = c.description;
@@ -156,7 +149,7 @@
       const from = shown; shown = null;
       setMode(false);
       if (stage.webgl) { if (from) stage.focus(from); stage.leave({instant: initial}); }
-      if (from && !initial) { showFocus(from); $('ov-enter').focus({preventScroll: true}); }
+      if (from && !initial) { showFocus(from); $('toc').querySelector('.toc-ch.on button')?.focus({preventScroll: true}); }
       $('announce').textContent = initial ? '' : '全部章节';
     }
   }
@@ -173,10 +166,10 @@
   function measure() {
     if (!stage.webgl) return;
     /* 宽屏：书名在左，展台占右侧；窄屏：书名在上，展台在下 */
-    const h = innerHeight, info = $('ov-info').getBoundingClientRect(), wide = innerWidth > 900;
+    const h = innerHeight, left = $('stage-probe').getBoundingClientRect().width, wide = innerWidth > 900;
     const list = $('tasks').getBoundingClientRect();
-    stage.layout({overview: {left: wide ? info.left : 0, top: wide ? 64 : $('book').getBoundingClientRect().bottom + 4, bottom: Math.max(110, h - info.top + 20)},
-      cover: wide ? {left: info.left, top: 64, bottom: 40} : {left: 0, top: $('cv-lead').getBoundingClientRect().bottom + 4, bottom: Math.max(110, h - list.top + 40)}});
+    stage.layout({overview: {left: wide ? left : 0, top: wide ? 64 : $('book').getBoundingClientRect().bottom + 4, bottom: 36},
+      cover: wide ? {left, top: 64, bottom: 40} : {left: 0, top: $('cv-lead').getBoundingClientRect().bottom + 4, bottom: Math.max(110, h - list.top + 40)}});
   }
   addEventListener('resize', measure);
 

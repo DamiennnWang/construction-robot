@@ -35,7 +35,7 @@ const layout = p => p.evaluate(() => {
     sizes.push([parseFloat(cs.fontSize), el.className || el.tagName]);
   }
   sizes.sort((a, b) => a[0] - b[0]);
-  return {scroll: document.documentElement.scrollHeight - innerHeight, overflow: document.documentElement.scrollWidth - innerWidth, minFont: sizes[0], body: ['.ov-desc', '.cv-lead', '.task .name'].map(s => document.querySelector(s)).filter(Boolean).map(e => parseFloat(getComputedStyle(e).fontSize))};
+  return {scroll: document.documentElement.scrollHeight - innerHeight, overflow: document.documentElement.scrollWidth - innerWidth, minFont: sizes[0], body: ['.book-intro', '.cv-lead', '.task .name'].map(s => document.querySelector(s)).filter(Boolean).map(e => parseFloat(getComputedStyle(e).fontSize))};
 });
 const settle = (p, mode) => p.waitForFunction(m => { const s = CourseHome.state(); return s.mode === m && (!s.stage || (s.stage.zoom === (m === 'chapter' ? 1 : 0) && !s.stage.rotating)); }, mode, {timeout: 8000});
 async function clickTarget(p, match) {
@@ -92,19 +92,24 @@ async function clickTarget(p, match) {
     ok((await p.evaluate(() => CourseHome.state())).focus === f0 % 8 + 1, 'ArrowRight switches chapter');
     await p.mouse.move(720, 300); await p.mouse.wheel(0, 120); await p.waitForTimeout(300); await settle(p, 'overview');
     ok((await p.evaluate(() => CourseHome.state())).focus === (f0 + 1) % 8 + 1, 'wheel switches chapter');
-    await p.click('#next'); await settle(p, 'overview');
-    ok((await p.evaluate(() => CourseHome.state())).focus === (f0 + 2) % 8 + 1, 'next button switches chapter');
+    /* 按住鼠标向左拖动转台，松手吸附到下一章 */
+    const probe = await p.evaluate(() => document.getElementById('stage-probe').getBoundingClientRect().width);
+    const f1 = (await p.evaluate(() => CourseHome.state())).focus;
+    await p.mouse.move(probe + 420, 560); await p.mouse.down(); await p.mouse.move(probe + 330, 560, {steps: 4}); await p.mouse.move(probe + 260, 560, {steps: 4}); await p.mouse.up();
+    await settle(p, 'overview');
+    const f2 = (await p.evaluate(() => CourseHome.state())).focus;
+    ok(f2 !== f1 && !new URL(p.url()).hash, 'dragging the turntable switches chapter and snaps', [f1, f2]);
     const before = (await p.evaluate(() => CourseHome.state())).focus;
-    const stageLeft = await p.evaluate(() => document.getElementById('ov-info').getBoundingClientRect().left);
+    const stageLeft = probe;
     const side = await clickTarget(p, t => t.chapter !== before && t.x > stageLeft + 60 && t.x < 1380 && t.y > 80 && t.y < 520);
     await settle(p, 'overview');
     ok((await p.evaluate(() => CourseHome.state())).focus === side.chapter && !new URL(p.url()).hash, 'clicking a side model brings it into focus', side.chapter);
-    await p.click('#ov-name'); await p.waitForURL(u => u.hash === '#chapter-' + side.chapter); await settle(p, 'chapter');
+    await p.click('.toc-ch.on button'); await p.waitForURL(u => u.hash === '#chapter-' + side.chapter); await settle(p, 'chapter');
     ok(true, 'clicking the chapter title enters the chapter');
     await p.click('#back'); await settle(p, 'overview');
     ok(!new URL(p.url()).hash && (await p.evaluate(() => CourseHome.state())).focus === side.chapter, '← 全部章节 pulls back to the overview on the same chapter');
     await p.evaluate(() => CourseHome.go(3)); await settle(p, 'overview');
-    await p.focus('#ov-enter'); await p.keyboard.press('Enter'); await p.waitForURL(u => u.hash === '#chapter-3'); await settle(p, 'chapter');
+    await p.focus('.toc-ch.on button'); await p.keyboard.press('Enter'); await p.waitForURL(u => u.hash === '#chapter-3'); await settle(p, 'chapter');
     ok(true, 'keyboard Enter enters the chapter');
     await p.keyboard.press('Escape'); await settle(p, 'overview');
     ok(!new URL(p.url()).hash, 'Escape returns to overview');
