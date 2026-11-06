@@ -5,8 +5,8 @@
  const scene=window.createTilingScene($('heroViewport'),{onPick:info=>setView(info.type==='tile'&&state.stage==='align'?'top':'head'),onContextLost:()=>{displayLost=true;state.align.running=false;state.press.running=false;cancelAnimationFrame(raf);raf=0;state.message='三维显示暂停。当前动作已保持，请刷新页面恢复显示。';render();}});
  const texts={
   grip:['01 / VACUUM HANDLING','吸力够了，砖就一定稳吗？','先低位试提，再调整吸盘的位置；看砖的变化，不只看读数。','把偏心的砖吸稳','同一总有效面积，比较不同吸盘布局；分布改变抗偏载能力。','吸得住，还要拿得稳。','有效面积决定理论吸力，布局、偏载和密封决定能否可靠搬运。'],
-  align:['02 / VISION & ALIGNMENT','砖缝对齐了，相机也看清了吗？','看砖边的位置和转角。遮挡镜头，再观察旧图像与真实砖位的差别。','让两条砖缝连起来','相机画面显示最后有效观测；主场景显示实际砖位。','看得见，才有纠偏的依据。','镜头恢复后重新识别；关节编码器不能独自证明砖没有滑移。'],
-  press:['03 / FORCE & FINISHED LEVEL','力合适了，砖面也平了吗？','切到铺贴剖面，看下压怎样改变砂浆厚度，再用靠尺独立复核。','压实力与高度，都检查','力传感器 → 比较目标力 → 调整法向压入；标高另行复核。','力反馈控制过程，靠尺检查结果。','力稳定不等于粘结合格；空鼓与粘结质量仍须实体复核。']
+  align:['02 / VISION & ALIGNMENT','砖缝对齐了，相机也看清了吗？','看砖边的位置和转角。遮挡镜头，再观察旧图像与真实砖位的差别。','让两条砖缝连起来','相机画面显示最后有效观测；主场景显示实际砖位。','看得见，才有纠偏的依据。','镜头恢复后要重新识别；机器人自己不知道砖有没有滑动。'],
+  press:['03 / FORCE & FINISHED LEVEL','力合适了，砖面也平了吗？','切到铺贴剖面，看下压怎样改变砂浆厚度，再用靠尺独立复核。','压实力与高度，都检查','边压边测力，力到了就停；高度另外用靠尺查。','测力管住压的过程，靠尺查最后的高度。','力稳定不等于粘结合格；空鼓与粘结质量仍须实体复核。']
  };
  const put=(id,v)=>{const e=$(id);if(e&&e.textContent!==String(v))e.textContent=v;},val=(id,v)=>{if(document.activeElement!==$(id))$(id).value=v;},signed=(n,d=1)=>`${n>=0?'+':''}${n.toFixed(d)}`;
  function send(type,value){
@@ -36,7 +36,7 @@
   $('transfer').disabled=!g.trial||!r.grip.ready||!!state.motion;put('gripEvidence',g.trial?'✓ 当前配置已通过低位试提':'○ 当前配置尚未通过试提');put('trial',state.motion?.kind==='trial'?'试提中…':'↑ 低位试提');
   put('occlude',a.visibility==='clear'?'遮挡镜头':'移开遮挡');$('occlude').setAttribute('aria-pressed',a.visibility!=='clear');$('slip').disabled=a.visibility==='clear';put('alignRun',a.running?'暂停纠偏':reduced.matches?'单步纠偏':'开始纠偏');$('alignRun').setAttribute('aria-pressed',a.running);$('toPress').disabled=!state.done.align;
   put('occlusionEvidence',(a.blockedSeen?'✓':'○')+' 体验观测失效');put('recognitionEvidence',(a.reacquired?'✓':'○')+' 恢复视野后重新识别');$('occlusionEvidence').classList.toggle('done',a.blockedSeen);$('recognitionEvidence').classList.toggle('done',a.reacquired);
-  $('cameraPanel').hidden=state.stage!=='align'||view==='section';$('cameraVeil').style.display=r.vision.valid?'none':'';put('cameraStatus',r.vision.valid?'实时观测':a.last?'旧观测':'尚无观测');put('cameraFoot',r.vision.valid?'砖边 → 位姿误差 → 机器人微动':a.visibility==='clear'?'视野已恢复，等待重新识别。':'观测失效，自动纠偏已保持。');
+  $('cameraPanel').hidden=state.stage!=='align'||view==='section';$('cameraVeil').style.display=r.vision.valid?'none':'';put('cameraStatus',r.vision.valid?'实时观测':a.last?'旧观测':'尚无观测');put('cameraFoot',r.vision.valid?'看到砖边 → 算出偏多少 → 机器人挪一点':a.visibility==='clear'?'视野已恢复，等待重新识别。':'观测失效，自动纠偏已保持。');
   const obs=a.last||{ex:0,ey:0,angle:0};$('cameraTile').setAttribute('transform',`translate(${obs.ex*.45} ${obs.ey*.45}) rotate(${obs.angle} 100 78)`);$('cameraTile').style.opacity=a.last?'1':'.1';
   all('[data-mode]').forEach(b=>b.setAttribute('aria-pressed',b.dataset.mode===p.mode));const target=$('pressTarget');if(lastTargetMode!==p.mode){lastTargetMode=p.mode;target.min=p.mode==='force'?'40':'.3';target.max=p.mode==='force'?'320':'4';target.step=p.mode==='force'?'10':'.1';}
   val('pressTarget',p.mode==='force'?p.targetForce:p.targetCompression);put('pressTargetLabel',p.mode==='force'?'目标接触力':'目标压入量');put('pressTargetValue',p.mode==='force'?p.targetForce+' N':p.targetCompression.toFixed(1)+' mm');put('targetMin',p.mode==='force'?'小力':'浅');put('targetMax',p.mode==='force'?'大力':'深');val('stiffness',p.stiffness);put('stiffnessValue',p.stiffness+' N/mm');
@@ -45,7 +45,7 @@
   if(state.stage==='grip'){
    metric(1,'有效真空压差',r.grip.pressure.toFixed(1),'kPa','压差产生吸附力',r.grip.capacityOK);metric(2,'有效吸力 / 需求',Math.round(r.grip.holding)+' / '+Math.round(r.grip.required),'N','需求包含教学安全余量',r.grip.capacityOK);metric(3,'支承与密封',!r.grip.fit?'吸盘越出砖边':!r.grip.sealReliable?'砖面漏气':!r.grip.stable?'偏心不稳':r.grip.ready?'可以低位试提':'吸力不足','','吸力与支承分别检查',r.grip.ready);
   }else if(state.stage==='align'){
-   metric(1,'X / Y 位置误差',r.vision.valid?signed(r.vision.ex)+' / '+signed(r.vision.ey):'— / —','mm',r.vision.valid?'教学窗口：各 ±0.5 mm':'无有效观测，不发布实时误差',r.vision.valid&&Math.abs(r.vision.ex)<=.5&&Math.abs(r.vision.ey)<=.5);metric(2,'砖的转角误差',r.vision.valid?signed(r.vision.angle,2):'—','°',r.vision.valid?'教学窗口：±0.25°':'旧观测不能判断当前转角',r.vision.valid&&Math.abs(r.vision.angle)<=.25);metric(3,'视觉反馈',r.vision.valid?(r.vision.aligned?'已经对正':'正在识别砖边'):'定位已保持','','清除遮挡后重新识别',r.vision.valid);
+   metric(1,'X / Y 位置误差',r.vision.valid?signed(r.vision.ex)+' / '+signed(r.vision.ey):'— / —','mm',r.vision.valid?'教学窗口：各 ±0.5 mm':'无有效观测，不发布实时误差',r.vision.valid&&Math.abs(r.vision.ex)<=.5&&Math.abs(r.vision.ey)<=.5);metric(2,'砖的转角误差',r.vision.valid?signed(r.vision.angle,2):'—','°',r.vision.valid?'教学窗口：±0.25°':'旧观测不能判断当前转角',r.vision.valid&&Math.abs(r.vision.angle)<=.25);metric(3,'相机对齐',r.vision.valid?(r.vision.aligned?'已经对正':'正在识别砖边'):'定位已保持','','清除遮挡后重新识别',r.vision.valid);
   }else{
    metric(1,'测得接触力',r.sensorForce.toFixed(1),'N',state.attached?'教学窗口：120–200 N':'工具已卸载；压实记录已保留',state.attached?r.press.forceOK&&!r.press.damaged:true);metric(2,'与邻砖的完成面高差',signed(r.press.error,2),'mm',p.checked?'已放靠尺复核':'教学窗口：±0.5 mm',r.press.heightOK);metric(3,'接触力变化 · 绿色区为教学窗口',' ','',p.damaged?'过压记录保留，需揭砖整备':`已稳定保持 ${r.press.settledTime.toFixed(1)} s`);
    const pts=trace.map((v,i)=>`${i/Math.max(1,trace.length-1)*260},${40-Math.min(v,340)/340*39}`);$('tracePath').setAttribute('d',pts.length?'M'+pts.join('L'):'M0 40H260');$('traceTarget').setAttribute('d',`M0 ${40-p.targetForce/340*39}H260`);

@@ -108,8 +108,8 @@
         c.challenges([
           {id: 'over', icon: '💥', title: '把砖压过头', hint: '固定压入量调深', check: () => seen.overpressed,
             result: '固定压入量不管力多大都往下压，遇到硬层就过压。'},
-          {id: 'force', icon: '🎚', title: '用力反馈压到位', hint: '换力反馈控制再下压', check: () => seen.forceOK,
-            result: '测力、和目标比、再调整：力稳在窗口里就不再往下压。'},
+          {id: 'force', icon: '🎚', title: '边压边测力，压到位', hint: '换“边压边测力”再下压', check: () => seen.forceOK,
+            result: '边压边感觉力：力到了就停，不会一直往下压。'},
           {id: 'high', icon: '📐', title: '力对了，砖却偏高', hint: '基层高出 2 mm，放靠尺', check: () => seen.highChecked,
             result: '力合适不等于砖面平——靠尺查的是高度，不是力。'},
           {id: 'done', icon: '✅', title: '铺好并卸下吸盘', hint: '力和高差都过关', check: s => s.state.done.press,
