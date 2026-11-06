@@ -1,6 +1,7 @@
-/* 任务 8-2 三维场景：维修车间里的两台课程机型。
+/* 任务 8-2 三维场景：维修车间里的四个工位。
  * 发动机：第二章 2-1 的四缸柴油机（createMultiEngine，构建时从 2-1 源码内联），放在发动机支架上。
  * 挖掘机：第二章 2-1 的挖掘机（createExcavator），停在车间地坪上；动臂、斗杆、铲斗姿态由本页控制。
+ * 喷涂管路清洗：第六章 6-4 的喷涂机器人（scene-spray.js）；砂浆管道清洗：本页新做的教学砂浆泵（scene-mortar.js）。
  * 本文件只管画面：读状态（MaintModel 的 state）摆出对应的样子，并把检查点点击交给 onPoint。
  */
 (function () {
@@ -226,27 +227,39 @@
     gun.position.copy(gunRest);
     const gunAnim = {t: -1, from: new T.Vector3(), to: new T.Vector3(), id: null};
 
+    /* ===================== 清洗工位（喷涂管路、砂浆管道） ===================== */
+    const flush = {};
+    for (const id of ['spray', 'mortar']) {
+      flush[id] = window.MaintFlush[id]({T, mesh, cyl, box, tag, bayLines, M});
+      scene.add(flush[id].group);
+      flush[id].group.traverse(o => { if (o.isMesh && !o.material.transparent) { o.castShadow = true; o.receiveShadow = true; } });
+    }
+
     /* —— 检查点标记（HTML，跟随三维位置） —— */
     const POINTS = {engine: ePoints, excavator: null};
-    const buttons = {engine: {}, excavator: {}};
+    const buttons = {engine: {}, excavator: {}, spray: {}, mortar: {}};
     let onPoint = () => {};
     function addButtons(station, list) {
-      list.forEach(([id, name], i) => {
+      list.forEach(([id, name, no], i) => {
         const b = document.createElement('button'); b.type = 'button'; b.className = 'm82-pt'; b.dataset.station = station; b.dataset.point = id;
-        b.innerHTML = `<i>${i + 1}</i><span>${name}</span>`; b.title = name;
+        b.innerHTML = `<i>${no ?? i + 1}</i><span>${name}</span>`; b.title = no ? name + no : name;
         b.addEventListener('click', e => { e.stopPropagation(); onPoint(id); });
         overlay.append(b); buttons[station][id] = b;
       });
     }
     addButtons('engine', window.MaintModel.STATIONS.engine.points);
     addButtons('excavator', window.MaintModel.STATIONS.excavator.points);
-    const worldOf = (station, id) => station === 'engine' ? POINTS.engine[id] : nipples[id].getWorldPosition(new T.Vector3());
+    addButtons('spray', window.MaintModel.STATIONS.spray.spots);
+    addButtons('mortar', window.MaintModel.STATIONS.mortar.spots);
+    const worldOf = (station, id) => flush[station] ? flush[station].spots[id]() : station === 'engine' ? POINTS.engine[id] : nipples[id].getWorldPosition(new T.Vector3());
 
     /* —— 相机：拖动旋转、滚轮缩放 —— */
     const view = {az: .7, el: .32, dist: 12, target: new T.Vector3(), goal: null};
     const FRAMES = {
       engine: () => ({az: .62, el: .3, dist: Math.max(esize.x, esize.y * 1.6) * 2.25, target: new T.Vector3(ecenter.x, ebox.max.y * .48, ecenter.z)}),
       excavator: () => ({az: .78, el: .26, dist: Math.max(xsize.x, xsize.y * 1.7) * 1.9, target: new T.Vector3(xcenter.x + .3, xsize.y * .38, xcenter.z)}),
+      spray: () => flush.spray.frame(),
+      mortar: () => flush.mortar.frame(),
     };
     let station = 'engine';
     function frame(st, instant) { const f = FRAMES[st](); if (instant) { Object.assign(view, f); view.target = f.target; view.goal = null; } else view.goal = f; }
@@ -276,7 +289,14 @@
     const anim = {dip: 0, dipT: -1, cap: 0, capOpen: false, isoKnob: 0, temp: 88, pressure: 35};
     function sync(state, ev) {
       const prev = S; S = state;
-      if (!prev || prev.station !== state.station) { station = state.station; engineSet.visible = station === 'engine'; excSet.visible = station === 'excavator'; frame(station, !prev); }
+      if (!prev || prev.station !== state.station) {
+        station = state.station; engineSet.visible = station === 'engine'; excSet.visible = station === 'excavator';
+        for (const id in flush) flush[id].group.visible = station === id;
+        frame(station, !prev);
+      }
+      for (const id in flush) flush[id].sync(state.work[id], state, ev && state.station === id ? ev : (prev ? null : ev));
+      const af = flush[state.station]?.autoFocus(ev, state.work[state.station], state);
+      if (af && prev) { if (af.frame) frame(station, false); else view.goal = {az: view.az, el: view.el, dist: af.dist, target: af.target}; }
       const we = state.work.engine, wx = state.work.excavator;
       running = !we.prepared;
       ePuddle.visible = we.scenario === 'leak'; drip.visible = we.scenario === 'leak';
@@ -302,6 +322,7 @@
       // 检查点按钮状态
       for (const [st, map] of Object.entries(buttons)) {
         const w = state.work[st];
+        if (flush[st]) { for (const [id, b] of Object.entries(map)) { b.hidden = st !== state.station || !flush[st].spotVisible(id, w); b.dataset.state = flush[st].spotState(id, w); } continue; }
         for (const [id, b] of Object.entries(map)) {
           b.hidden = st !== state.station;
           const f = window.MaintModel.finding(st, w.scenario, id);
@@ -334,7 +355,9 @@
       placeCamera();
       key.target.position.copy(view.target); key.position.copy(view.target).add(tmp.set(-7, 12, 8));
       const we = S.work.engine, wx = S.work.excavator;
-      if (station === 'engine') {
+      if (flush[station]) {
+        flush[station].update(dt, now, S.work[station]);
+      } else if (station === 'engine') {
         // 曲轴：运转时匀速，熄火后慢慢停下
         speed = lerp(speed, running ? 1 : 0, 1 - Math.exp(-dt * (running ? 3 : 1.4)));
         crank = (crank + dt * 300 * speed) % 720;
@@ -369,6 +392,7 @@
       // 检查点标记跟随
       const placed = [];
       for (const [id, b] of Object.entries(buttons[station])) {
+        if (b.hidden) continue;
         tmp.copy(worldOf(station, id)).project(camera);
         const x = (tmp.x * .5 + .5) * w; let y = (-tmp.y * .5 + .5) * h;
         // 标记互相挡住时往下错开一行
@@ -384,7 +408,8 @@
       sync, focus, frame: () => frame(station, false),
       top() { const f = FRAMES[station](); view.goal = {az: view.az, el: 1.2, dist: f.dist * 1.05, target: f.target.clone()}; },
       set onPoint(fn) { onPoint = fn; },
-      readouts: () => ({temp: Math.round(anim.temp), pressure: Math.round(anim.pressure), crank: Math.round(speed * 100)}),
+      readouts: () => ({temp: Math.round(anim.temp), pressure: Math.round(anim.pressure), crank: Math.round(speed * 100),
+        sprayPressure: flush.spray.readouts().pressure, mortarPressure: flush.mortar.readouts().pressure}),
       stats: () => ({webgl: !renderer.isFallback, calls: renderer.info?.render?.calls || 0, gun: +gunAnim.t.toFixed(2), boom: +pose.boom.toFixed(2), dip: +dipRod.position.y.toFixed(2), cap: +anim.cap.toFixed(2)}),
     };
   }
