@@ -1,0 +1,96 @@
+/* 8-2：三维区上方的情境选择 */
+.m82-cases { display:flex; align-items:center; gap:6px; width:100%; flex-wrap:nowrap; }
+.m82-cases-label { font-size:12px; font-weight:700; color:var(--course-muted); padding:0 4px 0 2px; white-space:nowrap; }
+.m82-case {
+  flex:1 1 0; min-width:0; height:32px; padding:0 12px; border-radius:10px; border:1px solid var(--hair);
+  background:var(--course-surface); color:var(--course-ink); font:600 13px/1 inherit; cursor:pointer; white-space:nowrap;
+  overflow:hidden; text-overflow:ellipsis; box-shadow:var(--shadow-sm); transition:border-color .15s, background .15s, color .15s;
+  display:inline-flex; align-items:center; justify-content:center; gap:6px;
+}
+.m82-case::before { content:''; width:7px; height:7px; border-radius:50%; background:var(--ok); flex:none; }
+.m82-case.abn::before { background:var(--warn); }
+.m82-case.unk::before { background:var(--course-muted); }
+.m82-case:hover { border-color:var(--course-accent); }
+.m82-case[aria-checked="true"] { border-color:var(--course-accent); background:var(--blue-soft); color:var(--course-accent); box-shadow:0 0 0 1px var(--course-accent) inset; }
+
+/* 原页面的三维场景铺满外壳三维区 */
+html.lab-native #scene.c2-native-stage { min-height:0 !important; }
+html.lab-native #scene .hotspot { font-family:inherit; cursor:pointer; }
+html[data-theme="dark"] #scene.c2-native-stage { background:radial-gradient(ellipse at 50% 40%,#1b324d,#0f1f33) !important; }
+html[data-theme="dark"] #scene .hotspot { background:var(--course-surface); color:var(--course-ink); border-color:var(--hair); }
+
+/* 现场情况 */
+.m82-site { display:grid; gap:9px; }
+.m82-finding { margin:0; font-size:13.5px; line-height:1.55; color:var(--course-ink); }
+.m82-pills { display:flex; flex-wrap:wrap; gap:6px; }
+.m82-pill { display:inline-flex; align-items:center; gap:5px; height:26px; padding:0 10px; border-radius:13px; background:var(--surface-2, var(--course-bg)); font-size:12px; color:var(--course-muted); }
+.m82-pill b { color:var(--course-ink); font-weight:650; }
+.m82-pill i { width:7px; height:7px; border-radius:50%; background:var(--course-muted); }
+.m82-pill[data-s="ok"] i { background:var(--ok); }
+.m82-pill[data-s="warn"] i { background:var(--warn); }
+.m82-pill[data-s="warn"] b { color:var(--warn); }
+.m82-pill[data-s="bad"] i { background:var(--bad); }
+.m82-pill[data-s="bad"] b { color:var(--bad); }
+
+/* 维护流程：竖向步骤线 */
+.m82-flow { list-style:none; margin:0; padding:0; display:grid; gap:2px; counter-reset:m82; position:relative; }
+.m82-step { position:relative; counter-increment:m82; }
+.m82-step:not(.m82-ends)::before {
+  content:''; position:absolute; left:15px; top:30px; bottom:-6px; width:2px; background:var(--hair); border-radius:1px;
+}
+.m82-step.done:not(.m82-ends)::before { background:var(--ok-line, var(--ok)); }
+.m82-step-btn {
+  position:relative; display:flex; align-items:center; gap:10px; width:100%; min-height:34px; padding:4px 10px 4px 4px;
+  border:1px solid transparent; border-radius:10px; background:none; color:var(--course-ink); font:600 13.5px/1.3 inherit;
+  text-align:left; cursor:pointer; transition:background .15s, border-color .15s;
+}
+.m82-step-btn:not(.static):hover { background:var(--blue-soft); }
+html.lab-native .c2-panel .m82-step-btn.static { cursor:default; opacity:1; }
+html[data-c3-task="8-2"] .c2-panel-head > p:empty { display:none; }
+.m82-step-text { flex:1; }
+.m82-dot {
+  flex:none; width:24px; height:24px; margin-left:3px; border-radius:50%; display:grid; place-items:center;
+  border:2px solid var(--hair); background:var(--course-surface); font-size:11.5px; font-weight:700; color:var(--course-muted);
+}
+.m82-dot::before { content:counter(m82); }
+.m82-step.done .m82-dot { border-color:var(--ok); background:var(--ok); color:#fff; }
+.m82-step.done .m82-dot::before { content:'✓'; }
+.m82-step.next .m82-step-btn { border-color:var(--course-accent); background:var(--blue-soft); }
+.m82-step.next .m82-dot { border-color:var(--course-accent); color:var(--course-accent); }
+.m82-step.bad .m82-dot { border-color:var(--bad); color:var(--bad); }
+.m82-pct { font-size:12px; color:var(--course-muted); font-variant-numeric:tabular-nums; }
+.m82-step.done .m82-pct { color:var(--ok); }
+.m82-mats { display:flex; flex-wrap:wrap; gap:5px; padding:2px 0 6px 41px; }
+.m82-mat {
+  height:28px; padding:0 10px; border-radius:8px; border:1px solid var(--hair); background:var(--course-surface);
+  color:var(--course-ink); font:500 12.5px/1 inherit; cursor:pointer;
+}
+.m82-mat:hover { border-color:var(--course-accent); }
+.m82-mat[aria-checked="true"] { border-color:var(--course-accent); color:var(--course-accent); background:var(--blue-soft); font-weight:650; }
+.m82-mat[aria-checked="true"]:not(.ok) { border-color:var(--bad); color:var(--bad); background:var(--bad-soft); }
+.m82-bar { height:5px; margin:0 10px 6px 41px; border-radius:3px; background:var(--hair); overflow:hidden; }
+.m82-bar span { display:block; height:100%; width:0; background:linear-gradient(90deg,var(--course-accent),var(--ok)); transition:width .4s; }
+.m82-ends { display:grid; grid-template-columns:1fr 1fr; gap:8px; padding:6px 0 0 41px; }
+.m82-ends .c2-btn { width:100%; }
+.m82-hand { border-color:var(--warn) !important; color:var(--warn) !important; }
+.m82-verdict { margin-top:8px; padding:8px 11px; border-radius:10px; font-size:12.5px; line-height:1.45; font-weight:600; }
+.m82-verdict.ok { background:var(--ok-soft); color:var(--ok); }
+.m82-verdict.warn { background:var(--warn-soft); color:var(--warn); }
+
+/* 交接记录 */
+.m82-records { list-style:none; margin:0; padding:0; display:grid; gap:4px; max-height:132px; overflow:auto; }
+.m82-records li { display:grid; grid-template-columns:auto 1fr auto; gap:8px; align-items:center; padding:5px 9px; border-radius:8px; background:var(--surface-2, var(--course-bg)); font-size:12.5px; }
+.m82-rec-st { font-weight:650; }
+.m82-rec-case { color:var(--course-muted); overflow:hidden; text-overflow:ellipsis; white-space:nowrap; }
+.m82-records li.ok b { color:var(--ok); }
+.m82-records li.open b { color:var(--warn); }
+.m82-records li.m82-empty { display:block; color:var(--course-muted); background:none; padding:2px 0; }
+.m82-rec-tools { display:flex; gap:6px; margin-top:8px; }
+.m82-clear { color:var(--bad) !important; }
+
+@media (max-height:700px) {
+  .m82-step-btn { min-height:30px; padding-top:2px; padding-bottom:2px; }
+  .m82-dot { width:22px; height:22px; }
+  .m82-step:not(.m82-ends)::before { left:14px; top:27px; }
+  .m82-finding { font-size:13px; }
+}
