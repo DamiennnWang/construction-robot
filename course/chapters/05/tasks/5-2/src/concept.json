@@ -53,11 +53,9 @@
   },
   "model": "归一化教学周期0..1。卡丝在0.51锁定，送丝目标与实际进度不一致；禁止跨越到扭结。绑丝形变是工序示意，不求材料力学。",
   "sources": [
-    "../../../../../../resources/textbook/11_5.主体结构施工协同.txt",
-    "https://www.maxusacorp.com/wp-content/uploads/TWINTIER-Manual-RB441T-RB611T.pdf",
-    "https://www.maxusacorp.com/rebar_tying_tools/products/rb441t/"
+    "../../../../../../resources/textbook/11_5.主体结构施工协同.txt"
   ],
-  "scope": "不实现具体机型尺寸、额定速度、扭矩、检测阈值或真实控制器；夹持表示工具就位约束，不宣称所有机型使用同种主动夹爪。",
+  "scope": "不实现具体机型尺寸、额定速度、扭矩、检测阈值或真实控制器；“就位”表示工具就位约束，不宣称所有机型使用同种主动夹爪。",
   "interaction": "自由移动枪口并缓动跟随，实际位置对准后扣动扳机；切换到另一组样例，逐点轻拉、标记补绑、退出检查后补绑、隔离后再次复核。没有选择题。",
   "validationScope": "75实体固定剖视台保留 Anatomy recorder/settle/audit；另行验证游戏SVG、正投影动作、手机滚动、键盘、减少动态效果和主题。"
 }

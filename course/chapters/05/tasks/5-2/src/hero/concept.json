@@ -18,6 +18,6 @@
     "study": "同一三维工具头近看；显示送丝成环，供丝受阻时停在0.51，不能越过故障完成扭结。"
   },
   "palette": "暖白喷涂壳体、石墨关节、银灰金属钢筋、铜色绑丝、少量橙色机构与青绿状态；地面与桌面采用暖中性色。字体统一。",
-  "evidence": ["https://www.maxusacorp.com/wp-content/uploads/TWINTIER-Manual-RB441T-RB611T.pdf", "https://www.maxusacorp.com/rebar_tying_tools/products/rb441t/"],
+  "evidence": ["resources/textbook/11_5.主体结构施工协同.txt"],
   "limits": "教学组合模型，不复制某一厂商整机；送丝轮转动、导向成环和动作顺序为结构示意，不提供真实控制程序、尺寸公差、扭矩、时间或验收阈值。"
 }
