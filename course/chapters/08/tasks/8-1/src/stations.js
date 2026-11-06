@@ -210,8 +210,6 @@
     ];
 
     let lastSeq = -1;
-    // 进外壳后三维区尺寸要等布局稳定才确定：稍后重设一次全景，保证首屏画面出来（和点“全景”效果相同）
-    for (const ms of [300, 1000, 2000]) setTimeout(() => scene.view('home'), ms);
     NativeShell.start({
       task: '8-1', title: '安全操作',
       stage: byId('site'),
