@@ -43,6 +43,7 @@
 - `src/hero/model.mjs`：绑扎、隔离、检查、标记、补绑规则及归一化动作。
 - `src/hero/scene.js`：Three.js实体机构、逆运动学、材质、灯光、接触示意、射线选点和镜头。
 - `src/hero/app.js`：同一模型驱动的交互、播放和显示；实际工具姿态决定能否开始。
+- `src/stations.js`、`stations.css`：全课程统一任务页外壳（原地模式）。原页面的三个环节成为三个工位（对点绑扎 / 人工复核 / 看懂这一扣），三维工位和控件原样搬进外壳，各工位附“试一试”。`src/hero/build.mjs` 在原页面生成后调用 `labShell(html,'5-2')`；有 `stations.js` 时不再套第五章原版式。
 - `src/build.mjs` → `src/hero/build.mjs`：生成可直接双击打开、无网络依赖的 `index.html`，内联仓库本地 Three.js 与许可证。
 - 原 `src/geometry.mjs`、`figure-cache.json` 保留为无WebGL时的静态机构参考。旧版SVG应用源码和旧QA脚本不再是当前页面入口。
 
