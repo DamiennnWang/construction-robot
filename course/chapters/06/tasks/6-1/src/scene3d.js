@@ -41,7 +41,7 @@ class MasonryScene {
   meshCount(g){let n=0;g.traverse(o=>{if(o.isMesh)n++;});return n;}
   clear(g){while(g.children.length)g.remove(g.children[0]);}
   setTheme(dark){this.dark=!!dark;
-    const colors=dark?{base:0x29394c,lo:0x5e728b,mid:0x8d9fb2,hi:0xd6e0ea,steel:0xa6b9c9,ink:0x132238,rubber:0x121b2a,brick:0xa6aeb8,lit:0x84b5ff,mortar:0x536477,glass:0x233a57}:{base:0xc4ced8,lo:0x788b9e,mid:0xa2b2c2,hi:0xe2e7ed,steel:0xb9c8d4,ink:0x30475e,rubber:0x263647,brick:0xd2d0ca,lit:0x4b82c9,mortar:0xa5adb3,glass:0x5a7898};
+    const colors=dark?{base:0x29394c,lo:0x5e728b,mid:0x8d9fb2,hi:0xd6e0ea,steel:0xa6b9c9,ink:0x132238,rubber:0x121b2a,brick:0xa8735e,lit:0x84b5ff,mortar:0x536477,glass:0x233a57}:{base:0xc4ced8,lo:0x788b9e,mid:0xa2b2c2,hi:0xe2e7ed,steel:0xb9c8d4,ink:0x30475e,rubber:0x263647,brick:0xc98d70,lit:0x4b82c9,mortar:0xa5adb3,glass:0x5a7898};
     for(const key of Object.keys(colors))this.mat[key].color.setHex(colors[key]);this.mat.ghost.color.setHex(dark?0xa0c5fa:0x4c7db7);this.mat.slot.color.setHex(dark?0x6685ac:0xadc4df);this.edgeMat.color.setHex(dark?0xc0d0e0:0x3b536e);this.floor.material.opacity=dark?.23:.12;this.draw();
   }
   bind(){let dragging=false,lastX=0,lastY=0,distance=0;
