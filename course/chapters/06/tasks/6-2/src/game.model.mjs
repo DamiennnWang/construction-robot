@@ -46,7 +46,7 @@ export function act(state,type,value){
   s.align.running=false;s.press.running=false;s.stage=value;s.attached=true;
   if(value==='grip'){s.tile={...SOURCE};s.grip.trial=false;return msg(s,'砖已回到料架。重新试提，检查当前吸盘和气路。');}
   if(value==='align'){s.practice=!s.done.grip;tileAligned(s);s.align.needsRecognition=true;return msg(s,s.practice?'对缝分项练习：已预设一块可靠吸持的砖。先识别砖边。':'砖已移到空位上方。先识别砖边，再对齐砖缝。');}
-  s.practice=!s.done.align;s.attached=!s.done.press;s.tile={...TARGET,y:(16+s.press.base-s.press.compression)/1000};return msg(s,s.press.damaged?'本次过压记录仍保留。先揭砖整备，再重新压实。':s.practice?'压实分项练习：预设砖已对正。比较固定压入与力反馈。':'砖已对正。缓慢压入，留意力与完成面高度。');
+  s.practice=!s.done.align;s.attached=!s.done.press;s.tile={...TARGET,y:(16+s.press.base-s.press.compression)/1000};return msg(s,s.press.damaged?'本次过压记录仍保留。先揭砖整备，再重新压实。':s.practice?'压实分项练习：预设砖已对正。比较“固定压入量”和“边压边测力”。':'砖已对正。缓慢压入，留意力与完成面高度。');
  }
  if(s.motion)return msg(s,'当前动作正在进行，结束后再调整。');
  if(type==='gripConfig'){
@@ -92,7 +92,7 @@ export function act(state,type,value){
  }
  if(type==='alignRun'){
   if(!r.vision.valid)return msg(s,'没有有效实时观测，无法自动纠偏。清除遮挡并重新识别。','warn');
-  s.align.running=!s.align.running;return msg(s,s.align.running?'视觉反馈根据实时砖边误差，小步修正 X、Y 和转角。':'已暂停纠偏。');
+  s.align.running=!s.align.running;return msg(s,s.align.running?'相机盯着砖边，偏多少就挪多少，一小步一小步对齐位置和转角。':'已暂停纠偏。');
  }
  if(type==='alignStep'){
   if(!r.vision.valid)return msg(s,'先恢复视野并重新识别。','warn');
@@ -121,7 +121,7 @@ export function act(state,type,value){
   if(s.stage!=='press')return s;
   if(s.press.damaged)return msg(s,'本次已发生过压，先揭砖整备，不能直接提交。','warn');
   s.press.running=!s.press.running;s.press.checked=false;s.done.press=false;
-  return msg(s,s.press.running?(s.press.mode==='force'?'力传感器测量 → 与目标比较 → 调整法向压入速度。':'按设定压入量前进；材料变硬时，力也会变大。'):'已保持当前压入位置。');
+  return msg(s,s.press.running?(s.press.mode==='force'?'边压边测力：力不够就再压一点，力到了就停住。':'按设定压入量前进；材料变硬时，力也会变大。'):'已保持当前压入位置。');
  }
  if(type==='pressStep'){
   if(!s.attached)return msg(s,'吸盘已卸载。先揭砖整备，再开始新的压实练习。');

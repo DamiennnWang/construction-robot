@@ -9,23 +9,578 @@ footer{display:flex;align-items:center;gap:20px}.lesson-note{display:flex;flex-d
 .workspace{grid-template-rows:112px minmax(0,1fr) 97px 31px}
 @media(prefers-reduced-motion:reduce){*{transition:none!important;scroll-behavior:auto!important}}
 @media(max-width:760px){body{height:auto;min-height:100dvh;overflow:auto}.app{position:relative;left:auto;top:auto;width:100%;height:100dvh;min-height:680px;transform:none;padding:0 11px;grid-template-rows:57px 68px minmax(0,1fr) 61px}header{gap:9px}.brand{font-size:13px;gap:7px}.brand small,.task-tag,#fullscreen{display:none}.brand-mark{width:29px;height:29px;gap:2px;padding:6px;border-radius:7px}.header-tools{gap:4px}.header-tools button{font-size:10px;padding:6px}#restart{font-size:0}#restart:after{content:'↺';font-size:17px}.tabs{gap:4px;padding:8px 0}.tabs button{padding:5px 7px;gap:7px;position:relative}.tabs b{font-size:17px}.tabs span{font-size:11px}.tabs small{font-size:8px;margin-top:3px;line-height:1.45}.tabs i{position:absolute;right:5px;top:3px;font-size:8px}main{display:block;position:relative}.workspace{height:100%;grid-template-rows:98px minmax(0,1fr) 98px 37px;border-radius:12px}.intro{padding:17px 16px 0}.eyebrow{font-size:8px;letter-spacing:1.2px}h1{font-size:21px;margin:10px 0 6px}.intro p{font-size:11px}.view-toolbar{top:10px;left:10px;right:10px;padding:3px;gap:0;justify-content:space-between}.view-toolbar button{font-size:9px;padding:7px 6px}#explode{margin-left:0}.scene-status{top:52px;left:15px;right:auto;font-size:8px}.scene-hint{font-size:8px;left:14px;bottom:12px}.instruments{grid-template-columns:1fr 1fr;gap:10px;padding:12px 16px}.instruments>div:nth-child(3){display:none}.instruments strong{font-size:23px}.instruments span{font-size:10px}.instruments em{font-size:9px;line-height:1.5}.instruments strong small{font-size:10px}.scene-caption{font-size:8px;padding:0 14px;line-height:1.6;gap:6px}.scene-caption span:last-child{max-width:78px;white-space:normal;text-align:right}.camera-panel{top:66px;right:12px;width:122px}.camera-panel svg{height:90px}.camera-header{padding:6px;font-size:8px}.camera-header b{font-size:7px}.camera-panel>span{font-size:7px;padding:5px}.section-note{top:66px;right:12px;font-size:8px;padding:6px}.mobile-action{display:block;position:absolute;right:12px;bottom:10px;font-size:10px;padding:8px 10px;box-shadow:0 3px 10px #183c5315}.controls{display:none;height:100%;padding:18px 18px 13px;border-radius:12px}.mobile-controls .workspace{display:none}.mobile-controls .controls{display:flex}.mission-head{font-size:10px}h2{font-size:21px;margin:8px 0 4px}.brief{font-size:12px;margin:4px 0 11px}.control-label,.control-section>label{font-size:12px;margin:11px 0 8px}.cup-options button{padding:6px}.cup-options svg{height:36px}.cup-options b{font-size:11px}.control-section{margin:8px 0}.action-row button,.segmented button,.wide{font-size:12px;padding:9px}.micro{font-size:10px}.feedback{font-size:11px;min-height:59px;padding:9px 11px}.lesson-note{display:none}footer{gap:9px}.progress{margin-left:0;align-items:flex-start;font-size:10px}#progressDots i{width:22px;height:3px}#mobileToggle{display:block;margin-left:auto;font-size:11px;padding:9px}#next{font-size:11px;padding:10px}.cup-comparison{grid-template-columns:1fr;gap:12px}.cup-comparison>div{padding-top:9px}.cup-comparison p{margin:5px 0}dialog{padding:30px 23px}dialog h2{font-size:23px}dialog p,dialog li{font-size:12px}.result-grid{grid-template-columns:1fr;gap:6px}.alignment-pad{margin:12px 0}.panel-scroll{padding-bottom:10px}}
-</style><style>:root{--c6-nav-height:64px}
-.c6-nav{position:fixed;inset:0 0 auto;height:var(--c6-nav-height);z-index:1000;display:flex;align-items:center;gap:24px;padding:0 24px;background:#111d30;color:#dbe9fc;border-bottom:1px solid #334660;font:15px/1.4 "Segoe UI","Microsoft YaHei",sans-serif;box-sizing:border-box}
-.c6-nav a{text-decoration:none;color:#c0d2ec;white-space:nowrap;font-size:15px}.c6-nav .c6-home{font-weight:700;color:#8ebeff;padding-right:20px;border-right:1px solid #3a4a62}.c6-links{display:flex;align-items:center;gap:5px;flex:1}.c6-links a{padding:8px 12px;border-radius:6px}.c6-links a:hover,.c6-links a[aria-current]{background:#294260;color:#fff}.c6-nav button{border:1px solid #465d79;background:#22354d;color:#e5efff;border-radius:7px;padding:8px 12px;font:inherit;cursor:pointer;white-space:nowrap}.c6-nav :focus-visible{outline:3px solid #e7ac54;outline-offset:3px}
-html[data-c6] body{display:block;overflow:hidden;margin:0;padding:0;width:100%;height:100dvh}
-#c6-content{position:absolute;inset:var(--c6-nav-height) 0 0;overflow:auto;background:var(--paper,var(--bg,#101b2b))}
-html[data-c6=spray] #c6-content{background:var(--bg)}
-html[data-c6=spray] .app{height:calc(100dvh - var(--c6-nav-height))}
-html[data-c6=tiling] #c6-content,html[data-c6=sanding] #c6-content{overflow:hidden}
-@media(max-width:999px){.c6-nav{gap:8px;padding:0 12px}.c6-nav .c6-home{padding-right:10px}.c6-links{overflow:auto}.c6-links a{font-size:13px;padding:8px}.c6-nav button{font-size:13px;padding:7px}}
-@media(max-width:900px){html[data-c6=spray] .app{height:auto;min-height:calc(100dvh - var(--c6-nav-height))}}
-@media(max-width:760px){html[data-c6=tiling] #c6-content,html[data-c6=sanding] #c6-content{overflow:auto}html[data-c6=tiling] .app,html[data-c6=sanding] .app{height:calc(100dvh - var(--c6-nav-height))}}
-@media(max-width:760px){html[data-c6=sanding] .mobile-controls main{overflow:hidden}html[data-c6=sanding] .mobile-controls .controls{height:100%;overflow-y:auto;overflow-x:hidden;overscroll-behavior:contain}html[data-c6=sanding] .app>footer{position:relative;z-index:2;background:var(--paper)}}
-@media(max-width:600px){:root{--c6-nav-height:96px}.c6-nav{height:96px;display:grid;grid-template-columns:1fr auto;grid-template-rows:44px 44px;gap:0}.c6-nav .c6-home{border:0}.c6-links{grid-column:1/-1;grid-row:2;width:100%;overflow-x:auto;min-width:0}.c6-nav button{grid-column:2;grid-row:1}.c6-links a{flex:none}}
+</style><style data-lab-shell>/* 第二章任务页：一屏放下（16:9 屏幕不出现纵向滚动），菜单两层，蓝白配色。 */
+:root {
+  --course-bg:#edf4fc; --course-surface:#fff; --course-ink:#193550; --course-muted:#57718b;
+  --course-line:#cbdbea; --course-accent:#2467c9; --blue-soft:#e6f0ff;
+  --accent-2:#1c55ad; --surface-2:#f5f8fd; --hair:#e1eaf4;
+  --ok:#1f8a5b; --ok-soft:#e5f6ee; --ok-line:#a8dcc2; --warn:#c77a12; --warn-soft:#fdf2e1; --bad:#c2413b; --bad-soft:#fbe7e5;
+  --focus:#f0a020;
+  --shadow-sm:0 1px 2px rgba(18,44,78,.06);
+  --shadow:0 1px 2px rgba(18,44,78,.05), 0 6px 22px rgba(18,44,78,.08);
+  --shadow-lg:0 10px 34px rgba(18,44,78,.18);
+  --page-bg:linear-gradient(180deg,#eef4fc 0%,#e7eff9 100%);
+}
+html[data-theme="dark"] {
+  --accent-2:#b5d3ff; --surface-2:#1d324b; --hair:#2b4562;
+  --ok:#5cc597; --ok-soft:#173a2d; --ok-line:#2f6b51; --warn:#f0b35a; --warn-soft:#3b2d16; --bad:#f08079; --bad-soft:#3d1f1f;
+  --shadow-sm:0 1px 2px rgba(0,0,0,.25); --shadow:0 1px 2px rgba(0,0,0,.25), 0 8px 24px rgba(0,0,0,.28); --shadow-lg:0 12px 34px rgba(0,0,0,.45);
+  --page-bg:linear-gradient(180deg,#112035 0%,#0d1a2b 100%);
+}
+* { box-sizing:border-box; }
+[hidden] { display:none !important; }
+html, body { margin:0; height:100%; }
+body {
+  display:grid; grid-template-rows:auto auto minmax(0,1fr); height:100vh; height:100dvh; overflow:hidden;
+  background:var(--page-bg); color:var(--course-ink);
+  font:14px/1.5 "Microsoft YaHei","PingFang SC","Hiragino Sans GB","Segoe UI",sans-serif;
+  -webkit-font-smoothing:antialiased;
+}
+button, input, select { font:inherit; color:inherit; }
+button { cursor:pointer; transition:background .15s, border-color .15s, color .15s, box-shadow .15s, transform .15s; }
+:focus-visible { outline:3px solid color-mix(in srgb, var(--course-accent) 60%, transparent); outline-offset:2px; }
+
+/* —— 页头：本章任务 —— */
+.c2-top {
+  display:flex; align-items:center; gap:14px; height:50px; padding:0 18px;
+  background:var(--course-surface); border-bottom:1px solid var(--hair); box-shadow:var(--shadow-sm);
+}
+.c2-back {
+  display:inline-flex; align-items:center; gap:6px; height:32px; padding:0 12px 0 10px; border-radius:16px;
+  color:var(--course-ink); text-decoration:none; font-weight:700; white-space:nowrap; font-size:14px; background:var(--surface-2);
+}
+.c2-back:hover { color:var(--course-accent); background:var(--blue-soft); }
+.c2-tasks { display:flex; gap:2px; margin:0 auto; padding:3px; border-radius:12px; background:var(--surface-2); overflow-x:auto; }
+.c2-tasks a { padding:5px 16px; border-radius:9px; color:var(--course-muted); text-decoration:none; white-space:nowrap; font-size:14px; }
+.c2-tasks a:hover { color:var(--course-accent); }
+.c2-tasks a[aria-current="page"] { background:var(--course-surface); color:var(--course-accent); font-weight:700; box-shadow:var(--shadow-sm); }
+.c2-top .course-theme-toggle { margin-left:0 !important; height:32px !important; min-height:32px !important; border-radius:16px !important; }
+
+/* —— 工位条 —— */
+.c2-bar { display:flex; align-items:center; gap:20px; padding:12px 18px 10px; }
+.c2-title { display:flex; align-items:center; gap:10px; min-width:0; }
+.c2-task-id {
+  display:inline-flex; align-items:center; height:26px; padding:0 10px; border-radius:13px;
+  background:var(--course-accent); color:#fff; font-weight:700; font-size:13px; white-space:nowrap;
+}
+html[data-theme="dark"] .c2-task-id { color:#0f1d2e; }
+.c2-title h1 { margin:0; font-size:22px; line-height:1.2; font-weight:800; letter-spacing:.5px; white-space:nowrap; }
+.c2-stations { display:flex; gap:8px; margin-left:auto; }
+.c2-station {
+  display:flex; align-items:center; gap:9px; height:42px; padding:0 16px 0 7px;
+  border:1px solid var(--hair); border-radius:12px; background:var(--course-surface); box-shadow:var(--shadow-sm);
+  color:var(--course-ink); font-size:15px; white-space:nowrap;
+}
+.c2-station:hover { border-color:var(--course-accent); transform:translateY(-1px); }
+.c2-station[aria-selected="true"] {
+  background:linear-gradient(135deg,#3a82e4,#1f5bbd); border-color:transparent; color:#fff; font-weight:700;
+  box-shadow:0 6px 16px rgba(36,103,201,.32);
+}
+html[data-theme="dark"] .c2-station[aria-selected="true"] { background:linear-gradient(135deg,#8abaff,#5f97ea); color:#0f1d2e; }
+.c2-num { display:grid; place-items:center; width:28px; height:28px; border-radius:9px; background:var(--blue-soft); color:var(--course-accent); font-size:14px; font-weight:800; }
+.c2-station[aria-selected="true"] .c2-num { background:rgba(255,255,255,.22); color:inherit; }
+.c2-check { display:none; width:18px; height:18px; border-radius:50%; background:var(--ok); color:#fff; font-size:11px; font-weight:800; place-items:center; }
+.c2-station.done .c2-check { display:grid; }
+.c2-station[aria-selected="true"].done .c2-check { background:#fff; color:var(--ok); }
+
+/* —— 主体：三维区 + 面板 —— */
+.c2-main { display:grid; grid-template-columns:minmax(0,1fr) clamp(340px,25vw,410px); gap:14px; padding:0 18px 16px; min-height:0; }
+.c2-stage {
+  display:flex; flex-direction:column; min-height:0; overflow:hidden; border-radius:16px;
+  border:1px solid var(--hair); background:var(--course-surface); box-shadow:var(--shadow);
+}
+.c2-view { position:relative; flex:1 1 auto; min-height:0; background:var(--course-bg); }
+.c2-frame { position:absolute; inset:0; width:100%; height:100%; border:0; display:block; background:transparent; }
+.c2-loading {
+  position:absolute; inset:0; display:flex; flex-direction:column; align-items:center; justify-content:center; gap:12px;
+  color:var(--course-muted); font-size:15px; background:var(--course-bg); pointer-events:none; z-index:1;
+}
+.c2-spinner { width:30px; height:30px; border-radius:50%; border:3px solid var(--blue-soft); border-top-color:var(--course-accent); animation:c2-spin .8s linear infinite; }
+@keyframes c2-spin { to { transform:rotate(360deg); } }
+.c2-tools { position:absolute; left:12px; top:12px; display:flex; gap:6px; flex-wrap:wrap; max-width:64%; z-index:2; }
+.c2-tool {
+  height:32px; padding:0 12px; border-radius:10px; border:1px solid color-mix(in srgb, var(--hair) 70%, transparent);
+  background:color-mix(in srgb, var(--course-surface) 88%, transparent); backdrop-filter:blur(8px);
+  color:var(--course-ink); font-size:13px; white-space:nowrap; box-shadow:var(--shadow-sm);
+}
+.c2-tool:hover { border-color:var(--course-accent); color:var(--course-accent); }
+.c2-tool[aria-pressed="true"] { background:var(--blue-soft); border-color:color-mix(in srgb, var(--course-accent) 55%, transparent); color:var(--course-accent); font-weight:700; }
+.c2-toolseg {
+  padding:3px; border-color:color-mix(in srgb, var(--hair) 70%, transparent) !important;
+  background:color-mix(in srgb, var(--course-surface) 88%, transparent) !important; backdrop-filter:blur(8px); box-shadow:var(--shadow-sm);
+}
+.c2-toolseg button { height:26px; font-size:13px; padding:0 10px; }
+.c2-hint {
+  position:absolute; right:12px; bottom:10px; color:var(--course-muted); font-size:12px; pointer-events:none; z-index:2;
+  max-width:60%; white-space:nowrap; overflow:hidden; text-overflow:ellipsis;
+  background:color-mix(in srgb, var(--course-surface) 72%, transparent); padding:2px 10px; border-radius:10px;
+}
+.c2-part {
+  position:absolute; right:12px; top:12px; z-index:3; width:min(300px,42%); padding:11px 34px 11px 13px; border-radius:12px;
+  background:var(--course-surface); border:1px solid var(--hair); border-left:4px solid var(--focus);
+  box-shadow:var(--shadow-lg); display:flex; flex-direction:column; gap:3px;
+}
+.c2-part strong { font-size:15px; }
+.c2-part span { color:var(--course-muted); font-size:13px; line-height:1.5; }
+.c2-x { position:absolute; right:6px; top:4px; border:0; background:none; font-size:18px; color:var(--course-muted); }
+
+/* 三维区底部：运行控制 + 读数（不压在模型上） */
+.c2-strip {
+  flex:0 0 auto; display:flex; align-items:stretch; gap:10px; padding:8px 10px;
+  border-top:1px solid var(--hair); background:var(--course-surface);
+}
+.c2-strip:has(.c2-transport:empty):has(.c2-readouts:empty) { display:none; }
+.c2-transport { display:flex; align-items:center; gap:6px; flex:0 0 auto; padding-right:4px; }
+.c2-transport:empty { display:none; }
+.c2-transport .c2-tool { box-shadow:none; background:var(--surface-2); border-color:transparent; backdrop-filter:none; height:34px; }
+.c2-transport .c2-tool:hover { background:var(--blue-soft); }
+.c2-play {
+  height:38px; min-width:96px; padding:0 16px; border-radius:11px; border:0;
+  background:linear-gradient(135deg,#3a82e4,#1f5bbd); color:#fff; font-weight:700; font-size:14.5px;
+  box-shadow:0 4px 12px rgba(36,103,201,.3);
+}
+.c2-play:hover { transform:translateY(-1px); box-shadow:0 6px 16px rgba(36,103,201,.36); }
+.c2-play[aria-pressed="true"] { background:linear-gradient(135deg,#4c5f78,#33465e); box-shadow:0 4px 12px rgba(30,45,65,.25); }
+html[data-theme="dark"] .c2-play { background:linear-gradient(135deg,#8abaff,#5f97ea); color:#0f1d2e; }
+.c2-readouts { display:flex; gap:6px; flex:1 1 auto; min-width:0; }
+.c2-read {
+  flex:1 1 0; min-width:84px; display:flex; flex-direction:column; justify-content:center; padding:4px 12px;
+  border-radius:11px; background:var(--surface-2);
+}
+.c2-read-label { color:var(--course-muted); font-size:12px; white-space:nowrap; }
+.c2-val { display:flex; align-items:baseline; gap:4px; white-space:nowrap; overflow:hidden; }
+.c2-val b { font-size:21px; line-height:1.2; font-weight:800; font-variant-numeric:tabular-nums; color:var(--course-ink); }
+.c2-val small { color:var(--course-muted); font-size:12px; }
+
+/* —— 操作面板 —— */
+.c2-panel {
+  display:flex; flex-direction:column; gap:12px; min-height:0; overflow:auto; padding:16px 16px 14px;
+  border-radius:16px; border:1px solid var(--hair); background:var(--course-surface); box-shadow:var(--shadow); scrollbar-width:thin;
+}
+.c2-head-row { display:flex; align-items:center; justify-content:space-between; gap:8px; }
+.c2-head-name { display:flex; align-items:center; gap:9px; min-width:0; }
+.c2-head-num {
+  flex:0 0 30px; height:30px; border-radius:10px; display:grid; place-items:center; font-weight:800; font-size:15px; color:#fff;
+  background:linear-gradient(135deg,#3a82e4,#1f5bbd); box-shadow:0 3px 8px rgba(36,103,201,.3);
+}
+html[data-theme="dark"] .c2-head-num { color:#0f1d2e; background:linear-gradient(135deg,#8abaff,#5f97ea); }
+.c2-panel-head h2 { margin:0; font-size:19px; font-weight:800; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; }
+.c2-panel-head p { margin:6px 0 0; color:var(--course-muted); font-size:13.5px; line-height:1.55; }
+.c2-redo { height:30px; padding:0 11px; border-radius:15px; border:1px solid var(--hair); background:var(--surface-2); color:var(--course-muted); font-size:12.5px; white-space:nowrap; }
+.c2-redo:hover { color:var(--course-accent); border-color:var(--course-accent); }
+.c2-panel-body { display:flex; flex-direction:column; gap:14px; }
+.c2-group { display:flex; flex-direction:column; gap:8px; }
+.c2-group h3 { margin:0; font-size:13px; color:var(--accent-2); font-weight:700; display:flex; justify-content:space-between; align-items:center; gap:8px; }
+.c2-h3-text { display:flex; align-items:center; gap:7px; }
+.c2-h3-text::before { content:""; width:4px; height:14px; border-radius:2px; background:var(--course-accent); }
+.c2-row { display:flex; gap:6px; align-items:center; flex-wrap:wrap; }
+.c2-grid2 { display:grid; grid-template-columns:1fr 1fr; gap:8px 14px; }
+.c2-btn {
+  height:36px; padding:0 14px; border-radius:10px; border:1px solid var(--hair);
+  background:var(--course-surface); color:var(--course-ink); white-space:nowrap; box-shadow:var(--shadow-sm);
+}
+.c2-btn:hover:not(:disabled) { border-color:var(--course-accent); color:var(--course-accent); }
+.c2-btn:disabled { opacity:.45; cursor:not-allowed; }
+.c2-btn.c2-primary { background:linear-gradient(135deg,#3a82e4,#1f5bbd); border-color:transparent; color:#fff; font-weight:700; box-shadow:0 4px 12px rgba(36,103,201,.28); }
+.c2-btn.c2-primary:hover:not(:disabled) { color:#fff; transform:translateY(-1px); }
+html[data-theme="dark"] .c2-btn.c2-primary { background:linear-gradient(135deg,#8abaff,#5f97ea); color:#0f1d2e; }
+.c2-btn.c2-small { height:32px; padding:0 12px; }
+.c2-btn[aria-pressed="true"] { background:var(--blue-soft); border-color:var(--course-accent); color:var(--course-accent); font-weight:700; }
+.c2-seg { display:flex; padding:3px; gap:3px; border-radius:11px; background:var(--surface-2); border:1px solid var(--hair); }
+.c2-seg button { flex:1; height:32px; padding:0 8px; border:0; border-radius:8px; background:none; color:var(--course-muted); white-space:nowrap; }
+.c2-seg button:hover { color:var(--course-accent); }
+.c2-seg button[aria-checked="true"] { background:var(--course-surface); color:var(--course-accent); font-weight:700; box-shadow:0 1px 4px rgba(18,44,78,.14); }
+.c2-speed { padding:2px; border-radius:10px; }
+.c2-speed button { height:30px; padding:0 10px; font-size:13px; }
+
+/* 滑块：已走过的一段用主色填充 */
+.c2-slider { display:flex; flex-direction:column; gap:3px; min-width:0; }
+.c2-slider-top { display:flex; justify-content:space-between; align-items:center; gap:8px; font-size:13.5px; }
+.c2-slider output {
+  font-weight:700; color:var(--course-accent); font-variant-numeric:tabular-nums; white-space:nowrap;
+  background:var(--blue-soft); padding:0 8px; border-radius:8px; font-size:13px; line-height:22px;
+}
+.c2-slider input[type="range"] {
+  -webkit-appearance:none; appearance:none; width:100%; height:22px; margin:0; background:transparent; cursor:pointer; --p:50%;
+}
+.c2-slider input[type="range"]::-webkit-slider-runnable-track {
+  height:6px; border-radius:3px; background:linear-gradient(to right, var(--course-accent) var(--p), var(--hair) var(--p));
+}
+.c2-slider input[type="range"]::-moz-range-track { height:6px; border-radius:3px; background:var(--hair); }
+.c2-slider input[type="range"]::-moz-range-progress { height:6px; border-radius:3px; background:var(--course-accent); }
+.c2-slider input[type="range"]::-webkit-slider-thumb {
+  -webkit-appearance:none; width:18px; height:18px; margin-top:-6px; border-radius:50%;
+  background:#fff; border:3px solid var(--course-accent); box-shadow:0 2px 6px rgba(18,44,78,.25);
+}
+.c2-slider input[type="range"]::-moz-range-thumb { width:14px; height:14px; border-radius:50%; background:#fff; border:3px solid var(--course-accent); }
+.c2-slider input[type="range"]:hover::-webkit-slider-thumb { transform:scale(1.12); }
+
+.c2-switch {
+  display:inline-flex; align-items:center; gap:7px; height:32px; padding:0 10px 0 6px; border-radius:10px;
+  border:1px solid var(--hair); background:var(--course-surface); font-size:13.5px; white-space:nowrap;
+}
+.c2-knob { position:relative; width:30px; height:18px; border-radius:10px; background:var(--course-line); transition:background .15s; }
+.c2-knob::after { content:""; position:absolute; left:2px; top:2px; width:14px; height:14px; border-radius:50%; background:#fff; transition:transform .15s; box-shadow:0 1px 2px rgba(0,0,0,.25); }
+.c2-switch[aria-checked="true"] .c2-knob { background:var(--course-accent); }
+.c2-switch[aria-checked="true"] .c2-knob::after { transform:translateX(12px); }
+.c2-chips { display:flex; flex-wrap:wrap; gap:6px; }
+.c2-chip { height:30px; padding:0 12px; border-radius:15px; border:1px solid var(--hair); background:var(--course-surface); font-size:13px; white-space:nowrap; box-shadow:var(--shadow-sm); }
+.c2-chip:hover { border-color:var(--course-accent); color:var(--course-accent); }
+.c2-chip[aria-pressed="true"] { background:var(--focus); border-color:var(--focus); color:#2b1a00; font-weight:700; }
+.c2-chip.done { background:var(--ok-soft); border-color:var(--ok-line); color:var(--ok); font-weight:700; }
+
+/* 试一试：挑战卡 */
+.c2-count { font-weight:800; color:var(--course-accent); font-size:13px; font-variant-numeric:tabular-nums; }
+.c2-progress { height:5px; border-radius:3px; background:var(--hair); overflow:hidden; }
+.c2-progress span { display:block; height:100%; width:0; border-radius:3px; background:linear-gradient(90deg,#3fb27f,#1f8a5b); transition:width .4s ease; }
+.c2-challenges { display:grid; grid-template-columns:1fr 1fr; gap:8px; }
+.c2-challenge {
+  display:flex; gap:9px; align-items:flex-start; padding:9px 10px; border-radius:12px; min-width:0;
+  border:1px solid var(--hair); background:var(--course-surface); box-shadow:var(--shadow-sm);
+  transition:border-color .2s, background .2s, transform .2s;
+}
+.c2-mark {
+  flex:0 0 30px; height:30px; border-radius:9px; display:grid; place-items:center; font-size:16px; line-height:1;
+  background:linear-gradient(135deg,#eaf2ff,#d9e8ff); color:var(--course-accent); font-weight:800;
+}
+html[data-theme="dark"] .c2-mark { background:var(--blue-soft); }
+.c2-ch-text { display:flex; flex-direction:column; gap:1px; min-width:0; }
+.c2-ch-text b { font-size:13.5px; line-height:1.35; font-weight:700; }
+.c2-ch-text span { color:var(--course-muted); font-size:12px; line-height:1.4; display:-webkit-box; -webkit-line-clamp:2; -webkit-box-orient:vertical; overflow:hidden; }
+.c2-ch-go {
+  align-self:flex-start; margin-top:5px; height:26px; padding:0 10px; border-radius:13px; border:0;
+  background:var(--course-accent); color:#fff; font-size:12.5px; font-weight:700;
+}
+html[data-theme="dark"] .c2-ch-go { color:#0f1d2e; }
+.c2-challenge.done { background:var(--ok-soft); border-color:var(--ok-line); }
+.c2-challenge.done .c2-mark { background:var(--ok); color:#fff; animation:c2-pop .45s ease; }
+.c2-challenge.done .c2-ch-text span { color:var(--ok); font-weight:700; }
+.c2-challenge.done .c2-ch-go { display:none; }
+@keyframes c2-pop { 0% { transform:scale(.6); } 60% { transform:scale(1.18); } 100% { transform:scale(1); } }
+
+.c2-choice, .c2-predict { display:flex; flex-direction:column; gap:6px; padding:10px 12px; border-radius:12px; background:var(--surface-2); border:1px solid var(--hair); }
+.c2-prompt { margin:0; font-weight:700; font-size:14px; }
+.c2-options { display:flex; gap:6px; flex-wrap:wrap; }
+.c2-opt { flex:1 1 auto; min-height:34px; padding:4px 12px; border-radius:9px; border:1px solid var(--hair); background:var(--course-surface); }
+.c2-opt:hover:not(:disabled) { border-color:var(--course-accent); }
+.c2-opt.right { background:var(--ok-soft); border-color:var(--ok); color:var(--ok); font-weight:700; }
+.c2-opt.wrong { background:var(--bad-soft); border-color:var(--bad); color:var(--bad); text-decoration:line-through; }
+.c2-opt:disabled:not(.right):not(.wrong) { opacity:.5; }
+.c2-predict.c2-inline { flex-direction:row; align-items:center; justify-content:space-between; flex-wrap:wrap; padding:8px 12px; }
+.c2-predict.c2-inline .c2-row { flex-wrap:nowrap; }
+.c2-predict.c2-inline input { width:72px; }
+.c2-predict input { width:100px; height:34px; padding:0 10px; border-radius:9px; border:1px solid var(--hair); background:var(--course-surface); font-size:16px; font-weight:700; }
+.c2-predict input.right { border-color:var(--ok); background:var(--ok-soft); }
+.c2-predict input.wrong { border-color:var(--bad); background:var(--bad-soft); }
+.c2-unit { color:var(--course-muted); }
+.c2-note { margin:0; color:var(--course-muted); font-size:12.5px; line-height:1.45; }
+.c2-big { font-size:15px; font-weight:700; }
+.c2-banner {
+  display:flex; align-items:center; justify-content:space-between; gap:8px; padding:9px 12px; border-radius:12px;
+  background:linear-gradient(135deg,#fff4dc,#ffe9bf); border:1px solid #f3cf87; color:#6b4300; font-size:13px; font-weight:700;
+}
+html[data-theme="dark"] .c2-banner { background:#3b2d16; border-color:#6b5124; color:#f6d38f; }
+.c2-quiet { color:var(--course-muted); }
+
+/* 提示条：在三维区下方弹出，几秒后收起 */
+.c2-feedback {
+  position:absolute; left:50%; top:56px; transform:translateX(-50%); z-index:4; max-width:min(640px,80%);
+  display:flex; align-items:center; gap:10px; font-size:14px; line-height:1.55; border-radius:14px;
+}
+.c2-feedback:empty { display:none; }
+.c2-feedback:not(:empty) {
+  padding:10px 14px 10px 10px; background:var(--course-surface); color:var(--course-ink);
+  border:1px solid var(--hair); box-shadow:var(--shadow-lg); animation:c2-rise .25s ease;
+}
+@keyframes c2-rise { from { opacity:0; transform:translate(-50%,-8px); } to { opacity:1; transform:translate(-50%,0); } }
+.c2-toast-icon { flex:0 0 26px; height:26px; border-radius:50%; display:grid; place-items:center; font-weight:800; font-size:14px; background:var(--blue-soft); color:var(--course-accent); }
+.c2-feedback.ok .c2-toast-icon { background:var(--ok); color:#fff; }
+.c2-feedback.warn .c2-toast-icon { background:var(--warn); color:#fff; }
+.c2-feedback .c2-next { margin:0 0 0 4px; flex:0 0 auto; height:32px; }
+
+/* 外壳布局写死：放进第三章等已有页面时，不受页面里 main / aside / header / section 等通用规则影响 */
+html.lab-shell body > .c2-top { grid-row:1; position:static; width:auto; max-width:none; margin:0; }
+html.lab-shell body > .c2-bar { grid-row:2; position:static; width:auto; max-width:none; margin:0; }
+html.lab-shell body > .c2-main {
+  grid-row:3; grid-template-rows:minmax(0,1fr); grid-template-areas:none; grid-auto-flow:row;
+  position:static; width:auto; max-width:none; height:auto; max-height:none; margin:0;
+}
+html.lab-shell .c2-main > :is(.c2-stage, .c2-panel) {
+  grid-row:1; grid-area:auto; position:relative; width:auto; height:auto; max-height:none; min-width:0; margin:0; float:none;
+}
+html.lab-shell .c2-main > .c2-stage { grid-column:1; }
+html.lab-shell .c2-main > .c2-panel { grid-column:2; }
+
+/* 较矮的 16:9 窗口（如 1366×640）：压缩间距，保证整页不滚动 */
+@media (max-height:720px) and (min-width:901px) {
+  .c2-top { height:44px; }
+  .c2-bar { padding:8px 18px 7px; }
+  .c2-title h1 { font-size:20px; }
+  .c2-station { height:38px; font-size:14px; }
+  .c2-num { width:26px; height:26px; }
+  .c2-main { padding-bottom:12px; gap:12px; }
+  .c2-panel { gap:9px; padding:12px 13px 11px; }
+  .c2-panel-head p { margin-top:3px; }
+  .c2-panel-body { gap:10px; }
+  .c2-group { gap:6px; }
+  .c2-challenge { padding:7px 8px; }
+  .c2-mark { flex-basis:26px; height:26px; font-size:14px; }
+  .c2-panel-head p { display:-webkit-box; -webkit-line-clamp:1; -webkit-box-orient:vertical; overflow:hidden; }
+  .c2-ch-text span { -webkit-line-clamp:1; }
+  .c2-ch-go { margin-top:3px; height:22px; font-size:12px; }
+  .c2-head-num { flex-basis:26px; height:26px; font-size:14px; }
+  .c2-panel-head h2 { font-size:18px; }
+  .c2-panel { gap:8px; padding:10px 12px 10px; }
+  .c2-panel-body { gap:8px; }
+  .c2-group { gap:5px; }
+  .c2-seg button { height:29px; }
+  .c2-challenges { gap:6px; }
+  .c2-slider input[type="range"] { height:20px; }
+  .c2-val b { font-size:19px; }
+  .c2-btn, .c2-play { height:34px; }
+  .c2-strip { padding:6px 8px; }
+  .c2-read { padding:3px 10px; }
+}
+
+/* 窄屏：上下排列，允许整页滚动 */
+@media (max-width:900px) {
+  body { display:block; height:auto; overflow:auto; }
+  .c2-top { flex-wrap:wrap; height:auto; padding:8px 12px; gap:6px; }
+  .c2-tasks { margin:0; order:3; width:100%; }
+  .c2-bar { flex-direction:column; align-items:stretch; gap:8px; padding:10px 12px; }
+  .c2-title h1 { white-space:normal; }
+  .c2-stations { margin:0; overflow-x:auto; }
+  .c2-station { flex:1 0 auto; }
+  .c2-main { display:flex; flex-direction:column; padding:0 12px 16px; }
+  .c2-stage { height:64vh; min-height:380px; }
+  .c2-panel { overflow:visible; }
+  .c2-strip { flex-wrap:wrap; }
+  .c2-readouts { flex-wrap:wrap; }
+  .c2-read { flex:1 1 40%; }
+  .c2-hint { display:none; }
+}
+@media (prefers-reduced-motion:reduce) { * { transition:none !important; animation:none !important; } }
+
+/* 第三章：原页面元素放进统一外壳后的补充样式。外壳本身的样式在 shared/lab-shell/lab-shell.css。 */
+
+/* 原页面的三维区铺满外壳三维区 */
+html.lab-native .c2-native-stage {
+  position:absolute !important; inset:0 !important; width:100% !important; height:100% !important;
+  max-width:none !important; max-height:none !important; min-height:0 !important;
+  margin:0 !important; border:0 !important; border-radius:0 !important; box-shadow:none !important;
+}
+html.lab-native .c2-view { background:transparent; }
+
+/* 三维区上方一排：模型选择 */
+.c2-stage-top {
+  flex:0 0 auto; display:flex; align-items:stretch; gap:8px; padding:8px 10px;
+  border-bottom:1px solid var(--hair); background:var(--course-surface); overflow-x:auto; scrollbar-width:thin;
+}
+.c2-stage-top:empty, .c2-stage-top:not(:has(> :not([hidden]))) { display:none; }
+.c2-stage-top > * { margin:0 !important; }
+
+/* 面板里的原有控件：统一字体与圆角，去掉原来的卡片外框 */
+html.lab-native .c2-panel :is(button, input, select) { font-family:inherit; }
+html.lab-native .c2-panel [data-c2-adopted] { margin-left:0; margin-right:0; max-width:100%; }
+html.lab-native .c2-group > [data-c2-adopted]:is(section, div, aside) { box-shadow:none; }
+html.lab-native .c2-panel .c3-note { margin:0; color:var(--course-muted); font-size:12.5px; line-height:1.5; }
+
+/* 停止按钮：始终醒目 */
+html.lab-native .c2-panel .c3-stop { width:100%; }
+
+/* 3-1：关节点动行在较矮窗口里收紧 */
+@media (max-height:720px) {
+  html.lab-native .c2-panel .joint-row { min-height:0 !important; padding-top:1px !important; padding-bottom:1px !important; }
+  html.lab-native .c2-panel .constraint-cards button { padding-top:4px !important; padding-bottom:4px !important; }
+}
+
+/* ===== 统一控件样式：搬进面板和底栏的原控件，与第二章同一套外观 ===== */
+html.lab-native :is(.c2-panel, .c2-strip) :is(button.primary, button.outline, button.text-button, .compare-buttons button, .path-buttons button, .target-buttons button, .teach-toolbar button, .challenge-actions button) {
+  height:34px; padding:0 14px; border-radius:10px; font-size:13.5px; font-weight:600; white-space:nowrap;
+  display:inline-flex; align-items:center; justify-content:center; gap:4px; margin:0; cursor:pointer;
+  transition:background .15s, border-color .15s, color .15s, box-shadow .15s, transform .15s;
+}
+html.lab-native :is(.c2-panel, .c2-strip) button.primary {
+  border:0; color:#fff; background:linear-gradient(135deg,#3a82e4,#1f5bbd); box-shadow:0 4px 12px rgba(36,103,201,.28);
+}
+html.lab-native :is(.c2-panel, .c2-strip) button.primary:hover:not(:disabled) { transform:translateY(-1px); }
+html[data-theme="dark"].lab-native :is(.c2-panel, .c2-strip) button.primary { background:linear-gradient(135deg,#8abaff,#5f97ea); color:#0f1d2e; }
+html.lab-native :is(.c2-panel, .c2-strip) button.outline {
+  border:1px solid var(--hair); background:var(--course-surface); color:var(--course-ink); box-shadow:var(--shadow-sm);
+}
+html.lab-native :is(.c2-panel, .c2-strip) button.outline:hover:not(:disabled) { border-color:var(--course-accent); color:var(--course-accent); }
+html.lab-native :is(.c2-panel, .c2-strip) button.text-button {
+  height:30px; padding:0 10px; border:0; background:var(--surface-2); color:var(--course-accent); box-shadow:none; font-weight:600;
+}
+html.lab-native :is(.c2-panel, .c2-strip) button.text-button:hover:not(:disabled) { background:var(--blue-soft); }
+html.lab-native :is(.c2-panel, .c2-strip) button:disabled { opacity:.45; cursor:not-allowed; transform:none; }
+html.lab-native :is(.c2-panel, .c2-strip) :is(.compare-buttons, .path-buttons, .target-buttons, .teach-toolbar, .challenge-actions) {
+  display:flex; flex-wrap:wrap; gap:6px; margin:0;
+}
+
+/* 停止：所有页面同一种红色按钮 */
+html.lab-native :is(.c2-panel, .c2-strip) :is(button.stop, button.stop-button, .c3-stop) {
+  height:36px; padding:0 14px; border-radius:10px; border:1px solid #f1b8b4; background:var(--bad-soft); color:var(--bad);
+  font-size:14px; font-weight:700; display:flex; align-items:center; justify-content:center; gap:8px; box-shadow:none; cursor:pointer;
+}
+html.lab-native :is(.c2-panel, .c2-strip) :is(button.stop, button.stop-button):hover { background:var(--bad); color:#fff; }
+html.lab-native :is(.c2-panel, .c2-strip) :is(button.stop, button.stop-button) kbd {
+  font:600 10.5px/1 "Segoe UI",sans-serif; padding:3px 5px; border-radius:5px; border:1px solid currentColor; opacity:.7; background:none;
+}
+html[data-theme="dark"].lab-native :is(.c2-panel, .c2-strip) :is(button.stop, button.stop-button) { border-color:#6b3434; }
+
+/* 滑轨：已走过的一段填主色（--p 由 chapter3-shell.js 跟随数值更新） */
+html.lab-native :is(.c2-panel, .c2-strip) input[type="range"] {
+  -webkit-appearance:none; appearance:none; height:22px; margin:0; background:transparent; cursor:pointer; --p:50%; min-width:0;
+}
+html.lab-native :is(.c2-panel, .c2-strip) input[type="range"]::-webkit-slider-runnable-track {
+  height:6px; border-radius:3px; background:linear-gradient(to right, var(--course-accent) var(--p), var(--hair) var(--p));
+}
+html.lab-native :is(.c2-panel, .c2-strip) input[type="range"]::-moz-range-track { height:6px; border-radius:3px; background:var(--hair); }
+html.lab-native :is(.c2-panel, .c2-strip) input[type="range"]::-moz-range-progress { height:6px; border-radius:3px; background:var(--course-accent); }
+html.lab-native :is(.c2-panel, .c2-strip) input[type="range"]::-webkit-slider-thumb {
+  -webkit-appearance:none; width:16px; height:16px; margin-top:-5px; border-radius:50%;
+  background:#fff; border:3px solid var(--course-accent); box-shadow:0 2px 5px rgba(18,44,78,.25);
+}
+html.lab-native :is(.c2-panel, .c2-strip) input[type="range"]::-moz-range-thumb { width:12px; height:12px; border-radius:50%; background:#fff; border:3px solid var(--course-accent); }
+
+/* 输入框、下拉框、读数 */
+html.lab-native :is(.c2-panel, .c2-strip) :is(select, input[type="number"], input[type="text"]) {
+  height:32px; padding:0 8px; border-radius:9px; border:1px solid var(--hair); background:var(--course-surface); color:var(--course-ink); font-size:13.5px; min-width:0;
+}
+html.lab-native :is(.c2-panel, .c2-strip) :is(select, input[type="number"], input[type="text"]):focus { outline:none; border-color:var(--course-accent); box-shadow:0 0 0 3px var(--blue-soft); }
+html.lab-native :is(.c2-panel, .c2-strip) input[type="checkbox"] { width:16px; height:16px; accent-color:var(--course-accent); }
+html.lab-native :is(.c2-panel, .c2-strip) output { font-weight:700; color:var(--course-accent); font-variant-numeric:tabular-nums; }
+
+/* 小号原地切换（如“按住连续 / 单步点动”） */
+html.lab-native :is(.c2-panel, .c2-strip) .segmented { display:flex; gap:3px; padding:3px; border-radius:10px; background:var(--surface-2); border:1px solid var(--hair); }
+html.lab-native :is(.c2-panel, .c2-strip) .segmented button { flex:1; height:26px; padding:0 10px; border:0; border-radius:7px; background:none; color:var(--course-muted); font-size:13px; white-space:nowrap; cursor:pointer; }
+html.lab-native :is(.c2-panel, .c2-strip) .segmented button.active { background:var(--course-surface); color:var(--course-accent); font-weight:700; box-shadow:0 1px 3px rgba(18,44,78,.14); }
+
+/* 点动行（3-1 关节行；3-2 在底栏另有排法） */
+html.lab-native .c2-panel .joint-rows { display:flex; flex-direction:column; gap:5px; }
+html.lab-native .c2-panel .joint-row {
+  border-radius:10px !important; background:var(--surface-2) !important; border:1px solid transparent !important; box-shadow:none !important;
+}
+html.lab-native .c2-panel .joint-row:is(.active, .selected) { border-color:var(--course-accent) !important; background:var(--blue-soft) !important; }
+html.lab-native :is(.c2-panel, .c2-strip) :is(.jog, .jog-button) {
+  border-radius:8px; border:1px solid var(--hair); background:var(--course-surface); color:var(--course-ink); box-shadow:var(--shadow-sm); cursor:pointer;
+}
+html.lab-native :is(.c2-panel, .c2-strip) :is(.jog, .jog-button):hover { border-color:var(--course-accent); color:var(--course-accent); }
+html.lab-native :is(.c2-panel, .c2-strip) :is(.jog, .jog-button):active { background:var(--course-accent); color:#fff; }
+html.lab-native .c2-panel .joint-top { display:flex; justify-content:space-between; align-items:center; font-size:12px; color:var(--course-muted); }
+
+/* 卡片式选择（约束连接、六轴卡片）：与挑战卡同一种卡片 */
+html.lab-native .c2-panel :is(.constraint-cards, .axis-cards) button {
+  border-radius:12px !important; border:1px solid var(--hair) !important; background:var(--course-surface) !important; box-shadow:var(--shadow-sm) !important; cursor:pointer;
+}
+html.lab-native .c2-panel :is(.constraint-cards, .axis-cards) button.active { border-color:var(--course-accent) !important; background:var(--blue-soft) !important; box-shadow:0 0 0 1px var(--course-accent) inset !important; }
+html.lab-native .c2-panel .constraint-cards { display:grid; grid-template-columns:1fr 1fr; gap:6px; }
+html.lab-native .c2-panel .constraint-cards button { display:grid; grid-template-columns:auto 1fr; align-items:center; gap:0 8px; padding:6px 9px; text-align:left; }
+html.lab-native .c2-panel .constraint-cards b { grid-row:1 / span 2; font-size:20px; font-weight:800; color:var(--course-accent); }
+html.lab-native .c2-panel .constraint-cards small { color:var(--course-muted); font-size:11.5px; }
+
+/* 区间控件、目标点、障碍编辑 */
+html.lab-native .c2-panel .range-control label { display:flex; justify-content:space-between; font-size:13.5px; }
+html.lab-native .c2-panel .range-control input { width:100%; }
+html.lab-native .c2-panel .range-control p { margin:0; font-size:12px; color:var(--course-muted); }
+html.lab-native .c2-panel .target-inputs { display:grid; grid-template-columns:repeat(3,1fr); gap:6px; }
+html.lab-native .c2-panel .target-inputs label { display:flex; align-items:center; gap:4px; font-weight:700; font-size:13px; color:var(--course-muted); }
+html.lab-native .c2-panel .target-inputs input { width:100%; }
+html.lab-native .c2-panel .target-panel { display:flex; flex-direction:column; gap:6px; }
+html.lab-native .c2-panel :is(#targetInfo, #pathInfo) { margin:0; font-size:12px; color:var(--course-muted); }
+html.lab-native .c2-panel .path-results { display:flex; flex-wrap:wrap; gap:4px 10px; font-size:12.5px; }
+html.lab-native .c2-panel .path-results span { padding:2px 8px; border-radius:8px; background:var(--surface-2); }
+html.lab-native .c2-panel .path-controls { display:flex; flex-direction:column; gap:6px; }
+html.lab-native .c2-panel .obstacle-editor { display:flex; flex-direction:column; gap:4px; }
+html.lab-native .c2-panel .obstacle-editor > div { display:flex; align-items:center; gap:8px; font-size:13px; }
+html.lab-native .c2-panel .obstacle-editor label { display:grid; grid-template-columns:22px 1fr 40px; align-items:center; gap:6px; font-size:13px; font-weight:700; color:var(--course-muted); }
+html.lab-native .c2-panel .obstacle-editor label input { width:100%; }
+
+/* 原卡片自带的高度、比例在面板里取消 */
+html.lab-native .c2-panel .constraint-cards button { min-height:0 !important; height:auto !important; aspect-ratio:auto !important; padding:6px 9px !important; display:grid !important; grid-template-columns:auto 1fr !important; grid-template-rows:auto auto !important; text-align:left !important; }
+html.lab-native .c2-panel .constraint-cards strong { font-size:13px; line-height:1.3; }
+html.lab-native .c2-panel .constraint-cards small { display:block; line-height:1.3; }
+html.lab-native .c2-panel :is(.target-buttons, .path-buttons, .compare-buttons, .teach-toolbar, .challenge-actions) button { padding:0 10px; }
+html.lab-native .c2-panel .target-buttons { flex-wrap:nowrap; }
+@media (max-height:720px) {
+  html.lab-native .c2-panel .range-control p { display:none; }
+  html.lab-native .c2-panel :is(button.primary, button.outline) { height:32px; }
+  html.lab-native .c2-panel button.text-button { height:28px; }
+  html.lab-native .c2-panel :is(button.stop, button.stop-button) { height:32px; }
+  html.lab-native .c2-panel :is(select, input[type="number"], input[type="text"]) { height:30px; }
+}
+html.lab-native .c2-panel .constraint-cards { height:auto !important; min-height:0 !important; max-height:none !important; flex:none !important; grid-template-rows:none !important; grid-auto-rows:auto !important; align-content:start !important; }
+
+/* 6-2 地砖铺贴：原页面控件进入统一外壳后的排版 */
+
+/* 三维区上方：吸盘布局（选研究对象），横排三张小卡 */
+.c2-stage-top .cup-options:not([hidden]) { display:grid !important; grid-template-columns:repeat(3, minmax(0,1fr)); grid-template-rows:none !important; gap:8px; width:100%; margin:0 !important; height:auto !important; }
+.c2-stage-top .cup-options button {
+  display:grid !important; grid-template-columns:auto 1fr; grid-template-rows:auto auto; column-gap:12px; align-items:center; text-align:left;
+  min-height:0 !important; height:auto !important; margin:0 !important; padding:7px 14px 7px 10px !important;
+  border-radius:12px; border:1px solid var(--hair); background:var(--course-surface); box-shadow:var(--shadow-sm); color:var(--ink, inherit) !important; cursor:pointer;
+}
+.c2-stage-top .cup-options button[aria-pressed="true"] { border-color:var(--course-accent); background:var(--blue-soft); box-shadow:0 0 0 1px var(--course-accent) inset; color:var(--course-accent) !important; }
+.c2-stage-top .cup-options svg { grid-row:span 2; width:46px; height:32px; margin:0 !important; }
+.c2-stage-top .cup-options b { font-size:14px; margin:0; line-height:1.3; }
+.c2-stage-top .cup-options small { font-size:11px; margin:0; line-height:1.3; }
+.c2-stage-top .cup-options button:disabled { opacity:.5; cursor:not-allowed; }
+
+/* 三维区：原页面的悬浮件让出外壳的提示位置 */
+
+.c2-native-stage .view-toolbar { top:12px; left:12px; border-radius:12px; box-shadow:var(--shadow-sm); }
+.c2-native-stage .view-toolbar button { border-radius:8px; }
+.c2-native-stage .scene-status { top:22px; right:18px; }
+.c2-native-stage .camera-panel { top:48px; right:14px; width:200px; border-radius:12px; }
+.c2-native-stage .section-note { top:48px; right:14px; border-radius:10px; }
+
+/* 三维区底部：原有三项仪表铺满一栏 */
+.c2-strip .c2-readouts:has(#instruments) { flex:1; display:block; }
+.c2-strip #instruments { display:grid; grid-template-columns:1fr 1.25fr 1fr; gap:10px; padding:0; border:0; width:100%; }
+.c2-strip #instruments > div { padding:8px 14px; border-radius:12px; background:var(--soft, rgba(127,140,160,.08)); min-width:0; }
+.c2-strip #instruments span { font-size:12px; }
+.c2-strip #instruments strong { font-size:22px; line-height:1.35; }
+.c2-strip #instruments .word-value { font-size:19px; line-height:1.55; }
+.c2-strip #instruments em { font-size:11px; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; }
+.c2-strip #instruments .third-metric.trace-mode { display:flex; flex-direction:column; }
+.c2-strip #instruments .third-metric.trace-mode strong { display:none; }
+.c2-strip #instruments .third-metric.trace-mode #forceTrace { position:static; order:2; width:100%; height:28px; margin:3px 0 2px; }
+.c2-strip #instruments .third-metric.trace-mode em { order:3; }
+
+/* 面板：去掉原页面的外框与折叠头，控件直接排开 */
+.c2-panel details#gripMore, .c2-panel details#pressMore { border:0; margin:0; background:none; padding:0; }
+.c2-panel details > summary { display:none; }
+.c2-panel .detail-body { padding:0; }
+.c2-panel :is(.control-label, .control-section > label, .detail-body > label:not(.check)) { margin:8px 0 6px; font-size:13px; }
+.c2-panel .control-section { margin:0; }
+.c2-panel .range-ends { margin:2px 0 6px; font-size:11px; }
+.c2-panel .detail-body .check { margin:6px 0; font-size:13px; }
+.c2-panel .detail-body select { border-radius:10px; padding:7px 8px; font-size:13px; }
+.c2-panel .action-row { display:grid; grid-template-columns:1fr 1fr; gap:8px; margin:6px 0 0; }
+.c2-panel .segmented { margin:2px 0 4px; }
+.c2-panel .wide { width:100%; margin-top:8px; }
+.c2-panel .micro { font-size:12px; margin:6px 0 0; line-height:1.6; }
+.c2-panel .alignment-pad { display:flex; align-items:center; gap:16px; margin:10px 0 0; }
+.c2-panel .dpad { display:grid; grid-template-columns:repeat(3, 38px); grid-template-rows:repeat(3, 32px); gap:4px; }
+.c2-panel .dpad button { padding:0; border-radius:9px; }
+.c2-panel .turn-pad { display:grid; grid-template-columns:1fr 1fr; gap:6px; flex:1; }
+.c2-panel .turn-pad button:last-child { grid-column:1/-1; }
+html.lab-native .c2-panel .segmented button[aria-pressed="true"] { background:var(--course-surface); color:var(--course-accent); font-weight:700; box-shadow:0 1px 3px rgba(18,44,78,.14); }
+/* 对缝工位的“遮挡镜头 / 滑移扰动”是两个动作，不是二选一：按普通按钮排 */
+html.lab-native .c2-panel .segmented:has(#occlude) { display:grid; grid-template-columns:1fr 1fr; gap:8px; padding:0; border:0; background:none; margin:6px 0 0; }
+html.lab-native .c2-panel .segmented:has(#occlude) button { height:auto; padding:9px 8px; border:1px solid var(--hair); border-radius:10px; background:var(--course-surface); color:var(--ink, inherit); font-size:13px; }
+html.lab-native .c2-panel #occlude[aria-pressed="true"] { border-color:#c77a12; color:#c77a12; background:rgba(199,122,18,.08); font-weight:700; }
+
+/* 面板收紧：两个开关并排；比较实验里的长注释由挑战卡的解释代替 */
+.c2-panel #gripMore .detail-body { display:grid; grid-template-columns:1fr 1fr; column-gap:10px; }
+.c2-panel #gripMore .detail-body > :not(.check) { grid-column:1/-1; }
+.c2-panel :is(#gripMore, #pressMore) .micro { display:none; }
+.c2-panel .range-ends { display:none; }
 </style><script data-course-navigation src="../../../../../shared/navigation.js"></script><link data-course-theme rel="stylesheet" href="../../../../../shared/styles/theme.css"><script data-course-theme src="../../../../../shared/theme.js"></script></head>
 <body><div id="app" class="app">
-<header><a class="brand" href="../../overview/index.html"><span class="brand-mark" aria-hidden="true"><i></i><i></i><i></i><i></i></span><span>智能建造实训室<small>CONSTRUCTION ROBOTICS LAB</small></span></a><span class="task-tag">任务 6-2 / 地砖铺贴</span><div class="header-tools"><button id="help">操作与原理</button><button id="theme" aria-label="切换深浅色">◐</button><button id="fullscreen">全屏 ⛶</button><button id="restart">重新挑战 ↺</button></div></header>
-<nav class="tabs" aria-label="铺砖实训步骤"><button data-stage="grip" aria-pressed="true"><b>01</b><span>吸牢，再提起<small>布置吸盘 · 检查密封</small></span><i>○</i></button><button data-stage="align" aria-pressed="false"><b>02</b><span>看清，再对缝<small>识别砖边 · 修正位姿</small></span><i>○</i></button><button data-stage="press" aria-pressed="false"><b>03</b><span>压稳，再复核<small>控制接触力 · 检查高差</small></span><i>○</i></button></nav>
+<header><a class="brand" href="../../../../../README.md"><span class="brand-mark" aria-hidden="true"><i></i><i></i><i></i><i></i></span><span>智能建造实训室<small>CONSTRUCTION ROBOTICS LAB</small></span></a><span class="task-tag">任务 6-2 / 地砖铺贴</span><div class="header-tools"><button id="help">操作与原理</button><button id="theme" aria-label="切换深浅色">◐</button><button id="fullscreen">全屏 ⛶</button><button id="restart">重新挑战 ↺</button></div></header>
+<nav class="tabs" aria-label="铺砖实训步骤"><button data-stage="grip" aria-pressed="true"><b>01</b><span>吸牢，再提起<small>布置吸盘 · 检查密封</small></span><i>○</i></button><button data-stage="align" aria-pressed="false"><b>02</b><span>看清，再对缝<small>识别砖边 · 修正位置</small></span><i>○</i></button><button data-stage="press" aria-pressed="false"><b>03</b><span>压稳，再复核<small>控制接触力 · 检查高差</small></span><i>○</i></button></nav>
 <main><section class="workspace"><div class="intro"><div class="eyebrow"><span id="eyebrow">01 / VACUUM HANDLING</span><span>FIG 06.2</span></div><h1 id="title">吸力够了，砖就一定稳吗？</h1><p id="subtitle">先低位试提，再调整吸盘的位置；看砖的变化，不只看读数。</p></div>
 <div class="scene-area"><div id="heroViewport" class="hero-viewport"></div>
 <div class="view-toolbar" role="group" aria-label="三维视角"><button data-view="overview" aria-pressed="true">全景</button><button data-view="top">俯看砖缝</button><button data-view="head">吸头近看</button><button data-view="section">铺贴剖面</button><button id="explode" aria-pressed="false">拆开吸头</button></div>
@@ -42,25 +597,14 @@ html[data-c6=tiling] #c6-content,html[data-c6=sanding] #c6-content{overflow:hidd
 <div class="action-row"><button id="trial" class="primary">↑ 低位试提</button><button id="transfer" disabled>移到铺贴位 →</button></div><div class="evidence" id="gripEvidence">○ 当前配置尚未通过试提</div></div>
 <div data-panel="align" hidden><p class="brief">先认出砖边，再修正平移和转角。遮挡时，看看机器人还能知道什么。</p><label class="control-label">① 识别与视觉纠偏</label><div class="action-row"><button id="recognize">重新识别</button><button id="alignRun" class="primary">开始纠偏</button></div><div class="alignment-pad"><div class="dpad"><button data-nudge="up" aria-label="砖向后微移1毫米">↑</button><button data-nudge="left" aria-label="砖向左微移1毫米">←</button><span>1 mm</span><button data-nudge="right" aria-label="砖向右微移1毫米">→</button><button data-nudge="down" aria-label="砖向前微移1毫米">↓</button></div><div class="turn-pad"><button data-nudge="ccw">↶ −0.5°</button><button data-nudge="cw">↷ +0.5°</button><button id="alignStep">单步纠偏</button></div></div>
 <label class="control-label">② 让相机“看不见”</label><div class="segmented"><button id="occlude">遮挡镜头</button><button id="slip">施加滑移扰动</button></div><p class="micro">遮挡本身不会让砖滑动。“滑移扰动”是另加的一次外力。</p><div class="evidence"><span id="occlusionEvidence">○ 体验观测失效</span><span id="recognitionEvidence">○ 恢复视野后重新识别</span></div><button id="acceptAlign" class="primary wide">检查砖缝与转角</button><button id="toPress" class="wide" disabled>对正后，进入压实 →</button></div>
-<div data-panel="press" hidden><p class="brief">力传感器装在腕部。比较两种控制，再用靠尺检查完成面。</p><label class="control-label">① 选择压入方式</label><div class="segmented"><button data-mode="position" aria-pressed="true">固定压入量</button><button data-mode="force" aria-pressed="false">力反馈控制</button></div><div class="control-section"><label for="pressTarget"><span id="pressTargetLabel">目标压入量</span><output id="pressTargetValue">2.0 mm</output></label><input id="pressTarget" type="range" min=".3" max="4" step=".1" value="2"><div class="range-ends"><span id="targetMin">浅</span><span id="targetMax">深</span></div></div><div class="action-row"><button id="pressRun" class="primary">缓慢下压 ↓</button><button id="pressStep">单步观察</button></div><details id="pressMore"><summary>比较实验：砂浆变硬 / 基层偏高</summary><div class="detail-body"><label for="stiffness">铺贴层软硬 <output id="stiffnessValue">80 N/mm</output></label><select id="stiffness"><option value="80">标准练习层</option><option value="140">较硬：同样压入，力更大</option><option value="50">较软：同样力，压入更深</option></select><button id="raisedBase" class="wide">模拟基层局部高出 2 mm</button><p class="micro">力合适而高度不合适，应检查并整备铺贴层，不能无限加力。</p></div></details>
+<div data-panel="press" hidden><p class="brief">力传感器装在腕部。比较两种控制，再用靠尺检查完成面。</p><label class="control-label">① 选择压入方式</label><div class="segmented"><button data-mode="position" aria-pressed="true">固定压入量</button><button data-mode="force" aria-pressed="false">边压边测力</button></div><div class="control-section"><label for="pressTarget"><span id="pressTargetLabel">目标压入量</span><output id="pressTargetValue">2.0 mm</output></label><input id="pressTarget" type="range" min=".3" max="4" step=".1" value="2"><div class="range-ends"><span id="targetMin">浅</span><span id="targetMax">深</span></div></div><div class="action-row"><button id="pressRun" class="primary">缓慢下压 ↓</button><button id="pressStep">单步观察</button></div><details id="pressMore"><summary>比较实验：砂浆变硬 / 基层偏高</summary><div class="detail-body"><label for="stiffness">铺贴层软硬 <output id="stiffnessValue">80 N/mm</output></label><select id="stiffness"><option value="80">标准练习层</option><option value="140">较硬：同样压入，力更大</option><option value="50">较软：同样力，压入更深</option></select><button id="raisedBase" class="wide">模拟基层局部高出 2 mm</button><p class="micro">力合适而高度不合适，应检查并整备铺贴层，不能无限加力。</p></div></details>
 <label class="control-label">② 复核完成面</label><div class="action-row"><button id="ruler">放上靠尺</button><button id="rebed">揭砖，重新整备</button></div><button id="finish" class="primary wide">确认铺贴结果 · 卸载吸盘</button><p class="micro">本页力、位移窗口均为教学设定；现场需试铺，粘结与空鼓另行复核。</p></div>
 </div><div id="feedback" class="feedback" role="status" aria-live="polite">吸盘偏在砖的一侧。先低位试提，看看砖会怎样。</div></aside></main>
 <footer><div class="lesson-note"><b id="keyTitle">吸得住，还要拿得稳。</b><span id="keyText">有效面积决定理论吸力，布局、偏载和密封决定能否可靠搬运。</span></div><div class="progress"><span id="progressText">已完成 0 / 3 关</span><div id="progressDots"><i></i><i></i><i></i></div></div><button id="mobileToggle">打开操作面板</button><button id="next">下一关 →</button></footer></div>
-<dialog id="helpDialog"><button class="close" data-close="helpDialog" aria-label="关闭操作原理">×</button><span class="eyebrow">任务 6-2 / 操作与原理</span><h2>同一块砖，三次判断。</h2><p>推荐依次完成试提、对缝与压实。也可以点击顶部页签进入分项练习，未完成的前序关卡不会被自动计分。主场景可拖动旋转、滚轮缩放，聚焦后方向键转动、Home 回全景。手机可切换画面与操作面板；“单步观察”适用于减少动态效果。</p><h3>对齐：图像误差如何变成机器动作？</h3><p>相机识别砖边和角点，结合相机标定与工具坐标关系，将位置和转角误差换成机器人微动。重复“观察—比较—修正”就是视觉反馈。镜头被遮挡后，旧观测不能代表当前砖位；恢复视野后要重新识别。编码器知道关节动了多少，也不能独自证明砖没有滑移。</p><h3>吸附：压差 × 有效面积</h3><p>真空发生器或真空泵抽走吸盘内空气，外界大气压力把砖压向密封吸盘。理论吸力 F = Δp × A。实际还要检查砖重、加速度、布置、偏载、密封面和安全余量。本页 1 / 2 / 4 盘总面积相同，避免把“更多”误当成“更大吸力”。部分布局在偏心时会不稳，但居中、密封良好的单盘也可以通过试提。</p><h3>压实：测力—比较—调整</h3><p>腕部力传感器测接触力，控制器比较实际力与目标力，调整法向压入速度。它体现柔顺控制的思想；沿砖缝的平面位置仍需保持。实际设备接触前还需进行力传感器去偏/重力补偿。本页用线性弹性层 F = kδ 演示反馈，未模拟砂浆流变或粘结。</p><h3>教学模型的边界</h3><p>地砖为 600 × 600 × 10 mm、12 kg 的示例。定位窗口 ±0.5 mm、±0.25°，接触力窗口 120–200 N，280 N 以上保留过压记录；这些都不是工程验收标准或瓷砖破裂阈值。剖面竖向厚度放大 8 倍。吸盘稳定性是简化的支承区判定，不替代厂家的力矩与选型校核。单盘失效后共用气路压差下降比例为情境设定；隔离支路也不能保证剩余布局仍稳定。</p><p>力读数正常不证明没有空鼓。粘结质量、覆盖率和成品验收须按施工工艺进行实体复核。</p><h3>原理参考</h3><ul><li><a href="https://www.flexiv.com/software/primitives/en/3.6/rizon4/Visual%20Servoing.html" target="_blank" rel="noopener">Flexiv · 视觉伺服</a></li><li><a href="https://docs.universal-robots.com/Universal_Robots_ROS_Documentation/rolling/doc/ur_robot_driver/ur_robot_driver/doc/usage/force_torque_control.html" target="_blank" rel="noopener">Universal Robots · 力与力矩控制</a></li><li><a href="https://www.schmalz.com/en/support/know-how/vacuum-knowledge/the-vacuum-system-and-its-components/vacuum-suction-cups/design-of-the-suction-cup" target="_blank" rel="noopener">Schmalz · 吸盘设计与保持力</a></li><li><a href="https://www.schmalz.com/en/support/know-how/vacuum-knowledge/the-vacuum-system-and-its-components/valve-technology/check-valves-flow-resistors-and-sensing-valves" target="_blank" rel="noopener">Schmalz · 止回阀、流阻与感应阀</a></li></ul></dialog>
+<dialog id="helpDialog"><button class="close" data-close="helpDialog" aria-label="关闭操作原理">×</button><span class="eyebrow">任务 6-2 / 操作与原理</span><h2>同一块砖，三次判断。</h2><p>推荐依次完成试提、对缝与压实。也可以点击顶部页签进入分项练习，未完成的前序关卡不会被自动计分。主场景可拖动旋转、滚轮缩放，聚焦后方向键转动、Home 回全景。手机可切换画面与操作面板；“单步观察”适用于减少动态效果。</p><h3>对齐：图像误差如何变成机器动作？</h3><p>相机认出砖边和砖角，算出砖偏了多少、歪了多少，再让机器人挪一点。重复“看—比—挪”，砖就一点点对齐。镜头被遮挡后，旧观测不能代表当前砖位；恢复视野后要重新识别。机器人只知道自己的手臂动了多少，不知道砖有没有滑动。</p><h3>吸附：压差 × 有效面积</h3><p>真空发生器或真空泵抽走吸盘内空气，外界大气压力把砖压向密封吸盘。吸盘里外的压力差越大、吸盘面积越大，吸力就越大。实际还要检查砖重、加速度、布置、偏载、密封面和安全余量。本页 1 / 2 / 4 盘总面积相同，避免把“更多”误当成“更大吸力”。部分布局在偏心时会不稳，但居中、密封良好的单盘也可以通过试提。</p><h3>压实：测力—比较—调整</h3><p>腕部力传感器测接触力，控制器比较实际力与目标力，再决定继续往下压还是停住，就像人手边压边感觉力；沿砖缝的平面位置仍需保持。实际设备接触前还需进行力传感器去偏/重力补偿。本页把铺贴层当成一根弹簧：压得越深，力越大；没有模拟砂浆的真实变化和粘结。</p><h3>教学模型的边界</h3><p>地砖为 600 × 600 × 10 mm、12 kg 的示例。定位窗口 ±0.5 mm、±0.25°，接触力窗口 120–200 N，280 N 以上保留过压记录；这些都不是工程验收标准或瓷砖破裂阈值。剖面竖向厚度放大 8 倍。吸盘稳定性是简化的支承区判定，不替代厂家的力矩与选型校核。单盘失效后共用气路压差下降比例为情境设定；隔离支路也不能保证剩余布局仍稳定。</p><p>力读数正常不证明没有空鼓。粘结质量、覆盖率和成品验收须按施工工艺进行实体复核。</p><h3>原理参考</h3><ul><li><a href="https://www.flexiv.com/software/primitives/en/3.6/rizon4/Visual%20Servoing.html" target="_blank" rel="noopener">Flexiv · 视觉伺服</a></li><li><a href="https://docs.universal-robots.com/Universal_Robots_ROS_Documentation/rolling/doc/ur_robot_driver/ur_robot_driver/doc/usage/force_torque_control.html" target="_blank" rel="noopener">Universal Robots · 力与力矩控制</a></li><li><a href="https://www.schmalz.com/en/support/know-how/vacuum-knowledge/the-vacuum-system-and-its-components/vacuum-suction-cups/design-of-the-suction-cup" target="_blank" rel="noopener">Schmalz · 吸盘设计与保持力</a></li><li><a href="https://www.schmalz.com/en/support/know-how/vacuum-knowledge/the-vacuum-system-and-its-components/valve-technology/check-valves-flow-resistors-and-sensing-valves" target="_blank" rel="noopener">Schmalz · 止回阀、流阻与感应阀</a></li></ul></dialog>
 <dialog id="cupDialog"><button class="close" data-close="cupDialog" aria-label="关闭吸盘原理">×</button><span class="eyebrow">吸盘选型 / 把条件放在一起看</span><h2>盘的数量，不是唯一答案。</h2><div class="cup-comparison"><div><b>1 个大盘</b><p>密封区域集中。尺寸合适、受力居中、表面可密封时可以使用；偏载力矩与砖的刚度仍需核验。</p></div><div><b>2 个小盘</b><p>沿一条方向展开，改善该方向的支承跨度；垂直方向的偏载不能自动解决。</p></div><div><b>4 个小盘</b><p>二维分布有利于分散载荷，但要保证各盘完整落在砖上、同时贴合，并考虑漏气与隔离。</p></div></div><p>试试三个动作：把单盘对中；把双盘横向展开后前后偏放；四盘中放掉一个支路。观察理论吸力、支承和砖的动作如何分别变化。</p><button id="cupCloseView" class="primary">回到场景，近看吸头</button></dialog>
 <dialog id="summaryDialog"><button class="close" data-close="summaryDialog" aria-label="关闭实训记录">×</button><span class="eyebrow">铺贴实训 / 完成记录</span><h2>砖铺进去了，检查也要跟上。</h2><p id="summaryText">你完成了吸附试提、视觉遮挡恢复和压实复核。</p><div class="result-grid"><span>吸附试提 <b id="resultGrip">✓</b></span><span>视觉对缝 <b id="resultAlign">✓</b></span><span>压实复核 <b id="resultPress">✓</b></span></div><p>保留这次判断：吸力足够不等于稳定；恢复视野不等于已重新定位；力稳定不等于完成面与粘结质量合格。</p><button id="download" class="primary">保存实训记录</button><button data-close="summaryDialog">继续探索</button></dialog>
-<script>(()=>{'use strict';
-const lab="tiling";
-const root=document.documentElement;root.dataset.c6=lab;
-const content=document.createElement('div');content.id='c6-content';
-for(const node of [...document.body.children])if(!['SCRIPT','STYLE','DIALOG'].includes(node.tagName))content.append(node);
-document.body.prepend(content);
-const nav=document.createElement('nav');nav.className='c6-nav';nav.setAttribute('aria-label','第六章学习导航');
-const routes=[['masonry','6-1 砌筑','course/chapters/06/tasks/6-1/index.html'],['tiling','6-2 地砖铺贴','course/chapters/06/tasks/6-2/index.html'],['sanding','6-3 腻子打磨','course/chapters/06/tasks/6-3/index.html'],['spray','6-4 室内喷涂','course/chapters/06/tasks/6-4/index.html']];
-nav.innerHTML='<a class="c6-home" href="../../overview/index.html">← 第六章总览</a><div class="c6-links">'+routes.map(([id,name,url])=>`<a data-route="${id}" ${id===lab?'aria-current="page"':''} href="../${url}">${name}</a>`).join('')+'</div>';
-document.body.prepend(nav);
-})();
-</script><script></script><script src="../../../../../shared/vendor/three-r160.min.js"></script><script>
+<script></script><script src="../../../../../shared/vendor/three-r160.min.js"></script><script>
 
 const M=(()=>{
 const SETTINGS={cups:4,diameter:.08,mass:12,gravity:9.81,acceleration:1,safety:2,targetHeight:14,tileThickness:10,initialGlue:6,stiffness:80,visionTolerance:.5};
@@ -277,7 +821,7 @@ function act(state,type,value){
   s.align.running=false;s.press.running=false;s.stage=value;s.attached=true;
   if(value==='grip'){s.tile={...SOURCE};s.grip.trial=false;return msg(s,'砖已回到料架。重新试提，检查当前吸盘和气路。');}
   if(value==='align'){s.practice=!s.done.grip;tileAligned(s);s.align.needsRecognition=true;return msg(s,s.practice?'对缝分项练习：已预设一块可靠吸持的砖。先识别砖边。':'砖已移到空位上方。先识别砖边，再对齐砖缝。');}
-  s.practice=!s.done.align;s.attached=!s.done.press;s.tile={...TARGET,y:(16+s.press.base-s.press.compression)/1000};return msg(s,s.press.damaged?'本次过压记录仍保留。先揭砖整备，再重新压实。':s.practice?'压实分项练习：预设砖已对正。比较固定压入与力反馈。':'砖已对正。缓慢压入，留意力与完成面高度。');
+  s.practice=!s.done.align;s.attached=!s.done.press;s.tile={...TARGET,y:(16+s.press.base-s.press.compression)/1000};return msg(s,s.press.damaged?'本次过压记录仍保留。先揭砖整备，再重新压实。':s.practice?'压实分项练习：预设砖已对正。比较“固定压入量”和“边压边测力”。':'砖已对正。缓慢压入，留意力与完成面高度。');
  }
  if(s.motion)return msg(s,'当前动作正在进行，结束后再调整。');
  if(type==='gripConfig'){
@@ -323,7 +867,7 @@ function act(state,type,value){
  }
  if(type==='alignRun'){
   if(!r.vision.valid)return msg(s,'没有有效实时观测，无法自动纠偏。清除遮挡并重新识别。','warn');
-  s.align.running=!s.align.running;return msg(s,s.align.running?'视觉反馈根据实时砖边误差，小步修正 X、Y 和转角。':'已暂停纠偏。');
+  s.align.running=!s.align.running;return msg(s,s.align.running?'相机盯着砖边，偏多少就挪多少，一小步一小步对齐位置和转角。':'已暂停纠偏。');
  }
  if(type==='alignStep'){
   if(!r.vision.valid)return msg(s,'先恢复视野并重新识别。','warn');
@@ -352,7 +896,7 @@ function act(state,type,value){
   if(s.stage!=='press')return s;
   if(s.press.damaged)return msg(s,'本次已发生过压，先揭砖整备，不能直接提交。','warn');
   s.press.running=!s.press.running;s.press.checked=false;s.done.press=false;
-  return msg(s,s.press.running?(s.press.mode==='force'?'力传感器测量 → 与目标比较 → 调整法向压入速度。':'按设定压入量前进；材料变硬时，力也会变大。'):'已保持当前压入位置。');
+  return msg(s,s.press.running?(s.press.mode==='force'?'边压边测力：力不够就再压一点，力到了就停住。':'按设定压入量前进；材料变硬时，力也会变大。'):'已保持当前压入位置。');
  }
  if(type==='pressStep'){
   if(!s.attached)return msg(s,'吸盘已卸载。先揭砖整备，再开始新的压实练习。');
@@ -657,8 +1201,8 @@ return {SOURCE,STAGES,TARGET,act,createState,readings,sceneData,step};})();
  const scene=window.createTilingScene($('heroViewport'),{onPick:info=>setView(info.type==='tile'&&state.stage==='align'?'top':'head'),onContextLost:()=>{displayLost=true;state.align.running=false;state.press.running=false;cancelAnimationFrame(raf);raf=0;state.message='三维显示暂停。当前动作已保持，请刷新页面恢复显示。';render();}});
  const texts={
   grip:['01 / VACUUM HANDLING','吸力够了，砖就一定稳吗？','先低位试提，再调整吸盘的位置；看砖的变化，不只看读数。','把偏心的砖吸稳','同一总有效面积，比较不同吸盘布局；分布改变抗偏载能力。','吸得住，还要拿得稳。','有效面积决定理论吸力，布局、偏载和密封决定能否可靠搬运。'],
-  align:['02 / VISION & ALIGNMENT','砖缝对齐了，相机也看清了吗？','看砖边的位置和转角。遮挡镜头，再观察旧图像与真实砖位的差别。','让两条砖缝连起来','相机画面显示最后有效观测；主场景显示实际砖位。','看得见，才有纠偏的依据。','镜头恢复后重新识别；关节编码器不能独自证明砖没有滑移。'],
-  press:['03 / FORCE & FINISHED LEVEL','力合适了，砖面也平了吗？','切到铺贴剖面，看下压怎样改变砂浆厚度，再用靠尺独立复核。','压实力与高度，都检查','力传感器 → 比较目标力 → 调整法向压入；标高另行复核。','力反馈控制过程，靠尺检查结果。','力稳定不等于粘结合格；空鼓与粘结质量仍须实体复核。']
+  align:['02 / VISION & ALIGNMENT','砖缝对齐了，相机也看清了吗？','看砖边的位置和转角。遮挡镜头，再观察旧图像与真实砖位的差别。','让两条砖缝连起来','相机画面显示最后有效观测；主场景显示实际砖位。','看得见，才有纠偏的依据。','镜头恢复后要重新识别；机器人自己不知道砖有没有滑动。'],
+  press:['03 / FORCE & FINISHED LEVEL','力合适了，砖面也平了吗？','切到铺贴剖面，看下压怎样改变砂浆厚度，再用靠尺独立复核。','压实力与高度，都检查','边压边测力，力到了就停；高度另外用靠尺查。','测力管住压的过程，靠尺查最后的高度。','力稳定不等于粘结合格；空鼓与粘结质量仍须实体复核。']
  };
  const put=(id,v)=>{const e=$(id);if(e&&e.textContent!==String(v))e.textContent=v;},val=(id,v)=>{if(document.activeElement!==$(id))$(id).value=v;},signed=(n,d=1)=>`${n>=0?'+':''}${n.toFixed(d)}`;
  function send(type,value){
@@ -688,7 +1232,7 @@ return {SOURCE,STAGES,TARGET,act,createState,readings,sceneData,step};})();
   $('transfer').disabled=!g.trial||!r.grip.ready||!!state.motion;put('gripEvidence',g.trial?'✓ 当前配置已通过低位试提':'○ 当前配置尚未通过试提');put('trial',state.motion?.kind==='trial'?'试提中…':'↑ 低位试提');
   put('occlude',a.visibility==='clear'?'遮挡镜头':'移开遮挡');$('occlude').setAttribute('aria-pressed',a.visibility!=='clear');$('slip').disabled=a.visibility==='clear';put('alignRun',a.running?'暂停纠偏':reduced.matches?'单步纠偏':'开始纠偏');$('alignRun').setAttribute('aria-pressed',a.running);$('toPress').disabled=!state.done.align;
   put('occlusionEvidence',(a.blockedSeen?'✓':'○')+' 体验观测失效');put('recognitionEvidence',(a.reacquired?'✓':'○')+' 恢复视野后重新识别');$('occlusionEvidence').classList.toggle('done',a.blockedSeen);$('recognitionEvidence').classList.toggle('done',a.reacquired);
-  $('cameraPanel').hidden=state.stage!=='align'||view==='section';$('cameraVeil').style.display=r.vision.valid?'none':'';put('cameraStatus',r.vision.valid?'实时观测':a.last?'旧观测':'尚无观测');put('cameraFoot',r.vision.valid?'砖边 → 位姿误差 → 机器人微动':a.visibility==='clear'?'视野已恢复，等待重新识别。':'观测失效，自动纠偏已保持。');
+  $('cameraPanel').hidden=state.stage!=='align'||view==='section';$('cameraVeil').style.display=r.vision.valid?'none':'';put('cameraStatus',r.vision.valid?'实时观测':a.last?'旧观测':'尚无观测');put('cameraFoot',r.vision.valid?'看到砖边 → 算出偏多少 → 机器人挪一点':a.visibility==='clear'?'视野已恢复，等待重新识别。':'观测失效，自动纠偏已保持。');
   const obs=a.last||{ex:0,ey:0,angle:0};$('cameraTile').setAttribute('transform',`translate(${obs.ex*.45} ${obs.ey*.45}) rotate(${obs.angle} 100 78)`);$('cameraTile').style.opacity=a.last?'1':'.1';
   all('[data-mode]').forEach(b=>b.setAttribute('aria-pressed',b.dataset.mode===p.mode));const target=$('pressTarget');if(lastTargetMode!==p.mode){lastTargetMode=p.mode;target.min=p.mode==='force'?'40':'.3';target.max=p.mode==='force'?'320':'4';target.step=p.mode==='force'?'10':'.1';}
   val('pressTarget',p.mode==='force'?p.targetForce:p.targetCompression);put('pressTargetLabel',p.mode==='force'?'目标接触力':'目标压入量');put('pressTargetValue',p.mode==='force'?p.targetForce+' N':p.targetCompression.toFixed(1)+' mm');put('targetMin',p.mode==='force'?'小力':'浅');put('targetMax',p.mode==='force'?'大力':'深');val('stiffness',p.stiffness);put('stiffnessValue',p.stiffness+' N/mm');
@@ -697,7 +1241,7 @@ return {SOURCE,STAGES,TARGET,act,createState,readings,sceneData,step};})();
   if(state.stage==='grip'){
    metric(1,'有效真空压差',r.grip.pressure.toFixed(1),'kPa','压差产生吸附力',r.grip.capacityOK);metric(2,'有效吸力 / 需求',Math.round(r.grip.holding)+' / '+Math.round(r.grip.required),'N','需求包含教学安全余量',r.grip.capacityOK);metric(3,'支承与密封',!r.grip.fit?'吸盘越出砖边':!r.grip.sealReliable?'砖面漏气':!r.grip.stable?'偏心不稳':r.grip.ready?'可以低位试提':'吸力不足','','吸力与支承分别检查',r.grip.ready);
   }else if(state.stage==='align'){
-   metric(1,'X / Y 位置误差',r.vision.valid?signed(r.vision.ex)+' / '+signed(r.vision.ey):'— / —','mm',r.vision.valid?'教学窗口：各 ±0.5 mm':'无有效观测，不发布实时误差',r.vision.valid&&Math.abs(r.vision.ex)<=.5&&Math.abs(r.vision.ey)<=.5);metric(2,'砖的转角误差',r.vision.valid?signed(r.vision.angle,2):'—','°',r.vision.valid?'教学窗口：±0.25°':'旧观测不能判断当前转角',r.vision.valid&&Math.abs(r.vision.angle)<=.25);metric(3,'视觉反馈',r.vision.valid?(r.vision.aligned?'已经对正':'正在识别砖边'):'定位已保持','','清除遮挡后重新识别',r.vision.valid);
+   metric(1,'X / Y 位置误差',r.vision.valid?signed(r.vision.ex)+' / '+signed(r.vision.ey):'— / —','mm',r.vision.valid?'教学窗口：各 ±0.5 mm':'无有效观测，不发布实时误差',r.vision.valid&&Math.abs(r.vision.ex)<=.5&&Math.abs(r.vision.ey)<=.5);metric(2,'砖的转角误差',r.vision.valid?signed(r.vision.angle,2):'—','°',r.vision.valid?'教学窗口：±0.25°':'旧观测不能判断当前转角',r.vision.valid&&Math.abs(r.vision.angle)<=.25);metric(3,'相机对齐',r.vision.valid?(r.vision.aligned?'已经对正':'正在识别砖边'):'定位已保持','','清除遮挡后重新识别',r.vision.valid);
   }else{
    metric(1,'测得接触力',r.sensorForce.toFixed(1),'N',state.attached?'教学窗口：120–200 N':'工具已卸载；压实记录已保留',state.attached?r.press.forceOK&&!r.press.damaged:true);metric(2,'与邻砖的完成面高差',signed(r.press.error,2),'mm',p.checked?'已放靠尺复核':'教学窗口：±0.5 mm',r.press.heightOK);metric(3,'接触力变化 · 绿色区为教学窗口',' ','',p.damaged?'过压记录保留，需揭砖整备':`已稳定保持 ${r.press.settledTime.toFixed(1)} s`);
    const pts=trace.map((v,i)=>`${i/Math.max(1,trace.length-1)*260},${40-Math.min(v,340)/340*39}`);$('tracePath').setAttribute('d',pts.length?'M'+pts.join('L'):'M0 40H260');$('traceTarget').setAttribute('d',`M0 ${40-p.targetForce/340*39}H260`);
@@ -718,8 +1262,602 @@ return {SOURCE,STAGES,TARGET,act,createState,readings,sceneData,step};})();
  CourseTheme.register(theme => scene.setTheme(theme));$('fullscreen').addEventListener('click',async()=>{try{if(document.fullscreenElement)await document.exitFullscreen();else await document.documentElement.requestFullscreen();}catch{put('feedback','当前环境不支持页面全屏，可以使用浏览器全屏。');}});click('restart','reset');
  $('next').addEventListener('click',()=>{if(state.stage==='grip')send('transfer');else if(state.stage==='align')send('toPress');else showSummary();});$('mobileToggle').addEventListener('click',()=>{const open=$('app').classList.toggle('mobile-controls');put('mobileToggle',open?'返回三维场景':'打开操作面板');$('mobileToggle').setAttribute('aria-expanded',open);requestAnimationFrame(()=>scene.resize());});$('sceneAction').addEventListener('click',()=>{if(state.stage==='grip')send(state.grip.trial?'transfer':'trial');else if(state.stage==='align')send(Game.readings(state).vision.valid?'alignRun':'recognize');else send('pressStep');});
  $('download').addEventListener('click',()=>{const report={任务:'地砖铺贴三维实训',时间:new Date().toISOString(),完成:state.done,吸盘配置:state.grip,当前定位:Game.readings(state).vision,压实检查:Game.readings(state).press,靠尺已检查:state.press.checked,备注:'课堂模型记录，不作为工程验收或设备选型依据'};const url=URL.createObjectURL(new Blob([JSON.stringify(report,null,2)],{type:'application/json;charset=utf-8'})),a=document.createElement('a');a.href=url;a.download='地砖铺贴-实训记录.json';a.click();setTimeout(()=>URL.revokeObjectURL(url),1000);});
- function fit(){document.documentElement.style.setProperty('--scale',Math.min((document.getElementById('c6-content')?.clientWidth||innerWidth)/1600,(document.getElementById('c6-content')?.clientHeight||innerHeight)/900));scene.resize();}addEventListener('resize',fit);fit();const observer=new IntersectionObserver(es=>{visible=es[0].isIntersecting;last=0;if(visible)schedule();else{cancelAnimationFrame(raf);raf=0;}},{threshold:.01});observer.observe($('app'));
+ function fit(){document.documentElement.style.setProperty('--scale',Math.min((document.getElementById('c6-content')?.clientWidth||innerWidth)/1600,(document.getElementById('c6-content')?.clientHeight||innerHeight)/900));scene.resize();}addEventListener('resize',fit);fit();const observer=new IntersectionObserver(es=>{visible=es.at(-1).isIntersecting;last=0;if(visible)schedule();else{cancelAnimationFrame(raf);raf=0;}},{threshold:.01});observer.observe(document.querySelector('[data-lab-shell]')?$('heroViewport'):$('app'));
  document.addEventListener('visibilitychange',()=>{last=0;if(document.hidden){cancelAnimationFrame(raf);raf=0;}else schedule();});reduced.addEventListener('change',()=>{if(reduced.matches){state.align.running=false;state.press.running=false;if(state.motion)for(let i=0;i<100&&state.motion;i++)state=Game.step(state,.05);cancelAnimationFrame(raf);raf=0;render();}else schedule();});
  window.tilingLab={snapshot:()=>({state:structuredClone(state),readings:Game.readings(state),scene:scene.stats(),view,playback:{visible,documentHidden:document.hidden,scheduled:!!raf}}),act:send,setView,scene};scene.setTheme(document.documentElement.dataset.theme||'light');render();
+})();
+</script><script data-lab-shell>window.CHAPTER_LAYOUT={"task":"6-2","page":"","nav":"6-2","chapter":{"title":"第六章 · 装饰装修施工","href":"course/chapters/06/overview/index.html","tasks":[{"id":"6-1","label":"6-1","short":"砌筑机器人","href":"course/chapters/06/tasks/6-1/index.html"},{"id":"6-2","label":"6-2","short":"地砖铺贴","href":"course/chapters/06/tasks/6-2/index.html"},{"id":"6-3","label":"6-3","short":"腻子打磨","href":"course/chapters/06/tasks/6-3/index.html"},{"id":"6-4","label":"6-4","short":"室内喷涂","href":"course/chapters/06/tasks/6-4/index.html"}]}};
+/* 课程任务页外壳（第二章起使用）：页头（本章任务）→ 工位条 → 三维区 + 操作面板。
+ * 两种用法：
+ *   LabShell.embedded(cfg)  三维区放原版实验页（iframe，嵌入模式只显示三维视图），面板通过 postMessage 驱动原模型。（第二章）
+ *   LabShell.native(cfg)    页面自己的三维区与原有控件直接搬进外壳，面板里重新编排，状态由 cfg.poll() 读取。（第三章）
+ * 菜单只有两层；面板里没有标签页，也没有“学习目标/学习任务”。设计规范见 course/设计规范.md。
+ */
+(() => {
+  'use strict';
+  const h = (tag, cls, text) => { const e = document.createElement(tag); if (cls) e.className = cls; if (text != null) e.textContent = text; return e; };
+  const href = p => (window.courseHref ? window.courseHref(p) : p);
+  const fmt = (v, n = 0) => (Number.isFinite(v) ? (Math.abs(v) < Math.pow(10, -n) / 2 ? 0 : v).toFixed(n) : '—');
+
+  function start(cfg) {
+    const native = Boolean(cfg.native);
+    document.title = `${cfg.task} ${cfg.title}｜智能建筑机械与机器人`;
+    document.documentElement.dataset.c2Lab = cfg.task;
+    document.documentElement.classList.add('lab-shell', native ? 'lab-native' : 'lab-embedded');
+    const store = 'c2-progress-' + (cfg.progressKey || cfg.task);
+    let progress = {};
+    try { progress = JSON.parse(localStorage.getItem(store) || '{}') || {}; } catch {}
+    const save = () => { try { localStorage.setItem(store, JSON.stringify(progress)); } catch {} };
+
+    /* 页头 */
+    const top = h('header', 'c2-top course-nav');
+    const back = h('a', 'c2-back', '← ' + cfg.chapter.title); back.href = href(cfg.chapter.href);
+    const tasks = h('nav', 'c2-tasks'); tasks.setAttribute('aria-label', '本章任务');
+    for (const t of cfg.tasks) {
+      const a = h('a', '', `${t.label || t.id} ${t.short || t.title}`); a.href = href(t.href);
+      if (t.id === (cfg.taskNav || cfg.task)) a.setAttribute('aria-current', 'page');
+      tasks.append(a);
+    }
+    top.append(back, tasks);
+
+    /* 工位条 */
+    const bar = h('div', 'c2-bar');
+    const title = h('div', 'c2-title');
+    title.append(h('span', 'c2-task-id', '任务 ' + cfg.task), h('h1', '', cfg.title));
+    const tabs = h('div', 'c2-stations'); tabs.setAttribute('role', 'tablist'); tabs.setAttribute('aria-label', '工位');
+    bar.append(title, tabs);
+
+    /* 三维区 */
+    const main = h('main', 'c2-main');
+    const stageBox = h('section', 'c2-stage'); stageBox.setAttribute('aria-label', '三维模型');
+    const view = h('div', 'c2-view');
+    const loading = h('div', 'c2-loading'); loading.append(h('span', 'c2-spinner'), h('span', '', '正在载入三维模型…'));
+    const tools = h('div', 'c2-tools');
+    const card = h('div', 'c2-part'); card.hidden = true; card.setAttribute('role', 'status');
+    const hint = h('div', 'c2-hint');
+    view.append(loading, tools, card, hint);
+    const strip = h('div', 'c2-strip');
+    const transportBox = h('div', 'c2-transport');
+    const readBox = h('div', 'c2-readouts');
+    strip.append(transportBox, readBox);
+    stageBox.append(view, strip);
+
+    /* 面板 */
+    const panel = h('aside', 'c2-panel'); panel.setAttribute('aria-label', '操作面板');
+    const head = h('div', 'c2-panel-head');
+    const body = h('div', 'c2-panel-body');
+    const feedback = h('div', 'c2-feedback'); feedback.setAttribute('role', 'status'); feedback.setAttribute('aria-live', 'polite');
+    const redo = h('button', 'c2-redo', '↺ 重来'); redo.type = 'button'; redo.title = '把这个工位恢复到开始的样子';
+    const next = h('button', 'c2-btn c2-primary c2-next', '去下一站 →'); next.type = 'button';
+    panel.append(head, body);
+    view.append(feedback);
+    let toastTimer = 0;
+    main.append(stageBox, panel);
+    /* 原页面里暂时不用的控件停放处（仍在文档里，原有程序照常工作） */
+    const parking = h('div', 'c2-parking'); parking.hidden = true;
+    document.body.append(top, bar, main, parking);
+    if (native) {
+      loading.hidden = true;
+      if (cfg.stage) { cfg.stage.classList.add('c2-native-stage'); view.prepend(cfg.stage); }
+      if (cfg.stageTop) { const topRow = h('div', 'c2-stage-top'); topRow.append(...[].concat(cfg.stageTop).filter(Boolean)); stageBox.prepend(topRow); }
+      if (cfg.redo === false) redo.hidden = true;
+    }
+
+    let current = -1, ctx = null, frame = null, cleanup = [];
+    const tabButtons = cfg.stations.map((s, i) => {
+      const b = h('button', 'c2-station'); b.type = 'button'; b.setAttribute('role', 'tab');
+      b.append(h('span', 'c2-num', String(i + 1)), h('span', 'c2-name', s.name), h('span', 'c2-check', '✓'));
+      b.addEventListener('click', () => select(i));
+      b.addEventListener('keydown', e => {
+        if (e.key !== 'ArrowRight' && e.key !== 'ArrowLeft') return;
+        e.preventDefault(); const j = (i + (e.key === 'ArrowRight' ? 1 : -1) + cfg.stations.length) % cfg.stations.length;
+        select(j); tabButtons[j].focus();
+      });
+      tabs.append(b);
+      return b;
+    });
+    const syncTabs = () => tabButtons.forEach((b, i) => {
+      b.setAttribute('aria-selected', String(i === current)); b.tabIndex = i === current ? 0 : -1;
+      b.classList.toggle('done', Boolean(progress[cfg.stations[i].id]));
+    });
+
+    /* 嵌入模式：与原版实验页通信（只用 postMessage，file:// 打开也能用） */
+    window.addEventListener('message', e => {
+      const d = e.data;
+      if (!d || d.c2 !== 'lab' || !frame || e.source !== frame.contentWindow) return;
+      if (d.type === 'ready' || (d.type === 'state' && ctx && !ctx.lab.ready)) { loading.hidden = true; sendTheme(); ctx?._ready(); }
+      if (d.type === 'state') ctx?._state(d.data);
+    });
+    const sendTheme = () => frame?.contentWindow?.postMessage({c2: 'cmd', op: 'theme', value: window.CourseTheme?.get?.() || 'light'}, '*');
+    window.addEventListener('course-theme-change', sendTheme);
+
+    // 原页面的控件始终留在文档里（原程序可能随时读写它们），换工位时先放回停放处
+    function parkAll() { for (const root of [body, readBox]) root.querySelectorAll('[data-c2-adopted]').forEach(n => parking.append(n)); }
+
+    function select(i, fromHash, fromPage) {
+      if (i === current) return;
+      cleanup.forEach(f => f()); cleanup = [];
+      current = i;
+      const s = cfg.stations[i];
+      if (!fromHash) history.replaceState(null, '', '#' + s.id);
+      const ht = h('div', 'c2-head-row'), name = h('div', 'c2-head-name');
+      name.append(h('span', 'c2-head-num', String(i + 1)), h('h2', '', s.name));
+      ht.append(name, redo);
+      head.replaceChildren(ht, h('p', '', s.lead || ''));
+      parkAll();
+      body.replaceChildren(); clearTimeout(toastTimer); feedback.textContent = ''; feedback.className = 'c2-feedback';
+      transportBox.replaceChildren(); readBox.replaceChildren(); tools.replaceChildren(); card.hidden = true;
+      hint.textContent = (s.note ? s.note + '　' : '') + (s.hint ?? cfg.hint ?? '拖动旋转 · 滚轮缩放');
+      hint.hidden = !hint.textContent;
+      if (native) {
+        if (!fromPage) cfg.select?.(s.id);
+      } else {
+        frame?.remove();
+        frame = h('iframe', 'c2-frame'); frame.title = s.name + '三维模型';
+        frame.src = s.src; loading.hidden = false;
+        view.prepend(frame);
+      }
+      ctx = makeContext(s, i);
+      cfg.build?.(ctx, s);
+      s.build?.(ctx, s);
+      if (native) ctx._ready();
+      syncTabs();
+      // 原页面的渲染器按容器尺寸重新取景；布局稳定后再通知一次
+      dispatchEvent(new Event('resize'));
+      if (native) for (const t of [60, 300, 900]) setTimeout(() => dispatchEvent(new Event('resize')), t);
+    }
+    redo.addEventListener('click', () => { const i = current; current = -1; cfg.reset?.(cfg.stations[i].id); select(i); });
+    next.addEventListener('click', () => select(Math.min(current + 1, cfg.stations.length - 1)));
+
+    function makeContext(s, index) {
+      const stateFns = new Set(), readyFns = new Set();
+      let latest = null, ready = false;
+      const send = msg => frame?.contentWindow?.postMessage({c2: 'cmd', ...msg}, '*');
+      const c = {
+        h, fmt, station: s, index, body, native,
+        /* —— 原模型 —— */
+        lab: {
+          click: (sel, i = 0) => send({op: 'click', sel, index: i}),
+          clickText: (sel, text) => send({op: 'clickText', sel, text}),
+          set: (sel, value) => send({op: 'set', sel, value}),
+          call: (path, ...args) => send({op: 'call', path, args}),
+          event: name => send({op: 'event', name}),
+          get state() { return latest; },
+          get ready() { return ready; },
+          onState(fn) { stateFns.add(fn); if (latest) fn(latest); },
+          onReady(fn) { readyFns.add(fn); if (ready) fn(); },
+        },
+        _state(data) { latest = data; stateFns.forEach(f => { try { f(data); } catch (err) { console.warn(err); } }); },
+        _ready() { if (ready) return; ready = true; readyFns.forEach(f => f()); },
+        /** 把原页面里的一个控件（或一组）搬进面板；换工位时自动放回停放处。 */
+        adopt(nodes, into) {
+          const list = (Array.isArray(nodes) ? nodes : [nodes]).map(n => (typeof n === 'string' ? document.querySelector(n) : n)).filter(Boolean);
+          list.forEach(n => { n.dataset.c2Adopted = '1'; n.hidden = false; (into || body).append(n); });
+          return list[0];
+        },
+        /* —— 反馈 —— */
+        /** 反馈以提示条形式出现在三维区上方，几秒后自动收起，不挤占面板。 */
+        feedback(text, kind = 'info', keep = false) {
+          clearTimeout(toastTimer);
+          feedback.replaceChildren();
+          if (text) feedback.append(h('span', 'c2-toast-icon', kind === 'ok' ? '✓' : kind === 'warn' ? '!' : 'i'), h('span', 'c2-toast-text', text));
+          feedback.className = 'c2-feedback ' + kind;
+          if (!keep && text) toastTimer = setTimeout(() => { feedback.textContent = ''; feedback.className = 'c2-feedback'; }, kind === 'warn' ? 5000 : 7000);
+        },
+        showPart(name, desc) {
+          if (!name) { card.hidden = true; return; }
+          card.replaceChildren(h('strong', '', name), h('span', '', desc || ''));
+          const x = h('button', 'c2-x', '×'); x.type = 'button'; x.setAttribute('aria-label', '关闭'); x.onclick = () => { card.hidden = true; };
+          card.append(x); card.hidden = false;
+        },
+        /* —— 面板控件 —— */
+        section(titleText, extra, into = body) {
+          const sec = h('section', 'c2-group');
+          if (titleText) { const t = h('h3', ''); t.append(h('span', 'c2-h3-text', titleText)); if (extra) t.append(extra); sec.append(t); }
+          into.append(sec); return sec;
+        },
+        button(text, fn, opts = {}) {
+          const b = h('button', 'c2-btn' + (opts.primary ? ' c2-primary' : '') + (opts.small ? ' c2-small' : ''), text);
+          b.type = 'button'; b.addEventListener('click', fn); if (opts.title) b.title = opts.title; return b;
+        },
+        row(...items) { const r = h('div', 'c2-row'); r.append(...items); return r; },
+        segmented(options, value, onChange, label) {
+          const wrap = h('div', 'c2-seg'); wrap.setAttribute('role', 'radiogroup'); if (label) wrap.setAttribute('aria-label', label);
+          let currentValue = value;
+          const buttons = options.map(o => {
+            const b = h('button', '', o.label); b.type = 'button'; b.setAttribute('role', 'radio'); if (o.title) b.title = o.title;
+            b.addEventListener('click', () => { set(o.value); onChange(o.value); });
+            wrap.append(b); return [o.value, b];
+          });
+          const set = v => { currentValue = v; buttons.forEach(([val, b]) => b.setAttribute('aria-checked', String(val === v))); };
+          set(value);
+          return {el: wrap, set, get: () => currentValue};
+        },
+        slider({label, min, max, step = 1, value, unit = '', format, onInput}) {
+          const wrap = h('label', 'c2-slider');
+          const t = h('span', 'c2-slider-top'), name = h('span', '', label), out = h('output', '');
+          t.append(name, out);
+          const input = h('input'); input.type = 'range'; Object.assign(input, {min, max, step, value});
+          const show = v => {
+            out.textContent = (format ? format(+v) : v) + (unit ? ' ' + unit : '');
+            input.style.setProperty('--p', ((+v - min) / (max - min || 1) * 100).toFixed(1) + '%');
+          };
+          let touching = 0;
+          input.addEventListener('input', () => { touching = performance.now(); show(input.value); onInput(+input.value); });
+          show(value); wrap.append(t, input);
+          return {
+            el: wrap, input,
+            /** 跟随模型同步显示；用户正在拖动时不打断。 */
+            sync(v) { if (performance.now() - touching < 700 || !Number.isFinite(v)) return; if (Math.abs(+input.value - v) > 1e-9) { input.value = v; show(input.value); } },
+            set(v) { input.value = v; show(v); }, get: () => +input.value,
+          };
+        },
+        toggle(label, value, onChange) {
+          const b = h('button', 'c2-switch'); b.type = 'button'; b.setAttribute('role', 'switch');
+          b.append(h('span', 'c2-knob'), h('span', '', label));
+          const set = v => b.setAttribute('aria-checked', String(Boolean(v)));
+          b.addEventListener('click', () => { const v = b.getAttribute('aria-checked') !== 'true'; set(v); onChange(v); });
+          set(value);
+          return {el: b, set};
+        },
+        /** 部件快捷：点一下镜头飞过去。 */
+        chips(items, onPick) {
+          const wrap = h('div', 'c2-chips');
+          const buttons = items.map(it => {
+            const b = h('button', 'c2-chip', it.label); b.type = 'button';
+            b.addEventListener('click', () => { buttons.forEach(x => x.setAttribute('aria-pressed', String(x === b))); onPick(it); });
+            wrap.append(b); return b;
+          });
+          return {el: wrap, buttons, clear: () => buttons.forEach(x => x.setAttribute('aria-pressed', 'false'))};
+        },
+        /** 小问题：只用在“看过结果之后”。 */
+        choice({prompt, options, answer, onRight, wrong}) {
+          const box = h('div', 'c2-choice');
+          if (prompt) box.append(h('p', 'c2-prompt', prompt));
+          const row = h('div', 'c2-options');
+          options.forEach((o, i) => {
+            const b = h('button', 'c2-opt', o); b.type = 'button';
+            b.addEventListener('click', () => {
+              if (box.dataset.solved) return;
+              if (i === answer) { b.classList.add('right'); box.dataset.solved = '1'; [...row.children].forEach(x => { x.disabled = x !== b; }); onRight?.(); }
+              else { b.classList.add('wrong'); b.disabled = true; c.feedback(typeof wrong === 'function' ? wrong(i) : (wrong || '再看看模型，再选一次。'), 'warn'); }
+            });
+            row.append(b);
+          });
+          box.append(row);
+          return box;
+        },
+        /** 先猜一个数，再让模型跑给你看。onGuess 返回 true/false/undefined。 */
+        predict({prompt, unit, onGuess, inline}) {
+          const box = h('div', 'c2-predict' + (inline ? ' c2-inline' : ''));
+          box.append(h('p', 'c2-prompt', prompt));
+          const r = h('div', 'c2-row'), input = h('input'); input.type = 'number'; input.inputMode = 'decimal'; input.setAttribute('aria-label', prompt);
+          const go = c.button('试试看', () => {
+            const v = parseFloat(input.value);
+            if (!Number.isFinite(v)) { c.feedback('先填一个数。', 'warn'); return; }
+            const ok = onGuess(v); input.classList.toggle('right', ok === true); input.classList.toggle('wrong', ok === false);
+          }, {small: true});
+          input.addEventListener('keydown', e => { if (e.key === 'Enter') go.click(); });
+          r.append(input, h('span', 'c2-unit', unit || ''), go); box.append(r);
+          return {el: box, input};
+        },
+        /** 试一试：几张挑战卡，不分先后；模型状态满足条件就自动打勾。 */
+        challenges(list, titleText = '试一试', into = body) {
+          const counter = h('span', 'c2-count');
+          const sec = c.section(titleText, counter, into);
+          const bar = h('div', 'c2-progress'); const fill = h('span'); bar.append(fill);
+          const grid = h('div', 'c2-challenges'); sec.append(bar, grid);
+          const done = new Set();
+          const items = list.map(ch => {
+            const li = h('div', 'c2-challenge');
+            const mark = h('span', 'c2-mark', ch.icon || '★');
+            const txt = h('div', 'c2-ch-text');
+            txt.append(h('b', '', ch.title));
+            const sub = h('span', '', ch.hint || ''); txt.append(sub);
+            li.append(mark, txt);
+            if (ch.action) {
+              const go = h('button', 'c2-ch-go', ch.action.label); go.type = 'button';
+              go.addEventListener('click', e => { e.stopPropagation(); ch.action.fn(); });
+              txt.append(go);
+            }
+            grid.append(li);
+            return {ch, li, sub, mark};
+          });
+          const update = () => { counter.textContent = `${done.size} / ${list.length}`; fill.style.width = (done.size / list.length * 100) + '%'; };
+          const complete = id => {
+            if (done.has(id)) return;
+            const it = items.find(x => x.ch.id === id); if (!it) return;
+            done.add(id); it.li.classList.add('done'); it.mark.textContent = '✓';
+            if (it.ch.result) c.feedback(it.ch.title + '：' + it.ch.result, 'ok');
+            it.sub.textContent = '完成';
+            update();
+            if (done.size === list.length) {
+              progress[s.id] = true; save(); syncTabs();
+              setTimeout(() => {
+                if (ctx !== c) return;
+                c.feedback(current < cfg.stations.length - 1 ? '这一站的挑战都完成了！' : '本任务的挑战都完成了！还可以接着随便调一调。', 'ok', current < cfg.stations.length - 1);
+                if (current < cfg.stations.length - 1) feedback.append(next);
+              }, 2600);
+            }
+          };
+          c.lab.onState(st => { for (const it of items) if (!done.has(it.ch.id)) { try { if (it.ch.check?.(st)) complete(it.ch.id); } catch {} } });
+          update();
+          return {complete, isDone: id => done.has(id), section: sec};
+        },
+        /* —— 三维区：工具、播放、读数 —— */
+        view(text, fn, titleText) { const b = h('button', 'c2-tool', text); b.type = 'button'; if (titleText) b.title = titleText; b.addEventListener('click', fn); tools.append(b); return b; },
+        /** 三维区左上角的一组单选（如 剖开 / 完整 / 去掉外壳）。 */
+        toolSeg(options, value, onChange, label) {
+          const seg = c.segmented(options, value, onChange, label); seg.el.classList.add('c2-toolseg'); tools.append(seg.el); return seg;
+        },
+        tool(text, onToggle, pressed = false) {
+          const b = h('button', 'c2-tool', text); b.type = 'button'; b.setAttribute('aria-pressed', String(pressed));
+          b.addEventListener('click', () => { const p = b.getAttribute('aria-pressed') !== 'true'; b.setAttribute('aria-pressed', String(p)); onToggle(p); });
+          tools.append(b); return {el: b, set: p => b.setAttribute('aria-pressed', String(Boolean(p)))};
+        },
+        transport({onToggle, onStep, onReset, stepText = '单步', extra, speeds, onSpeed, speed}) {
+          const play = h('button', 'c2-play', ''); play.type = 'button';
+          const set = p => { play.textContent = p ? '❚❚ 暂停' : '▶ 运行'; play.setAttribute('aria-pressed', String(Boolean(p))); };
+          play.addEventListener('click', () => { const p = play.getAttribute('aria-pressed') !== 'true'; set(p); onToggle(p); });
+          set(false); transportBox.append(play);
+          if (onStep) { const st = h('button', 'c2-tool', stepText); st.type = 'button'; st.addEventListener('click', onStep); transportBox.append(st); }
+          if (onReset) { const rs = h('button', 'c2-tool', '复位'); rs.type = 'button'; rs.addEventListener('click', onReset); transportBox.append(rs); }
+          let speedSeg = null;
+          if (speeds) { speedSeg = c.segmented(speeds.map(([v, l]) => ({value: v, label: l})), speed ?? speeds[0][0], onSpeed, '快慢'); speedSeg.el.classList.add('c2-speed'); transportBox.append(speedSeg.el); }
+          if (extra) transportBox.append(extra);
+          return {setPlaying: set, setSpeed: v => speedSeg?.set(v)};
+        },
+        /** 把原页面的元素放进三维区底部一栏。 */
+        stripAdopt(nodes) { const list = (Array.isArray(nodes) ? nodes : [nodes]).map(n => (typeof n === 'string' ? document.querySelector(n) : n)).filter(Boolean); list.forEach(n => { n.dataset.c2Adopted = '1'; readBox.append(n); }); },
+        readouts(defs) {
+          const cells = {};
+          readBox.replaceChildren();
+          for (const d of defs) {
+            const cell = h('div', 'c2-read'), v = h('b', '', '—'), u = h('small', '', d.unit || '');
+            const val = h('span', 'c2-val'); val.append(v, u);
+            cell.append(h('span', 'c2-read-label', d.label), val);
+            readBox.append(cell); cells[d.id] = {v, u, cell};
+          }
+          return (id, value, unit) => {
+            const x = cells[id]; if (!x) return;
+            if (x.v.textContent !== String(value)) x.v.textContent = value;
+            if (unit != null && x.u.textContent !== unit) x.u.textContent = unit;
+          };
+        },
+        onCleanup(fn) { cleanup.push(fn); },
+      };
+      return c;
+    }
+
+    /* 原地模式：定时读原页面状态；原页面自己切换了活动时，工位条跟着变 */
+    if (native) {
+      setInterval(() => {
+        let st = null;
+        try { st = cfg.poll?.(); } catch (err) { /* 页面尚未就绪 */ }
+        if (st && ctx) ctx._state(st);
+        const pageStation = cfg.current?.();
+        if (pageStation) { const j = cfg.stations.findIndex(s => s.id === pageStation); if (j >= 0 && j !== current) select(j, false, true); }
+      }, 200);
+    }
+
+    const fromHash = () => {
+      const id = location.hash.slice(1), i = cfg.stations.findIndex(s => s.id === id);
+      return i >= 0 ? i : 0;
+    };
+    window.addEventListener('hashchange', () => select(fromHash(), true));
+    select(fromHash(), true);
+    window.c2Lab = {select, get ctx() { return ctx; }, get frame() { return frame; }, get current() { return current; }};
+  }
+
+  window.LabShell = {
+    embedded: start,
+    native: cfg => start({...cfg, native: true}),
+  };
+  window.C2Lab = {start};
+})();
+
+/* 原地模式的统一任务页外壳（全课程共用）：把原页面装进 lab-shell。
+ * 原页面的全部元素先移入一个隐藏容器（仍在文档里，原有程序照常工作），
+ * 各任务的 src/stations.js 再把需要的三维区和控件搬进外壳。
+ * 章节标题和本章任务列表来自 shared/lab-shell/chapters.json，由 native-layout.mjs 写进 window.CHAPTER_LAYOUT。
+ */
+(() => {
+  'use strict';
+  const $ = s => document.querySelector(s);
+  const all = s => [...document.querySelectorAll(s)];
+
+  // 外壳里的原有滑轨：已走过的一段用主色填充，跟随拖动和程序改值
+  const fill = input => {
+    const min = +input.min || 0, max = input.max === '' ? 100 : +input.max, v = +input.value;
+    input.style.setProperty('--p', (((v - min) / ((max - min) || 1)) * 100).toFixed(1) + '%');
+  };
+  document.addEventListener('input', e => { if (e.target.matches?.('input[type="range"]')) fill(e.target); }, true);
+  setInterval(() => document.querySelectorAll('.c2-panel input[type="range"], .c2-strip input[type="range"]').forEach(fill), 250);
+
+  window.NativeShell = window.C3Shell = {
+    $, all,
+    start(cfg) {
+      const layout = window.CHAPTER_LAYOUT || {}, chapter = layout.chapter || {};
+      const legacy = document.createElement('div');
+      legacy.className = 'c3-legacy'; legacy.hidden = true;
+      [...document.body.children]
+        .filter(e => !['SCRIPT', 'STYLE', 'DIALOG', 'TEMPLATE'].includes(e.tagName) && e.id !== 'toast' && !e.matches('.course-theme-toggle'))
+        .forEach(e => legacy.append(e));
+      document.body.append(legacy);
+      document.documentElement.dataset.c3Task = layout.task || '';
+      LabShell.native({
+        chapter: {title: chapter.title, href: chapter.href},
+        tasks: chapter.tasks || [], taskNav: layout.nav, hint: '', progressKey: layout.nav,
+        ...cfg,
+      });
+    },
+  };
+})();
+
+/* 任务 6-2 地砖铺贴 —— 原页面的三维场景、操作模型与控件保持不变，搬进统一外壳。
+ * 原页面的三个关卡（吸牢再提起 / 看清再对缝 / 压稳再复核）就是三个工位；
+ * 吸盘布局（选研究对象）放在三维区上方，原有的三项仪表放在三维区底部，其余控件进面板。
+ * 状态全部来自 window.tilingLab.snapshot()，切换工位调原页面的 act('stage')。
+ */
+(() => {
+  'use strict';
+  const {$, all} = NativeShell;
+  const lab = () => window.tilingLab;
+  const snap = () => lab().snapshot();
+  const act = (type, value) => lab().act(type, value);
+
+  const EL = {
+    stage: $('.workspace > .scene-area'),
+    instruments: $('#instruments'),
+    cups: $('.cup-options'),
+    offset: $('[data-panel="grip"] .control-section'),
+    gripMore: $('#gripMore'),
+    gripActions: $('[data-panel="grip"] .action-row'),
+    alignActions: $('#recognize')?.parentElement,
+    alignPad: $('.alignment-pad'),
+    occlusion: $('#occlude')?.parentElement,
+    occlusionNote: $('#occlude')?.parentElement?.nextElementSibling,
+    acceptAlign: $('#acceptAlign'), toPress: $('#toPress'),
+    modes: $('[data-mode]')?.parentElement,
+    target: $('[data-panel="press"] .control-section'),
+    pressActions: $('#pressRun')?.parentElement,
+    pressMore: $('#pressMore'),
+    checkActions: $('#ruler')?.parentElement,
+    finish: $('#finish'),
+    slip: $('#slip'),
+  };
+
+  // 外壳里已有工位名、引子和挑战卡：原来的说明弹窗入口、证据行、底栏、页头都不再出现；
+  // 比较实验直接展开（面板里不放折叠菜单）。
+  for (const e of all('#cupInfo, .scene-hint, .mobile-action')) e.setAttribute('hidden', '');
+  for (const d of [EL.gripMore, EL.pressMore]) if (d) d.open = true;
+  // 原标签前的“① ②”是原面板的步骤序号，外壳里由分组标题代替
+  for (const l of all('.controls label')) {
+    const t = l.firstChild;
+    if (t?.nodeType === 3 && /^[①②③]\s*/.test(t.textContent)) t.textContent = t.textContent.replace(/^[①②③]\s*/, '');
+  }
+  // 每个面板只留一个主按钮：试提 / 开始纠偏 / 缓慢下压
+  for (const b of [EL.acceptAlign, EL.finish]) b?.classList.remove('primary');
+  // 完成后的“实训记录”弹窗不再弹出，完成情况由挑战卡和工位 ✓ 表示
+  const summary = $('#summaryDialog');
+  if (summary) summary.showModal = () => {};
+
+  /* 外壳自己记的经历（原模型只记当前状态） */
+  const seen = {passedLayouts: new Set(), isolatedPass: false, slipped: false, overpressed: false, forceOK: false, highChecked: false};
+  EL.slip?.addEventListener('click', () => { if (lab()?.snapshot().state.align.visibility !== 'clear') seen.slipped = true; });
+
+  const STATIONS = [
+    {
+      id: 'grip', name: '吸牢，再提起',
+      lead: '选吸盘布局、挪吸盘架，再低位试提。',
+      build(c) {
+        const g = c.section('吸盘架位置');
+        c.adopt(EL.offset, g);
+        const g2 = c.section('比较条件：间距、真空、密封');
+        c.adopt(EL.gripMore, g2);
+        const g3 = c.section('试提');
+        c.adopt(EL.gripActions, g3);
+        c.challenges([
+          {id: 'peel', icon: '🫨', title: '看砖掀边', hint: '吸盘偏着就试提', check: s => s.state.grip.observedFailure,
+            result: '吸力够也会翘边：吸盘偏在一侧，砖的重心落到了支承区外。'},
+          {id: 'pass', icon: '✅', title: '试提通过', hint: '先把吸盘架对准中心', check: s => s.state.done.grip,
+            result: '对中以后，同样的吸力就能把砖稳稳提起。'},
+          {id: 'layouts', icon: '🔁', title: '两种布局都提起来', hint: '换一种布局再试提', check: () => seen.passedLayouts.size >= 2,
+            result: '三种布局总面积相同，理论吸力一样；差别在支承和密封。'},
+          {id: 'leak', icon: '💨', title: '漏一个盘也提起来', hint: '4 个盘、漏气、隔离支路', check: () => seen.isolatedPass,
+            result: '隔离漏气支路，剩下的吸盘保住了真空——只是余量变小了。'},
+        ]);
+      },
+    },
+    {
+      id: 'align', name: '看清，再对缝',
+      lead: '认出砖边再纠偏；遮住镜头试试看。',
+      build(c) {
+        const g = c.section('识别与纠偏');
+        c.adopt([EL.alignActions, EL.alignPad], g);
+        const g2 = c.section('让相机看不见');
+        c.adopt([EL.occlusion, EL.occlusionNote], g2);
+        const g3 = c.section('检查砖缝');
+        c.adopt([EL.acceptAlign, EL.toPress], g3);
+        c.challenges([
+          {id: 'blind', icon: '🙈', title: '遮住镜头', hint: '看画面里留下了什么', check: s => s.state.align.blockedSeen,
+            result: '看不见就停止纠偏；相机小窗里留的是旧观测，不是现在的砖。'},
+          {id: 'slip', icon: '🫳', title: '遮着时推一下砖', hint: '先遮挡，再滑移扰动', check: () => seen.slipped,
+            result: '砖动了，相机没看到——旧读数不能拿来纠偏。'},
+          {id: 'again', icon: '🔍', title: '恢复后重新识别', hint: '移开遮挡，再识别', check: s => s.state.align.reacquired,
+            result: '视野恢复只是能看了，重新识别以后才知道砖现在在哪。'},
+          {id: 'pass', icon: '✅', title: '通过砖缝检查', hint: '纠偏到位后检查', check: s => s.state.done.align,
+            result: '两条砖缝和转角都进了窗口：看得见，纠偏才有依据。'},
+        ]);
+      },
+    },
+    {
+      id: 'press', name: '压稳，再复核',
+      lead: '比一比两种压法，再用靠尺查高差。',
+      build(c) {
+        const g = c.section('压入方式');
+        c.adopt([EL.modes, EL.target, EL.pressActions], g);
+        const g2 = c.section('换条件：铺贴层与基层');
+        c.adopt(EL.pressMore, g2);
+        const g3 = c.section('复核与卸盘');
+        c.adopt([EL.checkActions, EL.finish], g3);
+        c.challenges([
+          {id: 'over', icon: '💥', title: '把砖压过头', hint: '固定压入量调深', check: () => seen.overpressed,
+            result: '固定压入量不管力多大都往下压，遇到硬层就过压。'},
+          {id: 'force', icon: '🎚', title: '边压边测力，压到位', hint: '换“边压边测力”再下压', check: () => seen.forceOK,
+            result: '边压边感觉力：力到了就停，不会一直往下压。'},
+          {id: 'high', icon: '📐', title: '力对了，砖却偏高', hint: '基层高出 2 mm，放靠尺', check: () => seen.highChecked,
+            result: '力合适不等于砖面平——靠尺查的是高度，不是力。'},
+          {id: 'done', icon: '✅', title: '铺好并卸下吸盘', hint: '力和高差都过关', check: s => s.state.done.press,
+            result: '力和高差都过关才卸盘；粘结和空鼓还要在现场复核。'},
+        ]);
+      },
+    },
+  ];
+
+  const FRESH = {
+    grip: () => { seen.passedLayouts.clear(); seen.isolatedPass = false; },
+    align: () => { seen.slipped = false; },
+    press: () => { seen.overpressed = false; seen.forceOK = false; seen.highChecked = false; },
+  };
+
+  let lastMessage = '';
+  NativeShell.start({
+    task: '6-2', title: '地砖铺贴',
+    stage: EL.stage,
+    stageTop: [EL.cups],
+    stations: STATIONS,
+    hint: '拖动旋转 · 滚轮缩放',
+    current: () => lab()?.snapshot().state.stage,
+    select: id => { if (lab() && snap().state.stage !== id) act('stage', id); },
+    reset: id => {
+      act('reset');
+      if (id !== 'grip') act('stage', id);
+      FRESH[id]?.();
+      lastMessage = snap().state.message;
+    },
+    poll() {
+      const s = snap(), st = s.state, r = s.readings;
+      if (st.grip.trial) {
+        seen.passedLayouts.add(st.grip.layout);
+        if (st.grip.failed && st.grip.isolated) seen.isolatedPass = true;
+      }
+      if (st.stage === 'press') {
+        if (st.press.damaged) seen.overpressed = true;
+        if (st.press.mode === 'force' && r.press.forceOK && r.press.stable && !r.press.damaged) seen.forceOK = true;
+        if (st.press.checked && st.press.base > 0 && r.press.forceOK && !r.press.heightOK) seen.highChecked = true;
+      }
+      return s;
+    },
+    build(c) {
+      if (EL.cups) EL.cups.hidden = c.station.id !== 'grip';
+      c.stripAdopt(EL.instruments);
+      lastMessage = lab()?.snapshot().state.message || '';
+      c.lab.onState(s => {
+        const {message, kind} = s.state;
+        if (message && message !== lastMessage) { lastMessage = message; c.feedback(message, kind === 'warn' ? 'warn' : 'info'); }
+      });
+    },
+  });
 })();
 </script></body></html>

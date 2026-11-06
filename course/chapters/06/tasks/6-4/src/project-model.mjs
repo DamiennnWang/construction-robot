@@ -104,10 +104,10 @@ function issueFor(run, cell, index) {
 }
 
 const ISSUE_TEXT = {
-  miss: ['漏喷区', '这部分墙面尚未被实际喷幅覆盖；调整道间距或安排局部补喷。'],
-  edge: ['窗边待补喷', '完整喷幅保护保留了窗边空白；保留遮蔽，用局部精细作业补齐。'],
-  pollution: ['保护区受喷', '窗洞保护区记录到喷涂；先清理污染，再复核停喷时机。'],
-  dose: ['相对沉积偏差', '至少一道的相对沉积超出本项目 0.85–1.20× 教学目标；核对速度和流量后处理。'],
+  miss: ['漏喷区', '这块墙面还没喷到；调小道间距，或在这里补喷。'],
+  edge: ['窗边待补喷', '整幅避让在窗边留了一条空白；窗户继续遮好，把这条补喷上。'],
+  pollution: ['窗面受喷', '窗户上沾到了涂料；先擦干净，再检查窗边有没有及时停喷。'],
+  dose: ['涂层厚薄不对', '这里的涂层偏厚或偏薄；检查喷涂速度和流量，清掉后重喷。'],
 };
 
 export function summarizeRun(run) {
@@ -162,9 +162,9 @@ export function repairAt(run, x, z) {
     if (!cell.hole) run._visits[index].set(action.id, 1);
     action.cellIndices.push(index); action.changed++;
   });
-  action.label = [action.filled ? `精细补喷 ${action.filled} 格` : '',
-    action.cleaned ? `清理保护区 ${action.cleaned} 格` : '',
-    action.recoated ? `处理异常层并重喷 ${action.recoated} 格` : ''].filter(Boolean).join('；') || '该区域无需处理';
+  action.label = [action.filled ? `补喷 ${action.filled} 格` : '',
+    action.cleaned ? `擦净窗面 ${action.cleaned} 格` : '',
+    action.recoated ? `清掉厚薄不对的涂层并重喷 ${action.recoated} 格` : ''].filter(Boolean).join('；') || '该区域无需处理';
   if (action.changed) run.repairs.push(action);
   return action;
 }

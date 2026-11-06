@@ -180,12 +180,14 @@ class MasonryScene {
   updateRobot(state){this.applyRobotPose(state);this.draw();}
   setPlatformQuiet(p){this.platform=p==='mobile'?'mobile':'fixed';this.mobileParts.visible=this.platform==='mobile';this.fixedParts.visible=this.platform==='fixed';}
   draw(){if(!this.renderer||!this.camera)return;const rect=this.host.getBoundingClientRect();if(!rect.width||!rect.height)return;
-    const aspect=rect.width/rect.height,robot=this.mode==='robot';this.floor.position.z=robot?(this.platform==='mobile'?-130:-86):-72;
-    let box=(robot?this.robotBounds:this.manualBounds)?.clone(),points=robot?this.robotFramePoints:this.manualFramePoints;
+    const aspect=rect.width/rect.height,robot=this.mode==='robot',mortar=this.mode==='mortar';this.floor.position.z=robot?(this.platform==='mobile'?-130:-86):mortar?-86:-72;
+    let box=(mortar?this.mortarBounds:robot?this.robotBounds:this.manualBounds)?.clone(),points=mortar?this.mortarFramePoints:robot?this.robotFramePoints:this.manualFramePoints;
     if(!box||box.isEmpty())box=new THREE.Box3(new THREE.Vector3(-500,-300,-72),new THREE.Vector3(500,300,150));
     if(robot)box.min.z=this.platform==='mobile'?-130:-86;
     if(this.view==='detail'){
-      if(robot){const p=this.robotState?.tool||{x:302.5,y:110,z:136};box=new THREE.Box3(new THREE.Vector3(p.x-225,p.y-200,Math.min(p.z,this.robotState?.brick?.z??p.z)-35),new THREE.Vector3(p.x+225,p.y+210,p.z+210));points=null;}
+      // 砂浆工位近看：滚筒开口与出料位的灰车
+      if(mortar){box=new THREE.Box3(new THREE.Vector3(-1150,-450,100),new THREE.Vector3(-150,450,1200));points=null;}
+      else if(robot){const p=this.robotState?.tool||{x:302.5,y:110,z:136};box=new THREE.Box3(new THREE.Vector3(p.x-225,p.y-200,Math.min(p.z,this.robotState?.brick?.z??p.z)-35),new THREE.Vector3(p.x+225,p.y+210,p.z+210));points=null;}
       else{const content=this.manualRoot.getObjectByName('wall-content');if(content){box=this.boundsOf(content);points=this.pointsOf(content);}}
     }
     const center=box.getCenter(new THREE.Vector3()),right=new THREE.Vector3(-Math.sin(this.yaw),Math.cos(this.yaw),0),up=new THREE.Vector3(-Math.cos(this.yaw)*Math.sin(this.pitch),-Math.sin(this.yaw)*Math.sin(this.pitch),Math.cos(this.pitch));
