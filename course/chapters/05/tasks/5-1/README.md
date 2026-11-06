@@ -37,6 +37,7 @@ node "course/chapters/05/tasks/5-1/src/build.mjs" --audit
 
 构建将本地 Three.js、页面、样式、场景、交互与 Anatomy 检查台全部内联到 index.html，不需联网或启动服务。
 
+- src/stations.js、stations.css：统一任务页外壳（shared/lab-shell 原地模式）。三个环节成为三个工位（加工接力 / 楼面巡查 / 分区交接，仍按原顺序解锁），三维工地留在左侧，原有控件搬进右侧面板，每个环节要做的事成为“试一试”卡片；有这两个文件时构建不再套第五章原来的版式。
 - src/page.html、style.css、app.js：16:9 界面与游戏状态。
 - src/scene.js：三维机械、现场搬运、护栏与区域标记。
 - src/model.mjs：原有机械运动与几何模型。
