@@ -99,7 +99,8 @@
     $('cv-side').style.setProperty('--tint', tint(n));
     $('cv-name').textContent = c.title;
     $('cv-lead').textContent = c.description;
-        $('tasks').innerHTML = c.tasks.map(t => {
+        $('tasks').style.setProperty('--n', c.tasks.length);
+    $('tasks').innerHTML = c.tasks.map(t => {
       const done = progress(t.id);
       return `<a class="task" href="${esc(taskHref(t))}" data-task="${t.id}"><span class="id">${t.id}</span><span class="name">${esc(t.title)}</span><span class="note">${esc(t.note)}</span>${done ? `<em class="done">✓ ${done} 个工位</em>` : ''}<span class="go" aria-hidden="true">→</span></a>`;
     }).join('');
@@ -124,7 +125,7 @@
     body.classList.toggle('is-cover', cover); body.classList.toggle('is-overview', !cover);
     $('cover').hidden = !cover;
     $('overview').inert = cover; $('cover').inert = !cover;
-    $('back').hidden = !cover;
+    $('back').hidden = !cover; $('top-edition').hidden = cover;
     if (!cover) document.title = '智能建筑机械与机器人';
     measure();
   }
@@ -165,11 +166,12 @@
   /* 留给三维画面的区域：避开标题、卡片与底部章节条 */
   function measure() {
     if (!stage.webgl) return;
-    /* 宽屏：书名在左，展台占右侧；窄屏：书名在上，展台在下 */
+    /* 宽屏：三维画幅在左栏右侧，上下与左栏对齐；窄屏（手机、平板竖屏）：三维在上，章节信息在下 */
     const h = innerHeight, left = $('stage-probe').getBoundingClientRect().width, wide = innerWidth > 900;
-    const list = $('tasks').getBoundingClientRect();
-    stage.layout({overview: {left: wide ? left : 0, top: wide ? 64 : $('book').getBoundingClientRect().bottom + 4, bottom: 36},
-      cover: wide ? {left, top: 64, bottom: 40} : {left: 0, top: $('cv-lead').getBoundingClientRect().bottom + 4, bottom: Math.max(110, h - list.top + 40)}});
+    if (!wide) { stage.layout({overview: {left: 0, top: 6, bottom: 6}, cover: {left: 0, top: 6, bottom: 6}}); return; }
+    const book = $('book').getBoundingClientRect();
+    const band = {top: Math.max(64, book.top), bottom: Math.max(24, h - book.bottom)};
+    stage.layout({overview: {left, ...band}, cover: {left, ...band}});
   }
   addEventListener('resize', measure);
 

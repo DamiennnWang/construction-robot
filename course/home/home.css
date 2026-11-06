@@ -19,6 +19,7 @@ button{font:inherit;color:inherit}
 /* 页头：一行。左书名（章节里换成“← 全部章节”），右“全部任务”与深浅色 */
 .topbar{position:absolute;z-index:6;top:0;left:0;right:0;height:64px;display:flex;align-items:center;justify-content:space-between;padding:0 28px;pointer-events:none}
 .topbar>*{pointer-events:auto}
+.topbar{gap:16px}
 .back{display:inline-flex;align-items:center;height:42px;padding:0 18px;border-radius:999px;background:var(--h-paper);border:1px solid var(--h-line);box-shadow:var(--h-shadow);font-size:15px;font-weight:600;backdrop-filter:blur(8px)}
 .back:hover{color:var(--h-blue);border-color:var(--h-blue)}
 .home-tools{margin-left:auto;display:flex;gap:10px;align-items:center}
@@ -38,8 +39,9 @@ html body .home-tools #course-theme-toggle.course-theme-toggle:hover{border-colo
 /* 左侧版面底纹：淡淡的图纸网格，向右渐隐 */
 .overview::after{content:"";position:absolute;top:0;bottom:0;left:0;width:calc(var(--stage-left) + 40px);pointer-events:none;background:linear-gradient(var(--h-grid) 1px,transparent 1px) 0 0/28px 28px,linear-gradient(90deg,var(--h-grid) 1px,transparent 1px) 0 0/28px 28px;-webkit-mask-image:linear-gradient(90deg,#000 0,#000 45%,transparent);mask-image:linear-gradient(90deg,#000 0,#000 45%,transparent)}
 .book{z-index:1}
-.book{position:absolute;top:clamp(76px,11vh,128px);bottom:clamp(28px,6vh,72px);left:max(32px,4.6vw);width:calc(var(--stage-left) - max(32px,4.6vw) - 28px);display:flex;flex-direction:column;justify-content:space-between;gap:clamp(10px,1.8vh,22px)}
+.book{position:absolute;top:84px;bottom:clamp(28px,5vh,56px);left:max(32px,4.6vw);width:calc(var(--stage-left) - max(32px,4.6vw) - 28px);display:flex;flex-direction:column;justify-content:flex-start;gap:clamp(12px,2vh,22px)}
 .edition{margin:0;display:flex;align-items:center;gap:12px;font-size:15px;font-weight:700;color:var(--h-blue);letter-spacing:.32em}
+.top-edition{position:absolute;left:max(32px,4.6vw);top:22px;font-size:14px}
 .edition::before{content:"";width:34px;height:2px;border-radius:2px;background:currentColor}
 .edition span{letter-spacing:.06em;color:var(--h-ink);font-weight:700}
 /* 大号数字：08 章节、24 任务；数字用更有棱角的字体 */
@@ -54,11 +56,11 @@ html body .home-tools #course-theme-toggle.course-theme-toggle:hover{border-colo
 .book-title{margin:0;font-size:min(3.4vw,64px);line-height:1.12;font-weight:900;letter-spacing:.02em;white-space:nowrap}
 .book-intro{margin:0;padding-left:14px;border-left:4px solid var(--h-blue);font-size:16px;line-height:1.6;color:var(--h-muted)}
 /* 目录：两栏，八章与全部 24 项任务；当前章带本章颜色 */
-.toc{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:6px;padding:10px;border-radius:18px;background:var(--h-paper);border:1px solid var(--h-line-soft);box-shadow:0 8px 26px #1e3f6a12}
-.toc-ch{border-radius:12px;border:1px solid transparent;transition:background .2s,border-color .2s}
+.toc{flex:1 1 auto;min-height:0;max-height:560px;grid-auto-rows:minmax(0,1fr);display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:6px;padding:10px;border-radius:18px;background:var(--h-paper);border:1px solid var(--h-line-soft);box-shadow:0 8px 26px #1e3f6a12}
+.toc-ch{display:flex;border-radius:12px;border:1px solid transparent;transition:background .2s,border-color .2s}
 .toc-ch:hover{background:color-mix(in srgb,var(--tint) 8%,var(--h-paper-solid))}
 .toc-ch.on{background:color-mix(in srgb,var(--tint) 14%,var(--h-paper-solid));border-color:color-mix(in srgb,var(--tint) 60%,transparent)}
-.toc-ch button{position:relative;display:flex;align-items:center;gap:12px;width:100%;min-height:clamp(48px,7.4vh,80px);padding:6px 12px;border:0;background:none;font-size:16px;font-weight:800;color:var(--h-ink);cursor:pointer;text-align:left;line-height:1.35;white-space:nowrap}
+.toc-ch button{position:relative;display:flex;align-items:center;gap:12px;width:100%;min-height:44px;padding:6px 12px;border:0;background:none;font-size:16px;font-weight:800;color:var(--h-ink);cursor:pointer;text-align:left;line-height:1.35;white-space:nowrap}
 .toc-ch button b{flex:none;min-width:34px;font:700 26px/1 var(--h-num);color:var(--tint);letter-spacing:-.02em}
 .toc-ch .go{position:absolute;right:8px;top:50%;display:grid;place-items:center;width:28px;height:28px;border-radius:50%;transform:translate(6px,-50%);opacity:0;background:var(--tint);color:#fff;font-style:normal;font-size:16px;font-weight:800;box-shadow:0 4px 10px color-mix(in srgb,var(--tint) 40%,transparent);transition:opacity .25s,transform .25s}
 .toc-ch.on .go{opacity:1;transform:translate(0,-50%)}
@@ -98,7 +100,7 @@ html body .home-tools #course-theme-toggle.course-theme-toggle:hover{border-colo
 /* ---------- 章节 ---------- */
 /* 章节：与封面同样左右布局。左：章名、一句话、任务列表、上一章/下一章；右：三维 */
 .cover::before{content:"";position:absolute;inset:0;pointer-events:none;background:radial-gradient(38% 46% at 6% 10%,var(--h-warm),transparent 70%),linear-gradient(90deg,var(--h-veil) 0,var(--h-veil) calc(var(--stage-left) - 140px),var(--h-veil-0) calc(var(--stage-left) + 60px))}
-.cv-side{position:absolute;z-index:1;top:clamp(76px,11vh,128px);bottom:clamp(28px,6vh,72px);left:max(32px,4.6vw);width:calc(var(--stage-left) - max(32px,4.6vw) - 28px);display:flex;flex-direction:column;justify-content:space-between;gap:clamp(10px,1.8vh,22px)}
+.cv-side{position:absolute;z-index:1;top:84px;bottom:clamp(28px,5vh,56px);left:max(32px,4.6vw);width:calc(var(--stage-left) - max(32px,4.6vw) - 28px);display:flex;flex-direction:column;justify-content:flex-start;gap:clamp(12px,2vh,22px)}
 .cv-side .edition{color:var(--tint)}
 .cv-title{margin:0;font-size:clamp(40px,3.6vw,64px);line-height:1.15;font-weight:800;letter-spacing:.04em;outline:0}
 .cv-side .book-intro{border-left-color:var(--tint)}
@@ -120,8 +122,9 @@ html body .home-tools #course-theme-toggle.course-theme-toggle:hover{border-colo
 .chip.hot{border-color:var(--h-blue);box-shadow:0 8px 22px #2467c933;z-index:2}
 .chip.hot span{max-width:340px}
 .chip.hot b{background:linear-gradient(135deg,var(--h-blue-2),#1d58b3);color:#fff}
-.tasks{display:flex;flex-direction:column;gap:clamp(6px,1.1vh,12px)}
-.task{display:grid;grid-template-columns:auto minmax(0,1fr) auto auto;align-items:center;column-gap:12px;min-height:clamp(52px,7.6vh,82px);padding:6px 14px 6px 8px;border-radius:14px;background:var(--h-paper);border:1px solid var(--h-line-soft);box-shadow:0 4px 14px #1e3f6a0f;transition:transform .2s,border-color .2s,box-shadow .2s}
+.tasks{flex:1 1 auto;min-height:0;max-height:calc(var(--n,3) * 108px);display:flex;flex-direction:column;gap:clamp(6px,1.1vh,12px)}
+.tasks .task{flex:1 1 0}
+.task{display:grid;grid-template-columns:auto minmax(0,1fr) auto auto;align-items:center;align-content:center;column-gap:12px;min-height:clamp(52px,7.6vh,82px);padding:6px 14px 6px 8px;border-radius:14px;background:var(--h-paper);border:1px solid var(--h-line-soft);box-shadow:0 4px 14px #1e3f6a0f;transition:transform .2s,border-color .2s,box-shadow .2s}
 .task .id{grid-row:1/3;display:grid;place-items:center;min-width:48px;height:44px;border-radius:11px;background:color-mix(in srgb,var(--tint) 16%,var(--h-paper-solid));color:var(--h-ink);font-weight:800;font-size:15px}
 .task .name{grid-column:2;font-size:16px;font-weight:700;line-height:1.4;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
 .task .note{grid-column:2;font-size:14px;color:var(--h-muted);line-height:1.4;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
@@ -159,28 +162,38 @@ dialog[open]{display:flex;flex-direction:column}
 /* 矮屏：标题与卡片收紧 */
 @media (max-height:700px){
   .primary{height:42px}.stats strong{font-size:clamp(44px,3.8vw,60px)}
-  .book{gap:8px;top:58px;bottom:14px}.book-title{font-size:min(3.3vw,48px)}.edition{font-size:15px}.edition span{font-size:16px}.book-intro{font-size:16px;line-height:1.6}
+  .book{gap:10px;top:66px;bottom:18px}.book-title{font-size:min(3.3vw,48px)}.edition{font-size:15px}.edition span{font-size:16px}.book-intro{font-size:16px;line-height:1.6}
   .toc{padding:8px;gap:6px}.toc-ch button{padding:7px 10px}
   .book-intro{font-size:15px}.book .primary{height:40px}
-  .cv-side{gap:9px;top:58px;bottom:14px}.cv-title{font-size:40px}.task{padding:5px 12px 5px 6px}.task .id{height:38px;min-width:44px}.tasks{gap:6px}.cv-step .thumb{width:54px;height:40px}
+  .cv-side{gap:10px;top:76px;bottom:18px}.cv-title{font-size:40px}.task{padding:5px 12px 5px 6px}.task .id{height:38px;min-width:44px}.tasks{gap:6px}.cv-step .thumb{width:54px;height:40px}
 }
 /* 窄屏（平板竖屏、手机）：允许整页滚动，章节条只留编号 */
+/* 窄屏（手机、平板竖屏）：三维在上，章节信息在下，整页可上下滚动 */
 @media (max-width:900px){
-  :root{--stage-left:0px}
-  .overview::before{display:none}
-  .book{top:64px;bottom:auto;left:20px;right:20px;width:auto;gap:8px}
-  .book-title{font-size:min(7vw,34px)}.book-intro,.book .primary{display:none}
-  .toc{display:flex;gap:4px;padding:6px;overflow-x:auto}.toc-ch button{padding:4px}.toc-ch button span{display:none}
-  .stats strong{font-size:40px}.toc-ch .go{display:none}
-  .cover::before{display:none}
-  .cv-side{top:64px;bottom:12px;left:20px;right:20px;width:auto;justify-content:flex-start;gap:6px}.cv-title{font-size:30px}
-  .tasks{margin-top:auto;max-height:40vh;overflow:auto}
-  .cv-nav{display:none}
+  :root{--stage-left:0px;--stage-h:min(46vh,420px)}
+  body{overflow:auto}
+  #app{height:auto;min-height:100dvh;overflow:visible}
+  #app::after{display:none}
+  #scene{inset:auto;top:56px;left:0;right:0;height:var(--stage-h)}
+  .topbar{position:absolute;height:56px;padding:0 16px}
+  .top-edition{position:static;font-size:13px;letter-spacing:.2em}.top-edition::before{display:none}
+  .overview,.cover{position:relative;inset:auto;padding:calc(var(--stage-h) + 68px) 18px 28px}
+  .is-cover .overview,.is-overview .cover{display:none}
+  .overview::before,.overview::after,.cover::before{display:none}
+  .book,.cv-side{position:static;width:auto;gap:14px}
+  .book-title{font-size:min(7.6vw,34px);white-space:normal}
+  .stats strong{font-size:44px}
+  .toc{max-height:none;grid-template-columns:1fr 1fr}
+  .toc-ch button{font-size:15px;gap:8px;padding:6px 8px}.toc-ch button b{min-width:28px;font-size:22px}
+  .toc-ch .go{display:none}.toc-ch.on span{padding-right:0}
+  .cv-title{font-size:30px}
+  .tasks{max-height:none}.tasks .task{flex:none;min-height:60px}
+  .chips{inset:auto;top:56px;left:0;right:0;height:var(--stage-h)}
   .chapter-grid{display:none!important}
 }
 @media (max-width:600px){
   .topbar{padding:0 12px;gap:8px}
   .home-tools{gap:6px}.home-tools button,html body .home-tools #course-theme-toggle.course-theme-toggle{padding:0 12px;white-space:nowrap}
-  .cv-lead{display:none}
+  .toc{grid-template-columns:1fr}
 }
 @media (prefers-reduced-motion:reduce){*{animation:none!important;transition:none!important}}

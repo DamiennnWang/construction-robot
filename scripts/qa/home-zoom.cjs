@@ -83,6 +83,18 @@ async function clickTarget(p, match) {
     await ctx.close();
   }
 
+  /* 手机：三维在上，章节信息在下，整页可滚动 */
+  {
+    const ctx = await context(browser, 390, 844, 'light', {isMobile: true, hasTouch: true}), p = await page(ctx);
+    for (const [hash, info] of [['', '#book'], ['#chapter-3', '#cv-side']]) {
+      await p.goto('about:blank'); await p.goto(home(hash)); await p.waitForFunction(() => window.CourseHome); await p.waitForTimeout(600);
+      const r = await p.evaluate(sel => ({scene: document.getElementById('scene').getBoundingClientRect().bottom, info: document.querySelector(sel).getBoundingClientRect().top, overflow: document.documentElement.scrollWidth - innerWidth}), info);
+      ok(r.scene <= r.info + 1 && r.overflow <= 0, `phone ${hash || 'cover'}: model above the information, no sideways overflow`, r);
+      await p.screenshot({path: path.join(shots, `phone${hash ? '-chapter3' : '-cover'}-390x844.png`), fullPage: true});
+    }
+    await ctx.close();
+  }
+
   /* 全流程（1440×810 浅色） */
   {
     const ctx = await context(browser, 1440, 810, 'light'), p = await page(ctx);
