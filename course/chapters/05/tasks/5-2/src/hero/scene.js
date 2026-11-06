@@ -3,7 +3,8 @@
  * Concept: guide one tool onto a steel crossing, watch its wire close around BOTH bars,
  * then inspect the actual knot. No floating principle boxes or exploded whole robot.
  * World: y up, metres; x/z bars at -.5, 0, +.5; lower/upper centres .680/.716,
- * radius .018 (tangent contact). Arm shoulder (-1.3,.95,-.6), links 1.25 + 1.20.
+ * radius .018 (tangent contact). The arm is the course-wide six-axis arm
+ * (shared/robot-arm/six-axis-arm.js) on this pedestal, shoulder (-1.3,.95,-.6).
  * Parts list, grouped before geometry: base plate, levelling feet, anchors, rotary
  * bearing, seal, pedestal, motor, access cover, cover screws, four shoulder flange
  * layers; upper-arm shell, seam, inlay, elbow bearing, cover, ring fasteners,
@@ -19,23 +20,15 @@
  */
 (function (global) {
   'use strict';
-  const WORLD = Object.freeze({ baseX: -1.3, baseZ: -.6, shoulderY: .95, upper: 1.25, fore: 1.2, toolOffset: .38, tipY: .72, hoverY: 1.08 });
+  // Shared six-axis arm, scaled to this workshop: 1 mm of the course arm = ARM.scale m.
+  const ARM = Object.freeze({ scale: .00212, upper: 590, fore: 575, mountY: .60, headMount: .31 });
+  const WORLD = Object.freeze({ baseX: -1.3, baseZ: -.6, shoulderY: ARM.mountY + (210 - 45) * ARM.scale, upper: ARM.upper * ARM.scale, fore: (ARM.fore + 65) * ARM.scale, toolOffset: .38, tipY: .72, hoverY: 1.08 });
   const clamp = (x, a, b) => Math.min(b, Math.max(a, x));
   const smooth = (a, b, x) => { const t = clamp((x - a) / (b - a), 0, 1); return t * t * (3 - 2 * t); };
   function phaseAt(value,jammed) {
     if(typeof HG!=='undefined'&&HG.cycleAt)return HG.cycleAt(value,jammed);
     const p=jammed?Math.min(value,.51):value;
     return{p,approach:smooth(0,.2,p),grip:smooth(.2,.4,p)*(1-smooth(.8,1,p)),feed:clamp((p-.4)/.2,0,1),cut:smooth(.6,.635,p),tight:smooth(.635,.705,p),twist:smooth(.705,.8,p),leave:smooth(.8,1,p),jammed:jammed&&p>=.51};
-  }
-  function solveArm(x, y, z) {
-    const dx = x - WORLD.baseX, dz = z - WORLD.baseZ, r = Math.hypot(dx, dz), h = y - WORLD.shoulderY;
-    const distance = Math.hypot(r, h), d = clamp(distance, .051, WORLD.upper + WORLD.fore - .001);
-    const yaw = Math.atan2(dz, dx), a = Math.atan2(h, r) + Math.acos(clamp((WORLD.upper ** 2 + d ** 2 - WORLD.fore ** 2) / (2 * WORLD.upper * d), -1, 1));
-    const b = -Math.acos(clamp((d * d - WORLD.upper ** 2 - WORLD.fore ** 2) / (2 * WORLD.upper * WORLD.fore), -1, 1));
-    const endR = WORLD.upper * Math.cos(a) + WORLD.fore * Math.cos(a + b);
-    const endY = WORLD.shoulderY + WORLD.upper * Math.sin(a) + WORLD.fore * Math.sin(a + b);
-    const endpoint = { x: WORLD.baseX + endR * Math.cos(yaw), y: endY, z: WORLD.baseZ + endR * Math.sin(yaw) };
-    return { yaw, shoulder: a, elbow: b, wrist: -a - b, endpoint, error: Math.hypot(endpoint.x - x, endpoint.y - y, endpoint.z - z), reachable: distance <= WORLD.upper + WORLD.fore - .001 };
   }
   function unavailable(reason) {
     return { available: false, reason: String(reason || 'WebGL unavailable'), update() {}, render() {}, resize() {}, setCamera() {}, setTheme() {}, setCutaway() {}, dispose() {}, projectPoint() { return null; }, getState() { return {}; }, getDiagnostics() { return { available: false, settled: true, aimError: 0, partCount: 0 }; } };
@@ -161,41 +154,15 @@
     cylinder('pedestal-seat', .201, .027, 0, .099, 0, 'ivoryEdge', base);
     cylinder('azimuth-bearing', .166, .055, 0, .573, 0, 'graphite', base);
     torus('azimuth-bearing-seal', .166, .006, 0, .596, 0, 'rubber', base, 'y');
-    const yaw = new T.Group(); yaw.position.set(0, .95, 0); base.add(yaw);
-    rounded('shoulder-neck', .23, .36, .21, 0, -.168, 0, 'ivory', yaw, .038);
     rounded('pedestal-service-cover', .13, .17, .012, 0, .315, .174, 'graphite', base, .018);
     for (const x of [-.047, .047]) for (const y of [.253, .377]) bolt('pedestal-cover-fastener', x, y, .184, base, 'z', .007);
-    const upper = new T.Group(), fore = new T.Group(), wrist = new T.Group(); yaw.add(upper); upper.add(fore); fore.position.x = WORLD.upper; fore.add(wrist); wrist.position.x = WORLD.fore;
-    function joint(name, parent, r, depth, shell = 'ivory') {
-      cylinder(name + '-bearing', r, depth, 0, 0, 0, 'graphite', parent, 'z');
-      for (const sign of [-1, 1]) {
-        cylinder(name + '-flange', r * .91, .023, 0, 0, sign * (depth / 2 + .0115), 'silver', parent, 'z');
-        cylinder(name + '-cap', r * .79, .035, 0, 0, sign * (depth / 2 + .0405), shell, parent, 'z');
-      }
-      torus(name + '-seal', r * .82, .005, 0, 0, depth / 2 + .026, 'rubber', parent);
-      for (let i = 0; i < 4; i++) { const a = i * Math.PI / 2 + Math.PI / 4; bolt(name + '-cap-fastener', Math.cos(a) * r * .60, Math.sin(a) * r * .60, depth / 2 + .061, parent, 'z', .008); }
-    }
-    joint('shoulder', yaw, .195, .30);
-    function linkShell(name, parent, length, width, depth) {
-      rounded(name + '-main-shell', length - .19, width, depth, length / 2, 0, 0, 'ivory', parent, .055);
-      rounded(name + '-rear-seam', length - .29, width * .72, .012, length / 2, 0, -depth / 2 - .006, 'ivoryEdge', parent, .025);
-      rounded(name + '-front-service-strip', length * .52, width * .40, .009, length * .53, 0, depth / 2 + .006, 'ivoryEdge', parent, .022);
-      rounded(name + '-identification-inlay', .19, .047, .005, length * .56, 0, depth / 2 + .012, 'teal', parent, .008);
-      for (const x of [length * .32, length * .75]) bolt(name + '-cover-fastener', x, 0, depth / 2 + .014, parent, 'z', .008);
-      // The cable follows the service side with its ends seated in real collars.
-      tube(name + '-service-harness', [[.16, -.04, -depth / 2 - .025],[.24,-.08,-depth/2-.05],[length-.24,-.08,-depth/2-.05],[length-.13,-.025,-depth/2-.035]], .012, 'rubber', parent, 24);
-      for (const x of [.24, length - .24]) rounded(name + '-harness-clip', .038, .035, .06, x, -.08, -depth / 2 - .02, 'graphite', parent, .006);
-      cylinder(name+'-harness-entry',.018,.04,.16,-.04,-depth/2-.018,'graphite',parent,'z');
-      cylinder(name+'-harness-exit',.018,.04,length-.13,-.025,-depth/2-.018,'graphite',parent,'z');
-    }
-    linkShell('upper-arm', upper, WORLD.upper, .23, .22);
-    joint('elbow', fore, .158, .255, 'orange');
-    linkShell('forearm', fore, WORLD.fore, .17, .17);
-    joint('wrist-pitch', wrist, .077, .155);
-    cylinder('wrist-down-adapter', .057, .035, 0, -.047, 0, 'graphite', wrist);
-    cylinder('tool-mount-flange', .073, .018, 0, -.0735, 0, 'silver', wrist);
-    // Head is vertical at every articulated pose. This group is counter-rotated in yaw.
-    const head = new T.Group(); head.position.y = -WORLD.toolOffset; wrist.add(head);
+    // The arm itself: course-wide six-axis arm (Z-up mm) set on the azimuth bearing.
+    const armHolder = new T.Group(); armHolder.name = 'six-axis-arm-holder'; armHolder.position.set(0, ARM.mountY - CourseSixAxisArm.MOUNT_Z * ARM.scale, 0);
+    armHolder.rotation.x = -Math.PI / 2; armHolder.scale.setScalar(ARM.scale); base.add(armHolder);
+    const arm = CourseSixAxisArm.build(T, { upper: ARM.upper, fore: ARM.fore }); armHolder.add(arm.root);
+    arm.meshes.forEach(m => { robotParts.push(m); disposable.add(m.geometry); }); arm.materials && Object.values(arm.materials).forEach(m => disposable.add(m)); arm.accent.forEach(m => disposable.add(m));
+    // Head is vertical at every pose; the arm flange meets its top mount from above.
+    const head = new T.Group(); head.name = 'tying-head'; head.rotation.y = Math.PI / 4; robot.add(head);
     rounded('head-backbone', .135, .225, .08, 0, .24, -.045, 'graphite', head, .018);
     rounded('head-upper-shell', .15, .033, .12, 0, .274, 0, 'ivory', head, .012);
     rounded('head-orange-crown', .152, .013, .122, 0, .291, 0, 'orange', head, .005);
@@ -282,7 +249,7 @@
     tube('live-inspection-hook',[[0,.015,0],[.013,.018,0],[.015,.04,0],[.025,.06,0],[.14,.11,0]],.0035,'steel',inspectionHook,24);
     const hookGrip=rounded('live-inspection-grip',.11,.025,.029,.18,.125,0,'orange',inspectionHook,.009);hookGrip.rotation.z=.35;
     let data = { aim:{x:0,z:0},points:[],selected:null,stage:'tying',busy:null,cycle:0,inspection:0,jammed:false };
-    let actual = {x:0,y:WORLD.hoverY,z:0}, solution = solveArm(0,WORLD.hoverY+WORLD.toolOffset,0), clock=0,cutaway=false,cutawayAmount=0,destroyed=false,lastDt=1/60,view='overview';
+    let actual = {x:0,y:WORLD.hoverY,z:0}, solution = {yaw:0,shoulder:0,elbow:0,wrist:0,endpoint:{x:0,y:0,z:0},error:0,reachable:true}, clock=0,cutaway=false,cutawayAmount=0,destroyed=false,lastDt=1/60,view='overview';
     let needsPaint=true,lastPaintSignature='',renderedFrames=0,skippedFrames=0,lastRenderCall=0;
     const targetLook = new T.Vector3(-.36,.95,0), currentLook=targetLook.clone();
     let orbit = {theta:.77,phi:1.02,radius:5.65}, desiredOrbit={...orbit};
@@ -319,6 +286,12 @@
       record.marker.visible=data.stage!=='done'&&!busy;record.marker.material.color.copy(p.marked?materials.warning.color:p.checked?materials.teal.color:data.selected===p.id?materials.orange.color:materials.mark.color);
       const scale=data.selected===p.id?1.12:1;record.marker.scale.setScalar(scale);record.marker.material.transparent=true;record.marker.material.opacity=p.tied?.45:.85;
     }
+    const DOWN = new T.Vector3(0, -1, 0), mountTarget = new T.Vector3();
+    function poseArm(){
+      robot.updateMatrixWorld(true);mountTarget.set(actual.x,actual.y+ARM.headMount,actual.z);
+      const r=arm.reachWorld(mountTarget,DOWN,45),f=arm.points().flange,D=Math.PI/180;
+      return{yaw:r.q[0]*D,shoulder:r.q[1]*D,elbow:r.q[2]*D,wrist:r.q[4]*D,endpoint:{x:f.x,y:f.y,z:f.z},error:f.distanceTo(mountTarget),reachable:r.reachable};
+    }
     function render(dt=1/60) {
       if(destroyed)return;dt=clamp(Number(dt)||1/60,1/240,.05);lastDt+=(dt-lastDt)*.06;clock+=dt;
       const now=performance.now();if(now-lastRenderCall>250)needsPaint=true;lastRenderCall=now;
@@ -328,7 +301,7 @@
       const targetY=parked?1.32:WORLD.hoverY+(WORLD.tipY-WORLD.hoverY)*lower;
       const targetAim=parked?{x:-.94,z:-.65}:data.aim;
       const blend=data.reduced?1:1-Math.exp(-dt/(active?.07:.18));actual.x+=(targetAim.x-actual.x)*blend;actual.z+=(targetAim.z-actual.z)*blend;actual.y+=(targetY-actual.y)*(data.reduced?1:1-Math.exp(-dt/.075));
-      solution=solveArm(actual.x,actual.y+WORLD.toolOffset,actual.z);yaw.rotation.y=-solution.yaw;upper.rotation.z=solution.shoulder;fore.rotation.z=solution.elbow;wrist.rotation.z=solution.wrist;head.rotation.y=Math.PI/4+solution.yaw;
+      head.position.set(actual.x,actual.y,actual.z);solution=poseArm();
       cutawayAmount+=(Number(cutaway)-cutawayAmount)*(data.reduced?1:1-Math.exp(-dt/.2));coverHinge.rotation.y=cutawayAmount*1.85;
       const close=active?phase.grip:0;jaws[0].rotation.z=-(1-close)*.18;jaws[1].rotation.z=(1-close)*.18;
       spool.rotation.z=active?-phase.feed*Math.PI*3:0;feedWheels[0].rotation.z=active?phase.feed*Math.PI*11:0;feedWheels[1].rotation.z=active?-phase.feed*Math.PI*11:0;
@@ -357,12 +330,12 @@
       return{barContactGap:Math.abs(high.position.y-low.position.y)-lr-hr,wireBarClearance:Number.isFinite(min)?min:null,barGeometry:{lowerCenterY:low.position.y,upperCenterY:high.position.y,lowerRadius:lr,upperRadius:hr}};
     }
     function getDiagnostics(){const error=Math.hypot(data.aim.x-actual.x,data.aim.z-actual.z),parked=['review','done'].includes(data.stage)&&!['tie','repair','study'].includes(data.busy?.kind),parkError=Math.hypot(-.94-actual.x,1.32-actual.y,-.65-actual.z);return{available:true,partCount:robotParts.length,fixturePartCount:fixtureParts.length,meshCount:renderer.info.render.calls,triangles:renderer.info.render.triangles,ikError:solution.error,aimError:error,actualAim:{x:actual.x,z:actual.z},settled:error<.014,parked,parkedSettled:parked&&parkError<.014,effectiveSettled:parked?parkError<.014:error<.014,reachable:solution.reachable,fps:Math.round(1/lastDt),renderedFrames,skippedFrames,...geometryMeasurements(),upperLength:WORLD.upper,forearmLength:WORLD.fore,view};}
-    function getState(){const positions={};for(const [name,obj]of Object.entries({shoulder:upper,elbow:fore,wrist,head})){const v=obj.getWorldPosition(new T.Vector3());positions[name]={x:v.x,y:v.y,z:v.z};}return{actual:{...actual},aim:{...data.aim},solution:{...solution},positions,cutaway:cutawayAmount,view,camera:{...orbit,look:{x:currentLook.x,y:currentLook.y,z:currentLook.z}},mechanism:{phase:phaseAt(data.cycle||0,data.jammed),spoolAngle:spool.rotation.z,feedAngles:feedWheels.map(w=>w.rotation.z),twistAngle:twist.rotation.y,jawAngles:jaws.map(j=>j.rotation.z)},diagnostics:getDiagnostics()};}
+    function getState(){const positions={},pts=arm.points();pts.head=head.getWorldPosition(new T.Vector3());for(const name of ['shoulder','elbow','wrist','head']){const v=pts[name];positions[name]={x:v.x,y:v.y,z:v.z};}return{actual:{...actual},aim:{...data.aim},solution:{...solution},positions,cutaway:cutawayAmount,view,camera:{...orbit,look:{x:currentLook.x,y:currentLook.y,z:currentLook.z}},mechanism:{phase:phaseAt(data.cycle||0,data.jammed),spoolAngle:spool.rotation.z,feedAngles:feedWheels.map(w=>w.rotation.z),twistAngle:twist.rotation.y,jawAngles:jaws.map(j=>j.rotation.z)},diagnostics:getDiagnostics()};}
     const observer=typeof ResizeObserver!=='undefined'?new ResizeObserver(resize):null;observer?.observe(host);
     const invalidate=()=>{needsPaint=true;};document.addEventListener('visibilitychange',invalidate);canvas.addEventListener('webglcontextrestored',invalidate);
     function dispose(){destroyed=true;observer?.disconnect();document.removeEventListener('visibilitychange',invalidate);canvas.removeEventListener('webglcontextrestored',invalidate);canvas.removeEventListener('pointerdown',down);canvas.removeEventListener('pointermove',move);canvas.removeEventListener('pointerup',up);canvas.removeEventListener('pointercancel',cancel);canvas.removeEventListener('wheel',wheel);canvas.removeEventListener('keydown',keydown);for(const r of ties.values())r.loop.geometry.dispose();for(const item of disposable)item.dispose?.();renderer.dispose();canvas.remove();}
     setTheme(false);resize();render(1/60);callbacks.onReady?.();
     return{available:true,canvas,update,render,resize,invalidate,setCamera,setTheme,setCutaway(value){cutaway=!!value;},getDiagnostics,getState,projectPoint,dispose};
   }
-  global.TyingHeroScene={create,solveArm,WORLD};
+  global.TyingHeroScene={create,WORLD,ARM};
 })(window);

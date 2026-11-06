@@ -10,7 +10,7 @@ const script=s=>s.replace(/<\/script/gi,'<\\/script');
 const values={CSS:read('./style.css')+'\n'+ISO_CSS+'\n#fallback{position:absolute;inset:0;padding:80px 15px 60px;overflow:hidden}#fallback>svg{width:100%;height:100%}#fallback svg{max-height:100%}',
  THREE:script(read('../../../../../../../shared/vendor/three-r160.min.js')),
  MODEL:script('const HG=(()=>{\n'+read('./model.mjs').replace(/^export /gm,'')+'\nreturn {'+Object.keys(model).join(',')+'};})();'),
- SCENE:script(read('./scene.js')),APP:script(read('./app.js')),FALLBACK:fallback};
+ SCENE:script(read('../../../../../../../shared/robot-arm/six-axis-arm.js')+'\n'+read('./scene.js')),APP:script(read('./app.js')),FALLBACK:fallback};
 let html=read('./page.html').replace(/\{\{(CSS|THREE|MODEL|SCENE|APP|FALLBACK)\}\}/g,(_,key)=>values[key]);
 html=html.replace('<html lang="zh-CN">','<!-- Anatomy MIT license:\n'+read('../../../../../../../shared/anatomy/LICENSE')+'\nThree.js license:\n'+read('../../../../../../../shared/vendor/THREE-LICENSE.txt')+'\n-->\n<html lang="zh-CN">');
 // 有 src/stations.js 时使用全课程统一任务页外壳，不再套第五章原版式

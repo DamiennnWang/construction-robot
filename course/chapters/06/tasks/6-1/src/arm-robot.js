@@ -1,14 +1,15 @@
 /* 机器人取放工位：移动底盘 + 机械臂的砌筑机器人（教学模型，不对应品牌型号）。
  * 外观和尺度参照第六章 6-2、6-3 的同系机器人：蓝色底盘、白色盖板、深蓝关节、银色轴承环。
  * 末端是夹砖夹具；取放流程、8 个阶段、18 mm 基准偏差都沿用 RobotModel.robotAt，不改数据模型。
- * 单位 mm，Z 向上。机械臂只做“底座回转 + 大臂、小臂俯仰 + 手腕转向”，用两段臂的几何关系求关节位置。
+ * 单位 mm，Z 向上。机械臂本体是全课程统一六轴臂（shared/robot-arm/six-axis-arm.js，第三章原尺寸），
+ * 法兰竖直向下接住夹具的手腕段，由共享模型求六个关节角。
  */
 (() => {
   const P = MasonryScene.prototype;
   const K = .72;                       // 底盘与臂截面按 6-2 同系机型的 0.72 倍画，和砖、墙的尺度相称
-  const L1 = 700, L2 = 700;            // 大臂、小臂长度
+  const ARM_UPPER = 700, ARM_FORE = 635; // 统一六轴臂的大臂、小臂长度（小臂 + 腕部 = 700）
+  const L1 = ARM_UPPER, L2 = ARM_FORE + 65;
   const WRIST = 237;                   // 夹具参考点（砖底）到手腕关节的高度
-  const SHOULDER_Z = (490 + 270) * K;  // 肩关节高度（回转台顶 + 肩座）
   // 两个站位：原站位、换站位（底盘中心）。回转台在底盘中心前方 230 mm（按比例）。
   const STATIONS = {fixed: {x: -1010, y: 0}, mobile: {x: -1080, y: 330}};
   const TURRET_DX = 230 * K;
@@ -79,27 +80,11 @@
     const turret = this.armTurret = this.group(base, 'turret'); turret.position.set(TURRET_DX, 0, 490);
     this.cyl(170, 25, 0, 0, 0, 'rbSilver', turret, 'rotary-seat', 'z', 40);
     this.cyl(146, 50, 0, 0, 25, 'rbNavy', turret, 'rotary-bearing', 'z', 40);
-    this.box(265, 250, 200, 0, 0, 75, 'rbWhite', turret, 'shoulder-pedestal', 34);
-    for (const s of [-1, 1]) this.box(70, 40, 160, 0, s * 140, 170, 'rbBlue', turret, 'shoulder-cheek', 10);
 
-    /* —— 两段臂与关节：各自在局部坐标里沿 +Z 建模，摆姿态时整体对准 —— */
-    const link = (name, len, w, d) => {
-      const g = this.group(r, name);
-      this.box(w, d, len - 100, 0, 0, 50, 'rbBlue', g, 'cast-link', 30);
-      this.box(w * .69, 22, len - 220, 0, -d / 2 - 4, 110, 'rbWhite', g, 'link-cover', 8);
-      this.box(w * .7, 4, 7, 0, -d / 2 - 15, len * .65, 'rbBlue', g, 'cover-seam', 1);
-      for (const z of [len * .21, len * .79]) this.cyl(7, 5, 0, -d / 2 - 15, z, 'steel', g, 'cover-bolt', 'y', 8).position.set(0, -d / 2 - 12, z);
-      g.scale.set(K, K, 1);
-      return g;
-    };
-    this.armUpper = link('upper-arm', L1, 195, 180); this.armFore = link('forearm', L2, 150, 145);
-    const joint = (name, rad, w) => {
-      const g = this.group(r, name);
-      for (const [rr, ww, m] of [[rad, w, 'rbNavy'], [rad * .84, w + 8, 'rbSilver'], [rad * .67, w + 14, 'rbWhite'], [rad * .28, w + 19, 'rbBlue']]) this.cyl(rr, ww, 0, -ww / 2, 0, m, g, 'joint-ring', 'y', 32).position.set(0, -ww / 2, 0);
-      g.scale.setScalar(K);
-      return g;
-    };
-    this.armShoulder = joint('shoulder-joint', 120, 240); this.armElbow = joint('elbow-joint', 102, 210); this.armWristJoint = joint('wrist-joint', 73, 165);
+    /* —— 机械臂本体：全课程统一六轴臂（shared/robot-arm/six-axis-arm.js），按第三章原尺寸坐在回转轴承上 —— */
+    this.armHolder = this.group(r, 'six-axis-arm');
+    this.sixArm = CourseSixAxisArm.build(THREE, {upper: ARM_UPPER, fore: ARM_FORE}); this.armHolder.add(this.sixArm.root);
+    this.sixArm.meshes.forEach(m => { m.name = m.name || 'six-axis-arm'; });
 
     /* —— 手腕与夹砖夹具：始终竖直向下，绕竖轴转向 —— */
     this.zCarriage = this.group(r, 'tool');
@@ -144,12 +129,6 @@
     this.applyRobotPose(saved);
   };
 
-  // 把一段臂（局部 +Z 为长度方向、局部 X 为关节轴）摆到 a → b
-  const orient = (obj, a, b, axis) => {
-    const z = b.clone().sub(a).normalize(), y = z.clone().cross(axis).normalize(), x = y.clone().cross(z).normalize();
-    obj.position.copy(a); obj.quaternion.setFromRotationMatrix(new THREE.Matrix4().makeBasis(x, y, z));
-  };
-
   P.applyRobotPose = function (state) {
     if (!state) return; this.robotState = state; this.setPlatformQuiet(state.platform || this.platform);
     const st = STATIONS[this.platform], p = state.tool;
@@ -159,23 +138,21 @@
     for (const jaw of this.jaws) jaw.position.y = jaw.userData.side * (69.5 + p.open);
     const b = state.brick; this.carriedBrick.position.set(b.x, b.y, b.z); this.carriedBrick.rotation.z = b.yaw;
     this.targetBed.scale.z = (state.mortarHeight || 10) / 10; this.targetMarkers.visible = !state.brick.placed;
-    // 回转：底座转向手腕所在方位；两段臂在竖直平面里求肘部位置（肘部朝上）
+    // 回转台随手腕方位转动；统一六轴臂的法兰从上方接住夹具顶部的手腕段，工具竖直向下
     const T = new THREE.Vector3(st.x + TURRET_DX, st.y, 0), W = new THREE.Vector3(p.x, p.y, p.z + WRIST);
     const heading = Math.atan2(W.y - T.y, W.x - T.x);
     this.armTurret.rotation.z = heading;
-    const S = new THREE.Vector3(T.x, T.y, SHOULDER_Z), rad = new THREE.Vector3(Math.cos(heading), Math.sin(heading), 0);
-    const rr = Math.hypot(W.x - S.x, W.y - S.y), hh = W.z - S.z, dist = Math.min(L1 + L2 - 1, Math.max(60, Math.hypot(rr, hh)));
-    const ur = rr / dist, uh = hh / dist, a = (L1 * L1 - L2 * L2 + dist * dist) / (2 * dist), h = Math.sqrt(Math.max(0, L1 * L1 - a * a));
-    const er = a * ur - h * uh, eh = a * uh + h * ur;
-    const E = S.clone().addScaledVector(rad, er).add(new THREE.Vector3(0, 0, eh));
-    const axis = new THREE.Vector3(-Math.sin(heading), Math.cos(heading), 0);
-    orient(this.armUpper, S, E, axis); orient(this.armFore, E, W, axis);
-    for (const j of [this.armShoulder, this.armElbow, this.armWristJoint]) { j.position.copy(j === this.armShoulder ? S : j === this.armElbow ? E : W); j.quaternion.setFromUnitVectors(new THREE.Vector3(0, 1, 0), axis); }
+    this.robotRoot.updateMatrixWorld(true);
+    const mount = this.robotRoot.worldToLocal(this.armTurret.localToWorld(new THREE.Vector3(0, 0, 75)));
+    this.armHolder.position.set(mount.x, mount.y, mount.z - CourseSixAxisArm.MOUNT_Z);
+    const solved = this.sixArm.reach([W.x - this.armHolder.position.x, W.y - this.armHolder.position.y, W.z - this.armHolder.position.z], [0, 0, -1], 0);
+    const pts = this.sixArm.points(), local = v => this.robotRoot.worldToLocal(v.clone());
+    const S = local(pts.shoulder), E = local(pts.elbow), C = local(pts.wrist);
 
     // 手腕竖直段：从夹具顶到手腕关节
     const top = 138, len = Math.max(10, WRIST - top);
     this.wristHousing.position.set(0, 0, top); this.wristHousing.scale.z = len;
-    this.armPose = {shoulder: S.toArray(), elbow: E.toArray(), wrist: W.toArray(), reach: Math.hypot(rr, hh), reachLimit: L1 + L2, heading};
+    this.armPose = {shoulder: S.toArray(), elbow: E.toArray(), wrist: W.toArray(), reach: S.distanceTo(C), reachLimit: L1 + L2, reachable: solved.reachable, heading};
   };
 
   P.setPlatformQuiet = function (p) { this.platform = p === 'mobile' ? 'mobile' : 'fixed'; if (this.stationTrace) this.stationTrace.visible = this.platform === 'mobile'; };

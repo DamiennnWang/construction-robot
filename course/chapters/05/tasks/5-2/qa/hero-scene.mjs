@@ -11,7 +11,7 @@ import {fileURLToPath} from 'node:url';
 import {mkdir,readFile,writeFile} from 'node:fs/promises';
 import * as HG from '../src/hero/model.mjs';
 
-const task=resolve(dirname(fileURLToPath(import.meta.url)),'..'),repo=resolve(task,'..'),output=join(task,'qa','hero-shots');
+const task=resolve(dirname(fileURLToPath(import.meta.url)),'..'),repo=resolve(task,'../../../../..'),output=join(task,'qa','hero-shots');
 await mkdir(output,{recursive:true});
 const require=createRequire(import.meta.url);
 let playwright;try{playwright=require('playwright');}catch{playwright=require(join(homedir(),'.cache/codex-runtimes/codex-primary-runtime/dependencies/node/node_modules/playwright'));}
@@ -24,6 +24,7 @@ try{
   await page.addScriptTag({path:join(repo,'shared','vendor','three-r160.min.js')});
   const source=await readFile(join(task,'src','hero','model.mjs'),'utf8');
   await page.addScriptTag({content:source.replace(/\bexport\s+/g,'')+`\nwindow.HG={${Object.keys(HG).join(',')}};`});
+  await page.addScriptTag({path:join(repo,'shared','robot-arm','six-axis-arm.js')});
   await page.addScriptTag({path:join(task,'src','hero','scene.js')});
   await page.evaluate(()=>{window.hero=TyingHeroScene.create(document.getElementById('scene'));window.testPoints=HG.POINTS.map(p=>({...p,tied:false,quality:'missing'}));hero.update({points:testPoints,aim:testPoints[0],selected:'A',reduced:true});hero.render(1/60);});
   const result=await page.evaluate(()=>{
@@ -32,7 +33,7 @@ try{
     for(const p of testPoints)for(const cycle of phases){
       hero.update({stage:'study',aim:p,busy:{kind:'study',id:p.id},selected:p.id,cycle,reduced:true});hero.render(1/60);const s=hero.getState();poseCount++;
       endpointError=Math.max(endpointError,distance(s.positions.head,{x:p.x,y:s.actual.y,z:p.z}));
-      lengthError=Math.max(lengthError,Math.abs(distance(s.positions.shoulder,s.positions.elbow)-1.25),Math.abs(distance(s.positions.elbow,s.positions.wrist)-1.2));
+      lengthError=Math.max(lengthError,Math.abs(distance(s.positions.shoulder,s.positions.elbow)-s.diagnostics.upperLength),Math.abs(distance(s.positions.elbow,s.positions.wrist)-s.diagnostics.forearmLength));
       if(s.diagnostics.wireBarClearance!==null)minWireClearance=Math.min(minWireClearance,s.diagnostics.wireBarClearance);
     }
     hero.update({stage:'study',aim:testPoints[0],selected:'A',busy:{kind:'study',id:'A'},cycle:.51,jammed:true,reduced:true});hero.setCamera('tool');hero.setCutaway(true);for(let i=0;i<10;i++)hero.render(1/60);
@@ -49,7 +50,7 @@ try{
   assert.equal(errors.length,0);assert.equal(result.poseCount,56);assert.ok(result.endpointError<1e-12);assert.ok(result.lengthError<1e-12);
   assert.ok(Math.abs(independent.barContactGap)<1e-12);assert.ok(independent.analyticWireClearance>.00249);assert.ok(independent.conservativeRibClearance>0);assert.ok(result.minWireClearance>=independent.analyticWireClearance-.0002);
   assert.deepEqual(result.paused.before,result.paused.after);assert.equal(result.paused.draws,0);assert.equal(result.paused.skipped,120);assert.equal(result.invalidationDraws,4);
-  assert.ok(Math.abs(result.paused.before.phase.feed-HG.cycleAt(.51,true).feed)<1e-12);assert.equal(result.review.diagnostics.parkedSettled,true);assert.equal(result.review.camera.look.x,-.5);assert.equal(result.review.camera.look.z,.5);assert.ok(result.partCount>=100&&result.partCount<=150);
+  assert.ok(Math.abs(result.paused.before.phase.feed-HG.cycleAt(.51,true).feed)<1e-12);assert.equal(result.review.diagnostics.parkedSettled,true);assert.equal(result.review.camera.look.x,-.5);assert.equal(result.review.camera.look.z,.5);assert.ok(result.partCount>=200&&result.partCount<=260);
   await page.screenshot({path:join(output,'../../../../../../artifacts/screenshots/course/chapters/05/tasks/5-2/qa/scene-review.png')});
   // Fourfold CSS viewport, DPR 1: these are re-rendered at 4400x3040, not enlarged
   // screenshots. The 1.5 device-pixel-ratio cap remains intact in the product.

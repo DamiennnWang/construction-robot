@@ -43,14 +43,14 @@
     const needle=box('vacuum-gauge-needle',.003,.025,.003,0,.836,.073,'navy',vac);needle.geometry.translate(0,-.011,0);needle.position.y=.825;
     for(let i=0;i<9;i++){const a=-Math.PI*.75+i*Math.PI*1.5/8;const tick=box('gauge-scale',.0015,.005,.002,Math.sin(a)*.024,.825+Math.cos(a)*.024,.072,'steel',vac);tick.rotation.z=-a;}
     pipe('pump-reservoir-pipe',[[.04,.61,.06],[.07,.63,.08],[.07,.68,.07],[.04,.7,.045]],.008,'rubber',vac,18);
-    const turret=addGroup('shoulder-pedestal',base);cyl('rotary-seat',.17,.025,-.10,.512,-.02,'silver',turret);cyl('rotary-bearing',.146,.05,-.10,.55,-.02,'navy',turret);rounded('shoulder-cast-pedestal',.265,.20,.25,-.10,.663,-.02,'white',turret,.035);
-    const arm=addGroup('articulated-arm'),upper=addGroup('upper-arm',arm),lower=addGroup('forearm',arm);
-    const lengths=[.98,.92];
-    function link(p,len,w,d){rounded('cast-link',w,len-.10,d,0,len/2,0,'blue',p,.036);rounded('white-link-cover',w*.69,len-.22,.022,0,len/2,d/2+.004,'white',p,.01);rounded('cover-seam',w*.7,.007,.004,0,len*.65,d/2+.017,'lightblue',p,.002);for(const y of [len*.21,len*.79])bolt('cover-bolt',0,y,d/2+.02,p,'z');}
-    link(upper,lengths[0],.195,.18);link(lower,lengths[1],.15,.145);
-    const shoulder=addGroup('shoulder-joint',arm),elbow=addGroup('elbow-joint',arm),wrist=addGroup('wrist-joint',arm);
-    function joint(p,r,w){cyl('joint-bearing',r,w,0,0,0,'navy',p,'x');cyl('bearing-ring',r*.84,w+.008,0,0,0,'silver',p,'x');cyl('joint-cover',r*.67,w+.014,0,0,0,'white',p,'x');cyl('axis-cap',r*.28,w+.019,0,0,0,'blue',p,'x');}
-    joint(shoulder,.12,.24);joint(elbow,.102,.21);joint(wrist,.073,.165);
+    const turret=addGroup('shoulder-pedestal',base);cyl('rotary-seat',.17,.025,-.10,.512,-.02,'silver',turret);cyl('rotary-bearing',.146,.05,-.10,.55,-.02,'navy',turret);
+    // 机械臂本体：全课程统一六轴臂（shared/robot-arm/six-axis-arm.js），坐在回转座上，按本机臂展缩放。
+    const arm=addGroup('articulated-arm'),ARM={scale:.0019,upper:520,fore:430};
+    const armHolder=addGroup('six-axis-arm',arm);armHolder.position.set(-1.10,.575-window.CourseSixAxisArm.MOUNT_Z*ARM.scale,.48);armHolder.rotation.x=-Math.PI/2;armHolder.scale.setScalar(ARM.scale);
+    const six=window.CourseSixAxisArm.build(T,{upper:ARM.upper,fore:ARM.fore});armHolder.add(six.root);
+    six.meshes.forEach(o=>{parts.push(o);geometries.add(o.geometry);o.userData.part='six-axis-arm';});Object.values(six.materials).forEach(m=>materials.add(m));six.accent.forEach(m=>materials.add(m));assemblies['six-axis-arm']=six.meshes.length;
+    const lengths=[ARM.upper*ARM.scale,(ARM.fore+65)*ARM.scale];
+    const armBody=six.meshes.filter(o=>[six.root.children[0],six.joints[0],six.joints[1],six.joints[2]].includes(o.parent));
     const head=addGroup('vacuum-head');head.rotation.order='YXZ';
     const slide=addGroup('force-compliance',head),plate=addGroup('cup-mounting-frame',head),sensor=addGroup('force-sensor',head),cups=addGroup('cup-layouts',head);
     rounded('load-spreader-plate',.27,.022,.23,0,.106,0,'white',plate,.007);
@@ -79,7 +79,6 @@
     const hoseClamp=ring('elbow-hose-retaining-clamp',.012,.003,0,0,0,'steel',arm,'z'),clampStand=cyl('hose-clamp-standoff',.006,.055,0,0,0,'silver',arm);
     let hose=null,hoseCurve=null,hoseStamp='',current={},lastLayout='',lastSpread=0,lastExplosion=-1,hoseAudit={},explosion=0;
     const shoulderP=new T.Vector3(),elbowP=new T.Vector3(),wristP=new T.Vector3();
-    function placeLink(obj,a,b,axis){const y=b.clone().sub(a).normalize(),z=axis.clone().cross(y).normalize();obj.position.copy(a);obj.quaternion.setFromRotationMatrix(new T.Matrix4().makeBasis(axis,y,z));}
     function update(p={}){
       const tile={x:.6,z:.35,y:.15,yaw:0,tilt:0,...p.tile},layout=layouts[p.layout]?p.layout:'quad',spread=Math.max(.15,Math.min(.9,p.spread??.6));
       const yaw=tile.yaw*Math.PI/180,tilt=(Number.isFinite(p.toolTilt)?p.toolTilt:tile.tilt||0)*Math.PI/180,offset=new T.Vector3((p.offsetX||0)/1000,0,(p.offsetY||0)/1000);
@@ -97,16 +96,16 @@
       blocker.visible=p.visibility!=='clear';blocker.position.x=p.visibility==='partial'?.034:0;
       needle.rotation.z=(.75-(Math.max(0,p.pressure??p.vacuum??0)/80)*1.5)*Math.PI;
       led.material=p.gripReady?mats.green:mats.amber;
-      for(const part of [upper,lower,shoulder,elbow])part.visible=!p.inspection;
-      group.updateMatrixWorld(true);shoulderP.set(-1.10,.76,.48);wristP.copy(head.localToWorld(new T.Vector3(0,.268+sensor.position.y,0)));
-      const delta=wristP.clone().sub(shoulderP),rawDistance=delta.length(),d=Math.max(.08,Math.min(lengths[0]+lengths[1]-.00001,rawDistance)),u=delta.normalize(),pref=new T.Vector3(-.10,1,0);const bend=pref.addScaledVector(u,-pref.dot(u)).normalize();const a=(lengths[0]**2-lengths[1]**2+d*d)/(2*d),h=Math.sqrt(Math.max(0,lengths[0]**2-a*a));elbowP.copy(shoulderP).addScaledVector(u,a).addScaledVector(bend,h);const axis=new T.Vector3().crossVectors(u,bend).normalize();
-      placeLink(upper,shoulderP,elbowP,axis);placeLink(lower,elbowP,wristP,axis);for(const [obj,at] of [[shoulder,shoulderP],[elbow,elbowP],[wrist,wristP]]){obj.position.copy(at);obj.quaternion.setFromUnitVectors(new T.Vector3(1,0,0),axis);}
+      armBody.forEach(o=>o.visible=!p.inspection);
+      group.updateMatrixWorld(true);wristP.copy(head.localToWorld(new T.Vector3(0,.268+sensor.position.y,0)));
+      const toolDir=new T.Vector3(0,-1,0).transformDirection(head.matrixWorld),solved=six.reachWorld(wristP,toolDir,0),pts=six.points();
+      shoulderP.copy(pts.shoulder);elbowP.copy(pts.elbow);const wristC=pts.wrist,rawDistance=shoulderP.distanceTo(wristC),axis=new T.Vector3(0,1,0).transformDirection(six.joints[1].matrixWorld);
       const start=new T.Vector3(-.657,.806,.30),end=head.localToWorld(new T.Vector3(-.066,.135+plate.position.y,-.071));
       const stamp=[...head.position.toArray(),yaw,tilt,explosion,deflection].map(v=>Math.round(v*1000)).join(',');
       if(stamp!==hoseStamp){hoseStamp=stamp;const pts=[start,start.clone().add(new T.Vector3(.09,.02,-.03)),shoulderP.clone().addScaledVector(axis,.20).add(new T.Vector3(0,.09,-.04)),elbowP.clone().addScaledVector(axis,.18),wristP.clone().addScaledVector(axis,.14).add(new T.Vector3(0,.08,0)),end.clone().add(new T.Vector3(-.10,.10,0)),end.clone().add(new T.Vector3(-.025,0,0)),end];const curve=new T.CatmullRomCurve3(pts,false,'centripetal');hoseCurve=curve;if(!hose)hose=mesh('continuous-vacuum-supply-hose',new T.TubeGeometry(curve,80,.009,9,false),'rubber',group);else{geometries.delete(hose.geometry);hose.geometry.dispose();hose.geometry=new T.TubeGeometry(curve,80,.009,9,false);geometries.add(hose.geometry);}hoseAudit={start:start.toArray(),end:end.toArray(),portEnd:head.localToWorld(new T.Vector3(-.066,.135+plate.position.y,-.071)).toArray(),rebuilds:(hoseAudit.rebuilds||0)+1};}
       hoseClamp.position.copy(elbowP).addScaledVector(axis,.18);hoseClamp.quaternion.setFromUnitVectors(new T.Vector3(0,0,1),hoseCurve.getTangent(3/7));clampStand.position.copy(elbowP).addScaledVector(axis,.142);clampStand.quaternion.setFromUnitVectors(new T.Vector3(0,1,0),axis);hoseClamp.visible=clampStand.visible=!p.inspection;
       if(hose)hose.visible=!p.inspection;
-      group.updateMatrixWorld(true);current={tile:{...tile},layout,spread,force:p.force||0,deflection,shoulder:shoulderP.toArray(),elbow:elbowP.toArray(),wrist:wristP.toArray(),reach:rawDistance,reachLimit:lengths[0]+lengths[1],upperLength:shoulderP.distanceTo(elbowP),lowerLength:elbowP.distanceTo(wristP),cupContacts:positions.map(([x,z])=>head.localToWorld(new T.Vector3(x,0,z)).toArray()),head:head.position.toArray(),exploded:!!p.exploded,inspection:!!p.inspection};
+      group.updateMatrixWorld(true);current={tile:{...tile},layout,spread,force:p.force||0,deflection,shoulder:shoulderP.toArray(),elbow:elbowP.toArray(),wrist:wristP.toArray(),reach:rawDistance,reachLimit:lengths[0]+lengths[1],upperLength:shoulderP.distanceTo(elbowP),lowerLength:elbowP.distanceTo(wristC),armReachable:solved.reachable,cupContacts:positions.map(([x,z])=>head.localToWorld(new T.Vector3(x,0,z)).toArray()),head:head.position.toArray(),exploded:!!p.exploded,inspection:!!p.inspection};
     }
     update({visibility:'clear'});
     return {group,head,parts,update,getStats:()=>({meshes:parts.length,assemblies:{...assemblies},pose:{...current},jointErrors:{upper:Math.abs(current.upperLength-lengths[0]),lower:Math.abs(current.lowerLength-lengths[1])},hose:{...hoseAudit}}),destroy(){geometries.forEach(g=>g.dispose());materials.forEach(m=>m.dispose());textures.forEach(t=>t.dispose());group.removeFromParent();}};

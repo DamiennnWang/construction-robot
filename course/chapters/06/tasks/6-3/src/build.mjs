@@ -26,7 +26,7 @@ const values = {
   SOURCES: '<ul>' + sources.map(([title, url]) => `<li><a href="${url}" target="_blank" rel="noopener noreferrer">${title}</a></li>`).join('') + '</ul>',
   JS: three + '\n' + inlineModel('M', './model.mjs', Model) + '\n'
     + inlineModel('Game', './game.model.mjs', GameModel)
-    + '\n' + read('./robot3d.js') + '\n' + read('./scene3d.js') + '\n' + read('./app.js')
+    + '\n' + read('../../../../../../shared/robot-arm/six-axis-arm.js') + '\n' + read('./robot3d.js') + '\n' + read('./scene3d.js') + '\n' + read('./app.js')
 };
 const html = read('./page.html').replace(/\{\{(CSS|SCENE|SERVICE|SOURCES|JS)\}\}/g,
   (_, key) => key === 'JS' ? values[key].replace(/<\/script/gi, '<\\/script') : values[key]);
