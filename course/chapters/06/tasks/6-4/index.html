@@ -616,12 +616,12 @@ html.lab-native .c2-view .inspection-legend { font-size:12px !important; bottom:
 <div class="scene-top"><div class="stage-badge"><i></i><span id="stageLabel">01 / 规划路线</span><span class="stage-divider"></span><span id="stageHint">把方案带到墙面上</span></div><div class="view-switch" aria-label="观察视角"><button data-view="orbit" class="active" aria-pressed="true">立体</button><button data-view="front" aria-pressed="false">正视</button><button data-view="top" aria-pressed="false">俯视</button><button data-view="nozzle" aria-pressed="false">喷头</button></div></div>
 <div class="mission-card"><div class="mission-eyebrow"><span class="wall-dot"></span>WALL A <span>3.6 × 2.4 m</span></div><h2 id="missionTitle">让每一条路径都有交叠</h2><p id="missionHint">调节喷距和道间距，为这面墙规划涂装路线。</p><div class="mission-foot"><span class="small-window" aria-hidden="true"></span>窗洞 800 × 800 mm · 保留保护区</div></div>
 <div class="scene-left-tools"><label class="hud-toggle"><input type="checkbox" id="pathToggle" checked><span>作业路径</span></label><label class="hud-toggle"><input type="checkbox" id="inspectToggle"><span>质检视图</span></label></div>
-<div id="inspectionLegend" class="inspection-legend" hidden><span><i style="background:#efad57"></i>漏喷</span><span><i style="background:#efbd6c"></i>沉积偏少</span><span><i style="background:#a17ac7"></i>单道异常</span><span><i style="background:#e8505e"></i>窗面受喷</span><span><i style="background:#4fbaa9"></i>已涂达标</span></div>
+<div id="inspectionLegend" class="inspection-legend" hidden><span><i style="background:#efad57"></i>漏喷</span><span><i style="background:#efbd6c"></i>涂层偏薄</span><span><i style="background:#a17ac7"></i>涂层偏厚</span><span><i style="background:#e8505e"></i>窗面受喷</span><span><i style="background:#4fbaa9"></i>厚薄合适</span></div>
 <div class="scene-live"><span class="live-dot"></span><span id="sceneStatus">等待开工</span><span class="live-separator"></span><span id="valveState">喷枪关闭</span><span id="liveSpeed">0 mm/s</span></div>
 <div class="orbit-hint"><svg viewBox="0 0 20 20" aria-hidden="true"><path d="M10 2a4 4 0 0 0-4 4v7a4 4 0 0 0 8 0V6a4 4 0 0 0-4-4ZM10 2v5"/></svg><span>拖动环视 · 滚轮近看</span><span id="tcp">TCP · X 0.10 / Z 0.04 m</span></div><div id="toast" class="toast" role="status" aria-live="polite"></div>
 </div>
 <div class="control-deck">
-<div class="readouts" aria-label="实际作业读数"><div class="readout"><span><i class="mint-dot"></i>已喷覆盖</span><strong id="coverageValue">0.0<small>%</small></strong></div><div class="readout"><span><i class="orange-dot"></i>窗面污染</span><strong id="pollutionValue">0.0<small>%</small></strong></div><div class="readout"><span><i class="blue-dot"></i>沉积达标</span><strong id="uniformityValue">0.0<small>%</small></strong></div></div>
+<div class="readouts" aria-label="实际作业读数"><div class="readout"><span><i class="mint-dot"></i>已喷覆盖</span><strong id="coverageValue">0.0<small>%</small></strong></div><div class="readout"><span><i class="orange-dot"></i>窗面污染</span><strong id="pollutionValue">0.0<small>%</small></strong></div><div class="readout"><span><i class="blue-dot"></i>厚薄合适</span><strong id="uniformityValue">0.0<small>%</small></strong></div></div>
 <div class="playback"><div class="progress-heading"><span id="passLabel">待执行路径</span><span id="progressText">0%</span></div><input id="progress" type="range" min="0" max="1000" step="1" value="0" disabled aria-label="实际作业进度"><div class="playback-bottom"><span>执行记录 · 随作业累积</span><div><select id="rate" aria-label="教学演示速度"><option value="8">8× 慢看</option><option value="20" selected>20× 演示</option><option value="40">40× 快览</option></select><button id="play" disabled>Ⅱ 暂停</button></div></div></div>
 </div>
 <nav id="steps" class="project-steps" aria-label="项目进程"><button data-stage="plan" class="active" aria-current="step"><span class="step-number">01</span><span>规划路线</span><i>›</i></button><button data-stage="trial" disabled><span class="step-number">02</span><span>试喷调机</span><i>›</i></button><button data-stage="spray" disabled><span class="step-number">03</span><span>执行喷涂</span><i>›</i></button><button data-stage="inspect" disabled><span class="step-number">04</span><span>巡检返修</span><i>›</i></button><button data-stage="deliver" disabled><span class="step-number">05</span><span>项目交付</span></button></nav>
@@ -634,19 +634,19 @@ html.lab-native .c2-view .inspection-legend { font-size:12px !important; bottom:
 <div class="parameter"><label for="distance">喷嘴距墙面<output id="distanceOut" for="distance">300 mm</output></label><input id="distance" type="range" min="200" max="450" step="10" value="300"><div class="range-bounds"><span>200</span><span>450 mm</span></div></div>
 <div class="parameter"><label for="speed">直线喷涂速度<output id="speedOut" for="speed">420 mm/s</output></label><input id="speed" type="range" min="150" max="600" step="10" value="420"><div class="range-bounds"><span>150</span><span>600 mm/s</span></div></div>
 <div class="guard-field"><label for="guard">窗洞保护策略</label><select id="guard"><option value="footprint">完整喷幅避让</option><option value="center" selected>只按喷嘴中心</option><option value="off">不停喷 · 观察污染</option></select></div>
-<div class="switches"><label class="switch-row" for="slow"><span>起收段减速<small>靠近两端时，降到一半速度</small></span><input id="slow" type="checkbox" checked></label><label class="switch-row" for="compensate"><span>流量随速度调整<small>保持单位路程的相对沉积</small></span><input id="compensate" type="checkbox"></label></div>
+<div class="switches"><label class="switch-row" for="slow"><span>起收段减速<small>靠近两端时，降到一半速度</small></span><input id="slow" type="checkbox" checked></label><label class="switch-row" for="compensate"><span>流量随速度调整<small>减速时少出漆，涂层不会变厚</small></span><input id="compensate" type="checkbox"></label></div>
 <div class="color-field"><span>本次面漆</span><div id="color" class="color-swatches" role="group" aria-label="面漆颜色"><button data-color="#4ab4aa" class="active" style="--swatch:#4ab4aa" aria-label="薄荷青" aria-pressed="true"><span></span></button><button data-color="#5b8bd9" style="--swatch:#5b8bd9" aria-label="晴空蓝" aria-pressed="false"><span></span></button><button data-color="#dc9976" style="--swatch:#dc9976" aria-label="暖陶橙" aria-pressed="false"><span></span></button></div></div>
 <div id="planNote" class="plan-note">喷幅 400 mm · 需要留出相邻道的搭接。</div>
 </section>
 <section id="trialPanel" class="stage-panel" hidden><div class="section-heading"><span class="eyebrow">TRIAL RECORD</span><h3>试喷记录</h3></div><div id="trialResult" class="record-card">完成一段试喷，查看这组参数留下的涂层表现。</div><button id="retryTrial" class="secondary wide">↻ 重新试喷</button></section>
-<section id="inspectionPanel" class="stage-panel" hidden><div class="section-heading"><span class="eyebrow">WALL INSPECTION</span><h3>现场待处理</h3></div><p class="section-note">点选墙面或下方记录，定位需要处理的区域。返修采用校准后的精细作业：清理污染、处理异常层后重涂、补齐漏喷。</p><div id="issueList" class="issue-list"></div><div class="repair-actions"><button id="repairSelected" class="secondary wide" disabled>处理当前区域</button><button id="repairAll" class="secondary wide">完成剩余返修</button></div></section>
-<section id="deliveryPanel" class="stage-panel" hidden><div class="delivery-mark" aria-hidden="true">✓</div><span class="eyebrow">PROJECT RECORD</span><h3>把过程一起交付</h3><div id="deliverySummary" class="record-card"></div><button id="export" class="secondary wide">↓ 导出作业记录</button></section>
+<section id="inspectionPanel" class="stage-panel" hidden><div class="section-heading"><span class="eyebrow">WALL INSPECTION</span><h3>现场待处理</h3></div><p class="section-note">点选墙面或下方记录，定位需要处理的区域。返修时：擦净窗面、清掉厚薄不对的涂层后重喷、补齐漏喷。</p><div id="issueList" class="issue-list"></div><div class="repair-actions"><button id="repairSelected" class="secondary wide" disabled>处理当前区域</button><button id="repairAll" class="secondary wide">全部返修</button></div></section>
+<section id="deliveryPanel" class="stage-panel" hidden><div class="delivery-mark" aria-hidden="true">✓</div><span class="eyebrow">PROJECT RECORD</span><h3>把过程一起交付</h3><div id="deliverySummary" class="record-card"></div><button id="export" class="secondary wide">↓ 导出记录</button></section>
 </div>
 <div class="panel-action"><button id="actionPrimary" class="primary wide">确认路线，进入试喷 <span>→</span></button><p id="actionHint">每一次调整，都能在现场看见结果。</p></div>
 </aside></main>
-<footer class="app-footer"><span><i></i>教学模拟 · 参数用于观察几何覆盖与相对沉积</span><span>SPRAYING WORKSHOP <b>06.04</b></span></footer>
+<footer class="app-footer"><span><i></i>教学模拟 · 参数用于观察覆盖和涂层厚薄（示意）</span><span>SPRAYING WORKSHOP <b>06.04</b></span></footer>
 </div>
-<dialog id="helpDialog"><button id="closeHelp" class="dialog-close" aria-label="关闭操作指南">×</button><span class="eyebrow">FIELD GUIDE</span><h2>亲手完成一面墙</h2><p>规划路线、试喷调机、执行喷涂、巡检返修，最后导出作业记录。先观察，再调整，让过程留下可检查的痕迹。</p><div class="guide-grid"><div><b>观察现场</b><p>拖动旋转场景，滚轮缩放；触屏可双指缩放。方向键旋转，加减键缩放；顶部按钮可切换正视、俯视与喷头近景。</p></div><div><b>控制作业</b><p>调节参数后开始试喷。正式喷涂时可暂停观察，用演示速度调整观察节奏。覆盖数据只记录已执行的作业。</p></div><div><b>巡检返修</b><p>打开质检视图，点选墙面或待处理记录，再进行局部处理。保护窗洞的同时，也要完成窗边补作业。</p></div><div><b>模型约定</b><p>本页使用固定扇角、矩形喷幅与相对沉积的教学模型。颜色和达标比例用于项目练习，不代表真实膜厚或工程验收结论。</p></div></div></dialog>
+<dialog id="helpDialog"><button id="closeHelp" class="dialog-close" aria-label="关闭操作指南">×</button><span class="eyebrow">FIELD GUIDE</span><h2>亲手完成一面墙</h2><p>规划路线、试喷调机、执行喷涂、巡检返修，最后导出作业记录。先观察，再调整，让过程留下可检查的痕迹。</p><div class="guide-grid"><div><b>观察现场</b><p>拖动旋转场景，滚轮缩放；触屏可双指缩放。方向键旋转，加减键缩放；顶部按钮可切换正视、俯视与喷头近景。</p></div><div><b>控制作业</b><p>调节参数后开始试喷。正式喷涂时可暂停观察，用演示速度调整观察节奏。覆盖数据只记录已执行的作业。</p></div><div><b>巡检返修</b><p>打开质检视图，点选墙面或待处理记录，再进行局部处理。保护窗洞的同时，也要完成窗边补作业。</p></div><div><b>模型约定</b><p>本页使用固定扇角、矩形喷幅与涂层厚薄示意的教学模型。颜色和达标比例用于项目练习，不代表真实膜厚或工程验收结论。</p></div></div></dialog>
 <script></script><script src="../../../../../shared/vendor/three-r160.min.js"></script><script>
 
 ;
@@ -771,10 +771,10 @@ function issueFor(run, cell, index) {
 }
 
 const ISSUE_TEXT = {
-  miss: ['漏喷区', '这部分墙面尚未被实际喷幅覆盖；调整道间距或安排局部补喷。'],
-  edge: ['窗边待补喷', '完整喷幅保护保留了窗边空白；保留遮蔽，用局部精细作业补齐。'],
-  pollution: ['保护区受喷', '窗洞保护区记录到喷涂；先清理污染，再复核停喷时机。'],
-  dose: ['相对沉积偏差', '至少一道的相对沉积超出本项目 0.85–1.20× 教学目标；核对速度和流量后处理。'],
+  miss: ['漏喷区', '这块墙面还没喷到；调小道间距，或在这里补喷。'],
+  edge: ['窗边待补喷', '整幅避让在窗边留了一条空白；窗户继续遮好，把这条补喷上。'],
+  pollution: ['窗面受喷', '窗户上沾到了涂料；先擦干净，再检查窗边有没有及时停喷。'],
+  dose: ['涂层厚薄不对', '这里的涂层偏厚或偏薄；检查喷涂速度和流量，清掉后重喷。'],
 };
 
 function summarizeRun(run) {
@@ -829,9 +829,9 @@ function repairAt(run, x, z) {
     if (!cell.hole) run._visits[index].set(action.id, 1);
     action.cellIndices.push(index); action.changed++;
   });
-  action.label = [action.filled ? `精细补喷 ${action.filled} 格` : '',
-    action.cleaned ? `清理保护区 ${action.cleaned} 格` : '',
-    action.recoated ? `处理异常层并重喷 ${action.recoated} 格` : ''].filter(Boolean).join('；') || '该区域无需处理';
+  action.label = [action.filled ? `补喷 ${action.filled} 格` : '',
+    action.cleaned ? `擦净窗面 ${action.cleaned} 格` : '',
+    action.recoated ? `清掉厚薄不对的涂层并重喷 ${action.recoated} 格` : ''].filter(Boolean).join('；') || '该区域无需处理';
   if (action.changed) run.repairs.push(action);
   return action;
 }
@@ -1135,15 +1135,17 @@ return {CELL_SIZE,TARGET,advanceRun,createRun,planReport,repairAll,repairAt,summ
   const titles = ['规划一面墙的作业路线', '让第一道涂层告诉你结果', '把你的方案变成墙面', '走近墙面，处理留下的痕迹', '一面墙，一份完整作业记录'];
   const hints = [
     '调整喷距与道间距，沿着路线观察喷幅搭接；窗洞需要完整喷幅避让。',
-    '先试喷左侧两道，观察漏带与起收段沉积，再调整道间距、速度和流量同步。',
+    '先试喷左侧两道，看有没有漏带、两端涂层是不是偏厚，再调道间距、速度和流量。',
     '机器人按已保存的参数执行。你可以暂停、切换视角，近看喷枪的启停。',
-    '点选墙面或返修清单。漏喷区补涂，污染区清理，沉积偏差区处理后重涂。',
+    '点选墙面或返修清单。漏喷处补喷，窗面沾漆处擦净，厚薄不对处清掉重喷。',
     '路线、实际涂覆、窗洞保护与返修操作已汇总，可导出本次作业记录。'
   ];
   const initial = {spacing:500, distance:300, speed:420, guard:'center', slow:true, compensate:false};
   let state, lastTime=0, lastUI=0, frame=0, visible=true, scene;
   const logs=[];
   const log = (action, detail='') => logs.push({time:new Date().toISOString(), action, detail});
+  // 教学模型里的相对用量 → 学生看得懂的说法（合适范围与 PM.TARGET 一致）
+  const thick = d => d < PM.TARGET.minDose ? '偏薄' : d > PM.TARGET.maxDose ? '偏厚' : '合适';
   const fmt = n => Number.isFinite(n) ? n.toFixed(1) : '0.0';
   function focusScene() { if(innerWidth<=900)document.querySelector('.world').scrollIntoView({block:'start',behavior:matchMedia('(prefers-reduced-motion: reduce)').matches?'instant':'smooth'}); }
   function setCamera(name) { scene?.setView(name);document.querySelectorAll('[data-view]').forEach(b=>{const active=b.dataset.view===name;b.classList.toggle('active',active);b.setAttribute('aria-pressed',String(active));}); }
@@ -1195,8 +1197,8 @@ return {CELL_SIZE,TARGET,advanceRun,createRun,planReport,repairAll,repairAt,summ
     state.repair={all, elapsed:0, lastPatch:0, duration:all?8:1.8, targets:all?s.issues.map(i=>({x:i.x,z:i.z})): [{x:state.selection.x,z:state.selection.z}]};
     if(!state.repair.targets.length)state.repair.targets=[{x:1800,z:1200}];
     state.active='repair'; state.running=true;
-    log('执行返修工单',all?'采用校准后的精细作业，清理保护区、处理异常层并补涂':`局部 x=${state.selection.x}, z=${state.selection.z} mm；采用校准后的精细作业`);
-    toast('返修使用校准后的精细作业：先清理污染或异常层，再完成局部补涂。');
+    log('执行返修工单',all?'擦净窗面、清掉厚薄不对的涂层并补喷':`局部 x=${state.selection.x}, z=${state.selection.z} mm`);
+    toast('开始返修：先擦净窗面、清掉厚薄不对的涂层，再把这块补喷好。');
     refresh();focusScene();
   }
   function selectPoint(point) {
@@ -1204,7 +1206,7 @@ return {CELL_SIZE,TARGET,advanceRun,createRun,planReport,repairAll,repairAt,summ
     state.selection={x:point.x,z:point.z};
     const c=state.run.coat.cells.reduce((best,c)=>Math.hypot(c.x-point.x,c.z-point.z)<Math.hypot(best.x-point.x,best.z-point.z)?c:best);
     state.selection={x:c.x,z:c.z};
-    const note=c.hole ? (c.n?'窗面有涂料痕迹：先清理并恢复遮蔽。':'窗洞保护区，当前无污染。') : (!c.n?'这里还没有涂覆，需要精细补涂。':c.doseIssue?'相对沉积偏离教学目标：先处理，再按记录重涂。':'此处已达到本次教学目标。');
+    const note=c.hole ? (c.n?'窗面有涂料痕迹：先清理并恢复遮蔽。':'窗洞保护区，当前无污染。') : (!c.n?'这里还没喷到，需要补喷。':c.doseIssue?'这里涂层厚薄不对：清掉后重喷。':'此处已达到本次教学目标。');
     toast(`定位 ${Math.round(c.x)} / ${Math.round(c.z)} mm · ${note}`);
     log('点选墙面检查',`${Math.round(c.x)},${Math.round(c.z)}`);refresh();
   }
@@ -1231,20 +1233,20 @@ return {CELL_SIZE,TARGET,advanceRun,createRun,planReport,repairAll,repairAt,summ
     });
     const ov=M.overlap(state.params), d0=M.depositionAt(0,state.params).dose, d1=M.depositionAt(.5,state.params).dose;
     $('planNote').innerHTML=`<b>喷幅 ${Math.round(ov.width)} mm</b><span>${ov.gap>0?`相邻道留有 ${Math.round(ov.gap)} mm 漏带`:`名义搭接 ${Math.round(ov.ratio*100)}%`} · ${M.passes(state.params.spacing).length} 道</span>`;
-    $('trialResult').innerHTML=state.trialDone?`<strong>两道试喷已完成</strong><p>已涂区域 ${fmt(PM.summarizeRun(state.trialRun).coverage)}%。起收段相对沉积 ${fmt(d0)}×，中段 ${fmt(d1)}×。</p><p>${ov.gap>0?'可见间距漏带；减小道间距后再试。':'路线间无名义漏带。正式作业时继续观察窗边停喷。'}${d0>1.2||d1<.85?' 调整速度与流量同步，观察涂层变化。':''}</p>`:state.running?'<strong>正在试喷两道</strong><p>近看喷头与墙面，观察起收段和实际涂覆。</p>':'<strong>当前参数还未试喷</strong><p>每次调整参数后，重新试喷，再开始正式作业。</p>';
+    $('trialResult').innerHTML=state.trialDone?`<strong>两道试喷已完成</strong><p>已涂区域 ${fmt(PM.summarizeRun(state.trialRun).coverage)}%。两端涂层${thick(d0)}，中段涂层${thick(d1)}。</p><p>${ov.gap>0?'可见间距漏带；减小道间距后再试。':'两道之间没有漏带。正式喷涂时再看窗边停喷。'}${d0>1.2||d1<.85?' 打开“流量随速度调整”或改喷涂速度，再试一次。':''}</p>`:state.running?'<strong>正在试喷两道</strong><p>近看喷头与墙面，观察起收段和实际涂覆。</p>':'<strong>当前参数还未试喷</strong><p>每次调整参数后，重新试喷，再开始正式作业。</p>';
     $('retryTrial').disabled=state.running;
     if(state.stage==='inspect')renderIssues(s);
     $('repairSelected').disabled=state.running||!state.selection||!!s?.ready;
     $('repairAll').disabled=state.running||!!s?.ready;
-    $('repairSelected').textContent=state.selection?`处理此处 · ${Math.round(state.selection.x)} / ${Math.round(state.selection.z)}`:'点选墙面后局部返修';
+    $('repairSelected').textContent=state.selection?'返修此处':'先点墙面';
     if(state.stage==='deliver'){
-      $('deliverySummary').innerHTML=`<div class="delivery-seal">✓</div><strong>WALL A · 项目已交付</strong><p>已喷覆盖 ${fmt(s.coverage)}%<br>窗面污染 ${fmt(s.pollution)}%<br>相对沉积达标 ${fmt(s.uniformity)}%</p><p>完成 ${state.run.repairs.length} 次区域处理，记录 ${logs.length} 项操作。</p><small>以上为本教学项目的网格模拟结果。</small>`;
+      $('deliverySummary').innerHTML=`<div class="delivery-seal">✓</div><strong>WALL A · 项目已交付</strong><p>已喷覆盖 ${fmt(s.coverage)}%<br>窗面污染 ${fmt(s.pollution)}%<br>涂层厚薄合适 ${fmt(s.uniformity)}%</p><p>完成 ${state.run.repairs.length} 次区域处理，记录 ${logs.length} 项操作。</p><small>以上为本教学项目的网格模拟结果。</small>`;
     }
     const primary=$('actionPrimary');primary.disabled=state.running;
     if(state.stage==='plan'){primary.textContent='保存路线，开始试喷 →';$('actionHint').textContent='可以先保留当前参数，用试喷观察你的方案。';}
     if(state.stage==='trial'){primary.textContent=state.running?'试喷进行中…':state.trialDone?'按当前方案开始作业 →':'按新参数重新试喷 →';$('actionHint').textContent='试喷不会计入正式作业；正式喷涂会使用当前参数快照。';}
     if(state.stage==='spray'){primary.textContent=state.run?.progress>=1?'完成喷涂，开始巡检 →':'按已保存方案执行中';primary.disabled=state.run?.progress<1;$('actionHint').textContent='作业中锁定参数。发现异常可以暂停查看，完成后处理返修。';}
-    if(state.stage==='inspect'){primary.textContent=s?.ready?'确认记录，交付项目 →':'先处理墙面，再交付';primary.disabled=!s?.ready||state.running;$('actionHint').textContent='本次目标：覆盖 ≥99.5%，窗面无污染，相对沉积在 0.85–1.20×。';}
+    if(state.stage==='inspect'){primary.textContent=s?.ready?'确认记录，交付项目 →':'先处理墙面，再交付';primary.disabled=!s?.ready||state.running;$('actionHint').textContent='本次目标：覆盖 ≥99.5%，窗面无污染，涂层厚薄都合适。';}
     if(state.stage==='deliver'){primary.textContent='新开一面墙 ↗';$('actionHint').textContent='下载记录后，可用另一组参数开始新的项目。';}
     $('play').textContent=state.running?'Ⅱ 暂停':'▶ 继续';$('play').disabled=!state.active;
     $('sceneStatus').textContent=state.active==='repair'?(state.running?'返修工单执行中':'返修已暂停'):state.running?(state.active==='trial'?'两道试喷中':'正在喷涂'):r?.progress>=1?'本轮路径已完成':r?'作业已暂停':'等待你的操作';
@@ -1310,7 +1312,7 @@ return {CELL_SIZE,TARGET,advanceRun,createRun,planReport,repairAll,repairAt,summ
   }
   function exportRecord() {
     if(state.stage!=='deliver')return;
-    const s=summary();const rows=[['室内喷涂工坊 · 教学作业记录'],['墙面','WALL A 3600 × 2400 mm'],['完成时间',new Date().toLocaleString('zh-CN')],['道间距 mm',state.params.spacing],['喷距 mm',state.params.distance],['设定速度 mm/s',state.params.speed],['洞口保护',state.params.guard],['流量同步',state.params.compensate?'是':'否'],['已喷覆盖 %',fmt(s.coverage)],['窗面污染 %',fmt(s.pollution)],['相对沉积达标 %',fmt(s.uniformity)],['范围说明','教学几何与相对沉积模型，不代表实际膜厚与工程验收'],[],['时间','操作','详情'],...logs.map(l=>[l.time,l.action,l.detail])];
+    const s=summary();const rows=[['室内喷涂工坊 · 教学作业记录'],['墙面','WALL A 3600 × 2400 mm'],['完成时间',new Date().toLocaleString('zh-CN')],['道间距 mm',state.params.spacing],['喷距 mm',state.params.distance],['设定速度 mm/s',state.params.speed],['洞口保护',state.params.guard],['流量同步',state.params.compensate?'是':'否'],['已喷覆盖 %',fmt(s.coverage)],['窗面污染 %',fmt(s.pollution)],['涂层厚薄合适 %',fmt(s.uniformity)],['范围说明','教学示意模型，不代表实际漆膜厚度与工程验收'],[],['时间','操作','详情'],...logs.map(l=>[l.time,l.action,l.detail])];
     rows.push([],['返修编号','X mm','高度 mm','处理内容','处理网格数'],...state.run.repairs.map(a=>[a.id,a.x,a.z,a.label,a.changed]));
     const csv='\uFEFF'+rows.map(row=>row.map(v=>'"'+String(v).replace(/"/g,'""')+'"').join(',')).join('\r\n');
     const url=URL.createObjectURL(new Blob([csv],{type:'text/csv;charset=utf-8'}));const a=document.createElement('a');a.href=url;a.download='WALL-A_喷涂项目作业记录.csv';a.click();setTimeout(()=>URL.revokeObjectURL(url),1000);toast('作业记录已导出。');
@@ -1853,14 +1855,14 @@ return {CELL_SIZE,TARGET,advanceRun,createRun,planReport,repairAll,repairAt,summ
           {id: 'overlap', icon: '🎯', title: '让两道喷幅搭上', hint: '调小间距或拉远喷嘴', check: () => flags.overlapTrial,
             result: '喷嘴离墙越远喷幅越宽；间距小于喷幅，相邻两道才会搭接。'},
           {id: 'even', icon: '⚖️', title: '两端不堆厚', hint: '打开流量随速度调整', check: () => flags.evenTrial,
-            result: '起收段减速时流量也跟着减小，两端和中段的沉积就一样多。'},
+            result: '起收段减速时流量也跟着减小，两端和中段的涂层就一样厚。'},
         ]);
       },
     },
     {
       id: 'spray', name: '正式喷涂', lead: '机器人按试喷后的方案喷满整面墙。可以暂停、换视角，近看喷枪在窗边停喷。',
       build(c) {
-        const gate = lockable(c, '先在①试喷一次，再来正式喷涂。', {label: '去①规划试喷', index: 0});
+        const gate = lockable(c, '先在①试喷一次，再来正式喷涂。', {label: '去①试喷', index: 0});
         const g1 = c.section('作业', null, gate.content);
         c.adopt(EL.playback, g1);
         const primary = c.button('开始喷涂', () => EL.action.click(), {primary: true});
@@ -1886,7 +1888,7 @@ return {CELL_SIZE,TARGET,advanceRun,createRun,planReport,repairAll,repairAt,summ
     {
       id: 'inspect', name: '巡检交付', lead: '打开质检视图，点墙面找出漏喷和污染，返修达标后交付。',
       build(c) {
-        const gate = lockable(c, '整面墙喷完后，才能巡检。', {label: '去②正式喷涂', index: 1});
+        const gate = lockable(c, '整面墙喷完后，才能巡检。', {label: '去②喷涂', index: 1});
         const g1 = c.section('待处理', null, gate.content);
         c.adopt(EL.issues, g1);
         readoutGroup(c, gate.content);
@@ -1904,12 +1906,12 @@ return {CELL_SIZE,TARGET,advanceRun,createRun,planReport,repairAll,repairAt,summ
         });
         c.challenges([
           {id: 'pick', icon: '👆', title: '点墙面查一处', hint: '打开质检视图再点', check: s => !!s.selection,
-            result: '质检视图里的颜色分别代表漏喷、沉积偏少和窗面受喷。'},
-          {id: 'repair', icon: '🛠', title: '返修一处', hint: '点选后按“处理此处”', check: () => flags.repaired,
-            result: '漏喷补涂，窗面先清理，沉积不对的先处理再重涂。'},
+            result: '质检视图里的颜色分别代表漏喷、涂层偏薄、偏厚和窗面受喷。'},
+          {id: 'repair', icon: '🛠', title: '返修一处', hint: '点选后按“返修此处”', check: () => flags.repaired,
+            result: '漏喷的补喷，窗面沾漆的擦净，厚薄不对的清掉重喷。'},
           {id: 'ready', icon: '✅', title: '达到交付目标', hint: '覆盖 ≥99.5%，窗面无污染', check: s => s.summary?.ready,
-            result: '覆盖、窗面、沉积三项都达标，这面墙才能交付。'},
-          {id: 'export', icon: '📄', title: '导出作业记录', hint: '交付后点“导出”', check: () => flags.exported,
+            result: '喷满、窗面干净、涂层厚薄合适，这面墙才能交付。'},
+          {id: 'export', icon: '📄', title: '导出作业记录', hint: '交付后点“导出记录”', check: () => flags.exported,
             result: '参数、过程和每次返修都留在记录里，可以复查。'},
         ]);
       },

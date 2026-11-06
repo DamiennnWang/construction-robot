@@ -87,14 +87,14 @@
           {id: 'overlap', icon: '🎯', title: '让两道喷幅搭上', hint: '调小间距或拉远喷嘴', check: () => flags.overlapTrial,
             result: '喷嘴离墙越远喷幅越宽；间距小于喷幅，相邻两道才会搭接。'},
           {id: 'even', icon: '⚖️', title: '两端不堆厚', hint: '打开流量随速度调整', check: () => flags.evenTrial,
-            result: '起收段减速时流量也跟着减小，两端和中段的沉积就一样多。'},
+            result: '起收段减速时流量也跟着减小，两端和中段的涂层就一样厚。'},
         ]);
       },
     },
     {
       id: 'spray', name: '正式喷涂', lead: '机器人按试喷后的方案喷满整面墙。可以暂停、换视角，近看喷枪在窗边停喷。',
       build(c) {
-        const gate = lockable(c, '先在①试喷一次，再来正式喷涂。', {label: '去①规划试喷', index: 0});
+        const gate = lockable(c, '先在①试喷一次，再来正式喷涂。', {label: '去①试喷', index: 0});
         const g1 = c.section('作业', null, gate.content);
         c.adopt(EL.playback, g1);
         const primary = c.button('开始喷涂', () => EL.action.click(), {primary: true});
@@ -120,7 +120,7 @@
     {
       id: 'inspect', name: '巡检交付', lead: '打开质检视图，点墙面找出漏喷和污染，返修达标后交付。',
       build(c) {
-        const gate = lockable(c, '整面墙喷完后，才能巡检。', {label: '去②正式喷涂', index: 1});
+        const gate = lockable(c, '整面墙喷完后，才能巡检。', {label: '去②喷涂', index: 1});
         const g1 = c.section('待处理', null, gate.content);
         c.adopt(EL.issues, g1);
         readoutGroup(c, gate.content);
@@ -138,12 +138,12 @@
         });
         c.challenges([
           {id: 'pick', icon: '👆', title: '点墙面查一处', hint: '打开质检视图再点', check: s => !!s.selection,
-            result: '质检视图里的颜色分别代表漏喷、沉积偏少和窗面受喷。'},
-          {id: 'repair', icon: '🛠', title: '返修一处', hint: '点选后按“处理此处”', check: () => flags.repaired,
-            result: '漏喷补涂，窗面先清理，沉积不对的先处理再重涂。'},
+            result: '质检视图里的颜色分别代表漏喷、涂层偏薄、偏厚和窗面受喷。'},
+          {id: 'repair', icon: '🛠', title: '返修一处', hint: '点选后按“返修此处”', check: () => flags.repaired,
+            result: '漏喷的补喷，窗面沾漆的擦净，厚薄不对的清掉重喷。'},
           {id: 'ready', icon: '✅', title: '达到交付目标', hint: '覆盖 ≥99.5%，窗面无污染', check: s => s.summary?.ready,
-            result: '覆盖、窗面、沉积三项都达标，这面墙才能交付。'},
-          {id: 'export', icon: '📄', title: '导出作业记录', hint: '交付后点“导出”', check: () => flags.exported,
+            result: '喷满、窗面干净、涂层厚薄合适，这面墙才能交付。'},
+          {id: 'export', icon: '📄', title: '导出作业记录', hint: '交付后点“导出记录”', check: () => flags.exported,
             result: '参数、过程和每次返修都留在记录里，可以复查。'},
         ]);
       },
