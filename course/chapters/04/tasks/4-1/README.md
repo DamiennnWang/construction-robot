@@ -15,6 +15,8 @@
 
 所有场景均为教学模拟，速度和位移等参照量已在页面标注。颠簸垂向位移放大8倍显示，读数不放大。道路模型简化为车体中心随路面垂向运动，不模拟悬架和逐轮动力学。
 
+统一任务页外壳：`src/stations.js`（及 `src/stations.css`）把四种状态案例做成四个工位，三维区、同步曲线、时间轴和原有控件原样搬进全课程统一外壳（`shared/lab-shell`），每个工位带几张“试一试”；有 `stations.js` 时构建不再套第四章原来的版式（`shared/感知与识别/chapter-layout.mjs`）。
+
 构建：在仓库根目录运行 `node scripts/build.mjs 4-1`。主要源码为 `src/state-model.mjs`、`src/scene.js`、`src/app.js`、`src/page.html`、`src/style.css`、`src/layout.css`；`src/csv-tools.js`复用原版的独立CSV工具。`src/model.mjs`及`src/sensors.mjs`为此前版本，不再打包。
 
 16:9排版截图与交互检查保存在 `qa/layout-16x9/`，其中 `previous/` 为本次排版调整前的页面、样式及交互代码。

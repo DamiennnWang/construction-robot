@@ -216,20 +216,605 @@ html[data-theme=dark]{--bg:#0b101a;--surface:#111a29;--stage:#15232c;--ink:#e4ed
  .site-header{padding:12px 14px;gap:10px}.brand{font-size:10px}.brand small{font-size:7px}.brand-icon{width:29px;height:32px;font-size:20px}.brand-icon span{font-size:10px}.header-title{border:0;padding:0;display:block;margin-left:auto;margin-right:0}.header-title h1{font-size:12px}.header-title>span{font-size:8px;padding:2px 5px;display:inline-block;margin-top:3px}.site-header nav{width:100%;margin:0;justify-content:space-between;gap:4px}.site-header button{font-size:10px;padding:6px 8px}.help-icon{width:13px;height:13px;font-size:9px;margin-left:3px}
  .shell{padding:16px 14px 0}.scene-data-grid{grid-template-columns:1fr}.scene-toolbar>span{font-size:9px}.experiment-heading{gap:8px;padding:14px 14px 0}.experiment-heading h2{font-size:16px}.source-tag{font-size:8px}.scene-stamp strong{font-size:15px}.scene-panel #viewport{min-height:290px}.scene-foot{flex-wrap:wrap}.scene-foot>span:last-child{width:auto}.wave-title{display:block}.wave-heading{gap:8px}.wave-heading h2{font-size:18px}.chart-card svg{height:156px}.capture-button{padding:10px}footer{padding:18px 0}
 }
-</style><style>:root{--c4-nav-height:64px}
-.c4-nav{position:fixed;inset:0 0 auto;height:var(--c4-nav-height);z-index:1000;display:flex;align-items:center;gap:24px;padding:0 24px;background:#111d30;color:#dbe9fc;border-bottom:1px solid #334660;font:15px/1.4 "Segoe UI","Microsoft YaHei",sans-serif;box-sizing:border-box}
-.c4-nav a{text-decoration:none;color:#c0d2ec;white-space:nowrap;font-size:15px}.c4-nav .c4-home{font-weight:700;color:#8ebeff;padding-right:20px;border-right:1px solid #3a4a62}.c4-links{display:flex;align-items:center;gap:5px;flex:1}.c4-links a{padding:8px 12px;border-radius:6px}.c4-links a:hover,.c4-links a[aria-current]{background:#294260;color:#fff}.c4-nav button{border:1px solid #465d79;background:#22354d;color:#e5efff;border-radius:7px;padding:8px 12px;font:inherit;cursor:pointer;white-space:nowrap}.c4-nav :focus-visible{outline:3px solid #e7ac54;outline-offset:3px}
-html[data-c4] body{display:block;overflow:hidden;margin:0;width:100%;height:100dvh}
-#c4-content{position:absolute;inset:var(--c4-nav-height) 0 0;overflow:auto;background:var(--bg,#0b1422)}
-html[data-c4=state] #c4-content{display:grid;place-items:center}
-html[data-c4=vision] #c4-content{display:grid;place-items:center;overflow:hidden;background:#0c1625}
-html[data-c4=vision][data-theme=light] #c4-content{background:#dfebf5}
-html[data-c4] :is(dialog){max-height:calc(100dvh - 90px)}
-html[data-c4=lidar] :is(.control-label,.field-label,.tabs button,.segmented button,.experiment-tabs button){font-size:14px}
-html[data-c4=lidar] :is(.site-header p,.lab-title p){font-size:14px}
-@media(min-width:1000px){html[data-c4=state] .presentation{width:min(100%,calc((100dvh - var(--c4-nav-height))*16/9))}}
-@media(max-width:999px){html[data-c4=state] #c4-content{display:block}html[data-c4=state] .presentation{width:100%;min-height:100%}.c4-nav{gap:8px;padding:0 12px}.c4-nav .c4-home{padding-right:10px}.c4-links{overflow:auto}.c4-links a{font-size:13px;padding:8px}.c4-nav button{font-size:13px;padding:7px}}
-@media(max-width:600px){:root{--c4-nav-height:96px}.c4-nav{height:96px;display:grid;grid-template-columns:1fr auto;grid-template-rows:44px 44px;gap:0}.c4-nav .c4-home{border:0}.c4-links{grid-column:1/-1;grid-row:2;width:100%;overflow-x:auto;min-width:0}.c4-nav button{grid-column:2;grid-row:1}.c4-links a{flex:none}}
+</style><style data-lab-shell>/* 第二章任务页：一屏放下（16:9 屏幕不出现纵向滚动），菜单两层，蓝白配色。 */
+:root {
+  --course-bg:#edf4fc; --course-surface:#fff; --course-ink:#193550; --course-muted:#57718b;
+  --course-line:#cbdbea; --course-accent:#2467c9; --blue-soft:#e6f0ff;
+  --accent-2:#1c55ad; --surface-2:#f5f8fd; --hair:#e1eaf4;
+  --ok:#1f8a5b; --ok-soft:#e5f6ee; --ok-line:#a8dcc2; --warn:#c77a12; --warn-soft:#fdf2e1; --bad:#c2413b; --bad-soft:#fbe7e5;
+  --focus:#f0a020;
+  --shadow-sm:0 1px 2px rgba(18,44,78,.06);
+  --shadow:0 1px 2px rgba(18,44,78,.05), 0 6px 22px rgba(18,44,78,.08);
+  --shadow-lg:0 10px 34px rgba(18,44,78,.18);
+  --page-bg:linear-gradient(180deg,#eef4fc 0%,#e7eff9 100%);
+}
+html[data-theme="dark"] {
+  --accent-2:#b5d3ff; --surface-2:#1d324b; --hair:#2b4562;
+  --ok:#5cc597; --ok-soft:#173a2d; --ok-line:#2f6b51; --warn:#f0b35a; --warn-soft:#3b2d16; --bad:#f08079; --bad-soft:#3d1f1f;
+  --shadow-sm:0 1px 2px rgba(0,0,0,.25); --shadow:0 1px 2px rgba(0,0,0,.25), 0 8px 24px rgba(0,0,0,.28); --shadow-lg:0 12px 34px rgba(0,0,0,.45);
+  --page-bg:linear-gradient(180deg,#112035 0%,#0d1a2b 100%);
+}
+* { box-sizing:border-box; }
+[hidden] { display:none !important; }
+html, body { margin:0; height:100%; }
+body {
+  display:grid; grid-template-rows:auto auto minmax(0,1fr); height:100vh; height:100dvh; overflow:hidden;
+  background:var(--page-bg); color:var(--course-ink);
+  font:14px/1.5 "Microsoft YaHei","PingFang SC","Hiragino Sans GB","Segoe UI",sans-serif;
+  -webkit-font-smoothing:antialiased;
+}
+button, input, select { font:inherit; color:inherit; }
+button { cursor:pointer; transition:background .15s, border-color .15s, color .15s, box-shadow .15s, transform .15s; }
+:focus-visible { outline:3px solid color-mix(in srgb, var(--course-accent) 60%, transparent); outline-offset:2px; }
+
+/* —— 页头：本章任务 —— */
+.c2-top {
+  display:flex; align-items:center; gap:14px; height:50px; padding:0 18px;
+  background:var(--course-surface); border-bottom:1px solid var(--hair); box-shadow:var(--shadow-sm);
+}
+.c2-back {
+  display:inline-flex; align-items:center; gap:6px; height:32px; padding:0 12px 0 10px; border-radius:16px;
+  color:var(--course-ink); text-decoration:none; font-weight:700; white-space:nowrap; font-size:14px; background:var(--surface-2);
+}
+.c2-back:hover { color:var(--course-accent); background:var(--blue-soft); }
+.c2-tasks { display:flex; gap:2px; margin:0 auto; padding:3px; border-radius:12px; background:var(--surface-2); overflow-x:auto; }
+.c2-tasks a { padding:5px 16px; border-radius:9px; color:var(--course-muted); text-decoration:none; white-space:nowrap; font-size:14px; }
+.c2-tasks a:hover { color:var(--course-accent); }
+.c2-tasks a[aria-current="page"] { background:var(--course-surface); color:var(--course-accent); font-weight:700; box-shadow:var(--shadow-sm); }
+.c2-top .course-theme-toggle { margin-left:0 !important; height:32px !important; min-height:32px !important; border-radius:16px !important; }
+
+/* —— 工位条 —— */
+.c2-bar { display:flex; align-items:center; gap:20px; padding:12px 18px 10px; }
+.c2-title { display:flex; align-items:center; gap:10px; min-width:0; }
+.c2-task-id {
+  display:inline-flex; align-items:center; height:26px; padding:0 10px; border-radius:13px;
+  background:var(--course-accent); color:#fff; font-weight:700; font-size:13px; white-space:nowrap;
+}
+html[data-theme="dark"] .c2-task-id { color:#0f1d2e; }
+.c2-title h1 { margin:0; font-size:22px; line-height:1.2; font-weight:800; letter-spacing:.5px; white-space:nowrap; }
+.c2-stations { display:flex; gap:8px; margin-left:auto; }
+.c2-station {
+  display:flex; align-items:center; gap:9px; height:42px; padding:0 16px 0 7px;
+  border:1px solid var(--hair); border-radius:12px; background:var(--course-surface); box-shadow:var(--shadow-sm);
+  color:var(--course-ink); font-size:15px; white-space:nowrap;
+}
+.c2-station:hover { border-color:var(--course-accent); transform:translateY(-1px); }
+.c2-station[aria-selected="true"] {
+  background:linear-gradient(135deg,#3a82e4,#1f5bbd); border-color:transparent; color:#fff; font-weight:700;
+  box-shadow:0 6px 16px rgba(36,103,201,.32);
+}
+html[data-theme="dark"] .c2-station[aria-selected="true"] { background:linear-gradient(135deg,#8abaff,#5f97ea); color:#0f1d2e; }
+.c2-num { display:grid; place-items:center; width:28px; height:28px; border-radius:9px; background:var(--blue-soft); color:var(--course-accent); font-size:14px; font-weight:800; }
+.c2-station[aria-selected="true"] .c2-num { background:rgba(255,255,255,.22); color:inherit; }
+.c2-check { display:none; width:18px; height:18px; border-radius:50%; background:var(--ok); color:#fff; font-size:11px; font-weight:800; place-items:center; }
+.c2-station.done .c2-check { display:grid; }
+.c2-station[aria-selected="true"].done .c2-check { background:#fff; color:var(--ok); }
+
+/* —— 主体：三维区 + 面板 —— */
+.c2-main { display:grid; grid-template-columns:minmax(0,1fr) clamp(340px,25vw,410px); gap:14px; padding:0 18px 16px; min-height:0; }
+.c2-stage {
+  display:flex; flex-direction:column; min-height:0; overflow:hidden; border-radius:16px;
+  border:1px solid var(--hair); background:var(--course-surface); box-shadow:var(--shadow);
+}
+.c2-view { position:relative; flex:1 1 auto; min-height:0; background:var(--course-bg); }
+.c2-frame { position:absolute; inset:0; width:100%; height:100%; border:0; display:block; background:transparent; }
+.c2-loading {
+  position:absolute; inset:0; display:flex; flex-direction:column; align-items:center; justify-content:center; gap:12px;
+  color:var(--course-muted); font-size:15px; background:var(--course-bg); pointer-events:none; z-index:1;
+}
+.c2-spinner { width:30px; height:30px; border-radius:50%; border:3px solid var(--blue-soft); border-top-color:var(--course-accent); animation:c2-spin .8s linear infinite; }
+@keyframes c2-spin { to { transform:rotate(360deg); } }
+.c2-tools { position:absolute; left:12px; top:12px; display:flex; gap:6px; flex-wrap:wrap; max-width:64%; z-index:2; }
+.c2-tool {
+  height:32px; padding:0 12px; border-radius:10px; border:1px solid color-mix(in srgb, var(--hair) 70%, transparent);
+  background:color-mix(in srgb, var(--course-surface) 88%, transparent); backdrop-filter:blur(8px);
+  color:var(--course-ink); font-size:13px; white-space:nowrap; box-shadow:var(--shadow-sm);
+}
+.c2-tool:hover { border-color:var(--course-accent); color:var(--course-accent); }
+.c2-tool[aria-pressed="true"] { background:var(--blue-soft); border-color:color-mix(in srgb, var(--course-accent) 55%, transparent); color:var(--course-accent); font-weight:700; }
+.c2-toolseg {
+  padding:3px; border-color:color-mix(in srgb, var(--hair) 70%, transparent) !important;
+  background:color-mix(in srgb, var(--course-surface) 88%, transparent) !important; backdrop-filter:blur(8px); box-shadow:var(--shadow-sm);
+}
+.c2-toolseg button { height:26px; font-size:13px; padding:0 10px; }
+.c2-hint {
+  position:absolute; right:12px; bottom:10px; color:var(--course-muted); font-size:12px; pointer-events:none; z-index:2;
+  max-width:60%; white-space:nowrap; overflow:hidden; text-overflow:ellipsis;
+  background:color-mix(in srgb, var(--course-surface) 72%, transparent); padding:2px 10px; border-radius:10px;
+}
+.c2-part {
+  position:absolute; right:12px; top:12px; z-index:3; width:min(300px,42%); padding:11px 34px 11px 13px; border-radius:12px;
+  background:var(--course-surface); border:1px solid var(--hair); border-left:4px solid var(--focus);
+  box-shadow:var(--shadow-lg); display:flex; flex-direction:column; gap:3px;
+}
+.c2-part strong { font-size:15px; }
+.c2-part span { color:var(--course-muted); font-size:13px; line-height:1.5; }
+.c2-x { position:absolute; right:6px; top:4px; border:0; background:none; font-size:18px; color:var(--course-muted); }
+
+/* 三维区底部：运行控制 + 读数（不压在模型上） */
+.c2-strip {
+  flex:0 0 auto; display:flex; align-items:stretch; gap:10px; padding:8px 10px;
+  border-top:1px solid var(--hair); background:var(--course-surface);
+}
+.c2-strip:has(.c2-transport:empty):has(.c2-readouts:empty) { display:none; }
+.c2-transport { display:flex; align-items:center; gap:6px; flex:0 0 auto; padding-right:4px; }
+.c2-transport:empty { display:none; }
+.c2-transport .c2-tool { box-shadow:none; background:var(--surface-2); border-color:transparent; backdrop-filter:none; height:34px; }
+.c2-transport .c2-tool:hover { background:var(--blue-soft); }
+.c2-play {
+  height:38px; min-width:96px; padding:0 16px; border-radius:11px; border:0;
+  background:linear-gradient(135deg,#3a82e4,#1f5bbd); color:#fff; font-weight:700; font-size:14.5px;
+  box-shadow:0 4px 12px rgba(36,103,201,.3);
+}
+.c2-play:hover { transform:translateY(-1px); box-shadow:0 6px 16px rgba(36,103,201,.36); }
+.c2-play[aria-pressed="true"] { background:linear-gradient(135deg,#4c5f78,#33465e); box-shadow:0 4px 12px rgba(30,45,65,.25); }
+html[data-theme="dark"] .c2-play { background:linear-gradient(135deg,#8abaff,#5f97ea); color:#0f1d2e; }
+.c2-readouts { display:flex; gap:6px; flex:1 1 auto; min-width:0; }
+.c2-read {
+  flex:1 1 0; min-width:84px; display:flex; flex-direction:column; justify-content:center; padding:4px 12px;
+  border-radius:11px; background:var(--surface-2);
+}
+.c2-read-label { color:var(--course-muted); font-size:12px; white-space:nowrap; }
+.c2-val { display:flex; align-items:baseline; gap:4px; white-space:nowrap; overflow:hidden; }
+.c2-val b { font-size:21px; line-height:1.2; font-weight:800; font-variant-numeric:tabular-nums; color:var(--course-ink); }
+.c2-val small { color:var(--course-muted); font-size:12px; }
+
+/* —— 操作面板 —— */
+.c2-panel {
+  display:flex; flex-direction:column; gap:12px; min-height:0; overflow:auto; padding:16px 16px 14px;
+  border-radius:16px; border:1px solid var(--hair); background:var(--course-surface); box-shadow:var(--shadow); scrollbar-width:thin;
+}
+.c2-head-row { display:flex; align-items:center; justify-content:space-between; gap:8px; }
+.c2-head-name { display:flex; align-items:center; gap:9px; min-width:0; }
+.c2-head-num {
+  flex:0 0 30px; height:30px; border-radius:10px; display:grid; place-items:center; font-weight:800; font-size:15px; color:#fff;
+  background:linear-gradient(135deg,#3a82e4,#1f5bbd); box-shadow:0 3px 8px rgba(36,103,201,.3);
+}
+html[data-theme="dark"] .c2-head-num { color:#0f1d2e; background:linear-gradient(135deg,#8abaff,#5f97ea); }
+.c2-panel-head h2 { margin:0; font-size:19px; font-weight:800; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; }
+.c2-panel-head p { margin:6px 0 0; color:var(--course-muted); font-size:13.5px; line-height:1.55; }
+.c2-redo { height:30px; padding:0 11px; border-radius:15px; border:1px solid var(--hair); background:var(--surface-2); color:var(--course-muted); font-size:12.5px; white-space:nowrap; }
+.c2-redo:hover { color:var(--course-accent); border-color:var(--course-accent); }
+.c2-panel-body { display:flex; flex-direction:column; gap:14px; }
+.c2-group { display:flex; flex-direction:column; gap:8px; }
+.c2-group h3 { margin:0; font-size:13px; color:var(--accent-2); font-weight:700; display:flex; justify-content:space-between; align-items:center; gap:8px; }
+.c2-h3-text { display:flex; align-items:center; gap:7px; }
+.c2-h3-text::before { content:""; width:4px; height:14px; border-radius:2px; background:var(--course-accent); }
+.c2-row { display:flex; gap:6px; align-items:center; flex-wrap:wrap; }
+.c2-grid2 { display:grid; grid-template-columns:1fr 1fr; gap:8px 14px; }
+.c2-btn {
+  height:36px; padding:0 14px; border-radius:10px; border:1px solid var(--hair);
+  background:var(--course-surface); color:var(--course-ink); white-space:nowrap; box-shadow:var(--shadow-sm);
+}
+.c2-btn:hover:not(:disabled) { border-color:var(--course-accent); color:var(--course-accent); }
+.c2-btn:disabled { opacity:.45; cursor:not-allowed; }
+.c2-btn.c2-primary { background:linear-gradient(135deg,#3a82e4,#1f5bbd); border-color:transparent; color:#fff; font-weight:700; box-shadow:0 4px 12px rgba(36,103,201,.28); }
+.c2-btn.c2-primary:hover:not(:disabled) { color:#fff; transform:translateY(-1px); }
+html[data-theme="dark"] .c2-btn.c2-primary { background:linear-gradient(135deg,#8abaff,#5f97ea); color:#0f1d2e; }
+.c2-btn.c2-small { height:32px; padding:0 12px; }
+.c2-btn[aria-pressed="true"] { background:var(--blue-soft); border-color:var(--course-accent); color:var(--course-accent); font-weight:700; }
+.c2-seg { display:flex; padding:3px; gap:3px; border-radius:11px; background:var(--surface-2); border:1px solid var(--hair); }
+.c2-seg button { flex:1; height:32px; padding:0 8px; border:0; border-radius:8px; background:none; color:var(--course-muted); white-space:nowrap; }
+.c2-seg button:hover { color:var(--course-accent); }
+.c2-seg button[aria-checked="true"] { background:var(--course-surface); color:var(--course-accent); font-weight:700; box-shadow:0 1px 4px rgba(18,44,78,.14); }
+.c2-speed { padding:2px; border-radius:10px; }
+.c2-speed button { height:30px; padding:0 10px; font-size:13px; }
+
+/* 滑块：已走过的一段用主色填充 */
+.c2-slider { display:flex; flex-direction:column; gap:3px; min-width:0; }
+.c2-slider-top { display:flex; justify-content:space-between; align-items:center; gap:8px; font-size:13.5px; }
+.c2-slider output {
+  font-weight:700; color:var(--course-accent); font-variant-numeric:tabular-nums; white-space:nowrap;
+  background:var(--blue-soft); padding:0 8px; border-radius:8px; font-size:13px; line-height:22px;
+}
+.c2-slider input[type="range"] {
+  -webkit-appearance:none; appearance:none; width:100%; height:22px; margin:0; background:transparent; cursor:pointer; --p:50%;
+}
+.c2-slider input[type="range"]::-webkit-slider-runnable-track {
+  height:6px; border-radius:3px; background:linear-gradient(to right, var(--course-accent) var(--p), var(--hair) var(--p));
+}
+.c2-slider input[type="range"]::-moz-range-track { height:6px; border-radius:3px; background:var(--hair); }
+.c2-slider input[type="range"]::-moz-range-progress { height:6px; border-radius:3px; background:var(--course-accent); }
+.c2-slider input[type="range"]::-webkit-slider-thumb {
+  -webkit-appearance:none; width:18px; height:18px; margin-top:-6px; border-radius:50%;
+  background:#fff; border:3px solid var(--course-accent); box-shadow:0 2px 6px rgba(18,44,78,.25);
+}
+.c2-slider input[type="range"]::-moz-range-thumb { width:14px; height:14px; border-radius:50%; background:#fff; border:3px solid var(--course-accent); }
+.c2-slider input[type="range"]:hover::-webkit-slider-thumb { transform:scale(1.12); }
+
+.c2-switch {
+  display:inline-flex; align-items:center; gap:7px; height:32px; padding:0 10px 0 6px; border-radius:10px;
+  border:1px solid var(--hair); background:var(--course-surface); font-size:13.5px; white-space:nowrap;
+}
+.c2-knob { position:relative; width:30px; height:18px; border-radius:10px; background:var(--course-line); transition:background .15s; }
+.c2-knob::after { content:""; position:absolute; left:2px; top:2px; width:14px; height:14px; border-radius:50%; background:#fff; transition:transform .15s; box-shadow:0 1px 2px rgba(0,0,0,.25); }
+.c2-switch[aria-checked="true"] .c2-knob { background:var(--course-accent); }
+.c2-switch[aria-checked="true"] .c2-knob::after { transform:translateX(12px); }
+.c2-chips { display:flex; flex-wrap:wrap; gap:6px; }
+.c2-chip { height:30px; padding:0 12px; border-radius:15px; border:1px solid var(--hair); background:var(--course-surface); font-size:13px; white-space:nowrap; box-shadow:var(--shadow-sm); }
+.c2-chip:hover { border-color:var(--course-accent); color:var(--course-accent); }
+.c2-chip[aria-pressed="true"] { background:var(--focus); border-color:var(--focus); color:#2b1a00; font-weight:700; }
+.c2-chip.done { background:var(--ok-soft); border-color:var(--ok-line); color:var(--ok); font-weight:700; }
+
+/* 试一试：挑战卡 */
+.c2-count { font-weight:800; color:var(--course-accent); font-size:13px; font-variant-numeric:tabular-nums; }
+.c2-progress { height:5px; border-radius:3px; background:var(--hair); overflow:hidden; }
+.c2-progress span { display:block; height:100%; width:0; border-radius:3px; background:linear-gradient(90deg,#3fb27f,#1f8a5b); transition:width .4s ease; }
+.c2-challenges { display:grid; grid-template-columns:1fr 1fr; gap:8px; }
+.c2-challenge {
+  display:flex; gap:9px; align-items:flex-start; padding:9px 10px; border-radius:12px; min-width:0;
+  border:1px solid var(--hair); background:var(--course-surface); box-shadow:var(--shadow-sm);
+  transition:border-color .2s, background .2s, transform .2s;
+}
+.c2-mark {
+  flex:0 0 30px; height:30px; border-radius:9px; display:grid; place-items:center; font-size:16px; line-height:1;
+  background:linear-gradient(135deg,#eaf2ff,#d9e8ff); color:var(--course-accent); font-weight:800;
+}
+html[data-theme="dark"] .c2-mark { background:var(--blue-soft); }
+.c2-ch-text { display:flex; flex-direction:column; gap:1px; min-width:0; }
+.c2-ch-text b { font-size:13.5px; line-height:1.35; font-weight:700; }
+.c2-ch-text span { color:var(--course-muted); font-size:12px; line-height:1.4; display:-webkit-box; -webkit-line-clamp:2; -webkit-box-orient:vertical; overflow:hidden; }
+.c2-ch-go {
+  align-self:flex-start; margin-top:5px; height:26px; padding:0 10px; border-radius:13px; border:0;
+  background:var(--course-accent); color:#fff; font-size:12.5px; font-weight:700;
+}
+html[data-theme="dark"] .c2-ch-go { color:#0f1d2e; }
+.c2-challenge.done { background:var(--ok-soft); border-color:var(--ok-line); }
+.c2-challenge.done .c2-mark { background:var(--ok); color:#fff; animation:c2-pop .45s ease; }
+.c2-challenge.done .c2-ch-text span { color:var(--ok); font-weight:700; }
+.c2-challenge.done .c2-ch-go { display:none; }
+@keyframes c2-pop { 0% { transform:scale(.6); } 60% { transform:scale(1.18); } 100% { transform:scale(1); } }
+
+.c2-choice, .c2-predict { display:flex; flex-direction:column; gap:6px; padding:10px 12px; border-radius:12px; background:var(--surface-2); border:1px solid var(--hair); }
+.c2-prompt { margin:0; font-weight:700; font-size:14px; }
+.c2-options { display:flex; gap:6px; flex-wrap:wrap; }
+.c2-opt { flex:1 1 auto; min-height:34px; padding:4px 12px; border-radius:9px; border:1px solid var(--hair); background:var(--course-surface); }
+.c2-opt:hover:not(:disabled) { border-color:var(--course-accent); }
+.c2-opt.right { background:var(--ok-soft); border-color:var(--ok); color:var(--ok); font-weight:700; }
+.c2-opt.wrong { background:var(--bad-soft); border-color:var(--bad); color:var(--bad); text-decoration:line-through; }
+.c2-opt:disabled:not(.right):not(.wrong) { opacity:.5; }
+.c2-predict.c2-inline { flex-direction:row; align-items:center; justify-content:space-between; flex-wrap:wrap; padding:8px 12px; }
+.c2-predict.c2-inline .c2-row { flex-wrap:nowrap; }
+.c2-predict.c2-inline input { width:72px; }
+.c2-predict input { width:100px; height:34px; padding:0 10px; border-radius:9px; border:1px solid var(--hair); background:var(--course-surface); font-size:16px; font-weight:700; }
+.c2-predict input.right { border-color:var(--ok); background:var(--ok-soft); }
+.c2-predict input.wrong { border-color:var(--bad); background:var(--bad-soft); }
+.c2-unit { color:var(--course-muted); }
+.c2-note { margin:0; color:var(--course-muted); font-size:12.5px; line-height:1.45; }
+.c2-big { font-size:15px; font-weight:700; }
+.c2-banner {
+  display:flex; align-items:center; justify-content:space-between; gap:8px; padding:9px 12px; border-radius:12px;
+  background:linear-gradient(135deg,#fff4dc,#ffe9bf); border:1px solid #f3cf87; color:#6b4300; font-size:13px; font-weight:700;
+}
+html[data-theme="dark"] .c2-banner { background:#3b2d16; border-color:#6b5124; color:#f6d38f; }
+.c2-quiet { color:var(--course-muted); }
+
+/* 提示条：在三维区下方弹出，几秒后收起 */
+.c2-feedback {
+  position:absolute; left:50%; top:56px; transform:translateX(-50%); z-index:4; max-width:min(640px,80%);
+  display:flex; align-items:center; gap:10px; font-size:14px; line-height:1.55; border-radius:14px;
+}
+.c2-feedback:empty { display:none; }
+.c2-feedback:not(:empty) {
+  padding:10px 14px 10px 10px; background:var(--course-surface); color:var(--course-ink);
+  border:1px solid var(--hair); box-shadow:var(--shadow-lg); animation:c2-rise .25s ease;
+}
+@keyframes c2-rise { from { opacity:0; transform:translate(-50%,-8px); } to { opacity:1; transform:translate(-50%,0); } }
+.c2-toast-icon { flex:0 0 26px; height:26px; border-radius:50%; display:grid; place-items:center; font-weight:800; font-size:14px; background:var(--blue-soft); color:var(--course-accent); }
+.c2-feedback.ok .c2-toast-icon { background:var(--ok); color:#fff; }
+.c2-feedback.warn .c2-toast-icon { background:var(--warn); color:#fff; }
+.c2-feedback .c2-next { margin:0 0 0 4px; flex:0 0 auto; height:32px; }
+
+/* 外壳布局写死：放进第三章等已有页面时，不受页面里 main / aside / header / section 等通用规则影响 */
+html.lab-shell body > .c2-top { grid-row:1; position:static; width:auto; max-width:none; margin:0; }
+html.lab-shell body > .c2-bar { grid-row:2; position:static; width:auto; max-width:none; margin:0; }
+html.lab-shell body > .c2-main {
+  grid-row:3; grid-template-rows:minmax(0,1fr); grid-template-areas:none; grid-auto-flow:row;
+  position:static; width:auto; max-width:none; height:auto; max-height:none; margin:0;
+}
+html.lab-shell .c2-main > :is(.c2-stage, .c2-panel) {
+  grid-row:1; grid-area:auto; position:relative; width:auto; height:auto; max-height:none; min-width:0; margin:0; float:none;
+}
+html.lab-shell .c2-main > .c2-stage { grid-column:1; }
+html.lab-shell .c2-main > .c2-panel { grid-column:2; }
+
+/* 较矮的 16:9 窗口（如 1366×640）：压缩间距，保证整页不滚动 */
+@media (max-height:720px) and (min-width:901px) {
+  .c2-top { height:44px; }
+  .c2-bar { padding:8px 18px 7px; }
+  .c2-title h1 { font-size:20px; }
+  .c2-station { height:38px; font-size:14px; }
+  .c2-num { width:26px; height:26px; }
+  .c2-main { padding-bottom:12px; gap:12px; }
+  .c2-panel { gap:9px; padding:12px 13px 11px; }
+  .c2-panel-head p { margin-top:3px; }
+  .c2-panel-body { gap:10px; }
+  .c2-group { gap:6px; }
+  .c2-challenge { padding:7px 8px; }
+  .c2-mark { flex-basis:26px; height:26px; font-size:14px; }
+  .c2-panel-head p { display:-webkit-box; -webkit-line-clamp:1; -webkit-box-orient:vertical; overflow:hidden; }
+  .c2-ch-text span { -webkit-line-clamp:1; }
+  .c2-ch-go { margin-top:3px; height:22px; font-size:12px; }
+  .c2-head-num { flex-basis:26px; height:26px; font-size:14px; }
+  .c2-panel-head h2 { font-size:18px; }
+  .c2-panel { gap:8px; padding:10px 12px 10px; }
+  .c2-panel-body { gap:8px; }
+  .c2-group { gap:5px; }
+  .c2-seg button { height:29px; }
+  .c2-challenges { gap:6px; }
+  .c2-slider input[type="range"] { height:20px; }
+  .c2-val b { font-size:19px; }
+  .c2-btn, .c2-play { height:34px; }
+  .c2-strip { padding:6px 8px; }
+  .c2-read { padding:3px 10px; }
+}
+
+/* 窄屏：上下排列，允许整页滚动 */
+@media (max-width:900px) {
+  body { display:block; height:auto; overflow:auto; }
+  .c2-top { flex-wrap:wrap; height:auto; padding:8px 12px; gap:6px; }
+  .c2-tasks { margin:0; order:3; width:100%; }
+  .c2-bar { flex-direction:column; align-items:stretch; gap:8px; padding:10px 12px; }
+  .c2-title h1 { white-space:normal; }
+  .c2-stations { margin:0; overflow-x:auto; }
+  .c2-station { flex:1 0 auto; }
+  .c2-main { display:flex; flex-direction:column; padding:0 12px 16px; }
+  .c2-stage { height:64vh; min-height:380px; }
+  .c2-panel { overflow:visible; }
+  .c2-strip { flex-wrap:wrap; }
+  .c2-readouts { flex-wrap:wrap; }
+  .c2-read { flex:1 1 40%; }
+  .c2-hint { display:none; }
+}
+@media (prefers-reduced-motion:reduce) { * { transition:none !important; animation:none !important; } }
+
+/* 第三章：原页面元素放进统一外壳后的补充样式。外壳本身的样式在 shared/lab-shell/lab-shell.css。 */
+
+/* 原页面的三维区铺满外壳三维区 */
+html.lab-native .c2-native-stage {
+  position:absolute !important; inset:0 !important; width:100% !important; height:100% !important;
+  max-width:none !important; max-height:none !important; min-height:0 !important;
+  margin:0 !important; border:0 !important; border-radius:0 !important; box-shadow:none !important;
+}
+html.lab-native .c2-view { background:transparent; }
+
+/* 三维区上方一排：模型选择 */
+.c2-stage-top {
+  flex:0 0 auto; display:flex; align-items:stretch; gap:8px; padding:8px 10px;
+  border-bottom:1px solid var(--hair); background:var(--course-surface); overflow-x:auto; scrollbar-width:thin;
+}
+.c2-stage-top:empty, .c2-stage-top:not(:has(> :not([hidden]))) { display:none; }
+.c2-stage-top > * { margin:0 !important; }
+
+/* 面板里的原有控件：统一字体与圆角，去掉原来的卡片外框 */
+html.lab-native .c2-panel :is(button, input, select) { font-family:inherit; }
+html.lab-native .c2-panel [data-c2-adopted] { margin-left:0; margin-right:0; max-width:100%; }
+html.lab-native .c2-group > [data-c2-adopted]:is(section, div, aside) { box-shadow:none; }
+html.lab-native .c2-panel .c3-note { margin:0; color:var(--course-muted); font-size:12.5px; line-height:1.5; }
+
+/* 停止按钮：始终醒目 */
+html.lab-native .c2-panel .c3-stop { width:100%; }
+
+/* 3-1：关节点动行在较矮窗口里收紧 */
+@media (max-height:720px) {
+  html.lab-native .c2-panel .joint-row { min-height:0 !important; padding-top:1px !important; padding-bottom:1px !important; }
+  html.lab-native .c2-panel .constraint-cards button { padding-top:4px !important; padding-bottom:4px !important; }
+}
+
+/* ===== 统一控件样式：搬进面板和底栏的原控件，与第二章同一套外观 ===== */
+html.lab-native :is(.c2-panel, .c2-strip) :is(button.primary, button.outline, button.text-button, .compare-buttons button, .path-buttons button, .target-buttons button, .teach-toolbar button, .challenge-actions button) {
+  height:34px; padding:0 14px; border-radius:10px; font-size:13.5px; font-weight:600; white-space:nowrap;
+  display:inline-flex; align-items:center; justify-content:center; gap:4px; margin:0; cursor:pointer;
+  transition:background .15s, border-color .15s, color .15s, box-shadow .15s, transform .15s;
+}
+html.lab-native :is(.c2-panel, .c2-strip) button.primary {
+  border:0; color:#fff; background:linear-gradient(135deg,#3a82e4,#1f5bbd); box-shadow:0 4px 12px rgba(36,103,201,.28);
+}
+html.lab-native :is(.c2-panel, .c2-strip) button.primary:hover:not(:disabled) { transform:translateY(-1px); }
+html[data-theme="dark"].lab-native :is(.c2-panel, .c2-strip) button.primary { background:linear-gradient(135deg,#8abaff,#5f97ea); color:#0f1d2e; }
+html.lab-native :is(.c2-panel, .c2-strip) button.outline {
+  border:1px solid var(--hair); background:var(--course-surface); color:var(--course-ink); box-shadow:var(--shadow-sm);
+}
+html.lab-native :is(.c2-panel, .c2-strip) button.outline:hover:not(:disabled) { border-color:var(--course-accent); color:var(--course-accent); }
+html.lab-native :is(.c2-panel, .c2-strip) button.text-button {
+  height:30px; padding:0 10px; border:0; background:var(--surface-2); color:var(--course-accent); box-shadow:none; font-weight:600;
+}
+html.lab-native :is(.c2-panel, .c2-strip) button.text-button:hover:not(:disabled) { background:var(--blue-soft); }
+html.lab-native :is(.c2-panel, .c2-strip) button:disabled { opacity:.45; cursor:not-allowed; transform:none; }
+html.lab-native :is(.c2-panel, .c2-strip) :is(.compare-buttons, .path-buttons, .target-buttons, .teach-toolbar, .challenge-actions) {
+  display:flex; flex-wrap:wrap; gap:6px; margin:0;
+}
+
+/* 停止：所有页面同一种红色按钮 */
+html.lab-native :is(.c2-panel, .c2-strip) :is(button.stop, button.stop-button, .c3-stop) {
+  height:36px; padding:0 14px; border-radius:10px; border:1px solid #f1b8b4; background:var(--bad-soft); color:var(--bad);
+  font-size:14px; font-weight:700; display:flex; align-items:center; justify-content:center; gap:8px; box-shadow:none; cursor:pointer;
+}
+html.lab-native :is(.c2-panel, .c2-strip) :is(button.stop, button.stop-button):hover { background:var(--bad); color:#fff; }
+html.lab-native :is(.c2-panel, .c2-strip) :is(button.stop, button.stop-button) kbd {
+  font:600 10.5px/1 "Segoe UI",sans-serif; padding:3px 5px; border-radius:5px; border:1px solid currentColor; opacity:.7; background:none;
+}
+html[data-theme="dark"].lab-native :is(.c2-panel, .c2-strip) :is(button.stop, button.stop-button) { border-color:#6b3434; }
+
+/* 滑轨：已走过的一段填主色（--p 由 chapter3-shell.js 跟随数值更新） */
+html.lab-native :is(.c2-panel, .c2-strip) input[type="range"] {
+  -webkit-appearance:none; appearance:none; height:22px; margin:0; background:transparent; cursor:pointer; --p:50%; min-width:0;
+}
+html.lab-native :is(.c2-panel, .c2-strip) input[type="range"]::-webkit-slider-runnable-track {
+  height:6px; border-radius:3px; background:linear-gradient(to right, var(--course-accent) var(--p), var(--hair) var(--p));
+}
+html.lab-native :is(.c2-panel, .c2-strip) input[type="range"]::-moz-range-track { height:6px; border-radius:3px; background:var(--hair); }
+html.lab-native :is(.c2-panel, .c2-strip) input[type="range"]::-moz-range-progress { height:6px; border-radius:3px; background:var(--course-accent); }
+html.lab-native :is(.c2-panel, .c2-strip) input[type="range"]::-webkit-slider-thumb {
+  -webkit-appearance:none; width:16px; height:16px; margin-top:-5px; border-radius:50%;
+  background:#fff; border:3px solid var(--course-accent); box-shadow:0 2px 5px rgba(18,44,78,.25);
+}
+html.lab-native :is(.c2-panel, .c2-strip) input[type="range"]::-moz-range-thumb { width:12px; height:12px; border-radius:50%; background:#fff; border:3px solid var(--course-accent); }
+
+/* 输入框、下拉框、读数 */
+html.lab-native :is(.c2-panel, .c2-strip) :is(select, input[type="number"], input[type="text"]) {
+  height:32px; padding:0 8px; border-radius:9px; border:1px solid var(--hair); background:var(--course-surface); color:var(--course-ink); font-size:13.5px; min-width:0;
+}
+html.lab-native :is(.c2-panel, .c2-strip) :is(select, input[type="number"], input[type="text"]):focus { outline:none; border-color:var(--course-accent); box-shadow:0 0 0 3px var(--blue-soft); }
+html.lab-native :is(.c2-panel, .c2-strip) input[type="checkbox"] { width:16px; height:16px; accent-color:var(--course-accent); }
+html.lab-native :is(.c2-panel, .c2-strip) output { font-weight:700; color:var(--course-accent); font-variant-numeric:tabular-nums; }
+
+/* 小号原地切换（如“按住连续 / 单步点动”） */
+html.lab-native :is(.c2-panel, .c2-strip) .segmented { display:flex; gap:3px; padding:3px; border-radius:10px; background:var(--surface-2); border:1px solid var(--hair); }
+html.lab-native :is(.c2-panel, .c2-strip) .segmented button { flex:1; height:26px; padding:0 10px; border:0; border-radius:7px; background:none; color:var(--course-muted); font-size:13px; white-space:nowrap; cursor:pointer; }
+html.lab-native :is(.c2-panel, .c2-strip) .segmented button.active { background:var(--course-surface); color:var(--course-accent); font-weight:700; box-shadow:0 1px 3px rgba(18,44,78,.14); }
+
+/* 点动行（3-1 关节行；3-2 在底栏另有排法） */
+html.lab-native .c2-panel .joint-rows { display:flex; flex-direction:column; gap:5px; }
+html.lab-native .c2-panel .joint-row {
+  border-radius:10px !important; background:var(--surface-2) !important; border:1px solid transparent !important; box-shadow:none !important;
+}
+html.lab-native .c2-panel .joint-row:is(.active, .selected) { border-color:var(--course-accent) !important; background:var(--blue-soft) !important; }
+html.lab-native :is(.c2-panel, .c2-strip) :is(.jog, .jog-button) {
+  border-radius:8px; border:1px solid var(--hair); background:var(--course-surface); color:var(--course-ink); box-shadow:var(--shadow-sm); cursor:pointer;
+}
+html.lab-native :is(.c2-panel, .c2-strip) :is(.jog, .jog-button):hover { border-color:var(--course-accent); color:var(--course-accent); }
+html.lab-native :is(.c2-panel, .c2-strip) :is(.jog, .jog-button):active { background:var(--course-accent); color:#fff; }
+html.lab-native .c2-panel .joint-top { display:flex; justify-content:space-between; align-items:center; font-size:12px; color:var(--course-muted); }
+
+/* 卡片式选择（约束连接、六轴卡片）：与挑战卡同一种卡片 */
+html.lab-native .c2-panel :is(.constraint-cards, .axis-cards) button {
+  border-radius:12px !important; border:1px solid var(--hair) !important; background:var(--course-surface) !important; box-shadow:var(--shadow-sm) !important; cursor:pointer;
+}
+html.lab-native .c2-panel :is(.constraint-cards, .axis-cards) button.active { border-color:var(--course-accent) !important; background:var(--blue-soft) !important; box-shadow:0 0 0 1px var(--course-accent) inset !important; }
+html.lab-native .c2-panel .constraint-cards { display:grid; grid-template-columns:1fr 1fr; gap:6px; }
+html.lab-native .c2-panel .constraint-cards button { display:grid; grid-template-columns:auto 1fr; align-items:center; gap:0 8px; padding:6px 9px; text-align:left; }
+html.lab-native .c2-panel .constraint-cards b { grid-row:1 / span 2; font-size:20px; font-weight:800; color:var(--course-accent); }
+html.lab-native .c2-panel .constraint-cards small { color:var(--course-muted); font-size:11.5px; }
+
+/* 区间控件、目标点、障碍编辑 */
+html.lab-native .c2-panel .range-control label { display:flex; justify-content:space-between; font-size:13.5px; }
+html.lab-native .c2-panel .range-control input { width:100%; }
+html.lab-native .c2-panel .range-control p { margin:0; font-size:12px; color:var(--course-muted); }
+html.lab-native .c2-panel .target-inputs { display:grid; grid-template-columns:repeat(3,1fr); gap:6px; }
+html.lab-native .c2-panel .target-inputs label { display:flex; align-items:center; gap:4px; font-weight:700; font-size:13px; color:var(--course-muted); }
+html.lab-native .c2-panel .target-inputs input { width:100%; }
+html.lab-native .c2-panel .target-panel { display:flex; flex-direction:column; gap:6px; }
+html.lab-native .c2-panel :is(#targetInfo, #pathInfo) { margin:0; font-size:12px; color:var(--course-muted); }
+html.lab-native .c2-panel .path-results { display:flex; flex-wrap:wrap; gap:4px 10px; font-size:12.5px; }
+html.lab-native .c2-panel .path-results span { padding:2px 8px; border-radius:8px; background:var(--surface-2); }
+html.lab-native .c2-panel .path-controls { display:flex; flex-direction:column; gap:6px; }
+html.lab-native .c2-panel .obstacle-editor { display:flex; flex-direction:column; gap:4px; }
+html.lab-native .c2-panel .obstacle-editor > div { display:flex; align-items:center; gap:8px; font-size:13px; }
+html.lab-native .c2-panel .obstacle-editor label { display:grid; grid-template-columns:22px 1fr 40px; align-items:center; gap:6px; font-size:13px; font-weight:700; color:var(--course-muted); }
+html.lab-native .c2-panel .obstacle-editor label input { width:100%; }
+
+/* 原卡片自带的高度、比例在面板里取消 */
+html.lab-native .c2-panel .constraint-cards button { min-height:0 !important; height:auto !important; aspect-ratio:auto !important; padding:6px 9px !important; display:grid !important; grid-template-columns:auto 1fr !important; grid-template-rows:auto auto !important; text-align:left !important; }
+html.lab-native .c2-panel .constraint-cards strong { font-size:13px; line-height:1.3; }
+html.lab-native .c2-panel .constraint-cards small { display:block; line-height:1.3; }
+html.lab-native .c2-panel :is(.target-buttons, .path-buttons, .compare-buttons, .teach-toolbar, .challenge-actions) button { padding:0 10px; }
+html.lab-native .c2-panel .target-buttons { flex-wrap:nowrap; }
+@media (max-height:720px) {
+  html.lab-native .c2-panel .range-control p { display:none; }
+  html.lab-native .c2-panel :is(button.primary, button.outline) { height:32px; }
+  html.lab-native .c2-panel button.text-button { height:28px; }
+  html.lab-native .c2-panel :is(button.stop, button.stop-button) { height:32px; }
+  html.lab-native .c2-panel :is(select, input[type="number"], input[type="text"]) { height:30px; }
+}
+html.lab-native .c2-panel .constraint-cards { height:auto !important; min-height:0 !important; max-height:none !important; flex:none !important; grid-template-rows:none !important; grid-auto-rows:auto !important; align-content:start !important; }
+
+/* 4-1：原页面在 1000px 以上按 16:9 外框（cqw）排版；搬进外壳后统一换成固定字号 */
+
+/* 原页面给 body 写了居中的 16:9 网格：换回外壳的上下排列 */
+html.lab-native body { place-items:stretch; width:auto; }
+
+/* 三维区右上角的阶段与读数标记 */
+html.lab-native #viewport .scene-stamp { left:auto; right:16px; top:14px; align-items:flex-end; gap:2px; }
+html.lab-native #viewport .scene-stamp span { font-size:12px; color:var(--course-muted); }
+html.lab-native #viewport .scene-stamp strong { font-size:18px; color:var(--ink, inherit); font-variant-numeric:tabular-nums; }
+html.lab-native #viewport #loading { font-size:13px; }
+
+/* 同步曲线：三维区与时间轴之间 */
+.c41-waves { flex:0 0 auto; height:clamp(150px, 27vh, 236px); padding:8px 12px 6px; border-top:1px solid var(--hair); background:var(--course-surface); }
+html.lab-native .c41-waves .wave-section { height:100%; margin:0; padding:0; border:0; background:none; display:grid; grid-template-rows:auto minmax(0,1fr) auto; gap:6px; min-height:0; }
+html.lab-native .c41-waves .wave-heading { display:flex; align-items:center; justify-content:space-between; gap:10px; margin:0; }
+html.lab-native .c41-waves .wave-tools { display:contents; }
+html.lab-native .c41-waves .compare-label { display:inline-flex; align-items:center; gap:6px; font-size:12.5px; color:var(--course-muted); cursor:pointer; }
+html.lab-native .c41-waves .compare-label input { width:15px; height:15px; margin:0; accent-color:var(--course-accent); }
+html.lab-native .c41-waves .compare-label span { color:var(--course-accent); font-weight:600; }
+.c41-wave-tools { display:flex; gap:6px; margin-left:auto; }
+html.lab-native .c41-wave-tools button {
+  height:26px; width:auto; margin:0; padding:0 10px; border-radius:8px; font-size:12px; font-weight:600; white-space:nowrap; cursor:pointer;
+  border:1px solid var(--hair); background:var(--surface-2); color:var(--course-muted); box-shadow:none;
+}
+html.lab-native .c41-wave-tools button:hover { border-color:var(--course-accent); color:var(--course-accent); }
+html.lab-native .c41-wave-tools #captureButton { background:var(--blue-soft); color:var(--course-accent); border-color:transparent; }
+html.lab-native .c41-wave-tools b { margin-left:3px; color:var(--course-accent); }
+html.lab-native .c41-waves .chart-grid { display:grid; grid-template-columns:repeat(3, minmax(0,1fr)); gap:10px; min-height:0; }
+html.lab-native .c41-waves .chart-card { display:flex; flex-direction:column; min-height:0; padding:6px 10px 4px; border-radius:12px; border:1px solid var(--hair); background:var(--course-surface); box-shadow:none; }
+html.lab-native .c41-waves .chart-title { flex-shrink:0; display:flex; justify-content:space-between; align-items:baseline; gap:4px; }
+html.lab-native .c41-waves .chart-title h3 { margin:0; font-size:12.5px; font-weight:600; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; }
+html.lab-native .c41-waves .chart-title span { font-size:11px; color:var(--course-muted); }
+html.lab-native .c41-waves .chart-card svg { flex:1; height:0; min-height:0; width:100%; margin-top:2px; cursor:crosshair; }
+html.lab-native .c41-waves .chart-card svg text { font-size:10px; fill:var(--course-muted); }
+html.lab-native .c41-waves .chart-legend { flex-shrink:0; height:16px; font-size:11px; gap:10px; }
+html.lab-native .c41-waves .chart-legend i { width:7px; height:7px; margin-right:4px; }
+html.lab-native .c41-waves .wave-footer { display:flex; gap:12px; padding:0 2px; font-size:11px; color:var(--course-muted); }
+html.lab-native .c41-waves .wave-footer i { margin:0 4px 0 2px; }
+
+/* 底栏：时间轴 + 关键片段 */
+html.lab-native .c2-strip .timeline { display:flex; align-items:center; gap:8px; flex:1 1 auto; min-width:0; padding:0; margin:0; border:0; background:none; }
+html.lab-native .c2-strip .timeline #playButton { flex:0 0 auto; height:34px; padding:0 14px; border:0; border-radius:10px; font-size:13.5px; font-weight:700; color:#fff; background:linear-gradient(135deg,#3a82e0,#2467c9); box-shadow:0 4px 12px rgba(36,103,201,.25); cursor:pointer; white-space:nowrap; }
+html[data-theme="dark"].lab-native .c2-strip .timeline #playButton { background:linear-gradient(135deg,#8abaff,#5f97ea); color:#0f1d2e; }
+html.lab-native .c2-strip .timeline #stepButton { flex:0 0 auto; height:34px; padding:0 12px; border:0; border-radius:10px; background:var(--surface-2); color:inherit; font-size:13px; cursor:pointer; }
+html.lab-native .c2-strip .timeline #stepButton:hover { background:var(--blue-soft); }
+html.lab-native .c2-strip .timeline-track { flex:1 1 auto; min-width:120px; display:flex; flex-direction:column; gap:1px; }
+html.lab-native .c2-strip .timeline-track input { width:100%; height:16px; margin:0; }
+html.lab-native .c2-strip .time-scale { display:flex; justify-content:space-between; font-size:10px; color:var(--course-muted); }
+html.lab-native .c2-strip .timeline > output { flex:0 0 auto; min-width:56px; font-size:19px; text-align:right; }
+html.lab-native .c2-strip .rate { display:inline-flex; align-items:center; gap:4px; font-size:12px; color:var(--course-muted); }
+html.lab-native .c2-strip .rate select { height:28px; padding:0 6px; }
+html.lab-native .c2-strip .phase-row { flex:0 0 auto; display:flex; align-items:center; padding:0 0 0 8px; margin:0; border:0; border-left:1px solid var(--hair); background:none; }
+html.lab-native .c2-strip #phaseButtons { display:flex; gap:4px; flex-wrap:nowrap; }
+html.lab-native .c2-strip #phaseButtons button { height:28px; padding:0 9px; border-radius:8px; border:1px solid var(--hair); background:var(--course-surface); color:var(--course-muted); font-size:12px; white-space:nowrap; cursor:pointer; }
+html.lab-native .c2-strip #phaseButtons button:hover { color:var(--course-accent); border-color:var(--course-accent); }
+html.lab-native .c2-strip #phaseButtons button[aria-pressed="true"] { background:var(--blue-soft); color:var(--course-accent); border-color:var(--course-accent); font-weight:700; }
+
+/* 面板：此刻的数据 */
+html.lab-native .c2-panel .readings { display:grid; grid-template-columns:1fr 1fr; gap:8px; margin:0; }
+html.lab-native .c2-panel .reading { padding:8px 10px; border-radius:12px; background:var(--surface-2); border:0; }
+html.lab-native .c2-panel .reading span { display:block; font-size:12px; color:var(--course-muted); }
+html.lab-native .c2-panel .reading strong { font-size:24px; line-height:1.25; font-variant-numeric:tabular-nums; color:var(--course-accent); }
+html.lab-native .c2-panel .reading.reference strong { font-size:20px; color:inherit; }
+html.lab-native .c2-panel .reading small { font-size:12px; margin-left:3px; color:var(--course-muted); }
+html.lab-native .c2-panel .axis-readings { display:grid; gap:4px; margin:0; }
+html.lab-native .c2-panel .axis-row { display:grid; grid-template-columns:52px 1fr 50px; align-items:center; gap:8px; font-size:12.5px; line-height:1.4; }
+html.lab-native .c2-panel .axis-row output { font-size:14px; text-align:right; }
+html.lab-native .c2-panel :is(.axis-bar, .axis-bar i) { height:6px; border-radius:3px; }
+html.lab-native .c2-panel .live-explanation { position:static; margin:0; padding:7px 10px; border-left:3px solid var(--course-accent); border-radius:0 10px 10px 0; background:var(--blue-soft); font-size:13px; line-height:1.55; pointer-events:auto; min-height:0; }
+
+/* 面板：改变条件 */
+html.lab-native .c2-panel :is(#slopeControls, #driveControls, #bumpControls, #turnControls) { display:grid; gap:8px; }
+html.lab-native .c2-panel :is(#slopeControls, #driveControls, #bumpControls, #turnControls)[hidden] { display:none; }
+html.lab-native .c2-panel :is(.choice-row, .presets) { display:flex; gap:6px; margin:0; }
+html.lab-native .c2-panel :is(.choice-row, .presets) button {
+  flex:1; height:32px; padding:0 8px; border-radius:10px; font-size:13px; white-space:nowrap; cursor:pointer;
+  border:1px solid var(--hair); background:var(--course-surface); color:inherit;
+}
+html.lab-native .c2-panel :is(.choice-row, .presets) button:hover { border-color:var(--course-accent); }
+html.lab-native .c2-panel :is(.choice-row, .presets) button[aria-pressed="true"] { border-color:var(--course-accent); background:var(--blue-soft); color:var(--course-accent); font-weight:700; }
+html.lab-native .c2-panel .range-label { display:flex; justify-content:space-between; align-items:baseline; font-size:13px; }
+html.lab-native .c2-panel .range-label output { font-size:15px; }
+html.lab-native .c2-panel input[type="range"] { height:16px; margin:0; width:100%; }
+html.lab-native .c2-panel .control-note { margin:0; font-size:12px; line-height:1.5; color:var(--course-muted); }
+html.lab-native .c2-panel .gravity-control { display:grid; gap:2px; margin:10px 0 0; padding-top:10px; border-top:1px dashed var(--hair); font-size:13px; }
+html.lab-native .c2-panel .gravity-control[hidden] { display:none; }
+html.lab-native .c2-panel .gravity-control label { display:flex; align-items:center; gap:6px; cursor:pointer; }
+html.lab-native .c2-panel .gravity-control > span { padding-left:22px; margin:0; font-size:11.5px; color:var(--course-muted); }
+
+/* 较矮窗口：曲线和读数收紧 */
+@media (max-height:700px) {
+  .c41-waves { height:clamp(140px, 25vh, 170px); padding-top:6px; }
+  html.lab-native .c41-waves .wave-footer { display:none; }
+  html.lab-native .c2-panel .reading { padding:6px 10px; }
+  html.lab-native .c2-panel .reading strong { font-size:21px; }
+}
 </style><script data-course-navigation src="../../../../../shared/navigation.js"></script><link data-course-theme rel="stylesheet" href="../../../../../shared/styles/theme.css"><script data-course-theme src="../../../../../shared/theme.js"></script></head><body><div class="presentation">
 <header class="site-header"><a class="brand" href="../../../../../shared/感知与识别/index.html"><span class="brand-icon">R<span>↗</span></span><span>智能建筑机械与机器人<small>INTERACTIVE LAB · 土木工程</small></span></a><div class="header-title"><h1>机器人自身状态感知</h1><span>任务 4-1</span></div><nav aria-label="页面工具"><button id="csvOpen">手机数据对照</button><button id="recordBtn">观察记录 <b id="recordCount">0</b></button><button id="themeButton" aria-label="切换深色主题">◐ 深色</button><button id="helpButton">教学说明 <span class="help-icon">?</span></button></nav></header>
 <main class="shell">
@@ -275,23 +860,7 @@ html[data-c4=lidar] :is(.site-header p,.lab-title p){font-size:14px}
 <dialog id="csvDialog"><div class="dialog-heading"><div><p class="eyebrow">PHONE / MEASURED DATA</p><h2>用手机读数做一次对照</h2></div><button data-close="csvDialog" aria-label="关闭手机数据">×</button></div><p class="dialog-note">导入 phyphox 导出的加速度 CSV，核对时间、三轴和单位。手机和机器人可以使用同类传感原理；这里的手机数据单独显示，不控制机器人姿态。</p><input id="csvFile" type="file" accept=".csv,.tsv,.txt" aria-label="导入手机CSV"><div id="csvMapping" hidden><div class="mapping-grid"><label>时间列<select id="csvTime"></select></label><label>时间单位<select id="csvTimeUnit"><option value="1">秒 s</option><option value=".001">毫秒 ms</option></select></label><label>x 轴<select id="csvX"></select></label><label>y 轴<select id="csvY"></select></label><label>z 轴<select id="csvZ"></select></label><label>加速度单位<select id="csvAccelUnit"><option value="1">m/s²</option><option value="9.81">g</option></select></label></div><button id="applyCSV" class="primary">应用列映射</button></div><p id="csvStatus" role="status">尚未导入文件。缺失轴保持缺失，不填 0。</p><div id="importedChart" hidden><h3 id="importedName"></h3><svg id="csvSignal" aria-label="用户导入加速度时序图" role="img"></svg><div class="mapping-grid"><label>窗口起点 / s<input id="csvFrom" type="number" value="2" step=".1"></label><label>窗口终点 / s<input id="csvTo" type="number" value="8" step=".1"></label><label>记录轴<select id="csvAxis"><option value="0">x</option><option value="1">y</option><option value="2" selected>z</option></select></label><button id="saveCSV">保存导入窗口</button></div><p class="control-note">原始数据及采集条件以你的文件和实验记录为准。</p></div></dialog>
 
 <div id="toast" role="status" hidden></div>
-<script>(()=>{'use strict';
-const lab="state";
-const root=document.documentElement;
-root.dataset.c4=lab;
-const content=document.createElement('div');content.id='c4-content';
-for(const node of [...document.body.children])if(!['SCRIPT','STYLE','DIALOG'].includes(node.tagName))content.append(node);
-document.body.prepend(content);
-const nav=document.createElement('nav');nav.className='c4-nav';nav.setAttribute('aria-label','第四章实验导航');
-const routes=[['state','4-1 自身状态','course/chapters/04/tasks/4-1/index.html'],['lidar','4-2 激光雷达','course/chapters/04/tasks/4-2/index.html'],['annotation','4-3 标注','course/chapters/04/tasks/4-3/index.html#annotation'],['predict','预测','course/chapters/04/tasks/4-3/index.html#predict'],['evaluate','评估','course/chapters/04/tasks/4-3/index.html#evaluate']];
-nav.innerHTML='<a class="c4-home" href="../../overview/index.html">← 第四章总览</a><div class="c4-links">'+routes.map(([id,name,url])=>`<a data-route="${id}" href="../${url}">${name}</a>`).join('')+'</div>';
-document.body.prepend(nav);
-
-function highlight(){const selected=lab==='vision'?(location.hash.slice(1).split('?')[0]||document.body.dataset.startView):lab;nav.querySelectorAll('[data-route]').forEach(a=>{a.toggleAttribute('aria-current',a.dataset.route===selected);if(lab==='vision'&&['annotation','predict','evaluate'].includes(a.dataset.route))a.href='#'+a.dataset.route;});}
-addEventListener('hashchange',highlight);addEventListener('popstate',highlight);addEventListener('c4-route-change',highlight);
-highlight();
-})();
-</script><script>/*
+<script>/*
 The MIT License
 
 Copyright © 2010-2023 three.js authors
@@ -523,5 +1092,584 @@ document.addEventListener('visibilitychange',()=>{if(document.hidden){state.play
 let chartWidth=0;new ResizeObserver(()=>{const w=$('charts').clientWidth;if(w&&Math.abs(w-chartWidth)>.5){chartWidth=w;drawCharts();labels(stateAt(state));}}).observe($('charts'));
 window.__STATE_LAB__={snapshot:()=>({state:{...state},sample:stateAt(state),scene:scene?.stats()||{available:false},records:records.map(r=>({...r,rows:r.rows?.length})),imported:imported?{name:imported.name,rows:imported.rows,axes:imported.axes}:null,reduced:reduced.matches}),chooseCase,setTime,setState(p){if(p.case&&p.case!==state.case)chooseCase(p.case);Object.assign(state,p);changed(true);}};
 chooseCase('slope');updateRecords();wake();
+})();
+</script><script data-lab-shell>window.CHAPTER_LAYOUT={"task":"4-1","page":"","nav":"4-1","chapter":{"title":"第四章 · 感知与智能识别","href":"course/chapters/04/overview/index.html","tasks":[{"id":"4-1","label":"4-1","short":"状态与传感数据","href":"course/chapters/04/tasks/4-1/index.html"},{"id":"4-2","label":"4-2","short":"激光雷达与点云","href":"course/chapters/04/tasks/4-2/index.html"},{"id":"4-3","label":"4-3","short":"安全帽识别","href":"course/chapters/04/tasks/4-3/index.html"}]}};
+/* 课程任务页外壳（第二章起使用）：页头（本章任务）→ 工位条 → 三维区 + 操作面板。
+ * 两种用法：
+ *   LabShell.embedded(cfg)  三维区放原版实验页（iframe，嵌入模式只显示三维视图），面板通过 postMessage 驱动原模型。（第二章）
+ *   LabShell.native(cfg)    页面自己的三维区与原有控件直接搬进外壳，面板里重新编排，状态由 cfg.poll() 读取。（第三章）
+ * 菜单只有两层；面板里没有标签页，也没有“学习目标/学习任务”。设计规范见 course/设计规范.md。
+ */
+(() => {
+  'use strict';
+  const h = (tag, cls, text) => { const e = document.createElement(tag); if (cls) e.className = cls; if (text != null) e.textContent = text; return e; };
+  const href = p => (window.courseHref ? window.courseHref(p) : p);
+  const fmt = (v, n = 0) => (Number.isFinite(v) ? (Math.abs(v) < Math.pow(10, -n) / 2 ? 0 : v).toFixed(n) : '—');
+
+  function start(cfg) {
+    const native = Boolean(cfg.native);
+    document.title = `${cfg.task} ${cfg.title}｜智能建筑机械与机器人`;
+    document.documentElement.dataset.c2Lab = cfg.task;
+    document.documentElement.classList.add('lab-shell', native ? 'lab-native' : 'lab-embedded');
+    const store = 'c2-progress-' + (cfg.progressKey || cfg.task);
+    let progress = {};
+    try { progress = JSON.parse(localStorage.getItem(store) || '{}') || {}; } catch {}
+    const save = () => { try { localStorage.setItem(store, JSON.stringify(progress)); } catch {} };
+
+    /* 页头 */
+    const top = h('header', 'c2-top course-nav');
+    const back = h('a', 'c2-back', '← ' + cfg.chapter.title); back.href = href(cfg.chapter.href);
+    const tasks = h('nav', 'c2-tasks'); tasks.setAttribute('aria-label', '本章任务');
+    for (const t of cfg.tasks) {
+      const a = h('a', '', `${t.label || t.id} ${t.short || t.title}`); a.href = href(t.href);
+      if (t.id === (cfg.taskNav || cfg.task)) a.setAttribute('aria-current', 'page');
+      tasks.append(a);
+    }
+    top.append(back, tasks);
+
+    /* 工位条 */
+    const bar = h('div', 'c2-bar');
+    const title = h('div', 'c2-title');
+    title.append(h('span', 'c2-task-id', '任务 ' + cfg.task), h('h1', '', cfg.title));
+    const tabs = h('div', 'c2-stations'); tabs.setAttribute('role', 'tablist'); tabs.setAttribute('aria-label', '工位');
+    bar.append(title, tabs);
+
+    /* 三维区 */
+    const main = h('main', 'c2-main');
+    const stageBox = h('section', 'c2-stage'); stageBox.setAttribute('aria-label', '三维模型');
+    const view = h('div', 'c2-view');
+    const loading = h('div', 'c2-loading'); loading.append(h('span', 'c2-spinner'), h('span', '', '正在载入三维模型…'));
+    const tools = h('div', 'c2-tools');
+    const card = h('div', 'c2-part'); card.hidden = true; card.setAttribute('role', 'status');
+    const hint = h('div', 'c2-hint');
+    view.append(loading, tools, card, hint);
+    const strip = h('div', 'c2-strip');
+    const transportBox = h('div', 'c2-transport');
+    const readBox = h('div', 'c2-readouts');
+    strip.append(transportBox, readBox);
+    stageBox.append(view, strip);
+
+    /* 面板 */
+    const panel = h('aside', 'c2-panel'); panel.setAttribute('aria-label', '操作面板');
+    const head = h('div', 'c2-panel-head');
+    const body = h('div', 'c2-panel-body');
+    const feedback = h('div', 'c2-feedback'); feedback.setAttribute('role', 'status'); feedback.setAttribute('aria-live', 'polite');
+    const redo = h('button', 'c2-redo', '↺ 重来'); redo.type = 'button'; redo.title = '把这个工位恢复到开始的样子';
+    const next = h('button', 'c2-btn c2-primary c2-next', '去下一站 →'); next.type = 'button';
+    panel.append(head, body);
+    view.append(feedback);
+    let toastTimer = 0;
+    main.append(stageBox, panel);
+    /* 原页面里暂时不用的控件停放处（仍在文档里，原有程序照常工作） */
+    const parking = h('div', 'c2-parking'); parking.hidden = true;
+    document.body.append(top, bar, main, parking);
+    if (native) {
+      loading.hidden = true;
+      if (cfg.stage) { cfg.stage.classList.add('c2-native-stage'); view.prepend(cfg.stage); }
+      if (cfg.stageTop) { const topRow = h('div', 'c2-stage-top'); topRow.append(...[].concat(cfg.stageTop).filter(Boolean)); stageBox.prepend(topRow); }
+      if (cfg.redo === false) redo.hidden = true;
+    }
+
+    let current = -1, ctx = null, frame = null, cleanup = [];
+    const tabButtons = cfg.stations.map((s, i) => {
+      const b = h('button', 'c2-station'); b.type = 'button'; b.setAttribute('role', 'tab');
+      b.append(h('span', 'c2-num', String(i + 1)), h('span', 'c2-name', s.name), h('span', 'c2-check', '✓'));
+      b.addEventListener('click', () => select(i));
+      b.addEventListener('keydown', e => {
+        if (e.key !== 'ArrowRight' && e.key !== 'ArrowLeft') return;
+        e.preventDefault(); const j = (i + (e.key === 'ArrowRight' ? 1 : -1) + cfg.stations.length) % cfg.stations.length;
+        select(j); tabButtons[j].focus();
+      });
+      tabs.append(b);
+      return b;
+    });
+    const syncTabs = () => tabButtons.forEach((b, i) => {
+      b.setAttribute('aria-selected', String(i === current)); b.tabIndex = i === current ? 0 : -1;
+      b.classList.toggle('done', Boolean(progress[cfg.stations[i].id]));
+    });
+
+    /* 嵌入模式：与原版实验页通信（只用 postMessage，file:// 打开也能用） */
+    window.addEventListener('message', e => {
+      const d = e.data;
+      if (!d || d.c2 !== 'lab' || !frame || e.source !== frame.contentWindow) return;
+      if (d.type === 'ready' || (d.type === 'state' && ctx && !ctx.lab.ready)) { loading.hidden = true; sendTheme(); ctx?._ready(); }
+      if (d.type === 'state') ctx?._state(d.data);
+    });
+    const sendTheme = () => frame?.contentWindow?.postMessage({c2: 'cmd', op: 'theme', value: window.CourseTheme?.get?.() || 'light'}, '*');
+    window.addEventListener('course-theme-change', sendTheme);
+
+    // 原页面的控件始终留在文档里（原程序可能随时读写它们），换工位时先放回停放处
+    function parkAll() { for (const root of [body, readBox]) root.querySelectorAll('[data-c2-adopted]').forEach(n => parking.append(n)); }
+
+    function select(i, fromHash, fromPage) {
+      if (i === current) return;
+      cleanup.forEach(f => f()); cleanup = [];
+      current = i;
+      const s = cfg.stations[i];
+      if (!fromHash) history.replaceState(null, '', '#' + s.id);
+      const ht = h('div', 'c2-head-row'), name = h('div', 'c2-head-name');
+      name.append(h('span', 'c2-head-num', String(i + 1)), h('h2', '', s.name));
+      ht.append(name, redo);
+      head.replaceChildren(ht, h('p', '', s.lead || ''));
+      parkAll();
+      body.replaceChildren(); clearTimeout(toastTimer); feedback.textContent = ''; feedback.className = 'c2-feedback';
+      transportBox.replaceChildren(); readBox.replaceChildren(); tools.replaceChildren(); card.hidden = true;
+      hint.textContent = (s.note ? s.note + '　' : '') + (s.hint ?? cfg.hint ?? '拖动旋转 · 滚轮缩放');
+      hint.hidden = !hint.textContent;
+      if (native) {
+        if (!fromPage) cfg.select?.(s.id);
+      } else {
+        frame?.remove();
+        frame = h('iframe', 'c2-frame'); frame.title = s.name + '三维模型';
+        frame.src = s.src; loading.hidden = false;
+        view.prepend(frame);
+      }
+      ctx = makeContext(s, i);
+      cfg.build?.(ctx, s);
+      s.build?.(ctx, s);
+      if (native) ctx._ready();
+      syncTabs();
+      // 原页面的渲染器按容器尺寸重新取景；布局稳定后再通知一次
+      dispatchEvent(new Event('resize'));
+      if (native) for (const t of [60, 300, 900]) setTimeout(() => dispatchEvent(new Event('resize')), t);
+    }
+    redo.addEventListener('click', () => { const i = current; current = -1; cfg.reset?.(cfg.stations[i].id); select(i); });
+    next.addEventListener('click', () => select(Math.min(current + 1, cfg.stations.length - 1)));
+
+    function makeContext(s, index) {
+      const stateFns = new Set(), readyFns = new Set();
+      let latest = null, ready = false;
+      const send = msg => frame?.contentWindow?.postMessage({c2: 'cmd', ...msg}, '*');
+      const c = {
+        h, fmt, station: s, index, body, native,
+        /* —— 原模型 —— */
+        lab: {
+          click: (sel, i = 0) => send({op: 'click', sel, index: i}),
+          clickText: (sel, text) => send({op: 'clickText', sel, text}),
+          set: (sel, value) => send({op: 'set', sel, value}),
+          call: (path, ...args) => send({op: 'call', path, args}),
+          event: name => send({op: 'event', name}),
+          get state() { return latest; },
+          get ready() { return ready; },
+          onState(fn) { stateFns.add(fn); if (latest) fn(latest); },
+          onReady(fn) { readyFns.add(fn); if (ready) fn(); },
+        },
+        _state(data) { latest = data; stateFns.forEach(f => { try { f(data); } catch (err) { console.warn(err); } }); },
+        _ready() { if (ready) return; ready = true; readyFns.forEach(f => f()); },
+        /** 把原页面里的一个控件（或一组）搬进面板；换工位时自动放回停放处。 */
+        adopt(nodes, into) {
+          const list = (Array.isArray(nodes) ? nodes : [nodes]).map(n => (typeof n === 'string' ? document.querySelector(n) : n)).filter(Boolean);
+          list.forEach(n => { n.dataset.c2Adopted = '1'; n.hidden = false; (into || body).append(n); });
+          return list[0];
+        },
+        /* —— 反馈 —— */
+        /** 反馈以提示条形式出现在三维区上方，几秒后自动收起，不挤占面板。 */
+        feedback(text, kind = 'info', keep = false) {
+          clearTimeout(toastTimer);
+          feedback.replaceChildren();
+          if (text) feedback.append(h('span', 'c2-toast-icon', kind === 'ok' ? '✓' : kind === 'warn' ? '!' : 'i'), h('span', 'c2-toast-text', text));
+          feedback.className = 'c2-feedback ' + kind;
+          if (!keep && text) toastTimer = setTimeout(() => { feedback.textContent = ''; feedback.className = 'c2-feedback'; }, kind === 'warn' ? 5000 : 7000);
+        },
+        showPart(name, desc) {
+          if (!name) { card.hidden = true; return; }
+          card.replaceChildren(h('strong', '', name), h('span', '', desc || ''));
+          const x = h('button', 'c2-x', '×'); x.type = 'button'; x.setAttribute('aria-label', '关闭'); x.onclick = () => { card.hidden = true; };
+          card.append(x); card.hidden = false;
+        },
+        /* —— 面板控件 —— */
+        section(titleText, extra, into = body) {
+          const sec = h('section', 'c2-group');
+          if (titleText) { const t = h('h3', ''); t.append(h('span', 'c2-h3-text', titleText)); if (extra) t.append(extra); sec.append(t); }
+          into.append(sec); return sec;
+        },
+        button(text, fn, opts = {}) {
+          const b = h('button', 'c2-btn' + (opts.primary ? ' c2-primary' : '') + (opts.small ? ' c2-small' : ''), text);
+          b.type = 'button'; b.addEventListener('click', fn); if (opts.title) b.title = opts.title; return b;
+        },
+        row(...items) { const r = h('div', 'c2-row'); r.append(...items); return r; },
+        segmented(options, value, onChange, label) {
+          const wrap = h('div', 'c2-seg'); wrap.setAttribute('role', 'radiogroup'); if (label) wrap.setAttribute('aria-label', label);
+          let currentValue = value;
+          const buttons = options.map(o => {
+            const b = h('button', '', o.label); b.type = 'button'; b.setAttribute('role', 'radio'); if (o.title) b.title = o.title;
+            b.addEventListener('click', () => { set(o.value); onChange(o.value); });
+            wrap.append(b); return [o.value, b];
+          });
+          const set = v => { currentValue = v; buttons.forEach(([val, b]) => b.setAttribute('aria-checked', String(val === v))); };
+          set(value);
+          return {el: wrap, set, get: () => currentValue};
+        },
+        slider({label, min, max, step = 1, value, unit = '', format, onInput}) {
+          const wrap = h('label', 'c2-slider');
+          const t = h('span', 'c2-slider-top'), name = h('span', '', label), out = h('output', '');
+          t.append(name, out);
+          const input = h('input'); input.type = 'range'; Object.assign(input, {min, max, step, value});
+          const show = v => {
+            out.textContent = (format ? format(+v) : v) + (unit ? ' ' + unit : '');
+            input.style.setProperty('--p', ((+v - min) / (max - min || 1) * 100).toFixed(1) + '%');
+          };
+          let touching = 0;
+          input.addEventListener('input', () => { touching = performance.now(); show(input.value); onInput(+input.value); });
+          show(value); wrap.append(t, input);
+          return {
+            el: wrap, input,
+            /** 跟随模型同步显示；用户正在拖动时不打断。 */
+            sync(v) { if (performance.now() - touching < 700 || !Number.isFinite(v)) return; if (Math.abs(+input.value - v) > 1e-9) { input.value = v; show(input.value); } },
+            set(v) { input.value = v; show(v); }, get: () => +input.value,
+          };
+        },
+        toggle(label, value, onChange) {
+          const b = h('button', 'c2-switch'); b.type = 'button'; b.setAttribute('role', 'switch');
+          b.append(h('span', 'c2-knob'), h('span', '', label));
+          const set = v => b.setAttribute('aria-checked', String(Boolean(v)));
+          b.addEventListener('click', () => { const v = b.getAttribute('aria-checked') !== 'true'; set(v); onChange(v); });
+          set(value);
+          return {el: b, set};
+        },
+        /** 部件快捷：点一下镜头飞过去。 */
+        chips(items, onPick) {
+          const wrap = h('div', 'c2-chips');
+          const buttons = items.map(it => {
+            const b = h('button', 'c2-chip', it.label); b.type = 'button';
+            b.addEventListener('click', () => { buttons.forEach(x => x.setAttribute('aria-pressed', String(x === b))); onPick(it); });
+            wrap.append(b); return b;
+          });
+          return {el: wrap, buttons, clear: () => buttons.forEach(x => x.setAttribute('aria-pressed', 'false'))};
+        },
+        /** 小问题：只用在“看过结果之后”。 */
+        choice({prompt, options, answer, onRight, wrong}) {
+          const box = h('div', 'c2-choice');
+          if (prompt) box.append(h('p', 'c2-prompt', prompt));
+          const row = h('div', 'c2-options');
+          options.forEach((o, i) => {
+            const b = h('button', 'c2-opt', o); b.type = 'button';
+            b.addEventListener('click', () => {
+              if (box.dataset.solved) return;
+              if (i === answer) { b.classList.add('right'); box.dataset.solved = '1'; [...row.children].forEach(x => { x.disabled = x !== b; }); onRight?.(); }
+              else { b.classList.add('wrong'); b.disabled = true; c.feedback(typeof wrong === 'function' ? wrong(i) : (wrong || '再看看模型，再选一次。'), 'warn'); }
+            });
+            row.append(b);
+          });
+          box.append(row);
+          return box;
+        },
+        /** 先猜一个数，再让模型跑给你看。onGuess 返回 true/false/undefined。 */
+        predict({prompt, unit, onGuess, inline}) {
+          const box = h('div', 'c2-predict' + (inline ? ' c2-inline' : ''));
+          box.append(h('p', 'c2-prompt', prompt));
+          const r = h('div', 'c2-row'), input = h('input'); input.type = 'number'; input.inputMode = 'decimal'; input.setAttribute('aria-label', prompt);
+          const go = c.button('试试看', () => {
+            const v = parseFloat(input.value);
+            if (!Number.isFinite(v)) { c.feedback('先填一个数。', 'warn'); return; }
+            const ok = onGuess(v); input.classList.toggle('right', ok === true); input.classList.toggle('wrong', ok === false);
+          }, {small: true});
+          input.addEventListener('keydown', e => { if (e.key === 'Enter') go.click(); });
+          r.append(input, h('span', 'c2-unit', unit || ''), go); box.append(r);
+          return {el: box, input};
+        },
+        /** 试一试：几张挑战卡，不分先后；模型状态满足条件就自动打勾。 */
+        challenges(list, titleText = '试一试', into = body) {
+          const counter = h('span', 'c2-count');
+          const sec = c.section(titleText, counter, into);
+          const bar = h('div', 'c2-progress'); const fill = h('span'); bar.append(fill);
+          const grid = h('div', 'c2-challenges'); sec.append(bar, grid);
+          const done = new Set();
+          const items = list.map(ch => {
+            const li = h('div', 'c2-challenge');
+            const mark = h('span', 'c2-mark', ch.icon || '★');
+            const txt = h('div', 'c2-ch-text');
+            txt.append(h('b', '', ch.title));
+            const sub = h('span', '', ch.hint || ''); txt.append(sub);
+            li.append(mark, txt);
+            if (ch.action) {
+              const go = h('button', 'c2-ch-go', ch.action.label); go.type = 'button';
+              go.addEventListener('click', e => { e.stopPropagation(); ch.action.fn(); });
+              txt.append(go);
+            }
+            grid.append(li);
+            return {ch, li, sub, mark};
+          });
+          const update = () => { counter.textContent = `${done.size} / ${list.length}`; fill.style.width = (done.size / list.length * 100) + '%'; };
+          const complete = id => {
+            if (done.has(id)) return;
+            const it = items.find(x => x.ch.id === id); if (!it) return;
+            done.add(id); it.li.classList.add('done'); it.mark.textContent = '✓';
+            if (it.ch.result) c.feedback(it.ch.title + '：' + it.ch.result, 'ok');
+            it.sub.textContent = '完成';
+            update();
+            if (done.size === list.length) {
+              progress[s.id] = true; save(); syncTabs();
+              setTimeout(() => {
+                if (ctx !== c) return;
+                c.feedback(current < cfg.stations.length - 1 ? '这一站的挑战都完成了！' : '本任务的挑战都完成了！还可以接着随便调一调。', 'ok', current < cfg.stations.length - 1);
+                if (current < cfg.stations.length - 1) feedback.append(next);
+              }, 2600);
+            }
+          };
+          c.lab.onState(st => { for (const it of items) if (!done.has(it.ch.id)) { try { if (it.ch.check?.(st)) complete(it.ch.id); } catch {} } });
+          update();
+          return {complete, isDone: id => done.has(id), section: sec};
+        },
+        /* —— 三维区：工具、播放、读数 —— */
+        view(text, fn, titleText) { const b = h('button', 'c2-tool', text); b.type = 'button'; if (titleText) b.title = titleText; b.addEventListener('click', fn); tools.append(b); return b; },
+        /** 三维区左上角的一组单选（如 剖开 / 完整 / 去掉外壳）。 */
+        toolSeg(options, value, onChange, label) {
+          const seg = c.segmented(options, value, onChange, label); seg.el.classList.add('c2-toolseg'); tools.append(seg.el); return seg;
+        },
+        tool(text, onToggle, pressed = false) {
+          const b = h('button', 'c2-tool', text); b.type = 'button'; b.setAttribute('aria-pressed', String(pressed));
+          b.addEventListener('click', () => { const p = b.getAttribute('aria-pressed') !== 'true'; b.setAttribute('aria-pressed', String(p)); onToggle(p); });
+          tools.append(b); return {el: b, set: p => b.setAttribute('aria-pressed', String(Boolean(p)))};
+        },
+        transport({onToggle, onStep, onReset, stepText = '单步', extra, speeds, onSpeed, speed}) {
+          const play = h('button', 'c2-play', ''); play.type = 'button';
+          const set = p => { play.textContent = p ? '❚❚ 暂停' : '▶ 运行'; play.setAttribute('aria-pressed', String(Boolean(p))); };
+          play.addEventListener('click', () => { const p = play.getAttribute('aria-pressed') !== 'true'; set(p); onToggle(p); });
+          set(false); transportBox.append(play);
+          if (onStep) { const st = h('button', 'c2-tool', stepText); st.type = 'button'; st.addEventListener('click', onStep); transportBox.append(st); }
+          if (onReset) { const rs = h('button', 'c2-tool', '复位'); rs.type = 'button'; rs.addEventListener('click', onReset); transportBox.append(rs); }
+          let speedSeg = null;
+          if (speeds) { speedSeg = c.segmented(speeds.map(([v, l]) => ({value: v, label: l})), speed ?? speeds[0][0], onSpeed, '快慢'); speedSeg.el.classList.add('c2-speed'); transportBox.append(speedSeg.el); }
+          if (extra) transportBox.append(extra);
+          return {setPlaying: set, setSpeed: v => speedSeg?.set(v)};
+        },
+        /** 把原页面的元素放进三维区底部一栏。 */
+        stripAdopt(nodes) { const list = (Array.isArray(nodes) ? nodes : [nodes]).map(n => (typeof n === 'string' ? document.querySelector(n) : n)).filter(Boolean); list.forEach(n => { n.dataset.c2Adopted = '1'; readBox.append(n); }); },
+        readouts(defs) {
+          const cells = {};
+          readBox.replaceChildren();
+          for (const d of defs) {
+            const cell = h('div', 'c2-read'), v = h('b', '', '—'), u = h('small', '', d.unit || '');
+            const val = h('span', 'c2-val'); val.append(v, u);
+            cell.append(h('span', 'c2-read-label', d.label), val);
+            readBox.append(cell); cells[d.id] = {v, u, cell};
+          }
+          return (id, value, unit) => {
+            const x = cells[id]; if (!x) return;
+            if (x.v.textContent !== String(value)) x.v.textContent = value;
+            if (unit != null && x.u.textContent !== unit) x.u.textContent = unit;
+          };
+        },
+        onCleanup(fn) { cleanup.push(fn); },
+      };
+      return c;
+    }
+
+    /* 原地模式：定时读原页面状态；原页面自己切换了活动时，工位条跟着变 */
+    if (native) {
+      setInterval(() => {
+        let st = null;
+        try { st = cfg.poll?.(); } catch (err) { /* 页面尚未就绪 */ }
+        if (st && ctx) ctx._state(st);
+        const pageStation = cfg.current?.();
+        if (pageStation) { const j = cfg.stations.findIndex(s => s.id === pageStation); if (j >= 0 && j !== current) select(j, false, true); }
+      }, 200);
+    }
+
+    const fromHash = () => {
+      const id = location.hash.slice(1), i = cfg.stations.findIndex(s => s.id === id);
+      return i >= 0 ? i : 0;
+    };
+    window.addEventListener('hashchange', () => select(fromHash(), true));
+    select(fromHash(), true);
+    window.c2Lab = {select, get ctx() { return ctx; }, get frame() { return frame; }, get current() { return current; }};
+  }
+
+  window.LabShell = {
+    embedded: start,
+    native: cfg => start({...cfg, native: true}),
+  };
+  window.C2Lab = {start};
+})();
+
+/* 原地模式的统一任务页外壳（全课程共用）：把原页面装进 lab-shell。
+ * 原页面的全部元素先移入一个隐藏容器（仍在文档里，原有程序照常工作），
+ * 各任务的 src/stations.js 再把需要的三维区和控件搬进外壳。
+ * 章节标题和本章任务列表来自 shared/lab-shell/chapters.json，由 native-layout.mjs 写进 window.CHAPTER_LAYOUT。
+ */
+(() => {
+  'use strict';
+  const $ = s => document.querySelector(s);
+  const all = s => [...document.querySelectorAll(s)];
+
+  // 外壳里的原有滑轨：已走过的一段用主色填充，跟随拖动和程序改值
+  const fill = input => {
+    const min = +input.min || 0, max = input.max === '' ? 100 : +input.max, v = +input.value;
+    input.style.setProperty('--p', (((v - min) / ((max - min) || 1)) * 100).toFixed(1) + '%');
+  };
+  document.addEventListener('input', e => { if (e.target.matches?.('input[type="range"]')) fill(e.target); }, true);
+  setInterval(() => document.querySelectorAll('.c2-panel input[type="range"], .c2-strip input[type="range"]').forEach(fill), 250);
+
+  window.NativeShell = window.C3Shell = {
+    $, all,
+    start(cfg) {
+      const layout = window.CHAPTER_LAYOUT || {}, chapter = layout.chapter || {};
+      const legacy = document.createElement('div');
+      legacy.className = 'c3-legacy'; legacy.hidden = true;
+      [...document.body.children]
+        .filter(e => !['SCRIPT', 'STYLE', 'DIALOG', 'TEMPLATE'].includes(e.tagName) && e.id !== 'toast' && !e.matches('.course-theme-toggle'))
+        .forEach(e => legacy.append(e));
+      document.body.append(legacy);
+      document.documentElement.dataset.c3Task = layout.task || '';
+      LabShell.native({
+        chapter: {title: chapter.title, href: chapter.href},
+        tasks: chapter.tasks || [], taskNav: layout.nav, hint: '', progressKey: layout.nav,
+        ...cfg,
+      });
+    },
+  };
+})();
+
+/* 任务 4-1 从施工状态读懂传感数据 —— 原页面的三维、数据模型和同步曲线保持不变，搬进统一外壳。
+ * 原页面的四种状态案例（坡面停驻 / 起步与制动 / 路面颠簸 / 原地转向）就是四个工位。
+ * 三维区下面紧挨着三条同步曲线和时间轴（同一时间轴，是本页的主体）；面板里是读数、改变条件和试一试。
+ * 原页面没有自带关卡，“试一试”全部从 window.__STATE_LAB__.snapshot() 读状态判定。
+ */
+(() => {
+  'use strict';
+  const {$, all} = NativeShell;
+  const lab = () => window.__STATE_LAB__;
+  const snap = () => lab()?.snapshot();
+  const EL = {
+    stage: $('#viewport'),
+    readings: $('#readings'), axis: $('#axisReadings'), explain: $('#liveExplanation'),
+    controls: {slope: $('#slopeControls'), drive: $('#driveControls'), bump: $('#bumpControls'), turn: $('#turnControls')},
+    gravity: $('#gravityControl'),
+    waves: $('.wave-section'), timeline: $('.timeline'), phases: $('.phase-row'),
+    record: $('#recordBtn'), csv: $('#csvOpen'),
+    compare: $('#compareToggle'), axes: $('#axesToggle'),
+  };
+  // 外壳里已有工位条、工位名和“重来”：原来的页头、状态页签、标题、复位、说明文字收起
+  for (const e of all('.condition-title, .wave-title, .wave-footer > span:last-child, .phase-row > span, .phase-row > p')) e.setAttribute('hidden', '');
+
+  // 同步曲线：放在三维区和底栏（时间轴）之间，四个工位共用（不随工位切换搬动）
+  const band = document.createElement('div');
+  band.className = 'c41-waves';
+  const tools = document.createElement('div');
+  tools.className = 'c41-wave-tools';
+  if (EL.record) { EL.record.className = 'c41-mini'; EL.record.title = '查看和导出观察记录'; }
+  if (EL.csv) { EL.csv.className = 'c41-mini'; EL.csv.textContent = '手机数据'; EL.csv.title = '导入手机加速度 CSV 做对照'; }
+  const capture = $('#captureButton');
+  if (capture) capture.textContent = '＋ 记录';
+  tools.append(...[capture, EL.record, EL.csv].filter(Boolean));
+  $('.wave-heading')?.append(tools);
+  band.append(...[EL.waves].filter(Boolean));
+
+  const flags = {}, moved = {}, startTime = {};
+  // 原页面每个案例打开时就停在一个典型时刻；“停在……”类挑战要等学生自己动过时间轴才算
+  const mark = (k) => { flags[k] = true; };
+  $('#phaseButtons')?.addEventListener('click', e => { if (e.target.closest('[data-time]')) { const k = snap()?.state.case; if (k) moved[k] = true; } });
+  const near = (a, b, d) => Math.abs(a - b) <= d;
+
+  const STATIONS = [
+    {
+      id: 'slope', name: '坡面停驻', lead: '停在斜面上不动，为什么还有加速度读数？调坡角，看三根轴怎样分。',
+      build(c) {
+        const g = c.section('此刻的数据'); c.adopt([EL.readings, EL.axis, EL.explain], g);
+        const g2 = c.section('改变条件'); c.adopt([EL.controls.slope, EL.gravity], g2);
+        c.challenges([
+          {id: 'flat', icon: '⚖', title: '让它平放在地上', hint: '坡角调到 0°', check: s => s.state.tilt === 0 && s.state.time >= 3,
+            result: '平放时 x、y 接近 0，z 约 9.81 m/s²：一动不动，也有重力的读数。'},
+          {id: 'roll', icon: '↔', title: '换成左右倾斜', hint: '看哪根轴的读数变了', check: s => s.state.tiltAxis === 'roll' && Math.abs(s.state.tilt) >= 5 && s.state.time >= 3,
+            result: '左右倾斜时变的是 y 轴，前后倾斜变的是 x 轴；合起来仍约 9.81 m/s²。'},
+          {id: 'hold', icon: '⏸', title: '停在坡上看变化率', hint: '定位到“坡面保持”', check: s => moved.slope && s.state.tilt !== 0 && s.state.time >= 3.2 && !s.state.playing && s.sample.angular === 0,
+            result: '倾斜着不动，倾角不变、变化率为 0——“斜着”和“正在转”是两回事。'},
+          {id: 'nog', icon: '🧲', title: '关掉“包含重力”', hint: '静止时三轴变成多少', check: s => !s.state.gravity,
+            result: '理想去除重力后，静止的三轴都接近 0；倾角仍要靠含重力的数据来估计。'},
+        ]);
+      },
+    },
+    {
+      id: 'drive', name: '起步与制动', lead: '同样在往前走，起步、匀速、制动时，数据完全不一样。',
+      build(c) {
+        const g = c.section('此刻的数据'); c.adopt([EL.readings, EL.explain], g);
+        const g2 = c.section('改变条件'); c.adopt(EL.controls.drive, g2);
+        c.challenges([
+          {id: 'whole', icon: '▶', title: '从起步看到停稳', hint: '从头播放一遍', check: () => flags.driveWhole,
+            result: '加速度先正、再为 0、再为负；速度先升、再平、再降；位移一直在增加。'},
+          {id: 'cruise', icon: '0', title: '停在匀速段', hint: '还在走，加速度是多少', check: s => s.sample.phase === '匀速前进' && !s.state.playing,
+            result: '还在前进，但速度不再变化，所以前向加速度为 0。'},
+          {id: 'brake', icon: '➖', title: '找到负的加速度', hint: '车这时还在往前走', check: s => s.sample.ax < 0 && !s.state.playing,
+            result: '制动时速度在减小，加速度为负——车并没有往后退。'},
+          {id: 'fast', icon: '🚀', title: '把最高速度调到 0.8', hint: '起步加速度会变吗', check: s => s.state.speed >= 0.79,
+            result: '同样 2 秒加到更高的速度，起步加速度更大，停下的位置也更远。'},
+        ]);
+      },
+    },
+    {
+      id: 'bump', name: '路面颠簸', lead: '车速不变，只改路面的起伏，把起伏和加速度波形对上。', note: '垂向位移放大 8 倍显示，读数不放大',
+      build(c) {
+        const g = c.section('此刻的数据'); c.adopt([EL.readings, EL.axis, EL.explain], g);
+        const g2 = c.section('改变条件'); c.adopt([EL.controls.bump, EL.gravity], g2);
+        c.challenges([
+          {id: 'flat', icon: '🛣', title: '换成平整路面', hint: '波形还在吗', check: s => s.state.roughness === 0,
+            result: '路面平整，垂向加速度不再波动。'},
+          {id: 'rough', icon: '〰', title: '换成明显起伏', hint: '波形高了还是矮了', check: s => s.state.roughness === 2,
+            result: '起伏越明显，垂向加速度上下摆得越大。'},
+          {id: 'inside', icon: '📍', title: '停在颠簸中间', hint: '时间拖到 2～6 秒', check: s => moved.bump && s.state.roughness > 0 && s.state.time > 2.2 && s.state.time < 5.8 && !s.state.playing,
+            result: '颠簸时垂向加速度正负波动；波形的峰谷不等于路面的最高、最低点。'},
+          {id: 'compare', icon: '📊', title: '和基准叠在一起比', hint: '换个起伏，打开“叠加基准”', check: s => s.state.compare && s.state.roughness !== 1,
+            result: '虚线是“轻微起伏”的基准，实线和它一比，差别一眼就能看出来。'},
+        ]);
+      },
+    },
+    {
+      id: 'turn', name: '原地转向', lead: '都转 90°，转得快和转得慢，会留下不一样的曲线。',
+      build(c) {
+        const g = c.section('此刻的数据'); c.adopt([EL.readings, EL.axis, EL.explain], g);
+        const g2 = c.section('改变条件'); c.adopt([EL.controls.turn, EL.gravity], g2);
+        c.challenges([
+          {id: 'slow', icon: '🐢', title: '看完一次慢转', hint: '停转后再看转角', check: s => s.state.turnDuration === 4 && s.state.time >= 5.2,
+            result: '慢转 4 秒：角速度一直不高，累计转角慢慢到 90°。'},
+          {id: 'quick', icon: '🐇', title: '换成快转', hint: '看完 1 秒的转向', check: s => s.state.turnDuration === 1 && s.state.time >= 2.1,
+            result: '快转 1 秒也只转到 90°：角速度峰值更高，持续时间更短。'},
+          {id: 'half', icon: '🎯', title: '停在转了一半时', hint: '累计转角约 45°', check: s => near(s.sample.yaw, 45, 5) && !s.state.playing,
+            result: '转到一半时角速度最大；转过多少和转得多快要分开看。'},
+          {id: 'compare', icon: '📊', title: '快转叠上慢转比', hint: '快转时打开“叠加基准”', check: s => s.state.compare && s.state.turnDuration === 1,
+            result: '实线快转、虚线慢转：一个高而窄，一个矮而宽，最后都停在 90°。'},
+        ]);
+      },
+    },
+  ];
+
+  NativeShell.start({
+    task: '4-1', title: '从施工状态读懂传感数据',
+    stage: EL.stage,
+    hint: '教学模拟 · 拖动旋转 · 滚轮缩放',
+    stations: STATIONS,
+    current: () => snap()?.state.case,
+    select: id => { if (snap()?.state.case !== id) lab()?.chooseCase(id); },
+    reset: id => lab()?.chooseCase(id),
+    poll() {
+      const s = snap(), k = s.state.case;
+      if (startTime[k] == null) startTime[k] = s.state.time;
+      if (s.state.playing || Math.abs(s.state.time - startTime[k]) > 0.05) moved[k] = true;
+      if (s.state.case === 'drive') {
+        if (s.state.playing && s.state.time < 1.5) flags.driveStart = true;
+        if (flags.driveStart && s.state.time >= 7.4) mark('driveWhole');
+      } else flags.driveStart = false;
+      return s;
+    },
+    build(c) {
+      if (c.station.id !== 'drive') flags.driveStart = false;
+      // 怎么看：视角和方向参照放在三维区左上角，点的是原页面的按钮
+      const view = all('[data-view]').find(b => b.getAttribute('aria-pressed') === 'true')?.dataset.view || 'iso';
+      c.toolSeg([{value: 'iso', label: '三维'}, {value: 'side', label: '侧视'}, {value: 'top', label: '俯视'}], view,
+        v => $(`[data-view="${v}"]`)?.click(), '视角');
+      c.tool('方向参照', on => { if (EL.axes && EL.axes.checked !== on) EL.axes.click(); }, EL.axes ? EL.axes.checked : true);
+      // 时间轴和关键片段放进底栏（随工位停放，原程序照常读写）
+      const stage = document.querySelector('.c2-stage'), strip = document.querySelector('.c2-strip');
+      if (stage && strip && band.parentNode !== stage) stage.insertBefore(band, strip);
+      c.stripAdopt([EL.timeline, EL.phases].filter(Boolean));
+      // 原页面的提示条（记录、减少动态）转成外壳提示
+      const toast = $('#toast');
+      if (toast && !toast.dataset.c41) {
+        toast.dataset.c41 = '1';
+        new MutationObserver(() => { if (!toast.hidden && toast.textContent.trim()) { window.c2Lab?.ctx?.feedback(toast.textContent.trim(), 'info'); toast.hidden = true; } })
+          .observe(toast, {attributes: true, childList: true, characterData: true, subtree: true});
+      }
+    },
+  });
 })();
 </script></body></html>
