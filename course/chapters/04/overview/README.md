@@ -1,17 +1,9 @@
 # 第四章 · 感知与智能识别
 
-[打开章节总结入口](./index.html)
+[打开第四章](../../../home/index.html#chapter-4)
 
-沿“自身状态 → 环境扫描 → 图像识别”组织三个任务、五个实验入口。入口沿用第三章的蓝白展台风格，支持模型选择、拖动、巡展、暂停、全屏以及章节总结与学习导览。
+章节封面已并入课程首页：首页概览选中本章后点击主展品或章名，镜头推近进入本章（地址 `course/home/index.html#chapter-4`），本章任务展品与任务卡片都可直接进入任务。任务页左上角“← 主页”回到同一位置。
 
-| 任务 | 学习重点 | 实验 |
-|---|---|---|
-| 4-1 自身状态感知 | 对照坡面、起停、颠簸、转向与同步曲线 | [状态与数据](../tasks/4-1/index.html) |
-| 4-2 激光雷达与点云 | 距离与坐标、遮挡与补扫、真实点云与截面 | [扫描与点云](../tasks/4-2/index.html) |
-| 4-3 安全帽与 YOLO | 画框与标签、预测筛选、真值核验 | [标注](../tasks/4-3/index.html#annotation) · [预测](../tasks/4-3/index.html#predict) · [评估](../tasks/4-3/index.html#evaluate) |
+本目录的 `index.html` 只是跳转页，保证旧链接、书签和打包后的地址继续可用；由 `src/build.mjs` 调用 `course/home/redirect.mjs` 生成（`node scripts/build.mjs 4-entry`）。
 
-各实验首次进入默认浅色，后续沿用全站主题选择，可在顶部切换主题或返回章节总览。视觉实验的三个视图在同一页面切换，保留本次操作；预测和评估使用内置教学结果，页面不运行真实 YOLO 推理。任务之间不共享实验数据。
-
-在仓库根目录运行 `node scripts/build.mjs 4` 构建入口与全部任务。公共导航由 `shared/感知与识别/chapter-layout.mjs` 内嵌，各任务仍为离线 HTML。入口样式复用第三章基础 CSS，额外样式位于本章 `src/style.css`。
-
-运行 `npm run package --output <输出目录>` 生成独立站点与 ZIP；打开 `site/index.html` 即可使用。
+首页源码与展品说明见 [course/home/README.md](../../../home/README.md)。旧封面源码保留在 Git 历史中。

@@ -1,5 +1,2 @@
-import {readFileSync,writeFileSync} from 'node:fs';
-const read=name=>readFileSync(new URL(name,import.meta.url),'utf8'),safe=s=>s.replace(/<\/script/gi,'<\\/script');
-let html=read('./page.html');
-for(const [key,value]of[['STYLE',read('../../../../../shared/styles/chapter-overview.css')+'\n'+read('./style.css')],['THREE',safe(read('../../../../../shared/vendor/three-r160.min.js'))],['SCENE',safe(read('./scene.js'))],['APP',safe(read('./app.js'))]])html=html.replace(`/*${key}*/`,()=>value);
-writeFileSync(new URL('../index.html',import.meta.url),html);console.log('Built chapter 4: 3 tasks / 5 experiment entries / chapter summary');
+import {writeRedirect} from '../../../../home/redirect.mjs';
+writeRedirect(4);

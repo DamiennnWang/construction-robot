@@ -1,47 +1,242 @@
+/* 课程首页：概览（八章转台）与章节（#chapter-N）是同一页面的两个镜头状态。
+ * 地址里的 #chapter-N 决定显示哪一章；任务页左上角“← 主页”回到 course/home/index.html#chapter-N 时直接落在本章。 */
 (() => {
   'use strict';
-  const $=id=>document.getElementById(id),data=window.COURSE;
-  const esc=s=>String(s).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
-  const chapter=n=>data.chapters.find(c=>c.id===n),links=t=>t.entries||[];
-  $('chapter-filter').insertAdjacentHTML('beforeend',data.chapters.map(c=>`<option value="${c.id}">第${c.id}章 · ${esc(c.title)}</option>`).join(''));
-  const route=[
-    ['从现场认识设备','用场景说明问题，认识机械、机器人与人的分工。',[1]],
-    ['从动力走到运动','看动力如何产生与传递，再识读结构、关节和工具。',[2,3]],
-    ['从观测走到识别','认识自身状态、环境扫描与图像中的目标和疑点。',[4]],
-    ['进入具体施工作业','比较主体结构与装饰装修中的动作、反馈和质量复核。',[5,6]],
-    ['把复核与维护接起来','巡检取证、数据复核，再识读安全操作与维护条件。',[7,8]]
-  ];
-  $('route-list').innerHTML=route.map(([title,text,ids])=>`<li><h3>${title}</h3><p>${text}</p><div>${ids.map(n=>`<a href="${esc(chapter(n).entry)}">0${n} ${esc(chapter(n).title)} ↗</a>`).join('')}</div></li>`).join('');
-  $('route-open').onclick=()=>$('learning-route').showModal();$('route-close').onclick=()=>$('learning-route').close();
-  function catalog(){
-    const query=$('task-search').value.trim().toLowerCase(),filter=Number($('chapter-filter').value);
-    let count=0,groups=0;
-    $('catalog-content').innerHTML=data.chapters.map(c=>{
-      if(filter&&c.id!==filter)return '';
-      const tasks=c.tasks.filter(t=>(`${t.id} ${t.title} ${c.title} ${t.kind} 第${c.id}章`).toLowerCase().includes(query));
-      if(!tasks.length)return '';count+=tasks.length;groups++;
-      return `<section class="catalog-group" data-catalog-chapter="${c.id}"><h3><a href="${esc(c.entry)}">0${c.id} ${esc(c.title)} ↗</a><small>${tasks.length} 项任务</small></h3>${tasks.map(t=>`<article class="catalog-row" data-task="${t.id}"><span class="task-code">${t.id}</span><div class="task-info"><a class="task-title" href="${esc(links(t)[0].file)}">${esc(t.title)} ↗</a><small>${esc(t.kind)}</small>${links(t).length>1?`<div class="task-sub">${links(t).map(e=>`<a href="${esc(e.file)}">${esc(e.title)} ↗</a>`).join('')}</div>`:''}</div></article>`).join('')}</section>`;
+  const $ = id => document.getElementById(id);
+  const data = window.COURSE, stage = window.HomeStage || {webgl: false};
+  const esc = s => String(s).replace(/[&<>"']/g, c => ({'&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;'}[c]));
+  const href = p => (window.courseHref ? window.courseHref(p) : p);
+  const numerals = ['一', '二', '三', '四', '五', '六', '七', '八'];
+  const ordinal = n => '第' + numerals[n - 1] + '章';
+  const chapter = n => data.chapters.find(c => c.id === n);
+  const reduce = matchMedia('(prefers-reduced-motion: reduce)');
+  const body = document.body;
+  const parse = () => { const m = location.hash.match(/^#chapter-([1-8])$/); return m ? Number(m[1]) : null; };
+  const taskHref = t => href(t.demo || t.entries[0].file.split('#')[0]);
+
+  /* 本机进度：任务页外壳把各工位完成情况存在 localStorage 'c2-progress-任务号'（只读）。 */
+  function progress(id) {
+    try { const value = JSON.parse(localStorage.getItem('c2-progress-' + id) || '{}') || {}; return Object.values(value).filter(Boolean).length; } catch { return 0; }
+  }
+
+  if (!stage.webgl) body.classList.add('no-webgl');
+
+  /* ---------- 概览 ---------- */
+  let focus = 1;
+  try { focus = Number(sessionStorage.getItem('home-focus')) || 1; } catch {}
+  $('rail').innerHTML = data.chapters.map(c => `<button type="button" data-chapter="${c.id}" aria-label="${ordinal(c.id)} ${esc(c.title)}"><b>${c.id}</b><span>${esc(c.title)}</span><i aria-hidden="true"></i></button>`).join('');
+  $('chapter-grid').innerHTML = data.chapters.map(c => `<a href="#chapter-${c.id}" data-chapter="${c.id}"><small>${ordinal(c.id)} · ${c.tasks.length} 项任务</small><strong>${esc(c.title)}</strong><span>${esc(c.description)}</span></a>`).join('');
+  $('chapter-grid').hidden = stage.webgl;
+  function showFocus(n) {
+    focus = n;
+    try { sessionStorage.setItem('home-focus', String(n)); } catch {}
+    const c = chapter(n);
+    $('ov-kicker').textContent = `${ordinal(n)} · ${c.tasks.length} 项任务`;
+    $('ov-name').textContent = c.title;
+    $('ov-desc').textContent = c.description;
+    for (const a of [$('ov-name'), $('ov-enter')]) a.href = '#chapter-' + n;
+    $('ov-enter').setAttribute('aria-label', `进入${ordinal(n)} ${c.title}`);
+    $('rail').querySelectorAll('button').forEach(b => { const on = Number(b.dataset.chapter) === n; b.classList.toggle('on', on); b.setAttribute('aria-current', on ? 'true' : 'false'); });
+    $('ov-info').classList.remove('swap'); void $('ov-info').offsetWidth; $('ov-info').classList.add('swap');
+    autoStart = performance.now();
+  }
+  function go(n, user = true) {
+    n = ((n - 1 + 8) % 8) + 1;
+    if (user) touch();
+    if (stage.webgl) stage.focus(n); else showFocus(n);
+  }
+  if (stage.webgl) stage.on('focus', showFocus);
+  $('prev').onclick = () => go(focus - 1);
+  $('next').onclick = () => go(focus + 1);
+  $('rail').addEventListener('click', e => {
+    const b = e.target.closest('button[data-chapter]'); if (!b) return;
+    const n = Number(b.dataset.chapter);
+    if (n === focus) location.hash = '#chapter-' + n; else go(n);
+  });
+
+  /* 自动轮换：无人操作时每 7 秒换一章；动手后暂停 12 秒；减少动画时不轮换。 */
+  const AUTO = 7000, IDLE = 12000;
+  let lastTouch = -IDLE, autoStart = performance.now(), hoverHold = false;
+  function touch() { lastTouch = performance.now(); }
+  function autoTick() {
+    const now = performance.now();
+    const running = stage.webgl && body.classList.contains('is-overview') && !reduce.matches && !document.hidden && !$('catalog').open && !hoverHold && now - lastTouch > IDLE;
+    const bar = $('rail').querySelector('.on i');
+    $('rail').querySelectorAll('i').forEach(i => { if (i !== bar) i.style.transform = 'scaleX(0)'; });
+    if (!running) { autoStart = now; if (bar) bar.style.transform = 'scaleX(0)'; return; }
+    const u = (now - autoStart) / AUTO;
+    if (bar) bar.style.transform = `scaleX(${Math.min(1, u)})`;
+    if (u >= 1) go(focus + 1, false);
+  }
+  setInterval(autoTick, 120);
+  for (const node of [$('ov-info'), $('rail'), $('prev'), $('next')]) {
+    node.addEventListener('pointerenter', () => { hoverHold = true; });
+    node.addEventListener('pointerleave', () => { hoverHold = false; });
+  }
+  addEventListener('pointerdown', touch, true);
+  addEventListener('keydown', touch, true);
+
+  /* 滚轮、方向键、轻扫切换章节 */
+  let wheelSum = 0, wheelAt = 0;
+  addEventListener('wheel', e => {
+    if (!body.classList.contains('is-overview') || $('catalog').open || !stage.webgl) return;
+    e.preventDefault(); touch();
+    const now = performance.now();
+    if (now - wheelAt > 260) wheelSum = 0;
+    wheelSum += Math.abs(e.deltaY) > Math.abs(e.deltaX) ? e.deltaY : e.deltaX;
+    if (Math.abs(wheelSum) > 60 && now - wheelAt > 650) { go(focus + Math.sign(wheelSum)); wheelSum = 0; wheelAt = now; }
+    else if (now - wheelAt > 650) wheelAt = now - 400;
+  }, {passive: false});
+  addEventListener('keydown', e => {
+    if ($('catalog').open || e.altKey || e.ctrlKey || e.metaKey) return;
+    const typing = /^(INPUT|TEXTAREA|SELECT)$/.test(e.target.tagName);
+    if (typing) return;
+    if (body.classList.contains('is-overview')) {
+      if (e.key === 'ArrowRight' || e.key === 'ArrowDown') { e.preventDefault(); go(focus + 1); }
+      else if (e.key === 'ArrowLeft' || e.key === 'ArrowUp') { e.preventDefault(); go(focus - 1); }
+      else if (e.key === 'Enter' && (e.target === body || e.target === document.documentElement)) { location.hash = '#chapter-' + focus; }
+    } else {
+      if (e.key === 'Escape' || (e.key === 'Backspace' && e.target === body)) { e.preventDefault(); back(); }
+      else if (e.key === 'ArrowRight' || e.key === 'ArrowLeft') {
+        const cards = [...$('tasks').querySelectorAll('a')]; if (!cards.length) return;
+        const i = cards.indexOf(document.activeElement), next = i < 0 ? 0 : (i + (e.key === 'ArrowRight' ? 1 : -1) + cards.length) % cards.length;
+        e.preventDefault(); cards[next].focus();
+      }
+    }
+  });
+  if (stage.webgl) {
+    stage.on('swipe', dir => { if (body.classList.contains('is-overview')) go(focus + dir); });
+    stage.on('pick', target => {
+      if (target.task) { location.href = taskHref(chapter(target.chapter).tasks.find(t => t.id === target.task)); return; }
+      if (target.chapter === focus) location.hash = '#chapter-' + target.chapter;
+      else go(target.chapter);
+    });
+    stage.on('hover', target => {
+      hoverHold = Boolean(target) && !target.task;
+      document.querySelectorAll('[data-task].hot').forEach(n => n.classList.remove('hot'));
+      if (target?.task) document.querySelectorAll(`[data-task="${target.task}"]`).forEach(n => n.classList.add('hot'));
+    });
+  }
+
+  /* ---------- 章节 ---------- */
+  let shown = null, cameFromOverview = false, token = 0;
+  function fillCover(n) {
+    const c = chapter(n);
+    $('cv-kicker').textContent = `${ordinal(n)} · ${c.tasks.length} 项任务`;
+    $('cv-name').textContent = c.title;
+    $('cv-lead').textContent = c.description;
+    $('tasks').style.setProperty('--count', c.tasks.length);
+    $('tasks').innerHTML = c.tasks.map(t => {
+      const done = progress(t.id);
+      return `<a class="task" href="${esc(taskHref(t))}" data-task="${t.id}"><span class="id">${t.id}</span><span class="name">${esc(t.title)}</span><span class="state">${done ? `<em>✓ 已完成 ${done} 个工位</em>` : '<span>进入任务</span>'}<span class="go" aria-hidden="true">→</span></span></a>`;
     }).join('');
-    $('catalog-count').textContent=`显示 ${count} 项任务 · ${groups} 个章节`;
-    if(!count)$('catalog-content').innerHTML='<p class="empty-search">没有找到对应任务，请换一个关键词或章节。</p>';
+    $('chips').innerHTML = c.tasks.map(t => `<a class="chip" href="${esc(taskHref(t))}" data-task="${t.id}" tabindex="-1"><b>${t.id}</b><span>${esc(t.title)}</span>${progress(t.id) ? '<em>✓</em>' : ''}</a>`).join('');
+    $('tasks').querySelectorAll('a').forEach(a => {
+      const target = {chapter: n, task: a.dataset.task};
+      a.addEventListener('pointerenter', () => stage.webgl && stage.hover(target));
+      a.addEventListener('focus', () => stage.webgl && stage.hover(target));
+      a.addEventListener('pointerleave', () => stage.webgl && stage.hover(null));
+      a.addEventListener('blur', () => stage.webgl && stage.hover(null));
+    });
+    $('chips').querySelectorAll('a').forEach(a => {
+      a.addEventListener('pointerenter', () => stage.hover({chapter: n, task: a.dataset.task}));
+      a.addEventListener('pointerleave', () => stage.hover(null));
+    });
+    document.title = `${ordinal(n)} ${c.title}｜智能建筑机械与机器人`;
   }
-  function openCatalog(n=0){$('task-search').value='';$('chapter-filter').value=String(n);catalog();$('catalog').showModal();$('task-search').focus();}
-  $('catalog-open').onclick=()=>openCatalog();$('catalog-close').onclick=()=>$('catalog').close();
-  $('task-search').oninput=catalog;$('chapter-filter').onchange=catalog;
-  for(const dialog of [$('catalog'),$('learning-route')])dialog.addEventListener('click',e=>{if(e.target!==dialog)return;const r=dialog.getBoundingClientRect();if(e.clientX<r.left||e.clientX>r.right||e.clientY<r.top||e.clientY>r.bottom)dialog.close();});
-  function markChapter(){const match=location.hash.match(/^#chapter-([1-8])$/);if(match)window.CourseScene?.focus(Number(match[1]));}
-  addEventListener('hashchange',markChapter);markChapter();
-  let paused=true;
-  function motion(){
-    const available=CourseScene.getState().webgl;
-    if(!available)return;
-    const b=$('motion');b.setAttribute('aria-pressed',String(!paused));b.textContent=paused?'▷ 演示动作':'Ⅱ 暂停动作';
-    $('motion-status').textContent=paused?'展品已暂停 · 点击展台任意位置进入章节':'动作演示中：举臂、关节、飞轮与扫描；安全展品静态陈列。';
-    CourseScene.pause(paused);
+  function setMode(cover) {
+    body.classList.toggle('is-cover', cover); body.classList.toggle('is-overview', !cover);
+    $('cover').hidden = !cover;
+    $('overview').inert = cover; $('cover').inert = !cover;
+    $('back').hidden = !cover; $('brand').hidden = cover;
+    if (!cover) document.title = '智能建筑机械与机器人';
+    measure();
   }
-  $('motion').onclick=()=>{paused=!paused;motion();};
-  $('reset-motion').onclick=()=>{CourseScene.reset();paused=true;motion();$('motion-status').textContent='动作已复位，展品已暂停。';};
-  matchMedia('(prefers-reduced-motion: reduce)').addEventListener('change',e=>{if(e.matches){paused=true;motion();}});
-  motion();
-  window.CourseHome={state:()=>({chapters:data.chapters.length,tasks:data.chapters.reduce((sum,c)=>sum+c.tasks.length,0),paused,models:CourseScene.getState()}),openCatalog,pause(){paused=true;motion();}};
+  async function route(initial = false) {
+    const n = parse(), my = ++token;
+    if (n === shown && !initial) return;
+    if (n) {
+      const from = shown; shown = n;
+      cameFromOverview = !initial && from === null;
+      fillCover(n); setMode(true);
+      $('announce').textContent = `${ordinal(n)} ${chapter(n).title}`;
+      if (stage.webgl) {
+        if (from && from !== n) { await stage.leave(); if (my !== token) return; }
+        if (focus !== n) showFocus(n);
+        stage.enter(n, {instant: initial, arrive: initial});
+      }
+      if (!initial) $('cv-name').focus({preventScroll: true});
+    } else {
+      const from = shown; shown = null;
+      setMode(false);
+      if (stage.webgl) { if (from) stage.focus(from); stage.leave({instant: initial}); }
+      if (from && !initial) { showFocus(from); $('ov-enter').focus({preventScroll: true}); }
+      $('announce').textContent = initial ? '' : '全部章节';
+    }
+  }
+  function back() {
+    if (cameFromOverview) { history.back(); return; }
+    history.pushState(null, '', location.pathname + location.search);
+    route();
+  }
+  $('back').addEventListener('click', e => { e.preventDefault(); back(); });
+  $('brand').addEventListener('click', e => { if (!parse()) e.preventDefault(); });
+  addEventListener('hashchange', () => route());
+  addEventListener('popstate', () => route());
+
+  /* 留给三维画面的区域：避开标题、卡片与底部章节条 */
+  function measure() {
+    if (!stage.webgl) return;
+    const h = innerHeight, top = $('ov-info').getBoundingClientRect().top;
+    const coverTop = document.querySelector('.cv-info').getBoundingClientRect().bottom, coverBottom = $('tasks').getBoundingClientRect().top;
+    stage.layout({overview: {top: 64, bottom: Math.max(120, h - top + 6)}, cover: {top: Math.max(120, coverTop + 4), bottom: Math.max(110, h - coverBottom + 44)}});
+  }
+  addEventListener('resize', measure);
+
+  /* 名称标签跟着任务展品 */
+  if (stage.webgl) stage.on('frame', () => {
+    if (!shown) return;
+    const anchors = stage.anchors();
+    for (const a of anchors) {
+      const chip = $('chips').querySelector(`[data-task="${a.task}"]`); if (!chip) continue;
+      chip.style.transform = `translate(${a.x.toFixed(1)}px,${a.y.toFixed(1)}px) translate(-50%,-50%)`;
+      chip.classList.toggle('show', a.visible);
+    }
+  });
+  /* 停在某一章 1.5 秒后，空闲时先建好它的任务展品，进入时不卡 */
+  let prefetchTimer = 0;
+  if (stage.webgl) stage.on('focus', n => { clearTimeout(prefetchTimer); prefetchTimer = setTimeout(() => (window.requestIdleCallback || setTimeout)(() => stage.prefetch(n)), 1500); });
+
+  /* ---------- 全部任务 ---------- */
+  function catalog() {
+    const q = $('task-search').value.trim().toLowerCase();
+    let count = 0;
+    $('catalog-content').innerHTML = data.chapters.map(c => {
+      const tasks = c.tasks.filter(t => `${t.id} ${t.title} ${c.title} ${ordinal(c.id)}`.toLowerCase().includes(q));
+      if (!tasks.length) return '';
+      count += tasks.length;
+      return `<section><h3><a href="#chapter-${c.id}" data-close>${ordinal(c.id)} · ${esc(c.title)}</a></h3>${tasks.map(t => `<a class="row" href="${esc(taskHref(t))}"><span class="id">${t.id}</span><span>${esc(t.title)}</span>${progress(t.id) ? '<em>✓</em>' : ''}</a>`).join('')}</section>`;
+    }).join('') || '<p class="empty">没有找到对应任务，换一个关键词试试。</p>';
+    return count;
+  }
+  $('catalog-open').onclick = () => { $('task-search').value = ''; catalog(); $('catalog').showModal(); $('task-search').focus(); };
+  $('catalog-close').onclick = () => $('catalog').close();
+  $('task-search').oninput = catalog;
+  $('catalog').addEventListener('click', e => {
+    if (e.target.closest('[data-close]')) { $('catalog').close(); return; }
+    if (e.target !== $('catalog')) return;
+    const r = $('catalog').getBoundingClientRect();
+    if (e.clientX < r.left || e.clientX > r.right || e.clientY < r.top || e.clientY > r.bottom) $('catalog').close();
+  });
+
+  showFocus(parse() || focus);
+  if (stage.webgl) stage.focus(parse() || focus, {instant: true});
+  route(true);
+  requestAnimationFrame(() => { measure(); requestAnimationFrame(() => body.classList.remove('boot')); });
+  if (stage.webgl) stage.on('lost', () => location.reload());
+
+  window.CourseHome = {
+    state: () => ({mode: shown ? 'chapter' : 'overview', chapter: shown, focus, webgl: stage.webgl, chapters: data.chapters.length, tasks: data.chapters.reduce((s, c) => s + c.tasks.length, 0), stage: stage.webgl ? stage.state() : null}),
+    go, targets: () => (stage.webgl ? stage.targets() : [])
+  };
 })();

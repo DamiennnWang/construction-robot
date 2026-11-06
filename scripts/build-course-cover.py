@@ -20,8 +20,9 @@ spec=[
 tasks=json.loads((root/'course/catalog.json').read_text(encoding='utf-8-sig'))['tasks']
 chapters=[]
 for n,(folder,title,description) in enumerate(spec,1):
-    entry=folder+'/index.html'
-    assert (root/entry).is_file(),f'Missing chapter entrance: {entry}'
+    # 章节封面已并入课程首页（#chapter-N）；旧封面地址保留为跳转页。
+    entry=f'course/home/index.html#chapter-{n}'
+    assert (root/folder/'index.html').is_file(),f'Missing chapter redirect: {folder}/index.html'
     rows=[]
     for t in tasks:
         if not t['id'].startswith(str(n)+'-'):continue
@@ -29,7 +30,7 @@ for n,(folder,title,description) in enumerate(spec,1):
         assert entries,f'Missing task entry: {t["id"]}'
         for e in entries:assert (root/e['file'].split('#',1)[0]).is_file(),f'Missing task page: {e["file"]}'
         kind=t.get('kind','交互课堂')
-        rows.append({'id':t['id'],'title':t['title'].replace('任务一　',''),'entries':entries,'kind':kind})
+        rows.append({'id':t['id'],'title':t['title'].replace('任务一　',''),'demo':t['demo'],'entries':entries,'kind':kind})
     kinds={t['kind'] for t in rows}
     kind=next(iter(kinds)) if len(kinds)==1 else '互动课堂'
     chapters.append({'id':n,'title':title,'nav':title,'description':description,'entry':entry,'kind':kind,'tasks':rows})

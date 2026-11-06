@@ -1,14 +1,9 @@
-# 第1章 · 互动入口
+# 第一章 · 走进智能建造
 
-[打开本章](index.html) · [课程总览](../../../home/index.html)
+[打开第一章](../../../home/index.html#chapter-1)
 
-本章仅展示下列两项活动，保留原编号：
+章节封面已并入课程首页：首页概览选中本章后点击主展品或章名，镜头推近进入本章（地址 `course/home/index.html#chapter-1`），本章任务展品与任务卡片都可直接进入任务。任务页左上角“← 主页”回到同一位置。
 
-- [1-2 认识施工机械](../tasks/1-2/index.html)
-- [1-3 认识施工机器人](../tasks/1-3/index.html)
+本目录的 `index.html` 只是跳转页，保证旧链接、书签和打包后的地址继续可用；由 `src/build.mjs` 调用 `course/home/redirect.mjs` 生成（`node scripts/build.mjs 1-entry`）。
 
-构建：`node scripts/build.mjs 1-entry`。封面复用 `shared/styles/chapter-overview.css`，采用与第二至第七章一致的标题、展台、任务卡和顶部导航布局；通用封面模板位于 `shared/chapter-cover/`，三维模型与相机继续复用 `shared/workshop/`。活动任务及入口由 `course/catalog.json` 生成。
-
-顶部品牌及“返回课程首页”均回到课程首页开头。支持任务预览、部件观察、播放与重置、学习导览、深色主题、键盘操作和小屏重排；无 WebGL 时保留二维操作和任务入口。
-
-展台同时陈列挖掘机和六轴机械臂，模型、铭牌与任务卡联动预览，切换任务不移除任何展品。两件模型共享播放、暂停和复位控制；六轴机械臂为原创结构概念模型。
+首页源码与展品说明见 [course/home/README.md](../../../home/README.md)。旧封面源码保留在 Git 历史中。

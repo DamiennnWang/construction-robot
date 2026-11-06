@@ -1,19 +1,9 @@
-# 第八章 · 安全操作与维护封面
+# 第八章 · 安全操作与维护
 
-[打开本章](index.html) · [课程总览](../../../home/index.html)
+[打开第八章](../../../home/index.html#chapter-8)
 
-本章仅展示下列两项活动，保留原编号：
+章节封面已并入课程首页：首页概览选中本章后点击主展品或章名，镜头推近进入本章（地址 `course/home/index.html#chapter-8`），本章任务展品与任务卡片都可直接进入任务。任务页左上角“← 主页”回到同一位置。
 
-- [8-1 安全操作](../tasks/8-1/index.html)
-- [8-2 保养排查](../tasks/8-2/index.html)
+本目录的 `index.html` 只是跳转页，保证旧链接、书签和打包后的地址继续可用；由 `src/build.mjs` 调用 `course/home/redirect.mjs` 生成（`node scripts/build.mjs 8-entry`）。
 
-封面采用共用的蓝白 1600×900 章节布局：左侧章标题与任务预览、右侧双展品、底部两张任务卡。顶部可返回课程首页，页脚可进入第七章。两项任务名称和入口以 `course/catalog.json` 为准，不恢复旧任务。
-
-- **安全操作展品**：安全帽、警戒设施、风险提示与停止控制位置的原创概念模型，对应 8-1。
-- **保养排查展品**：复用发动机点检教学模型，对应 8-2；任务内仍保留喷涂、泵车、发动机与轴承四个维护工位。
-
-两件展品同时陈列。点击模型、铭牌或任务卡可切换预览，再进入对应任务。展品为静态主题陈列，可旋转、缩放与复位；封面不播放运行设备的维护动作，不表示安全条件已经满足，也不生成现场放行结论。
-
-配置位于 `src/config.json`，封面复用 `shared/chapter-cover/`。安全展品注册在 `shared/chapter-cover/safety-maintenance-models.js`，发动机模型复用 `shared/workshop/machines.js`。支持深色、键盘、小屏与无 WebGL 备用入口。
-
-构建：`node scripts/build.mjs 8-entry`；完整验证：`npm.cmd run verify`。旧阅读导读已归档，8-1 与 8-2 的操作流程和资料边界保持不变。
+首页源码与展品说明见 [course/home/README.md](../../../home/README.md)。旧封面源码保留在 Git 历史中。
