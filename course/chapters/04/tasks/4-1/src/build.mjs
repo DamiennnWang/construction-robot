@@ -9,8 +9,8 @@ import {labShell, hasStations} from '../../../../../../shared/lab-shell/native-l
 const HERE=__taskFile("."),ROOT=__taskFile("../../../../../../shared/感知与识别");
 export function buildSelfState(){
  const read=n=>readFileSync(join(HERE,n),'utf8');
- const values={CSS:'/*\n'+readFileSync(__taskFile("../../../../../../shared/anatomy/LICENSE.txt"),'utf8')+'\n*/\n'+readFileSync(__taskFile("../../../../../../shared/anatomy/iso.css"),'utf8')+'\n'+read("./style.css")+"\n"+read("./layout.css"),FALLBACK:'<div class="iso" data-theme="light">'+robotFallback()+'</div>',THREE:'/*\n'+readFileSync(__taskFile("../../../../../../shared/vendor/THREE-LICENSE.txt"),'utf8')+'\n*/\n'+readFileSync(__taskFile("../../../../../../shared/vendor/three-r160.min.js"),'utf8'),MODEL:read("./state-model.mjs").replace(/^export /gm,''),SCENE:read("./scene.js"),APP:read("./app.js").replace('{{CSV_TOOLS}}',()=>read('./csv-tools.js')),DIALOGS:read('./dialogs.html')};
- const out=read("./page.html").replace(/\{\{(CSS|FALLBACK|THREE|MODEL|SCENE|APP|DIALOGS)\}\}/g,(_,key)=>values[key].replace(/<\/script/gi,'<\\/script'));
+ const values={CSS:'/*\n'+readFileSync(__taskFile("../../../../../../shared/anatomy/LICENSE.txt"),'utf8')+'\n*/\n'+readFileSync(__taskFile("../../../../../../shared/anatomy/iso.css"),'utf8')+'\n'+read("./style.css")+"\n"+read("./layout.css"),FALLBACK:'<div class="iso" data-theme="light">'+robotFallback()+'</div>',THREE:'/*\n'+readFileSync(__taskFile("../../../../../../shared/vendor/THREE-LICENSE.txt"),'utf8')+'\n*/\n'+readFileSync(__taskFile("../../../../../../shared/vendor/three-r160.min.js"),'utf8'),MODEL:read("./state-model.mjs").replace(/^export /gm,''),SCENE:read("./scene.js"),APP:read("./app.js")};
+ const out=read("./page.html").replace(/\{\{(CSS|FALLBACK|THREE|MODEL|SCENE|APP)\}\}/g,(_,key)=>values[key].replace(/<\/script/gi,'<\\/script'));
  // 有 stations.js 时使用全课程统一任务页外壳，不再套第四章原来的版式
  writeFileSync(__taskFile("../index.html"),hasStations('4-1')?labShell(out,'4-1'):integrateChapter4(out,'state'));
  // Refresh only this task's existing chapter card, preserving all other cards.
@@ -21,6 +21,6 @@ export function buildSelfState(){
   const updated=home.replace(/<a class="home-card" href="[^"]*任务4-1[^"]*">[\s\S]*?<\/a>/,()=>card);
   if(updated!==home)writeFileSync(chapter,updated);
  }
- console.log('built 任务4-1/index.html · 从状态读懂传感数据 · '+out.length+' characters');
+ console.log('built 任务4-1/index.html · 机器人自身状态感知 · '+out.length+' characters');
 }
 if(process.argv[1]&&import.meta.url===pathToFileURL(process.argv[1]).href)buildSelfState();

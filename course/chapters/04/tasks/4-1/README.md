@@ -1,4 +1,4 @@
-# 任务4-1：从施工状态读懂传感数据
+# 任务4-1：机器人自身状态感知
 
 直接打开 `index.html`，可离线使用。当前版本面向土木工程课程，以状态与数据的对应关系为主线，不展示传感器芯片、电路或内部结构。
 
@@ -11,13 +11,13 @@
 | 路面颠簸 | 同车速、不同起伏条件下的垂向加速度波形 |
 | 原地转向 | 同样90°，快转峰值更高、持续时间更短 |
 
-三维动作、数值、曲线共用同一时间轴。可播放、减慢回放、单步、拖动时间、点击曲线或用曲线方向键定位；固定坐标范围下叠加基准，便于课堂比较。手机CSV为独立来源，保留缺失轴；观察记录可导出JSON和CSV。
+三维动作、数值、曲线共用同一时间轴。可播放、减慢回放、单步、拖动时间、点击曲线或用曲线方向键定位；固定坐标范围下叠加基准，便于课堂比较。手机CSV对照和观察记录导出已删除（用户要求）。
 
 所有场景均为教学模拟，速度和位移等参照量已在页面标注。颠簸垂向位移放大8倍显示，读数不放大。道路模型简化为车体中心随路面垂向运动，不模拟悬架和逐轮动力学。
 
-统一任务页外壳：`src/stations.js`（及 `src/stations.css`）把四种状态案例做成四个工位，三维区、同步曲线、时间轴和原有控件原样搬进全课程统一外壳（`shared/lab-shell`），每个工位带几张“试一试”；有 `stations.js` 时构建不再套第四章原来的版式（`shared/感知与识别/chapter-layout.mjs`）。
+统一任务页外壳：`src/stations.js`（及 `src/stations.css`）把四种状态案例做成四个工位，三维区、同步曲线、时间轴和原有控件原样搬进全课程统一外壳（`shared/lab-shell`），每个工位带几张“试一试”；读数和曲线名称改用中职学生能懂的说法（如“车身斜了多少”“倾斜变化快不快”“去掉重力”）；有 `stations.js` 时构建不再套第四章原来的版式（`shared/感知与识别/chapter-layout.mjs`）。
 
-构建：在仓库根目录运行 `node scripts/build.mjs 4-1`。主要源码为 `src/state-model.mjs`、`src/scene.js`、`src/app.js`、`src/page.html`、`src/style.css`、`src/layout.css`；`src/csv-tools.js`复用原版的独立CSV工具。`src/model.mjs`及`src/sensors.mjs`为此前版本，不再打包。
+构建：在仓库根目录运行 `node scripts/build.mjs 4-1`。主要源码为 `src/state-model.mjs`、`src/scene.js`、`src/app.js`、`src/page.html`、`src/style.css`、`src/layout.css`。`src/model.mjs`及`src/sensors.mjs`为此前版本，不再打包。
 
 16:9排版截图与交互检查保存在 `qa/layout-16x9/`，其中 `previous/` 为本次排版调整前的页面、样式及交互代码。
 

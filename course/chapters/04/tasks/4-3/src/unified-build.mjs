@@ -1,17 +1,13 @@
 import {readFileSync, writeFileSync} from 'node:fs';
 import {join} from 'node:path';
 import {fileURLToPath} from 'node:url';
-import {integrateChapter4} from '../../../../../../shared/感知与识别/chapter-layout.mjs';
-import {labShell, hasStations} from '../../../../../../shared/lab-shell/native-layout.mjs';
+import {labShell} from '../../../../../../shared/lab-shell/native-layout.mjs';
 
+/* 任务 4-3：标注、预测、评估三个实验放进同一个文档，由统一任务页外壳（src/stations.js）排成三个工位。
+ * predict.html、evaluate.html 只保留为旧链接的跳转页。 */
 const HERE = fileURLToPath(new URL('.', import.meta.url));
-const pages = [
-  {key:'annotation', file:'index.html', title:'标注', description:'人工定义目标'},
-  {key:'predict', file:'predict.html', title:'预测', description:'筛选模型输出'},
-  {key:'evaluate', file:'evaluate.html', title:'评估', description:'对照真值核验'}
-];
+const lessons = ['annotation', 'predict', 'evaluate'];
 const read = name => readFileSync(join(HERE, name), 'utf8');
-const inlineJSON = value => JSON.stringify(value).replace(/</g, '\\u003c');
 const inlineScript = value => value.replace(/<\/script/gi, '<\\/script');
 
 export function buildUnifiedHelmet() {
@@ -24,41 +20,22 @@ export function buildUnifiedHelmet() {
     return {width:item.width, height:item.height, svg, objects:item.objects.filter(object => !clear || object.classId !== null).map(object => ({id:object.id, cls:object.classId === null ? 'review' : object.classId, bbox:object.bbox, reviewReason:object.reviewReason}))};
   };
   const data = {clear:asset(640, true), wide:asset(960, true), occluded:asset(640, false)};
-  const css = [read('style.css'), read('page-extra.css'), read('widescreen.css'),read('dark-theme.css')].join('\n');
+  // 原实验的样式：变量加 --h43- 前缀、main 改成 #lesson-main，避免覆盖外壳与全课程主题
+  const css = [read('style.css'), read('page-extra.css')].join('\n')
+    .replace(/--(ink|muted|blue|deep|soft|line|paper|good|bad|warn)\b/g, '--h43-$1')
+    .replace(/font-synthesis:none;color:var\(--h43-ink\);background:var\(--h43-paper\)\}/, 'font-synthesis:none}')
+    .replace(/(^|[}\s])main\{/g, '$1#lesson-main{');
   const common = `const LESSON_DATA=${JSON.stringify(data)};\nconst $=id=>document.getElementById(id);const esc=s=>String(s).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));const imageURI=s=>'data:image/svg+xml;charset=utf-8,'+encodeURIComponent(s);let toastTimer;function toast(s){$('toast').textContent=s;$('toast').classList.add('show');clearTimeout(toastTimer);toastTimer=setTimeout(()=>$('toast').classList.remove('show'),4200);}\n` + read('model.mjs').replace(/^export /gm, '');
-  const documents = Object.fromEntries(pages.map(page => {
-    const script = [read('widescreen.js'), common, read(page.key + '.js'), read('frame-bridge.js')].join('\n');
-    return [page.key, `<!doctype html><html lang="zh-CN" data-theme="dark"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>${page.title}实验</title><style>${css}</style></head><body data-lesson="${page.key}"><main id="lesson-main"><div id="workbench">${read(page.key + '.body.html')}</div></main><div id="toast" role="status" aria-live="polite"></div><script>${inlineScript(script)}</script></body></html>`];
-  }));
-  const navigation = pages.map((page, index) => `<button class="shell-tab" id="tab-${page.key}" data-view="${page.key}" role="tab" aria-selected="false" aria-controls="frame-${page.key}" tabindex="-1"><span class="tab-number">0${index + 1}</span><strong>${page.title}</strong><small>${page.description}</small><span class="tab-arrow" aria-hidden="true">↗</span></button>`).join('');
-  const frames = pages.map(page => `<iframe id="frame-${page.key}" class="lesson-frame" data-view="${page.key}" title="${page.title}实验" role="tabpanel" aria-labelledby="tab-${page.key}" hidden></iframe>`).join('');
-  if (hasStations('4-3')) {
-    // 统一任务页外壳（原地模式）：三个实验放进同一个文档，成为三个工位；不再用 iframe 与旧的 16:9 外框。
-    const scoped = [read('style.css'), read('page-extra.css'), read('dark-theme.css')].join('\n')
-      .replace(/--(ink|muted|blue|deep|soft|line|paper|good|bad|warn)\b/g, '--h43-$1')
-      .replace(/font-synthesis:none;color:var\(--h43-ink\);background:var\(--h43-paper\)\}/, 'font-synthesis:none}')
-      .replace(/(^|[}\s])main\{/g, '$1#lesson-main{')
-      .replace(/html\[data-theme=dark\] body\{[^}]*\}/, '');
-    const lessons = pages.map(page => `<div class="h43-lesson" id="lesson-${page.key}" data-lesson="${page.key}">${read(page.key + '.body.html')}</div>`).join('');
-    const script = [common, ...pages.map(page => read(page.key + '.js'))].join('\n');
-    for (const page of pages) {
-      const html = `<!doctype html><html lang="zh-CN" data-theme="light"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><meta name="color-scheme" content="light dark"><title>安全帽与 YOLO</title><style>${scoped}</style></head>
-<body data-start-view="${page.key}"><main id="lesson-main"><div id="workbench">${lessons}</div></main><div id="toast" role="status" aria-live="polite"></div><noscript><p>请启用 JavaScript 以使用标注、预测和评估实验。</p></noscript><script>${inlineScript(script)}</script></body></html>`;
-      writeFileSync(join(HERE, '..', page.file), labShell(html, '4-3'));
-      console.log(`built ${page.file} · lab-shell native · start ${page.key}`);
-    }
-    return;
-  }
-  for (const page of pages) {
-    // Every legacy filename also contains all three lessons for single-file sharing.
-    const html = `<!doctype html>
-<html lang="zh-CN" data-theme="dark"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><meta name="color-scheme" content="dark light"><meta name="theme-color" content="#111d30"><title>安全帽与 YOLO · 三合一教学实验</title><style>${read('shell.css')}</style></head>
-<body data-start-view="${page.key}"><div id="lesson-shell">
-<header class="shell-header"><div class="shell-brand"><span class="shell-mark" aria-hidden="true">◈</span>安全帽与 YOLO</div><span class="shell-subtitle">任务 4-3 · 施工视觉实验室</span><span class="shell-status">离线可用 · 三个实验，一个入口</span><div class="shell-actions"><button class="shell-action" id="share-button">分享此课堂</button><button class="shell-action" id="fullscreen-button">全屏演示 ↗</button></div></header>
-<nav class="shell-tabs" role="tablist" aria-label="安全帽教学实验">${navigation}</nav><div class="shell-frames">${frames}</div><div id="shell-message" role="status" aria-live="polite"></div></div>
-<p class="orientation-tip"><strong>横屏观看，操作更清楚</strong>三个实验均保持 16:9 画面，可点击右上角全屏演示。</p><noscript><p class="noscript">请启用 JavaScript 以使用标注、预测和评估实验。</p></noscript>
-<script type="application/json" id="lesson-documents">${inlineJSON(documents)}</script><script>${inlineScript(read('shell.js'))}</script></body></html>`;
-    writeFileSync(join(HERE, '..', page.file), integrateChapter4(html,'vision'));
-    console.log(`built ${page.file} · all 3 lessons embedded · ${Buffer.byteLength(html)} bytes`);
+  const body = lessons.map(key => `<div class="h43-lesson" id="lesson-${key}" data-lesson="${key}">${read(key + '.body.html')}</div>`).join('');
+  const script = [common, ...lessons.map(key => read(key + '.js'))].join('\n');
+  const html = `<!doctype html><html lang="zh-CN" data-theme="light"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><meta name="color-scheme" content="light dark"><title>安全帽与 YOLO</title><style>${css}</style></head>
+<body><main id="lesson-main"><div id="workbench">${body}</div></main><div id="toast" role="status" aria-live="polite"></div><noscript><p>请启用 JavaScript 以使用标注、预测和评估实验。</p></noscript><script>${inlineScript(script)}</script></body></html>`;
+  writeFileSync(join(HERE, '..', 'index.html'), labShell(html, '4-3'));
+  console.log('built index.html · 标注 / 预测 / 评估三个工位');
+  // 旧入口：跳到对应工位（带上 ?threshold=）
+  for (const key of ['predict', 'evaluate']) {
+    const go = `index.html#${key}`;
+    writeFileSync(join(HERE, '..', key + '.html'), `<!doctype html><html lang="zh-CN"><head><meta charset="utf-8"><title>安全帽识别</title><meta http-equiv="refresh" content="0;url=${go}"><script>location.replace('${go}'+location.search)</script></head><body><p><a href="${go}">打开安全帽识别</a></p></body></html>\n`);
+    console.log(`built ${key}.html · 跳转到 ${go}`);
   }
 }

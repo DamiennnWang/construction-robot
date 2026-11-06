@@ -217,16 +217,9 @@ html.lab-native .c2-panel .iou-readouts strong { font:700 14px ui-monospace, Con
 html.lab-native .c2-panel .iou-readouts .iou-score strong { color:var(--course-accent) !important; }
 html.lab-native .c2-panel .iou-below { color:var(--bad, #c55) !important; }
 
-/* 深色：原页面深色样式里的固定蓝底换成外壳的颜色 */
-html[data-theme="dark"].lab-native .c2-panel :is(.note, .evaluation-rule, .equations span, .prediction-counts > div, .iou-readouts > div, .evaluation-metrics .metric) { background:var(--course-bg) !important; }
-html[data-theme="dark"].lab-native :is(.c2-panel, .h43-top, .h43-pane) :is(.btn, select, .class-choice, .box-row, .formula-cell, .candidate-row, .missed-row, .answer-option, input[type="number"]) { background:var(--course-surface) !important; color:var(--course-ink) !important; }
-html[data-theme="dark"].lab-native :is(.c2-panel, .h43-top) :is(.btn.active, .btn[aria-pressed="true"], .class-choice.active, .box-row.active, .answer-option.is-selected) { background:var(--blue-soft) !important; color:var(--course-accent) !important; }
-html[data-theme="dark"].lab-native .c2-panel .btn.primary { background:var(--course-accent) !important; color:#fff !important; }
-html[data-theme="dark"].lab-native .c2-panel .code-box { background:var(--blue-soft) !important; color:var(--course-accent) !important; }
-html[data-theme="dark"].lab-native .c2-panel .score-note { background:var(--course-bg) !important; color:var(--course-ink) !important; }
-html[data-theme="dark"].lab-native .h43-pane :is(.progress-strip, .stage-bottom) { background:var(--course-surface) !important; }
+/* 深色：类别标号与分数说明的浅色底换成外壳颜色 */
 html[data-theme="dark"].lab-native .c2-panel .class-choice > span:first-child { background:var(--course-bg) !important; }
-html[data-theme="dark"].lab-native .c2-panel .answer-feedback { background:var(--course-bg); }
+html[data-theme="dark"].lab-native .c2-panel .score-note { background:var(--course-bg) !important; border-color:var(--hair) !important; color:var(--course-ink) !important; }
 
 /* 较矮的窗口：画布下方信息收紧 */
 @media (max-height:700px) {
@@ -258,3 +251,4 @@ html.lab-native .c2-panel .evaluation-metrics { grid-template-columns:repeat(6, 
 html.lab-native .c2-panel .evaluation-metrics .metric { grid-column:span 2; }
 html.lab-native .c2-panel .evaluation-metrics .metric:nth-child(n+4) { grid-column:span 3; }
 html.lab-native .c2-panel .evaluation-metrics.metrics-hidden .metric strong { color:var(--course-muted) !important; }
+html.lab-native .c2-panel :is(.candidate-row, .missed-row) strong { color:var(--course-ink) !important; }

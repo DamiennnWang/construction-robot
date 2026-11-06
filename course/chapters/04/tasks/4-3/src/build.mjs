@@ -1,10 +1,8 @@
 import {buildUnifiedHelmet} from './unified-build.mjs';
-import {fileURLToPath as __taskFileURL} from 'node:url';
-const __taskFile=p=>__taskFileURL(new URL(p,import.meta.url));
-import {readFileSync,writeFileSync,existsSync} from 'node:fs';
-import {dirname,join} from 'node:path';
-import {fileURLToPath,pathToFileURL} from 'node:url';
-const HERE=__taskFile("."),ROOT=__taskFile("../../../../../../shared/感知与识别");
+import {readFileSync, writeFileSync, existsSync} from 'node:fs';
+import {fileURLToPath, pathToFileURL} from 'node:url';
+const __taskFile = p => fileURLToPath(new URL(p, import.meta.url));
+// shared/感知与识别/src/build.mjs 仍调用 refreshHelmetIndex() 更新第四章旧实验总页的 4-3 卡片
 export function refreshHelmetIndex(svg){
  const path=__taskFile("../../../../../../shared/感知与识别/index.html");if(!existsSync(path))return;
  if(!svg)svg=readFileSync(__taskFile("../assets/construction-640.svg"),'utf8').replace(/<g id="worker-H06"[^>]*>[\s\S]*?<\/g>/,'').replace(/六名工人，其中三名可明确判断戴安全帽、两名未戴安全帽，一名头部被结构遮挡而待复核/,'五名工人，其中三名戴安全帽、两名未戴安全帽');

@@ -1,5 +1,5 @@
 /* 任务 4-2 激光雷达与点云 —— 原页面的三维扫描台、点云和全部控件保持不变，搬进统一外壳；
- * 原来的四个实验成为四个工位。每个工位原有的“先预测、再用证据回答”关卡保留在面板里，并作为最后一张“试一试”卡片。
+ * 原来的四个实验中保留三个作为工位（遮挡与 A/B 两帧对齐已按用户意见撤掉，换位补扫并入工位②）。每个工位原有的“先预测、再用证据回答”关卡保留在面板里，并作为最后一张“试一试”卡片。
  * 状态全部读原页面接口 window.__LIDAR__（snapshot / getPoints / records），不另算一套。
  */
 (() => {
@@ -10,7 +10,7 @@
     stage: $('.workspace > .stage'),
     cards: Object.fromEntries(all('.experiment-card[data-experiment]').map(b => [b.dataset.experiment, b])),
     display: $('#displayOptions'),
-    beam: $('#beamControls'), density: $('#densityControls'), occlusion: $('#occlusionControls'), evidence: $('#evidenceControls'),
+    beam: $('#beamControls'), density: $('#densityControls'), evidence: $('#evidenceControls'),
     conversion: $('.point-strip .conversion'),
     progress: $('.scan-progress'), secondary: $('.secondary-actions'),
     capture: $('#captureButton'), recent: $('#recentEvidence'), count: $('#evidenceCount'),
@@ -30,7 +30,7 @@
   EL.capture?.classList.replace('c2-small', 'c2-primary');
 
   /* —— 挑战判定用的标记。“↺ 重来”后只认重来之后的记录和回答 —— */
-  const since = {beam: 0, density: 0, occlusion: 0, evidence: 0};
+  const since = {beam: 0, density: 0, evidence: 0};
   const answered = new Set(), flags = {pulse: false, section: false};
   const stamp = r => Date.parse(r.createdAt) || 0;
   const recs = id => (lab()?.records || []).filter(r => r.experiment === id && r.source === 'simulation' && stamp(r) >= since[id]);
@@ -66,7 +66,7 @@
     },
     {
       id: 'density', name: '点云怎样变密', hint: '拖动旋转 · 滚轮缩放 · 视角改变不增加点',
-      lead: '把方位角间隔在 10°、2°、1° 之间切换，数一数细柱被扫到几个点。',
+      lead: '把方位角间隔在 10°、2°、1° 之间切换，数一数细柱被扫到几个点；再把雷达挪个位置看看。',
       build(c) {
         c.adopt(EL.density, c.section('改采样'));
         c.adopt([EL.progress, EL.secondary], c.section('本帧扫描'));
@@ -75,28 +75,9 @@
             result: '相邻两束光之间隔得太开，细柱正好从缝里漏过去了。'},
           {id: 'fine', icon: '🔍', title: '再把细柱扫出来', hint: '换 1° 细密扫描', check: s => s.state.step === 1 && s.state.progress >= 0.999 && s.pole > 0,
             result: '细柱一直都在，是更密的角采样给了光束碰到它的机会。'},
-          {id: 'noise', icon: '〰', title: '加一点测距波动', hint: '拖动波动 σ', check: s => s.state.sigma > 0,
-            result: '点没有变多，只是每个点的位置抖了：密度和测准是两回事。'},
+          {id: 'moveB', icon: '🚶', title: '换个位置再扫', hint: '挡箱后面空着？换到 B 位', check: s => s.state.position === 'B' && s.state.progress >= 0.999,
+            result: '挡箱后面其实有墙：A 位的光被挡箱挡住了，挪个位置重新扫才看得见。没点不等于没东西。'},
           quizCard('density'),
-        ]);
-        evidence(c);
-      },
-    },
-    {
-      id: 'occlusion', name: '没点还是没看见', hint: '拖动旋转 · 滚轮缩放 · 转动画面不会多出点',
-      lead: '先在 A 位扫描并记录，再把雷达挪到 B 位补扫，看挡箱后面多出了什么。',
-      build(c) {
-        c.adopt(EL.occlusion, c.section('移动雷达'));
-        c.adopt([EL.progress, EL.secondary], c.section('本帧扫描'));
-        const at = p => recs('occlusion').some(r => r.complete && r.settings.position === p);
-        c.challenges([
-          {id: 'a', icon: '📍', title: '记录 A 位的一帧', hint: 'A 位扫完后记录', check: () => at('A'),
-            result: '挡箱后面一片空白——不是没有东西，是光被挡箱挡住了。'},
-          {id: 'b', icon: '🚶', title: '到 B 位补扫并记录', hint: '换 B 位再记录', check: () => at('B'),
-            result: '换了位置重新测量，才拿到挡箱后面的新回波。'},
-          {id: 'merge', icon: '🧩', title: '把 A、B 两帧叠起来', hint: '打开叠加开关', check: s => s.state.overlay && at('A') && at('B'),
-            result: '两帧按已知位姿转到同一坐标里，才能拼在一起比较。'},
-          quizCard('occlusion'),
         ]);
         evidence(c);
       },
