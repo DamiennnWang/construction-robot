@@ -30,8 +30,37 @@
   // 采集质量结论贴在取景框下方，和画面一起看
   if (EL.quality && EL.viewfinder) EL.viewfinder.append(EL.quality);
 
-  // 记录：预演过航线、导出过记录（只在本次打开页面期间）
-  let previewed = false, exported = false;
+  // 期末作业：在 Excel 里整理立面巡检记录表。要求单在三维区里展开（替换证据台账），模板随任务目录提供。
+  const TEMPLATE = '立面巡检记录表模板.xlsx';
+  const homework = document.createElement('section');
+  homework.className = 'c7-overlay c7-homework';
+  homework.setAttribute('aria-label', '期末作业要求');
+  homework.innerHTML = `
+    <header><div><span class="c7-hw-tag">期末作业</span><h2>用 Excel 做一份立面巡检记录表</h2></div><button type="button" class="c7-hw-close" aria-label="收起作业要求">×</button></header>
+    <div class="c7-hw-body">
+      <section><h3>交什么</h3><p>在本页完成 A1～B3 六个点位的采集和复核后，用模板整理一份别人能逐条核对的记录表。文件名：<b>班级_姓名_立面巡检记录.xlsx</b>，保留模板的四张工作表。</p></section>
+      <section><h3>“巡检记录”表：每个点位一行</h3><p class="c7-hw-fields"><span>点位</span><span>位置描述</span><span>照片编号</span><span>拍摄时间</span><span>拍摄距离</span><span>偏离正对角度</span><span>移动速度</span><span>快门</span><span>照片一格代表（毫米）</span><span>拖影（格）</span><span>照片是否合格</span><span>预设检测结果</span><span>预设分数</span><span>我的判断</span><span>判断理由</span><span>是否补拍过</span><span>人工补记漏检</span><span>处理建议</span><span>记录人 / 复核人</span></p>
+        <ul><li><b>照片和读数</b>照抄该点位<b>最新</b>一张照片的编号、拍摄条件和底部读数。</li>
+        <li><b>是否合格</b>按本课条件：一格不超过 2.5 毫米、拖影不超过 1.5 格、偏离不超过 25°；不合格要写明哪一条没达到。</li>
+        <li><b>我的判断</b>三选一：保留疑似病害 / 排除误报 / 证据不足，补拍。分数高不等于病害成立，没框的照片也要自己找。</li>
+        <li><b>判断理由</b>不少于 15 字：写形态（直还是弯、有没有分叉、边缘齐不齐）、位置（窗角、窗下、分格处）和用到的对照资料，不能只写“有裂缝”。</li></ul></section>
+      <section><h3>“补拍与复核历史”表</h3><p>每补拍一次记一行：旧照片编号、新照片编号、改了哪个拍摄条件、补拍前后的判断。旧照片不删。</p></section>
+      <section><h3>“汇总与结论”表</h3><p>用公式统计合格照片、保留疑点、排除误报、待补拍的点位数（模板已给示例公式）；再写 100～200 字结论：哪些点位要近距复查、误报是怎么来的、下次航拍注意什么。结尾注明“本记录为外观初筛，不判定结构安全”。</p></section>
+      <section><h3>评分（100 分）</h3><table><tbody>
+        <tr><td>数据完整准确</td><td>30</td><td>六个点位齐全，参数和读数与网页一致</td></tr>
+        <tr><td>判断正确</td><td>25</td><td>误报已排除、漏检已补记、证据不足已补拍</td></tr>
+        <tr><td>理由充分</td><td>20</td><td>每条理由写出形态、位置和依据</td></tr>
+        <tr><td>补拍可追溯</td><td>10</td><td>新旧照片编号和改动的条件对得上</td></tr>
+        <tr><td>汇总与结论</td><td>10</td><td>公式正确，结论具体、不夸大</td></tr>
+        <tr><td>表格规范</td><td>5</td><td>命名、表头冻结、合格与否用颜色区分</td></tr>
+      </tbody></table></section>
+    </div>`;
+  EL.stage.append(homework);
+  const showHomework = on => { EL.stage.dataset.c7Homework = on ? '1' : ''; };
+  homework.querySelector('.c7-hw-close').addEventListener('click', () => showHomework(false));
+
+  // 记录：预演过航线、导出过记录、下载过作业模板（只在本次打开页面期间）
+  let previewed = false, exported = false, downloaded = false;
   for (const id of ['export-json', 'export-csv']) document.getElementById(id)?.addEventListener('click', () => { exported = true; });
 
   // adopt 会把元素设为可见；原页面自己按状态隐藏的元素（无照片时的复核表单等）要保留原状
@@ -52,7 +81,7 @@
         keep(c, [EL.route[0], EL.routeBtn], row);
         c.challenges([
           {id: 'far', icon: '🔭', title: '离远了拍一张', hint: '距离拉到 12 m 再采集', check: s => hasIssue(s, 'detail'),
-            result: '离得越远，一个像素对应的墙面越大，细线就看不清了。'},
+            result: '离得越远，照片上一格代表的墙面越大，细线就看不清了。'},
           {id: 'blur', icon: '💨', title: '拍出拖影', hint: '飞得快、快门慢', check: s => hasIssue(s, 'motion'),
             result: '快门打开的那一刻相机还在移动，画面就拖出了影子。'},
           {id: 'route', icon: '🛸', title: '预演一次航线', hint: '勾选航点，按预演', check: () => previewed,
@@ -86,8 +115,17 @@
     },
     {
       id: 'report', name: '交付记录', hint: '绿色点位已复核完成',
-      lead: '每条意见都对应一个点位和一张照片。写上记录人，导出给同伴核对。',
+      lead: '每条意见都对应一个点位和一张照片。写上记录人、导出记录，再用 Excel 完成期末作业。',
       build(c) {
+        const g4 = c.section('期末作业');
+        const card = c.h('div', 'c7-hw-card');
+        card.append(c.h('b', '', 'Excel 立面巡检记录表'), c.h('p', '', '把六个点位的照片、读数、判断和理由整理成表，写出汇总和结论。'));
+        const see = c.button('看作业要求', () => showHomework(EL.stage.dataset.c7Homework !== '1'));
+        const dl = c.h('a', 'c2-btn c2-primary c7-dl', '下载 Excel 模板');
+        dl.href = TEMPLATE; dl.setAttribute('download', TEMPLATE);
+        dl.addEventListener('click', () => { downloaded = true; });
+        card.append(c.row(see, dl)); g4.append(card);
+        showHomework(false);
         const g = c.section('记录人');
         keep(c, EL.student[1], g);
         const g2 = c.section('完成情况');
@@ -101,6 +139,8 @@
             result: '六个点位：照片合格、意见正确、漏检已补记。'},
           {id: 'export', icon: '📤', title: '导出一份记录', hint: 'JSON 或表格都行', check: () => exported,
             result: '导出的记录里，每条意见都能追到照片编号和拍摄参数。'},
+          {id: 'homework', icon: '📊', title: '领取期末作业', hint: '下载 Excel 模板', check: () => downloaded,
+            result: '模板里已有表头和一行示例，照着网页上的记录逐个点位填。'},
         ]);
       },
     },
@@ -133,8 +173,8 @@
       EL.stage.dataset.c7Station = c.station.id;
       const read = c.readouts([
         {id: 'cov', label: '点位采集', unit: '/ 6'},
-        {id: 'gsd', label: '影像分辨率', unit: 'mm/px'},
-        {id: 'blur', label: '预计拖影', unit: 'px'},
+        {id: 'gsd', label: '照片一格代表', unit: '毫米'},
+        {id: 'blur', label: '预计拖影', unit: '格'},
         {id: 'ok', label: '复核完成', unit: '/ 6'},
       ]);
       c.lab.onState(s => {
