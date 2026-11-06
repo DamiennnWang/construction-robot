@@ -24,12 +24,11 @@
   /* ---------- 概览 ---------- */
   let focus = 1;
   try { focus = Number(sessionStorage.getItem('home-focus')) || 1; } catch {}
-  /* 左侧目录：点一章，右侧展台转到这一章；再点一次进入。 */
+  /* 左侧目录：八章。点章名，右侧展台转到这一章，再点一次进入。 */
   const tint = n => window.HomeExhibits?.chapters[n]?.tint || '#4f97e6';
-  $('toc').innerHTML = data.chapters.map(c => `<button type="button" data-chapter="${c.id}" style="--tint:${tint(c.id)}" aria-label="${ordinal(c.id)} ${esc(c.title)}"><i class="thumb"><img alt="" data-thumb="${c.id}" hidden></i><b>${c.id}</b><span>${esc(c.title)}</span></button>`).join('');
+  $('toc').innerHTML = data.chapters.map(c => `<section class="toc-ch" data-chapter="${c.id}" style="--tint:${tint(c.id)}"><button type="button" data-chapter="${c.id}" aria-label="${ordinal(c.id)} ${esc(c.title)}"><b>${c.id}</b><span>${esc(c.title)}<small>${c.tasks.length} 项任务</small></span></button></section>`).join('');
   /* 小图：三维可用时由展台离屏拍照，拍好一张填一张 */
   function fillThumb(img, url) { if (url) { img.src = url; img.hidden = false; } }
-  if (stage.webgl) data.chapters.forEach(c => stage.thumb(c.id).then(url => fillThumb($('toc').querySelector(`[data-thumb="${c.id}"]`), url)));
   $('chapter-grid').innerHTML = data.chapters.map(c => `<a href="#chapter-${c.id}" data-chapter="${c.id}"><small>${ordinal(c.id)} · ${c.tasks.length} 项任务</small><strong>${esc(c.title)}</strong><span>${esc(c.description)}</span></a>`).join('');
   $('chapter-grid').hidden = stage.webgl;
   function showFocus(n) {
@@ -42,9 +41,9 @@
     for (const a of [$('ov-name'), $('ov-enter')]) a.href = '#chapter-' + n;
     $('ov-enter').setAttribute('aria-label', `进入${ordinal(n)} ${c.title}`);
     $('ov-info').style.setProperty('--tint', tint(n));
-    $('ov-tasks').innerHTML = c.tasks.map(t => `<a class="mini" href="${esc(taskHref(t))}" data-task="${t.id}" title="${t.id} ${esc(t.title)}"><i class="thumb"><img alt="" hidden></i><b>${t.id}</b>${progress(t.id) ? '<em>✓</em>' : ''}</a>`).join('');
+    $('ov-tasks').innerHTML = c.tasks.map(t => `<a class="mini" href="${esc(taskHref(t))}" data-task="${t.id}" title="${t.id} ${esc(t.title)}：${esc(t.note)}"><i class="thumb"><img alt="" hidden></i><b>${t.id}</b>${progress(t.id) ? '<em>✓</em>' : ''}</a>`).join('');
     if (stage.webgl) c.tasks.forEach(t => stage.thumb(n, t.id).then(url => { const img = $('ov-tasks').querySelector(`[data-task="${t.id}"] img`); if (img && focus === n) fillThumb(img, url); }));
-    $('toc').querySelectorAll('button').forEach(b => { const on = Number(b.dataset.chapter) === n; b.classList.toggle('on', on); b.setAttribute('aria-current', on ? 'true' : 'false'); });
+    $('toc').querySelectorAll('.toc-ch').forEach(sec => { const on = Number(sec.dataset.chapter) === n; sec.classList.toggle('on', on); sec.querySelector('button').setAttribute('aria-current', on ? 'true' : 'false'); });
     $('ov-info').classList.remove('swap'); void $('ov-info').offsetWidth; $('ov-info').classList.add('swap');
   }
   function go(n) {
@@ -112,7 +111,7 @@
     $('tasks').style.setProperty('--count', c.tasks.length);
     $('tasks').innerHTML = c.tasks.map(t => {
       const done = progress(t.id);
-      return `<a class="task" href="${esc(taskHref(t))}" data-task="${t.id}"><span class="id">${t.id}</span><span class="name">${esc(t.title)}</span><span class="state">${done ? `<em>✓ 已完成 ${done} 个工位</em>` : '<span>进入任务</span>'}<span class="go" aria-hidden="true">→</span></span></a>`;
+      return `<a class="task" href="${esc(taskHref(t))}" data-task="${t.id}"><span class="id">${t.id}</span><span class="name">${esc(t.title)}</span><span class="note">${esc(t.note)}</span><span class="state">${done ? `<em>✓ 已完成 ${done} 个工位</em>` : '<span>进入任务</span>'}<span class="go" aria-hidden="true">→</span></span></a>`;
     }).join('');
     $('chips').innerHTML = c.tasks.map(t => `<a class="chip" href="${esc(taskHref(t))}" data-task="${t.id}" tabindex="-1"><b>${t.id}</b><span>${esc(t.title)}</span>${progress(t.id) ? '<em>✓</em>' : ''}</a>`).join('');
     $('tasks').querySelectorAll('a').forEach(a => {
@@ -126,6 +125,9 @@
       a.addEventListener('pointerenter', () => stage.hover({chapter: n, task: a.dataset.task}));
       a.addEventListener('pointerleave', () => stage.hover(null));
     });
+    /* 右上角：上一章、下一章（带该章主展品小图），章节之间直接切换 */
+    $('cv-nav').innerHTML = [[n - 1, '上一章'], [n + 1, '下一章']].filter(([m]) => chapter(m)).map(([m, label]) => `<a class="cv-step ${m < n ? 'is-prev' : 'is-next'}" href="#chapter-${m}" style="--tint:${tint(m)}"><i class="thumb"><img alt="" data-thumb="${m}" hidden></i><span><small>${m < n ? '← ' : ''}${label}${m > n ? ' →' : ''}</small>${ordinal(m)} ${esc(chapter(m).title)}</span></a>`).join('');
+    if (stage.webgl) $('cv-nav').querySelectorAll('img[data-thumb]').forEach(img => stage.thumb(Number(img.dataset.thumb)).then(url => fillThumb(img, url)));
     document.title = `${ordinal(n)} ${c.title}｜智能建筑机械与机器人`;
   }
   function setMode(cover) {
@@ -173,7 +175,7 @@
     /* 宽屏：书名在左，展台占右侧；窄屏：书名在上，展台在下 */
     const h = innerHeight, info = $('ov-info').getBoundingClientRect(), wide = innerWidth > 900;
     const coverTop = document.querySelector('.cv-info').getBoundingClientRect().bottom, coverBottom = $('tasks').getBoundingClientRect().top;
-    stage.layout({overview: {left: wide ? info.left : 0, top: wide ? 64 : $('book').getBoundingClientRect().bottom + 4, bottom: Math.max(120, h - info.top + 6)}, cover: {left: 0, top: Math.max(120, coverTop + 4), bottom: Math.max(110, h - coverBottom + 44)}});
+    stage.layout({overview: {left: wide ? info.left : 0, top: wide ? 64 : $('book').getBoundingClientRect().bottom + 4, bottom: Math.max(120, h - info.top + 26)}, cover: {left: 0, top: Math.max(120, coverTop + 4), bottom: Math.max(110, h - coverBottom + 44)}});
   }
   addEventListener('resize', measure);
 

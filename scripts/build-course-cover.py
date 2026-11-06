@@ -18,6 +18,7 @@ spec=[
  ('course/chapters/08/overview','安全操作与维护','在现场暂停推演中处理危险，在四个工位练习保养与排查。')
 ]
 tasks=json.loads((root/'course/catalog.json').read_text(encoding='utf-8-sig'))['tasks']
+notes=json.loads((root/'course/home/task-notes.json').read_text(encoding='utf-8'))
 chapters=[]
 for n,(folder,title,description) in enumerate(spec,1):
     # 章节封面已并入课程首页（#chapter-N）；旧封面地址保留为跳转页。
@@ -30,7 +31,8 @@ for n,(folder,title,description) in enumerate(spec,1):
         assert entries,f'Missing task entry: {t["id"]}'
         for e in entries:assert (root/e['file'].split('#',1)[0]).is_file(),f'Missing task page: {e["file"]}'
         kind=t.get('kind','交互课堂')
-        rows.append({'id':t['id'],'title':t['title'].replace('任务一　',''),'demo':t['demo'],'entries':entries,'kind':kind})
+        assert t['id'] in notes,f'Missing note in course/home/task-notes.json: {t["id"]}'
+        rows.append({'id':t['id'],'title':t['title'].replace('任务一　',''),'note':notes[t['id']],'demo':t['demo'],'entries':entries,'kind':kind})
     kinds={t['kind'] for t in rows}
     kind=next(iter(kinds)) if len(kinds)==1 else '互动课堂'
     chapters.append({'id':n,'title':title,'nav':title,'description':description,'entry':entry,'kind':kind,'tasks':rows})

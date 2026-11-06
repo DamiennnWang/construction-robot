@@ -24,7 +24,7 @@ test('home data follows the catalog: 8 chapters, every active task once, task pa
   assert.deepEqual(ids, catalog.map(t => t.id));
   for (const c of COURSE.chapters) {
     assert.equal(c.entry, `course/home/index.html#chapter-${c.id}`);
-    for (const t of c.tasks) assert(fs.existsSync(path.join(root, t.demo)), t.demo);
+    for (const t of c.tasks) { assert(fs.existsSync(path.join(root, t.demo)), t.demo); assert(t.note && t.note.length <= 18, 'note ' + t.id); }
   }
   const html = read('course/home/index.html');
   for (const [, src] of html.matchAll(/(?:src|href)="([^"#?]+)(?:\?[^"]*)?"/g)) if (!/^(https?:|index\.html$)/.test(src)) assert(fs.existsSync(path.join(root, 'course/home', src)), src);

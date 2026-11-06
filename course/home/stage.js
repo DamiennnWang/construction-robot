@@ -15,7 +15,7 @@
   } catch { renderer = null; }
   if (!renderer) { window.HomeStage = {webgl: false}; return; }
 
-  const R = 10, COUNT = data.chapters.length, SLOT = 5.5, ARC = 26;
+  const R = 6, COUNT = data.chapters.length, SLOT = 5.5, ARC = 26;
   const clamp = (v, a, b) => Math.max(a, Math.min(b, v));
   const smooth = x => { x = clamp(x, 0, 1); return x * x * (3 - 2 * x); };
   const inOut = x => { x = clamp(x, 0, 1); return x < .5 ? 4 * x * x * x : 1 - Math.pow(-2 * x + 2, 3) / 2; };
@@ -117,7 +117,7 @@
     group.position.set(Math.sin(angle) * R, 0, Math.cos(angle) * R); group.rotation.y = angle;
     table.add(group);
     const spec = E.chapters[chapter.id];
-    const hero = exhibit(chapter.id, spec.hero, 2.25);
+    const hero = exhibit(chapter.id, spec.hero, 2.05);
     group.add(hero.holder);
     const mats = [];
     hero.holder.children[1].traverse(o => { if (o.isMesh && o.material) [].concat(o.material).forEach(m => { if (m.color && !mats.some(x => x.m === m)) mats.push({m, base: m.color.clone()}); }); });
@@ -129,7 +129,7 @@
   /* 非聚焦展品褪色：颜色向灰度与背景色靠拢。 */
   const grey = new T.Color();
   function desaturate(island) {
-    const k = (1 - island.w) * .78;
+    const k = (1 - island.w) * .5;
     if (Math.abs(k - island.applied) < .004) return;
     island.applied = k;
     for (const {m, base} of island.mats) {
@@ -252,13 +252,13 @@
   function frameCameras() {
     const vfov = camera.fov * Math.PI / 180, aspect = state.viewW / height, tanV = Math.tan(vfov / 2), tanH = tanV * aspect;
     const o = state.layout.overview, oz = Math.max(160, height - o.top - o.bottom);
-    let d = 4.7 * height / (.86 * oz * 2 * tanV);
-    d = Math.max(d, 3.4 / tanH);
-    camOver.target.set(0, 1.45, R);
-    camOver.pos.set(0, 1.45 + Math.sin(.2) * d, R + Math.cos(.2) * d);
+    /* 概览：主展品在前、占画面主体，其余七章围在后面一圈，整圈都留在书名右侧的画幅里 */
+    let d = Math.max(8.2 * height / (oz * 2 * tanV), (R + 1.9) / (.92 * tanH) - R * .7);
+    camOver.target.set(0, 2.3, R * .7);
+    camOver.pos.set(0, 2.3 + Math.sin(.36) * d, R * .7 + Math.cos(.36) * d);
     const island = islands[(state.chapter || state.focus) - 1], c = state.layout.cover, cz = Math.max(160, height - c.top - c.bottom);
     const w = island.width || 10, depth = island.depth || 0;
-    let dc = Math.max((w / 2) / tanH * 1.04 + 2, 4.3 * height / (.9 * cz * 2 * tanV));
+    let dc = Math.max((w / 2) / tanH * 1.03 + 2.2, 3.7 * height / (.92 * cz * 2 * tanV));
     const tilt = island.cols && island.tasks && island.cols < island.tasks.length ? .62 : .36;
     if (tilt > .5) dc = Math.max((w / 2) / tanH * 1.08 + 3, 4.3 * height / (.9 * cz * 2 * tanV));
     camCover.target.set(0, 1.25, R + (tilt > .5 ? 0 : depth * .5));
@@ -362,7 +362,7 @@
         island.group.getWorldPosition(tmp).project(camera);
         page = smooth(((tmp.x + 1) / 2 * width - state.layout.overview.left * (1 - ez) + 10) / 150);
       }
-      const s = (.52 + .48 * smooth(island.w)) * (1 - .9 * smooth(island.away)) * page;
+      const s = (.58 + .82 * smooth(island.w) * (1 - .3 * ez)) * (1 - .9 * smooth(island.away)) * page;
       island.group.scale.setScalar(Math.max(.001, s));
       island.group.position.y = -2.4 * smooth(island.away);
       island.group.visible = island.away < .98;
@@ -410,7 +410,7 @@
     if (state.arrive > 0) camera.position.lerp(tmp, .2 * smooth(state.arrive));
     camera.lookAt(tmp);
     const reach = camera.position.distanceTo(tmp);
-    scene.fog.near = reach + 3; scene.fog.far = reach + 26;
+    scene.fog.near = reach + 4 - 2 * ez; scene.fog.far = reach + 40 - 14 * ez;
     camera.setViewOffset(state.viewW, height, -viewLeft, -viewShift, width, height);
     camera.updateProjectionMatrix();
 
