@@ -7,11 +7,11 @@
 ```text
 website/
 ├─ course/                 课程页面与源码
-│  ├─ home/                课程总入口
+│  ├─ home/                课程首页：八章转台 + 各章镜头（#chapter-N）
 │  ├─ catalog.json         24 项活动任务的编号、标题和入口
 │  └─ chapters/
 │     ├─ 01/
-│     │  ├─ overview/      第一章入口及 src/ 源码
+│     │  ├─ overview/      旧章节封面地址，跳转到首页 #chapter-1
 │     │  └─ tasks/
 │     │     ├─ 1-2/        施工机械三维展厅
 │     │     └─ 1-3/        机器人三维展厅
@@ -59,8 +59,8 @@ npm run build:models                # 更新共享机器人离线资源（含机
 ## 修改哪里
 
 - 修改某个任务：进入 `course/chapters/章节编号/tasks/任务编号/`。有 `src/` 的任务改源码后通过统一命令构建；最初直接编写的 HTML 继续作为该任务的维护文件。
-- 修改章节导览：进入该章 `overview/src/`；修改课程首页：进入 `course/home/`。
-- 修改共同导航、样式和组件：只改 `shared/`；第三章入口的通用样式已提取为 `shared/styles/chapter-overview.css`，其余章节从此读取。
+- 修改课程首页与章节导览：进入 `course/home/`。章节封面已并入首页（`#chapter-N` 镜头状态）；各章 `overview/index.html` 只保留为跳转页。
+- 修改共同导航、样式和组件：只改 `shared/`；首页与各章展品模型在 `shared/chapter-cover/` 和 `shared/workshop/`。
 - 新截图放入 `artifacts/screenshots/章节或任务编号/`，新 ZIP 放入 `artifacts/packages/`。教学图片和测试输入保留在任务的 `assets/`、`qa/fixtures/` 或 `qa/source/`，不按扩展名当作截图搬走。
 
 ## 交付
