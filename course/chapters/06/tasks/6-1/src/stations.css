@@ -83,3 +83,20 @@ html[data-theme="dark"] .c2-panel :is(.game-primary, button.primary) { backgroun
 .c2-panel .c61-explode { display:block; }
 .c2-panel .c61-explode .range-label { margin-top:0; }
 .c2-panel .c61-explode input { width:100%; }
+
+/* 拌砂浆工位：投料行、拌匀程度条 */
+.c2-panel .feed-rows { display:grid; gap:6px; }
+.c2-panel .feed-row { display:grid; grid-template-columns:14px 1fr 32px 64px 32px; align-items:center; gap:8px; padding:4px 6px 4px 10px; border:1px solid var(--hair); border-radius:12px; background:var(--course-surface); }
+.c2-panel .feed-row b { font-size:14px; }
+.c2-panel .feed-row output { text-align:center; font-size:15px; }
+.c2-panel .feed-row button { min-height:30px !important; height:30px; padding:0 !important; font-size:16px !important; font-weight:700; }
+.c2-panel .feed-swatch { width:14px; height:14px; border-radius:4px; box-shadow:inset 0 0 0 1px rgba(0,0,0,.12); }
+.c2-panel .feed-swatch.sand { background:#cbbd98; }
+.c2-panel .feed-swatch.cement { background:#9ba2a7; }
+.c2-panel .feed-swatch.water { background:#7fa9da; }
+.c2-panel #mixerRun { margin-top:0; }
+.c2-panel .mix-meter { display:grid; grid-template-columns:auto 1fr 44px; align-items:center; gap:10px; margin-top:10px; font-size:13px; }
+.c2-panel .mix-meter .meter { height:8px; border-radius:4px; background:var(--hair); overflow:hidden; }
+.c2-panel .mix-meter .meter i { display:block; height:100%; width:0; border-radius:4px; background:linear-gradient(90deg, #8fb4e6, var(--course-accent)); transition:width .2s; }
+.c2-panel .mix-meter output { text-align:right; }
+.c2-panel #mortarControls .play-row button:disabled { opacity:.45; }

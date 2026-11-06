@@ -1,5 +1,5 @@
 /* 任务 6-1 砌筑机器人 —— 原页面的三维工作台、砌筑闯关和机器人取放演示保持不变，搬进统一外壳。
- * 原来的三个学习阶段（先亲手砌一砌 / 发现人工难点 / 再让机器人介入）成为三个工位。
+ * 原来的三个学习阶段（先亲手砌一砌 / 发现人工难点 / 再让机器人介入）成为工位，中间加一个“拌砂浆”工位（砂浆搅拌机）。
  * 三维区上方放“选研究对象”：闯关的三关、三种施工问题、固定/移动工位；面板里是原有的改变条件的控件和试一试。
  */
 (() => {
@@ -9,10 +9,12 @@
   const game = () => lab()?.game;
   const issueBlocks = all('#issueControls > .control-block');
   const robotBlocks = all('#robotControls > .control-block');
+  const mortarBlocks = all('#mortarControls > .control-block');
   const EL = {
     stage: $('.stage-wrap'),
     metrics: $('.metrics'), live: $('#liveReadout'),
     manual: $('#manualControls'),
+    mortarFeed: mortarBlocks[0], mortarMix: mortarBlocks[1], mortarOut: mortarBlocks[2],
     issuePicker: $('#issueChoices'), issueSlider: issueBlocks[1], observation: $('#issueControls .observation'), connection: $('#issueControls .connection'),
     platformPicker: $('#robotControls .segmented'), platformNote: $('#platformNote'),
     timeline: robotBlocks[1], datum: robotBlocks[2],
@@ -20,7 +22,7 @@
     reset: $('#reset'),
   };
   // 外壳里已有工位名、引子和小标题：原来的阶段标题、“去下一站”链接、重复的小标签收起
-  for (const e of all('#issuesToRobot, #issueControls .section-label, #robotControls .section-label')) e.setAttribute('hidden', '');
+  for (const e of all('#issuesToRobot, #issueControls .section-label, #robotControls .section-label, #mortarControls .section-label')) e.setAttribute('hidden', '');
 
   /* 三维区上方：人工砌筑的三关（原闯关自带的关卡导航每次重绘都会重建，这里另做一排，调用原接口切关） */
   const LESSONS = ['认识一块砖', '拼出墙厚', '检查上下皮'];
@@ -68,6 +70,27 @@
       },
     },
     {
+      id: 'mortar', name: '拌砂浆', lead: '投料、开机拌匀，再倾翻出料、送到砌筑位。',
+      build(c) {
+        const g = c.section('投料');
+        c.adopt(EL.mortarFeed, g);
+        const g2 = c.section('搅拌');
+        c.adopt(EL.mortarMix, g2);
+        const g3 = c.section('出料与送料');
+        c.adopt(EL.mortarOut, g3);
+        c.challenges([
+          {id: 'recipe', icon: '🥣', title: '按示例投料', hint: '砂 4 · 水泥 1 · 水 1', check: s => s.mortar.recipeHit,
+            result: '砂、水泥、水按设定的份数投进滚筒，砂浆质量先从配料开始。'},
+          {id: 'mixed', icon: '🌀', title: '拌匀再出料', hint: '拌到 100%，再摇手轮', check: s => s.mortar.poured.includes('good'),
+            result: '滚筒转动时叶片不停翻料，拌匀后颜色一致，再倾翻倒进灰车。'},
+          {id: 'wet', icon: '💧', title: '拌一筒太稀的', hint: '多加水，拌匀看看', check: s => s.mortar.wetMixed,
+            result: '水多了砂浆太稀，铺灰会流淌，灰缝厚度就难控制。'},
+          {id: 'deliver', icon: '🧱', title: '送到砌筑位', hint: '合格的料倒进灰槽', check: s => s.mortar.delivered.includes('good'),
+            result: '砂浆要连续送到砌筑位：供料一断，人工和机器人都得停下来等。'},
+        ]);
+      },
+    },
+    {
       id: 'issues', name: '人工难点', lead: '在上方选一个问题，先放大它，再修正回来。',
       build(c) {
         const g = c.section('改变它');
@@ -111,7 +134,7 @@
     },
   ];
 
-  let lastFeedback = '';
+  let lastFeedback = '', lastNoteAt = 0;
   NativeShell.start({
     task: '6-1', title: '砌筑工程与机器人',
     stage: EL.stage,
@@ -156,6 +179,10 @@
         const g = game(), text = g?.feedback || '';
         if (id === 'manual' && text && text !== lastFeedback) c.feedback(text, g.feedbackTone === 'retry' ? 'warn' : 'info');
         lastFeedback = text;
+        // 搅拌机的提示（投料、出料、送料）同样转成提示条
+        const m = s.mortar;
+        if (id === 'mortar' && m.note && m.noteAt > lastNoteAt) c.feedback(m.note, /先|没|空|不在|太|不好/.test(m.note) ? 'warn' : 'info');
+        lastNoteAt = Math.max(lastNoteAt, m.noteAt);
       });
     },
   });

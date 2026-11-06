@@ -107,7 +107,7 @@
 
 :root{color-scheme:light;--bg:#f2f5fa;--paper:#fff;--ink:#213853;--muted:#718198;--line:#dce4ee;--blue:#2862a6;--blue-dark:#1b4c87;--pale:#edf4fd;--panel:#f8fafd;--shadow:0 8px 30px #20385c05}
 html[data-theme=dark]{color-scheme:dark;--bg:#101b2b;--paper:#17263a;--ink:#dce8f5;--muted:#93a9c4;--line:#31445d;--blue:#9cc7ff;--blue-dark:#b9d6ff;--pale:#243d5b;--panel:#1c2d43;--shadow:none}
-*{box-sizing:border-box}body{margin:0;background:var(--bg);color:var(--ink);font-family:Inter,"Segoe UI","Microsoft YaHei",sans-serif;font-size:14px;-webkit-font-smoothing:antialiased}button,input,select{font:inherit}button,a,input,select,summary{-webkit-tap-highlight-color:transparent}button{cursor:pointer;border:1px solid var(--line);background:var(--paper);color:var(--ink);border-radius:7px;padding:9px 12px;transition:background .15s,border-color .15s}button:hover{background:var(--pale);border-color:var(--blue)}button:disabled{opacity:.45;cursor:default}button[aria-pressed=true]{color:var(--blue);background:var(--pale);border-color:var(--blue)}button:focus-visible,a:focus-visible,input:focus-visible,select:focus-visible,summary:focus-visible{outline:2px solid var(--blue);outline-offset:3px}button.primary,.game-primary{background:var(--blue);color:var(--paper);border-color:var(--blue)}button.primary:hover,.game-primary:hover{background:var(--blue-dark)}a{color:var(--blue)}[hidden]{display:none!important}h1,h2,h3,p{margin:0}p{line-height:1.7}.app{max-width:1740px;padding:0 32px;margin:auto}.masthead{height:86px;display:flex;align-items:center;gap:30px}.brand{text-decoration:none;color:var(--ink);display:flex;gap:12px;align-items:center;font-weight:700;font-size:17px;letter-spacing:.05em}.brand-mark{background:var(--blue);color:var(--paper);width:39px;height:39px;display:grid;place-items:center;border-radius:9px;font-size:22px}.brand small{font-size:9px;display:block;color:var(--muted);letter-spacing:.15em;margin-top:5px}.course-name{font-size:14px;border-left:1px solid var(--line);padding-left:24px}.course-name span{color:var(--muted);margin-left:14px}.header-tools{display:flex;gap:8px;margin-left:auto}.header-tools button{font-size:12px;padding:8px 12px;background:transparent}.chapter-nav{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;margin-bottom:18px}.chapter-nav button{display:flex;align-items:center;text-align:left;gap:15px;padding:14px 20px;background:var(--paper);border-color:var(--line);border-radius:9px}.chapter-nav b{font-size:25px;font-weight:400;color:var(--muted)}.chapter-nav span{font-size:15px;font-weight:650}.chapter-nav small{display:block;color:var(--muted);font-weight:400;font-size:11px;margin-top:4px;letter-spacing:.06em}.chapter-nav i{font-style:normal;margin-left:auto;font-size:23px;color:var(--muted)}.chapter-nav button[aria-pressed=true]{background:var(--pale);border-color:var(--blue)}.chapter-nav button[aria-pressed=true] b,.chapter-nav button[aria-pressed=true] i{color:var(--blue)}.lab-layout{display:grid;grid-template-columns:minmax(0,1fr) 345px;gap:18px;align-items:stretch}.visual-card{background:var(--paper);border:1px solid var(--line);border-radius:12px;box-shadow:var(--shadow);min-width:0;overflow:hidden;display:flex;flex-direction:column}.figure-heading{display:flex;justify-content:space-between;gap:12px;padding:25px 28px 6px;min-height:132px}.eyebrow{font-size:10px;font-weight:650;letter-spacing:.12em;color:var(--muted);display:flex;gap:8px;align-items:center}.status-dot{width:6px;height:6px;display:inline-block;background:var(--blue);border-radius:50%}.figure-heading h1{font-size:28px;letter-spacing:-.04em;font-weight:650;margin:12px 0 7px}.figure-heading p{font-size:13px;color:var(--muted)}.figure-number{font-family:Consolas,monospace;color:var(--muted);font-size:11px;white-space:nowrap}.stage-wrap{position:relative;flex:1;min-height:355px;background:radial-gradient(ellipse at 48% 55%,var(--pale),transparent 65%)}.stage{width:100%;height:100%;min-height:355px;position:absolute;inset:0;touch-action:pan-y;cursor:grab;outline:none}.stage:active{cursor:grabbing}.stage:focus-visible{box-shadow:inset 0 0 0 2px var(--blue)}.stage canvas,.stage svg{display:block;width:100%;height:100%}.scene-tag{position:absolute;left:27px;top:12px;font-size:11px;letter-spacing:.04em;color:var(--muted);pointer-events:none}.view-tools{position:absolute;bottom:12px;left:50%;transform:translateX(-50%);display:flex;align-items:center;gap:3px;padding:5px;border:1px solid var(--line);border-radius:8px;background:var(--paper);box-shadow:var(--shadow);white-space:nowrap}.view-tools button{border-color:transparent;font-size:11px;padding:6px 9px}.view-tools span{height:14px;border-left:1px solid var(--line);margin:0 4px}.fallback-note{position:absolute;top:38px;left:27px;font-size:11px;color:var(--muted);right:15px}.figure-bottom{display:flex;justify-content:space-between;gap:12px;padding:12px 27px;font-size:11px;color:var(--muted);border-bottom:1px solid var(--line)}.figure-bottom strong{color:var(--ink);font-weight:500;font-family:Consolas,"Microsoft YaHei",monospace}.metrics{display:grid;grid-template-columns:repeat(3,1fr);padding:17px 27px 21px;gap:20px}.metrics>div+div{border-left:1px solid var(--line);padding-left:20px}.metrics span{display:block;color:var(--muted);font-size:10px;margin-bottom:8px}.metrics strong{font-size:17px;font-weight:600;display:block}.control-panel{background:var(--paper);border:1px solid var(--line);border-radius:12px;padding:22px 22px 16px;height:615px;overflow:auto;scrollbar-width:thin;scrollbar-color:var(--line) transparent}.panel-heading{display:flex;justify-content:space-between;align-items:center;padding-bottom:18px;border-bottom:1px solid var(--line);margin-bottom:18px}.panel-heading h2{font-size:18px;margin-top:7px;font-weight:600}.panel-heading button{border:0;background:transparent;font-size:11px;padding:6px;color:var(--muted)}.section-label{display:block;color:var(--muted);font-size:10px;letter-spacing:.04em;margin-bottom:11px}.control-block{padding-bottom:18px;margin-bottom:17px;border-bottom:1px solid var(--line)}.small-note,.game-small{font-size:11px;color:var(--muted);line-height:1.65;margin-top:10px}.range-label,.game-range-label{display:flex;justify-content:space-between;gap:10px;align-items:center;font-size:12px;margin:12px 0}.range-label output,.game-range-label output{font-family:Consolas,monospace;color:var(--blue);font-weight:600}input[type=range]{width:100%;accent-color:var(--blue);cursor:pointer;height:20px;margin:0 0 6px}input[type=checkbox]{accent-color:var(--blue);width:16px;height:16px}.segmented,.option-grid{display:flex;gap:6px}.segmented button{flex:1}.option-grid{display:grid;grid-template-columns:repeat(3,1fr)}.option-grid button{font-size:11px;padding:9px 3px}.wide,.game-wide{width:100%;margin-top:8px}.observation{background:var(--pale);padding:16px;border-radius:8px;margin-bottom:20px}.observation h3,.connection h3{font-size:14px;margin-bottom:8px}.observation p,.connection p{font-size:12px}.connection .human-note{padding-top:10px;color:var(--muted);font-size:11px}.text-button{border:0;background:transparent;padding:4px 0;color:var(--blue);font-size:12px}.play-row{display:flex;gap:6px;margin:8px 0 15px}.play-row button{font-size:12px;flex:1;padding:9px 7px}.play-row select{border:1px solid var(--line);background:var(--paper);color:var(--ink);border-radius:7px;font-size:11px;width:58px}.phase-list{display:grid;grid-template-columns:repeat(4,1fr);gap:5px}.phase-list button{padding:7px 2px;font-size:10px}.phase-note{margin-top:15px;padding:12px;background:var(--panel);border-left:2px solid var(--blue);border-radius:0 7px 7px 0}.phase-note b{font-size:13px}.phase-note p{font-size:11px;color:var(--muted);margin-top:5px}.toggle-row{display:flex;gap:8px;align-items:center;font-size:12px}.feedback{padding:11px 0 0;font-size:11px;color:var(--muted);line-height:1.7}.mechanism-details{font-size:12px;color:var(--muted);line-height:1.7}.mechanism-details summary{cursor:pointer;color:var(--ink);padding:2px 0 8px}.mechanism-details p{margin:8px 0}.lesson-band{display:grid;grid-template-columns:1.05fr repeat(3,1fr);gap:25px;padding:24px 8px 16px}.lesson-lead h2{font-size:19px;font-weight:500;margin-top:11px}.lesson-band article{position:relative;padding-left:25px}.lesson-band article>span{position:absolute;left:0;top:3px;color:var(--muted);font-size:9px;font-family:Consolas,monospace}.lesson-band h3{font-size:13px;font-weight:600;margin-bottom:6px}.lesson-band p{font-size:11px;color:var(--muted);line-height:1.7}footer{display:flex;justify-content:space-between;align-items:center;border-top:1px solid var(--line);margin-top:10px;padding:14px 0;color:var(--muted);font-size:10px}footer i{margin:0 10px;opacity:.5}footer button{border:0;background:transparent;font-size:11px;color:var(--blue);padding:4px}dialog{max-width:650px;max-height:85vh;border:1px solid var(--line);border-radius:15px;background:var(--paper);color:var(--ink);padding:35px;box-shadow:0 20px 80px #10294733}dialog::backdrop{background:#10223880;backdrop-filter:blur(4px)}dialog h2{font-size:25px;margin:13px 0}dialog h3{font-size:15px;margin:20px 0 8px}dialog p,#sources{font-size:13px;color:var(--muted);line-height:1.8}dialog .dialog-close{position:absolute;right:12px;top:12px;border:0;background:transparent;font-size:22px}#sources a{display:block;margin:5px 0}.game-progress,.game-choices,.game-button-row{display:flex;gap:6px;flex-wrap:wrap}.game-progress button{flex:1;font-size:10px;padding:8px 4px;white-space:nowrap}.game-task{font-size:14px;line-height:1.7;margin:13px 0}.game-kicker{display:block;font-size:10px;letter-spacing:.04em;color:var(--muted);margin-bottom:6px}.game-current{background:var(--panel);padding:12px;margin:12px 0;border-radius:7px;font-size:12px;line-height:1.8}.game-current strong{color:var(--blue)}.game-choices button,.game-button-row button{font-size:11px;flex:1;padding:9px 7px}.game-feedback{background:var(--pale);border-radius:7px;padding:12px;font-size:12px;line-height:1.75;margin:14px 0}.game-feedback[data-tone=retry]{border-left:3px solid var(--blue)}.game-slots{display:grid;grid-template-columns:repeat(4,1fr);gap:5px;margin:12px 0}.game-slots button{font-size:10px;min-height:38px;padding:6px}.game-stats{display:flex;gap:12px;font-size:11px;color:var(--muted);margin:12px 0}.game-footer{margin-top:18px;padding-top:12px;border-top:1px solid var(--line);font-size:11px;color:var(--muted);line-height:1.7}.game-footer button{width:100%;margin-top:9px}
+*{box-sizing:border-box}body{margin:0;background:var(--bg);color:var(--ink);font-family:Inter,"Segoe UI","Microsoft YaHei",sans-serif;font-size:14px;-webkit-font-smoothing:antialiased}button,input,select{font:inherit}button,a,input,select,summary{-webkit-tap-highlight-color:transparent}button{cursor:pointer;border:1px solid var(--line);background:var(--paper);color:var(--ink);border-radius:7px;padding:9px 12px;transition:background .15s,border-color .15s}button:hover{background:var(--pale);border-color:var(--blue)}button:disabled{opacity:.45;cursor:default}button[aria-pressed=true]{color:var(--blue);background:var(--pale);border-color:var(--blue)}button:focus-visible,a:focus-visible,input:focus-visible,select:focus-visible,summary:focus-visible{outline:2px solid var(--blue);outline-offset:3px}button.primary,.game-primary{background:var(--blue);color:var(--paper);border-color:var(--blue)}button.primary:hover,.game-primary:hover{background:var(--blue-dark)}a{color:var(--blue)}[hidden]{display:none!important}h1,h2,h3,p{margin:0}p{line-height:1.7}.app{max-width:1740px;padding:0 32px;margin:auto}.masthead{height:86px;display:flex;align-items:center;gap:30px}.brand{text-decoration:none;color:var(--ink);display:flex;gap:12px;align-items:center;font-weight:700;font-size:17px;letter-spacing:.05em}.brand-mark{background:var(--blue);color:var(--paper);width:39px;height:39px;display:grid;place-items:center;border-radius:9px;font-size:22px}.brand small{font-size:9px;display:block;color:var(--muted);letter-spacing:.15em;margin-top:5px}.course-name{font-size:14px;border-left:1px solid var(--line);padding-left:24px}.course-name span{color:var(--muted);margin-left:14px}.header-tools{display:flex;gap:8px;margin-left:auto}.header-tools button{font-size:12px;padding:8px 12px;background:transparent}.chapter-nav{display:grid;grid-template-columns:repeat(4,1fr);gap:10px;margin-bottom:18px}.chapter-nav button{display:flex;align-items:center;text-align:left;gap:15px;padding:14px 20px;background:var(--paper);border-color:var(--line);border-radius:9px}.chapter-nav b{font-size:25px;font-weight:400;color:var(--muted)}.chapter-nav span{font-size:15px;font-weight:650}.chapter-nav small{display:block;color:var(--muted);font-weight:400;font-size:11px;margin-top:4px;letter-spacing:.06em}.chapter-nav i{font-style:normal;margin-left:auto;font-size:23px;color:var(--muted)}.chapter-nav button[aria-pressed=true]{background:var(--pale);border-color:var(--blue)}.chapter-nav button[aria-pressed=true] b,.chapter-nav button[aria-pressed=true] i{color:var(--blue)}.lab-layout{display:grid;grid-template-columns:minmax(0,1fr) 345px;gap:18px;align-items:stretch}.visual-card{background:var(--paper);border:1px solid var(--line);border-radius:12px;box-shadow:var(--shadow);min-width:0;overflow:hidden;display:flex;flex-direction:column}.figure-heading{display:flex;justify-content:space-between;gap:12px;padding:25px 28px 6px;min-height:132px}.eyebrow{font-size:10px;font-weight:650;letter-spacing:.12em;color:var(--muted);display:flex;gap:8px;align-items:center}.status-dot{width:6px;height:6px;display:inline-block;background:var(--blue);border-radius:50%}.figure-heading h1{font-size:28px;letter-spacing:-.04em;font-weight:650;margin:12px 0 7px}.figure-heading p{font-size:13px;color:var(--muted)}.figure-number{font-family:Consolas,monospace;color:var(--muted);font-size:11px;white-space:nowrap}.stage-wrap{position:relative;flex:1;min-height:355px;background:radial-gradient(ellipse at 48% 55%,var(--pale),transparent 65%)}.stage{width:100%;height:100%;min-height:355px;position:absolute;inset:0;touch-action:pan-y;cursor:grab;outline:none}.stage:active{cursor:grabbing}.stage:focus-visible{box-shadow:inset 0 0 0 2px var(--blue)}.stage canvas,.stage svg{display:block;width:100%;height:100%}.scene-tag{position:absolute;left:27px;top:12px;font-size:11px;letter-spacing:.04em;color:var(--muted);pointer-events:none}.view-tools{position:absolute;bottom:12px;left:50%;transform:translateX(-50%);display:flex;align-items:center;gap:3px;padding:5px;border:1px solid var(--line);border-radius:8px;background:var(--paper);box-shadow:var(--shadow);white-space:nowrap}.view-tools button{border-color:transparent;font-size:11px;padding:6px 9px}.view-tools span{height:14px;border-left:1px solid var(--line);margin:0 4px}.fallback-note{position:absolute;top:38px;left:27px;font-size:11px;color:var(--muted);right:15px}.figure-bottom{display:flex;justify-content:space-between;gap:12px;padding:12px 27px;font-size:11px;color:var(--muted);border-bottom:1px solid var(--line)}.figure-bottom strong{color:var(--ink);font-weight:500;font-family:Consolas,"Microsoft YaHei",monospace}.metrics{display:grid;grid-template-columns:repeat(3,1fr);padding:17px 27px 21px;gap:20px}.metrics>div+div{border-left:1px solid var(--line);padding-left:20px}.metrics span{display:block;color:var(--muted);font-size:10px;margin-bottom:8px}.metrics strong{font-size:17px;font-weight:600;display:block}.control-panel{background:var(--paper);border:1px solid var(--line);border-radius:12px;padding:22px 22px 16px;height:615px;overflow:auto;scrollbar-width:thin;scrollbar-color:var(--line) transparent}.panel-heading{display:flex;justify-content:space-between;align-items:center;padding-bottom:18px;border-bottom:1px solid var(--line);margin-bottom:18px}.panel-heading h2{font-size:18px;margin-top:7px;font-weight:600}.panel-heading button{border:0;background:transparent;font-size:11px;padding:6px;color:var(--muted)}.section-label{display:block;color:var(--muted);font-size:10px;letter-spacing:.04em;margin-bottom:11px}.control-block{padding-bottom:18px;margin-bottom:17px;border-bottom:1px solid var(--line)}.small-note,.game-small{font-size:11px;color:var(--muted);line-height:1.65;margin-top:10px}.range-label,.game-range-label{display:flex;justify-content:space-between;gap:10px;align-items:center;font-size:12px;margin:12px 0}.range-label output,.game-range-label output{font-family:Consolas,monospace;color:var(--blue);font-weight:600}input[type=range]{width:100%;accent-color:var(--blue);cursor:pointer;height:20px;margin:0 0 6px}input[type=checkbox]{accent-color:var(--blue);width:16px;height:16px}.segmented,.option-grid{display:flex;gap:6px}.segmented button{flex:1}.option-grid{display:grid;grid-template-columns:repeat(3,1fr)}.option-grid button{font-size:11px;padding:9px 3px}.wide,.game-wide{width:100%;margin-top:8px}.observation{background:var(--pale);padding:16px;border-radius:8px;margin-bottom:20px}.observation h3,.connection h3{font-size:14px;margin-bottom:8px}.observation p,.connection p{font-size:12px}.connection .human-note{padding-top:10px;color:var(--muted);font-size:11px}.text-button{border:0;background:transparent;padding:4px 0;color:var(--blue);font-size:12px}.play-row{display:flex;gap:6px;margin:8px 0 15px}.play-row button{font-size:12px;flex:1;padding:9px 7px}.play-row select{border:1px solid var(--line);background:var(--paper);color:var(--ink);border-radius:7px;font-size:11px;width:58px}.phase-list{display:grid;grid-template-columns:repeat(4,1fr);gap:5px}.phase-list button{padding:7px 2px;font-size:10px}.phase-note{margin-top:15px;padding:12px;background:var(--panel);border-left:2px solid var(--blue);border-radius:0 7px 7px 0}.phase-note b{font-size:13px}.phase-note p{font-size:11px;color:var(--muted);margin-top:5px}.toggle-row{display:flex;gap:8px;align-items:center;font-size:12px}.feedback{padding:11px 0 0;font-size:11px;color:var(--muted);line-height:1.7}.mechanism-details{font-size:12px;color:var(--muted);line-height:1.7}.mechanism-details summary{cursor:pointer;color:var(--ink);padding:2px 0 8px}.mechanism-details p{margin:8px 0}.lesson-band{display:grid;grid-template-columns:1.05fr repeat(3,1fr);gap:25px;padding:24px 8px 16px}.lesson-lead h2{font-size:19px;font-weight:500;margin-top:11px}.lesson-band article{position:relative;padding-left:25px}.lesson-band article>span{position:absolute;left:0;top:3px;color:var(--muted);font-size:9px;font-family:Consolas,monospace}.lesson-band h3{font-size:13px;font-weight:600;margin-bottom:6px}.lesson-band p{font-size:11px;color:var(--muted);line-height:1.7}footer{display:flex;justify-content:space-between;align-items:center;border-top:1px solid var(--line);margin-top:10px;padding:14px 0;color:var(--muted);font-size:10px}footer i{margin:0 10px;opacity:.5}footer button{border:0;background:transparent;font-size:11px;color:var(--blue);padding:4px}dialog{max-width:650px;max-height:85vh;border:1px solid var(--line);border-radius:15px;background:var(--paper);color:var(--ink);padding:35px;box-shadow:0 20px 80px #10294733}dialog::backdrop{background:#10223880;backdrop-filter:blur(4px)}dialog h2{font-size:25px;margin:13px 0}dialog h3{font-size:15px;margin:20px 0 8px}dialog p,#sources{font-size:13px;color:var(--muted);line-height:1.8}dialog .dialog-close{position:absolute;right:12px;top:12px;border:0;background:transparent;font-size:22px}#sources a{display:block;margin:5px 0}.game-progress,.game-choices,.game-button-row{display:flex;gap:6px;flex-wrap:wrap}.game-progress button{flex:1;font-size:10px;padding:8px 4px;white-space:nowrap}.game-task{font-size:14px;line-height:1.7;margin:13px 0}.game-kicker{display:block;font-size:10px;letter-spacing:.04em;color:var(--muted);margin-bottom:6px}.game-current{background:var(--panel);padding:12px;margin:12px 0;border-radius:7px;font-size:12px;line-height:1.8}.game-current strong{color:var(--blue)}.game-choices button,.game-button-row button{font-size:11px;flex:1;padding:9px 7px}.game-feedback{background:var(--pale);border-radius:7px;padding:12px;font-size:12px;line-height:1.75;margin:14px 0}.game-feedback[data-tone=retry]{border-left:3px solid var(--blue)}.game-slots{display:grid;grid-template-columns:repeat(4,1fr);gap:5px;margin:12px 0}.game-slots button{font-size:10px;min-height:38px;padding:6px}.game-stats{display:flex;gap:12px;font-size:11px;color:var(--muted);margin:12px 0}.game-footer{margin-top:18px;padding-top:12px;border-top:1px solid var(--line);font-size:11px;color:var(--muted);line-height:1.7}.game-footer button{width:100%;margin-top:9px}
 @media(min-width:1550px){.lab-layout{grid-template-columns:minmax(0,1fr) 385px}.control-panel{height:660px}.stage-wrap,.stage{min-height:400px}.figure-heading{padding-top:28px}}
 @media(max-width:1100px){.app{padding:0 18px}.masthead{gap:15px;height:74px}.course-name{display:none}.lab-layout{grid-template-columns:minmax(0,1fr) 315px;gap:12px}.control-panel{padding:18px;height:610px}.figure-heading{padding:22px 20px 6px}.figure-heading h1{font-size:24px}.figure-heading p{font-size:12px}.figure-bottom{padding:12px 20px;flex-direction:column;gap:6px}.metrics{padding:16px 20px;gap:10px}.metrics strong{font-size:14px}.metrics>div+div{padding-left:12px}.chapter-nav button{padding:12px 15px;gap:10px}.chapter-nav span{font-size:13px}.chapter-nav small{font-size:10px}.lesson-band{gap:17px}.lesson-lead h2{font-size:17px}}
 @media(max-width:760px){.app{padding:0 12px}.masthead{height:70px}.brand{font-size:14px;gap:8px}.brand-mark{width:33px;height:33px;font-size:18px}.brand small{font-size:7px}.header-tools{gap:3px}.header-tools button{font-size:10px;padding:7px}.header-tools #fullscreen{display:none}.chapter-nav{gap:6px;margin-bottom:12px}.chapter-nav button{padding:10px 7px;gap:6px;align-items:flex-start;border-radius:7px}.chapter-nav b{font-size:16px}.chapter-nav span{font-size:11px;line-height:1.5}.chapter-nav small{font-size:8px;margin-top:3px;letter-spacing:0}.chapter-nav i{display:none}.lab-layout{grid-template-columns:1fr}.figure-heading{min-height:124px;padding:20px 18px 6px}.figure-heading h1{font-size:23px}.figure-heading p{font-size:11px}.figure-number{font-size:9px}.stage-wrap,.stage{min-height:320px}.scene-tag{left:18px;top:6px;font-size:10px}.view-tools{bottom:10px;gap:1px}.view-tools button{font-size:10px;padding:6px 7px}.figure-bottom{font-size:10px;padding:12px 18px}.metrics{padding:15px 18px;gap:10px}.metrics strong{font-size:13px}.metrics span{font-size:9px}.control-panel{height:auto;overflow:visible;padding:20px}.panel-heading{margin-bottom:16px}.lesson-band{grid-template-columns:1fr;padding:20px 8px;gap:18px}.lesson-lead{padding-bottom:4px}.lesson-lead h2{margin-top:8px;font-size:20px}.lesson-band article{padding-left:30px}.lesson-band p{font-size:12px}.lesson-band h3{font-size:14px}footer{font-size:9px;gap:10px}footer span{max-width:65%;line-height:1.7}dialog{margin:20px 14px;max-width:calc(100% - 28px);padding:28px 22px}.fallback-note{left:18px;font-size:9px}}
@@ -704,10 +704,27 @@ html[data-theme="dark"] .c2-panel :is(.game-primary, button.primary) { backgroun
 .c2-panel .c61-explode { display:block; }
 .c2-panel .c61-explode .range-label { margin-top:0; }
 .c2-panel .c61-explode input { width:100%; }
+
+/* 拌砂浆工位：投料行、拌匀程度条 */
+.c2-panel .feed-rows { display:grid; gap:6px; }
+.c2-panel .feed-row { display:grid; grid-template-columns:14px 1fr 32px 64px 32px; align-items:center; gap:8px; padding:4px 6px 4px 10px; border:1px solid var(--hair); border-radius:12px; background:var(--course-surface); }
+.c2-panel .feed-row b { font-size:14px; }
+.c2-panel .feed-row output { text-align:center; font-size:15px; }
+.c2-panel .feed-row button { min-height:30px !important; height:30px; padding:0 !important; font-size:16px !important; font-weight:700; }
+.c2-panel .feed-swatch { width:14px; height:14px; border-radius:4px; box-shadow:inset 0 0 0 1px rgba(0,0,0,.12); }
+.c2-panel .feed-swatch.sand { background:#cbbd98; }
+.c2-panel .feed-swatch.cement { background:#9ba2a7; }
+.c2-panel .feed-swatch.water { background:#7fa9da; }
+.c2-panel #mixerRun { margin-top:0; }
+.c2-panel .mix-meter { display:grid; grid-template-columns:auto 1fr 44px; align-items:center; gap:10px; margin-top:10px; font-size:13px; }
+.c2-panel .mix-meter .meter { height:8px; border-radius:4px; background:var(--hair); overflow:hidden; }
+.c2-panel .mix-meter .meter i { display:block; height:100%; width:0; border-radius:4px; background:linear-gradient(90deg, #8fb4e6, var(--course-accent)); transition:width .2s; }
+.c2-panel .mix-meter output { text-align:right; }
+.c2-panel #mortarControls .play-row button:disabled { opacity:.45; }
 </style><script data-course-navigation src="../../../../../shared/navigation.js"></script><link data-course-theme rel="stylesheet" href="../../../../../shared/styles/theme.css"><script data-course-theme src="../../../../../shared/theme.js"></script></head>
 <body class="iso" data-theme="light"><div class="app">
 <header class="masthead"><a class="brand" href="../../../../../README.md"><span class="brand-mark">筑</span><span>智能建造实验室<small>CONSTRUCTION LAB / 06.01</small></span></a><div class="course-name">砌筑工程<span>从工艺到机器人</span></div><div class="header-tools"><button id="theme" aria-label="切换深浅主题">◐ 深色</button><button id="fullscreen">⛶ 全屏</button><button id="help">使用说明</button></div></header>
-<nav class="chapter-nav" aria-label="学习阶段"><button data-tab="manual" aria-pressed="true"><b>01</b><span>先亲手砌一砌<small>认砖 · 组砌 · 错缝</small></span><i>→</i></button><button data-tab="issues" aria-pressed="false"><b>02</b><span>发现人工难点<small>灰缝 · 基准 · 连续作业</small></span><i>→</i></button><button data-tab="robot" aria-pressed="false"><b>03</b><span>再让机器人介入<small>定位 · 取放 · 反馈</small></span><i>↗</i></button></nav>
+<nav class="chapter-nav" aria-label="学习阶段"><button data-tab="manual" aria-pressed="true"><b>01</b><span>先亲手砌一砌<small>认砖 · 组砌 · 错缝</small></span><i>→</i></button><button data-tab="mortar" aria-pressed="false"><b>02</b><span>拌一筒砂浆<small>投料 · 搅拌 · 送料</small></span><i>→</i></button><button data-tab="issues" aria-pressed="false"><b>03</b><span>发现人工难点<small>灰缝 · 基准 · 连续作业</small></span><i>→</i></button><button data-tab="robot" aria-pressed="false"><b>04</b><span>再让机器人介入<small>定位 · 取放 · 反馈</small></span><i>↗</i></button></nav>
 <main class="lab-layout"><section class="visual-card iso-plate"><div class="figure-heading"><div><div class="eyebrow"><span class="status-dot"></span><span id="eyebrow">MASONRY / LEARN BY BUILDING</span></div><h1 id="title">砖怎样摆，才是一面墙？</h1><p id="subtitle">转一转砖，拼一皮墙，再让上下皮接缝错开。</p></div><span class="figure-number" id="figureNumber">FIG. 01</span></div>
 <div class="stage-wrap"><div id="stage" class="stage" tabindex="0" role="group" aria-label="三维砌筑工作台。拖动旋转，滚轮缩放，方向键旋转。"></div><div class="scene-tag" id="sceneTag">人工砌筑试排台</div><div class="view-tools" aria-label="观察视角"><button data-view="iso" aria-pressed="true">立体</button><button data-view="top" aria-pressed="false">俯视</button><button data-view="front" aria-pressed="false">正视</button><button data-view="detail" aria-pressed="false">近看</button><span></span><button id="zoomOut" aria-label="缩小">−</button><button id="zoomIn" aria-label="放大">＋</button><button id="home" aria-label="复位视角">↺</button></div><div id="fallbackNotice" class="fallback-note" hidden>三维加速不可用，已切换实体投影画面；仍可完成操作。</div></div>
 <div class="figure-bottom"><span id="gestureHint">拖动旋转 · 滚轮缩放 · 点视角观察墙厚</span><strong id="liveReadout" data-readout>标准砖 240 × 115 × 53 mm</strong></div>
@@ -715,6 +732,7 @@ html[data-theme="dark"] .c2-panel :is(.game-primary, button.primary) { backgroun
 </section>
 <aside class="control-panel"><div class="panel-heading"><div><span class="eyebrow" id="panelEyebrow">BUILD & DISCOVER</span><h2 id="panelTitle">人工砌筑挑战</h2></div><button id="reset">↺ 重来</button></div>
 <section id="manualControls" data-panel="manual" aria-label="人工砌筑小游戏"></section>
+<section id="mortarControls" data-panel="mortar" aria-label="砂浆搅拌与送料" hidden><div class="control-block mortar-feed"><div class="section-label">投料</div><div class="feed-rows"><div class="feed-row"><span class="feed-swatch sand"></span><b>砂</b><button data-mortar-add="sand" data-delta="-1" aria-label="少加一份砂">−</button><output id="feed-sand">0 份</output><button data-mortar-add="sand" data-delta="1" aria-label="多加一份砂">＋</button></div><div class="feed-row"><span class="feed-swatch cement"></span><b>水泥</b><button data-mortar-add="cement" data-delta="-1" aria-label="少加一份水泥">−</button><output id="feed-cement">0 份</output><button data-mortar-add="cement" data-delta="1" aria-label="多加一份水泥">＋</button></div><div class="feed-row"><span class="feed-swatch water"></span><b>水</b><button data-mortar-add="water" data-delta="-1" aria-label="少加一份水">−</button><output id="feed-water">0 份</output><button data-mortar-add="water" data-delta="1" aria-label="多加一份水">＋</button></div></div><p class="small-note" id="recipeNote">本页示例：砂 4 份 · 水泥 1 份 · 水 1 份（教学设定，不是施工配合比）</p></div><div class="control-block mortar-mix"><div class="section-label">搅拌</div><button class="primary wide" id="mixerRun" aria-pressed="false">▶ 开机搅拌</button><div class="mix-meter"><span>拌匀程度</span><div class="meter"><i id="mixBar"></i></div><output id="mixValue">0%</output></div><p class="small-note" id="mixState">滚筒里还没有料。</p></div><div class="control-block mortar-out"><div class="section-label">出料与送料</div><label class="range-label" for="drumTilt"><span>摇手轮，倾翻滚筒</span><output id="drumTiltValue">0° · 搅拌位</output></label><input id="drumTilt" type="range" min="0" max="90" step="1" value="0"><div class="play-row"><button id="cartBack" disabled>← 推回出料位</button><button id="cartGo">推到砌筑位 →</button></div><p class="small-note" id="cartLoadValue">灰车 0 / 6 份 · 灰槽 0 份</p></div></section>
 <section id="issueControls" data-panel="issues" hidden><div class="control-block"><div class="section-label">选一个问题，亲手改变它</div><div class="option-grid" id="issueChoices"><button data-issue="joints" aria-pressed="true">上下皮通缝</button><button data-issue="mortar" aria-pressed="false">灰缝不均</button><button data-issue="datum" aria-pressed="false">基准偏移</button></div></div>
 <div class="control-block"><label for="issueAmount" class="range-label"><span id="issueSliderLabel">上皮错开</span><output id="issueAmountValue">0 mm</output></label><input id="issueAmount" type="range" min="0" max="62.5" step="0.5" value="0"><p class="small-note" id="issueHint"></p><button class="primary wide" id="fixIssue">按基准修正</button></div>
 <div class="observation"><span class="section-label">现场会发生什么</span><h3 id="issueTitle"></h3><p id="issueText"></p></div>
@@ -1606,6 +1624,93 @@ function issueScene(type,amount){
 }
 
 return {ISSUES,issueScene};})();
+const MortarModel=(()=>{
+/** 砂浆搅拌与送料的教学模型（纯数据，无 DOM）。
+ * 用“份”表示投料量，本页示例配料为 砂 4 · 水泥 1 · 水 1，只是教学设定，不是任何砂浆的施工配合比。
+ * 拌匀程度、稀稠只分档显示，不给强度、稠度等实测数值。
+ */
+const RECIPE = Object.freeze({sand: 4, cement: 1, water: 1});
+const LIMITS = Object.freeze({sand: 6, cement: 2, water: 3});
+const MIX_SECONDS = 6;        // 教学设定：投料后连续搅拌 6 s 视为拌匀
+const TILT_POUR = 60;         // 滚筒倾翻到 60° 以上开始出料
+const CART_CAPACITY = 6;      // 灰车一次能装的“份”数
+
+function initialMortar() {
+  return {sand: 0, cement: 0, water: 0, mixed: 0, running: false, tilt: 0,
+    cart: {pos: 0, load: 0, quality: '', target: 0}, tray: {load: 0, quality: ''}, poured: [], delivered: []};
+}
+
+const total = s => s.sand + s.cement + s.water;
+const dry = s => s.sand + s.cement;
+
+/** 稀稠只看水和干料的比例：本页示例为 1 份水配 5 份干料。 */
+function consistency(s) {
+  if (!dry(s) && !s.water) return 'empty';
+  if (!dry(s)) return 'water';
+  const r = s.water / dry(s) * 5;
+  return r < 0.75 ? 'dry' : r > 1.3 ? 'wet' : 'ok';
+}
+const CONSISTENCY_TEXT = {empty: '空筒', water: '只有水', dry: '太干', wet: '太稀', ok: '合适'};
+
+function recipeMatched(s) { return s.sand === RECIPE.sand && s.cement === RECIPE.cement && s.water === RECIPE.water; }
+function uniformity(s) { return total(s) ? Math.min(1, s.mixed / MIX_SECONDS) : 0; }
+
+/** 这一筒料现在倒出来是什么质量。 */
+function batchQuality(s) {
+  const c = consistency(s);
+  if (c === 'empty') return '';
+  if (uniformity(s) < 1) return 'unmixed';
+  return c === 'ok' ? 'good' : c;
+}
+const QUALITY_TEXT = {'': '—', good: '拌匀、稀稠合适', unmixed: '没拌匀', dry: '太干', wet: '太稀', water: '只有水'};
+
+/** 投料：拌好的料里再加东西，相当于又要重新拌一阵。 */
+function add(s, key, delta) {
+  if (s.tilt > 5) return {...s, note: '先把滚筒摇回搅拌位置，再投料。'};
+  const next = Math.max(0, Math.min(LIMITS[key], s[key] + delta));
+  if (next === s[key]) return {...s, note: delta > 0 ? '这一样已经加到本页上限。' : ''};
+  const before = total(s), after = before - s[key] + next;
+  // 新加入的料没拌过：已拌时间按旧料所占比例折算
+  const mixed = delta > 0 && after ? s.mixed * before / after * 0.5 : s.mixed;
+  return {...s, [key]: next, mixed, note: ''};
+}
+
+/** 时间推进 dt 秒：转动时累计拌和；倾翻时出料到灰车；灰车在两个位置间移动。 */
+function step(s, dt) {
+  let n = {...s, cart: {...s.cart}, tray: {...s.tray}};
+  if (n.running && total(n) && n.tilt <= TILT_POUR) n.mixed = Math.min(MIX_SECONDS * 1.5, n.mixed + dt);
+  // 出料：滚筒倾翻且灰车停在出料口下方
+  if (n.tilt > TILT_POUR && total(n) && n.cart.pos < 0.02 && n.cart.load < CART_CAPACITY) {
+    const rate = 2.4 * dt * (n.running ? 1 : 0.35), t = total(n), take = Math.min(rate, t, CART_CAPACITY - n.cart.load);
+    const q = batchQuality(n);
+    n.cart.load += take;
+    n.cart.quality = n.cart.quality && n.cart.quality !== q ? worse(n.cart.quality, q) : q;
+    for (const k of ['sand', 'cement', 'water']) n[k] = Math.max(0, n[k] - take * n[k] / t);
+    if (total(n) < 0.05) { n.sand = n.cement = n.water = 0; n.mixed = 0; }
+    if (!n.poured.includes(q)) n.poured = [...n.poured, q];
+  }
+  // 灰车移动（0 = 出料口下，1 = 砌筑位）
+  const goal = n.cart.target, d = goal - n.cart.pos;
+  if (Math.abs(d) > 1e-3) n.cart.pos = Math.abs(d) < dt * 0.45 ? goal : n.cart.pos + Math.sign(d) * dt * 0.45;
+  // 到砌筑位后把料倒进灰槽
+  if (n.cart.pos > 0.98 && n.cart.load > 0) {
+    const take = Math.min(n.cart.load, 3 * dt);
+    n.tray.quality = n.tray.load > 0.05 && n.tray.quality !== n.cart.quality ? worse(n.tray.quality, n.cart.quality) : n.cart.quality;
+    n.tray.load = Math.min(8, n.tray.load + take); n.cart.load -= take;
+    if (n.cart.load < 0.05) {
+      n.cart.load = 0;
+      if (!n.delivered.includes(n.tray.quality)) n.delivered = [...n.delivered, n.tray.quality];
+      n.cart.quality = '';
+    }
+  }
+  return n;
+}
+function worse(a, b) { const order = ['good', 'dry', 'wet', 'unmixed', 'water']; return order.indexOf(a) > order.indexOf(b) ? a : b; }
+
+/** 有多少“份”料还在滚筒里（显示用，一位小数）。 */
+function drumLoad(s) { return Math.round(total(s) * 10) / 10; }
+
+return {CART_CAPACITY,CONSISTENCY_TEXT,LIMITS,MIX_SECONDS,QUALITY_TEXT,RECIPE,TILT_POUR,add,batchQuality,consistency,drumLoad,initialMortar,recipeMatched,step,uniformity};})();
 /* Anatomy kit geometry fallback. Physical cuboids retain thickness, shading and model state. */
 class AnatomyFallback {
  constructor(host,{onPick}={}){this.host=host;host.dataset.fallback='true';this.onPick=onPick;this.mode='manual';this.platform='fixed';this.view='iso';this.zoom=1;this.data={bricks:[],width:240};this.explode=0;this.dark=false;this.parts=0;this.host.addEventListener('click',e=>{const n=e.target.closest('[data-slot]');if(n)this.onPick?.(n.dataset.slot);});}
@@ -1838,12 +1943,14 @@ class MasonryScene {
   updateRobot(state){this.applyRobotPose(state);this.draw();}
   setPlatformQuiet(p){this.platform=p==='mobile'?'mobile':'fixed';this.mobileParts.visible=this.platform==='mobile';this.fixedParts.visible=this.platform==='fixed';}
   draw(){if(!this.renderer||!this.camera)return;const rect=this.host.getBoundingClientRect();if(!rect.width||!rect.height)return;
-    const aspect=rect.width/rect.height,robot=this.mode==='robot';this.floor.position.z=robot?(this.platform==='mobile'?-130:-86):-72;
-    let box=(robot?this.robotBounds:this.manualBounds)?.clone(),points=robot?this.robotFramePoints:this.manualFramePoints;
+    const aspect=rect.width/rect.height,robot=this.mode==='robot',mortar=this.mode==='mortar';this.floor.position.z=robot?(this.platform==='mobile'?-130:-86):mortar?-86:-72;
+    let box=(mortar?this.mortarBounds:robot?this.robotBounds:this.manualBounds)?.clone(),points=mortar?this.mortarFramePoints:robot?this.robotFramePoints:this.manualFramePoints;
     if(!box||box.isEmpty())box=new THREE.Box3(new THREE.Vector3(-500,-300,-72),new THREE.Vector3(500,300,150));
     if(robot)box.min.z=this.platform==='mobile'?-130:-86;
     if(this.view==='detail'){
-      if(robot){const p=this.robotState?.tool||{x:302.5,y:110,z:136};box=new THREE.Box3(new THREE.Vector3(p.x-225,p.y-200,Math.min(p.z,this.robotState?.brick?.z??p.z)-35),new THREE.Vector3(p.x+225,p.y+210,p.z+210));points=null;}
+      // 砂浆工位近看：滚筒开口与出料位的灰车
+      if(mortar){box=new THREE.Box3(new THREE.Vector3(-1150,-450,100),new THREE.Vector3(-150,450,1200));points=null;}
+      else if(robot){const p=this.robotState?.tool||{x:302.5,y:110,z:136};box=new THREE.Box3(new THREE.Vector3(p.x-225,p.y-200,Math.min(p.z,this.robotState?.brick?.z??p.z)-35),new THREE.Vector3(p.x+225,p.y+210,p.z+210));points=null;}
       else{const content=this.manualRoot.getObjectByName('wall-content');if(content){box=this.boundsOf(content);points=this.pointsOf(content);}}
     }
     const center=box.getCenter(new THREE.Vector3()),right=new THREE.Vector3(-Math.sin(this.yaw),Math.cos(this.yaw),0),up=new THREE.Vector3(-Math.cos(this.yaw)*Math.sin(this.pitch),-Math.sin(this.yaw)*Math.sin(this.pitch),Math.cos(this.pitch));
@@ -1860,6 +1967,206 @@ class MasonryScene {
   dispose(){this.observer.disconnect();this.renderer.dispose();for(const geo of this.geometries.values())geo.dispose();for(const mat of Object.values(this.mat))mat.dispose();if(this.directionMaterial){this.directionMaterial.map.dispose();this.directionMaterial.dispose();}this.edgeMat.dispose();this.renderer.domElement.remove();}
 }
 window.MasonryScene=MasonryScene;
+
+/* 砂浆机械工位：在同一个三维教学台上加一台倾翻式滚筒砂浆搅拌机、一辆灰车和砌筑位的灰槽。
+ * 沿用 MasonryScene 的材质、灯光、毫米尺度和取景方式；只在 mode === 'mortar' 时显示。
+ * 机器外形是教学用的共性结构，不对应任何品牌型号。
+ */
+(() => {
+  const P = MasonryScene.prototype;
+  const MIXER = {x: -700, pivotZ: 780};          // 滚筒倾翻轴
+  const CART_X = [-420, 520];                     // 灰车：出料口下 → 砌筑位
+  const lerp = (a, b, t) => a + (b - a) * t;
+
+  const baseSetMode = P.setMode, baseSetTheme = P.setTheme;
+  P.setMode = function (mode) {
+    if (mode !== 'mortar') { if (this.mortarRoot) this.mortarRoot.visible = false; return baseSetMode.call(this, mode); }
+    this.ensureMortar();
+    const changed = this.mode !== 'mortar';
+    this.mode = 'mortar'; this.manualRoot.visible = false; this.robotRoot.visible = false; this.mortarRoot.visible = true;
+    if (changed) this.resetView(); else this.draw();
+  };
+  P.setTheme = function (dark) { baseSetTheme.call(this, dark); if (this.mortarMat) { this.mortarColors(); this.draw(); } };
+
+  P.mortarColors = function () {
+    const d = this.dark, m = this.mortarMat;
+    m.sand.color.setHex(d ? 0x8f8469 : 0xcbbd98);
+    m.cement.color.setHex(d ? 0x6f777e : 0x9ba2a7);
+    m.water.color.setHex(d ? 0x4f7fb8 : 0x7fa9da);
+    m.drum.color.setHex(d ? 0x7d91a6 : 0x9fb1c3);
+    this.mortarBase = {mix: new THREE.Color(d ? 0x5f6c78 : 0xa5adb3), sand: m.sand.color.clone(), cement: m.cement.color.clone(), water: m.water.color.clone()};
+    if (this.mortarState) this.updateMortar(this.mortarState, true);
+  };
+
+  P.ensureMortar = function () {
+    if (this.mortarRoot) return;
+    const std = (o = {}) => new THREE.MeshStandardMaterial({roughness: .8, metalness: 0, ...o});
+    this.mortarMat = {
+      sand: std({roughness: .95}), cement: std({roughness: .9}), water: std({roughness: .2, transparent: true, opacity: .8}),
+      drum: std({roughness: .45, metalness: .18, side: THREE.DoubleSide}),
+      batch: std({roughness: .7}), cartLoad: std({roughness: .7}), trayLoad: std({roughness: .7}), stream: std({roughness: .6}),
+      lamp: std({roughness: .4, emissive: 0x000000}),
+    };
+    // 新材质也登记到 this.mat，跟随 dispose
+    for (const k of Object.keys(this.mortarMat)) this.mat['m_' + k] = this.mortarMat[k];
+    const r = this.mortarRoot = this.group(this.scene, 'mortar-station');
+    r.visible = false;
+    const M = k => 'm_' + k;
+
+    /* 教学台面（与机器人工作台同一做法） */
+    this.box(3000, 1300, 32, 0, 0, -35, 'base', r, 'mortar-plate', 8); this.box(2988, 1288, 3, 0, 0, -3, 'hi', r, 'mortar-plate-top', .7);
+    for (const x of [-1440, 1440]) for (const y of [-590, 590]) this.bolt(x, y, 0, r, 6);
+    for (const x of [-1380, 1380]) for (const y of [-540, 540]) { this.cyl(45, 16, x, y, -86, 'rubber', r); this.cyl(25, 35, x, y, -70, 'steel', r); }
+
+    /* 搅拌机：底架、轮子、支腿、拖杆 */
+    const mx = MIXER.x;
+    for (const y of [-400, 400]) this.box(900, 60, 70, mx, y, 330, 'mid', r, 'mixer-frame', 4);
+    for (const x of [mx - 420, mx - 120]) this.box(60, 860, 60, x, 0, 335, 'lo', r, 'mixer-crossbar', 3);
+    this.cyl(25, 1000, mx + 140, -500, 170, 'steel', r, 'axle', 'y');
+    for (const y of [-470, 470]) {
+      this.cyl(170, 70, mx + 140, y - 35, 170, 'rubber', r, 'mixer-wheel', 'y', 40);
+      this.cyl(80, 80, mx + 140, y - 40, 170, 'mid', r, 'mixer-hub', 'y', 24);
+      this.box(50, 50, 170, mx + 140, y > 0 ? 400 : -400, 170, 'lo', r, 'axle-bracket', 2);
+    }
+    for (const y of [-400, 400]) { this.box(60, 60, 330, mx - 400, y, 0, 'lo', r, 'stand-leg', 3); this.box(130, 110, 12, mx - 400, y, 0, 'mid', r, 'stand-foot', 3); }
+    this.box(340, 50, 50, mx - 610, 0, 345, 'lo', r, 'tow-bar', 3); this.cyl(36, 50, mx - 790, -25, 370, 'steel', r, 'tow-eye', 'y', 20);
+    /* 倾翻支架与手轮 */
+    for (const y of [-400, 400]) { this.box(80, 70, 430, mx, y, 400, 'mid', r, 'yoke-post', 4); this.cyl(55, 40, mx, y > 0 ? 435 : -475, MIXER.pivotZ, 'steel', r, 'trunnion', 'y', 28); }
+    this.handwheel = this.group(r, 'tilt-handwheel'); this.handwheel.position.set(mx, 520, MIXER.pivotZ);
+    const ring = new THREE.Mesh(this.geo('m-handwheel', () => new THREE.TorusGeometry(120, 10, 10, 40).rotateX(Math.PI / 2)), this.mat.steel); ring.castShadow = true; this.handwheel.add(ring);
+    for (let i = 0; i < 4; i++) { const s = this.box(8, 8, 240, 0, 0, -120, 'steel', this.handwheel, 'spoke', 0); s.rotation.y = i * Math.PI / 4; s.position.set(0, 0, 0); s.geometry = this.geo('m-spoke', () => new THREE.BoxGeometry(8, 8, 240)); }
+    this.cyl(30, 60, 0, -30, 0, 'lo', this.handwheel, 'handwheel-hub', 'y', 20);
+    this.cyl(9, 70, 0, 0, 120, 'lo', this.handwheel, 'handwheel-grip', 'y', 12);
+    /* 电机箱与开关 */
+    this.box(300, 240, 20, mx - 220, -530, 380, 'mid', r, 'motor-shelf', 3);
+    this.box(260, 200, 220, mx - 220, -540, 400, 'lo', r, 'motor-housing', 6);
+    for (let i = 0; i < 5; i++) this.box(200, 6, 4, mx - 220, -642, 450 + i * 32, 'mid', r, 'vent', 0);
+    this.box(90, 60, 130, mx + 300, -440, 430, 'mid', r, 'switch-box', 4);
+    this.lamp = this.cyl(16, 10, mx + 300, -475, 520, M('lamp'), r, 'run-lamp', 'y', 20);
+    this.cyl(22, 12, mx + 300, -478, 470, 'lo', r, 'switch', 'y', 20);
+
+    /* 倾翻组 → 旋转组（滚筒） */
+    this.tiltGroup = this.group(r, 'drum-tilt'); this.tiltGroup.position.set(mx, 0, MIXER.pivotZ);
+    this.box(80, 760, 70, 0, 0, -330, 'mid', this.tiltGroup, 'drum-cradle', 4);
+    this.cyl(70, 140, 0, 0, -400, 'lo', this.tiltGroup, 'drum-bearing', 'z', 28);
+    this.spinGroup = this.group(this.tiltGroup, 'drum-spin');
+    const profile = [[0, -330], [250, -330], [320, -240], [342, -70], [342, 40], [300, 200], [205, 330], [190, 372], [176, 372]].map(([x, y]) => new THREE.Vector2(x, y));
+    const drum = new THREE.Mesh(this.geo('m-drum', () => new THREE.LatheGeometry(profile, 48).rotateX(Math.PI / 2)), this.mortarMat.drum);
+    drum.castShadow = true; drum.receiveShadow = true; drum.name = 'mixing-drum'; this.spinGroup.add(drum); this.partCount++;
+    const gear = new THREE.Mesh(this.geo('m-gear', () => new THREE.TorusGeometry(350, 14, 8, 64)), this.mat.steel); gear.position.z = -20; gear.castShadow = true; this.spinGroup.add(gear);
+    for (let i = 0; i < 40; i++) { const g = this.group(this.spinGroup); g.rotation.z = i / 40 * Math.PI * 2; this.box(12, 14, 26, 362, 0, -33, 'steel', g, 'gear-tooth', 0); }
+    for (let i = 0; i < 6; i++) { const g = this.group(this.spinGroup); g.rotation.z = i / 6 * Math.PI * 2 + .2; this.box(14, 46, 150, 339, 0, 60, 'lo', g, 'drum-rib', 2); this.box(14, 46, 120, 332, 0, -220, 'lo', g, 'drum-rib', 2); }
+    const lip = new THREE.Mesh(this.geo('m-lip', () => new THREE.TorusGeometry(186, 10, 8, 48)), this.mat.steel); lip.position.z = 372; this.spinGroup.add(lip);
+    /* 滚筒里的料：砂、水泥、水分层，拌匀后变成同一种砂浆色 */
+    this.batch = this.group(this.tiltGroup, 'drum-batch');
+    this.batchLayers = ['sand', 'cement', 'water'].map(k => {
+      const q = new THREE.Mesh(this.geo('m-layer', () => new THREE.CylinderGeometry(240, 240, 1, 40).rotateX(Math.PI / 2).translate(0, 0, .5)), this.mortarMat[k].clone());
+      q.userData.kind = k; q.receiveShadow = true; this.batch.add(q); return q;
+    });
+    this.lumps = this.group(this.spinGroup, 'lumps');
+    for (let i = 0; i < 7; i++) { const g = this.group(this.lumps); g.rotation.z = i / 7 * Math.PI * 2; const q = this.box(70 + (i % 3) * 20, 50, 34, 120 + (i % 2) * 90, 0, 0, M('sand'), g, 'lump', 8); q.userData.lump = true; }
+    /* 出料流 */
+    this.stream = new THREE.Mesh(this.geo('m-stream', () => new THREE.CylinderGeometry(30, 22, 1, 16).rotateX(Math.PI / 2).translate(0, 0, -.5)), this.mortarMat.stream);
+    this.stream.visible = false; r.add(this.stream);
+
+    /* 灰车 */
+    this.cart = this.group(r, 'mortar-cart');
+    const c = this.cart;
+    this.box(460, 440, 20, 0, 0, 200, 'mid', c, 'cart-tub-floor', 3);
+    for (const y of [-220, 220]) this.box(480, 18, 180, 0, y, 200, 'mid', c, 'cart-tub-side', 2);
+    for (const x of [-235, 235]) this.box(18, 440, 180, x, 0, 200, 'mid', c, 'cart-tub-end', 2);
+    for (const y of [-225, 225]) this.box(490, 26, 12, 0, y, 380, 'hi', c, 'cart-rim', 2);
+    this.box(60, 560, 40, 30, 0, 160, 'lo', c, 'cart-axle-beam', 3);
+    for (const y of [-290, 290]) { this.cyl(120, 50, 30, y - 25, 120, 'rubber', c, 'cart-wheel', 'y', 32); this.cyl(48, 56, 30, y - 28, 120, 'mid', c, 'cart-hub', 'y', 20); }
+    for (const y of [-180, 180]) { this.box(30, 30, 200, -200, y, 0, 'lo', c, 'cart-leg', 2); this.box(330, 30, 30, 390, y, 330, 'lo', c, 'cart-handle', 2); }
+    this.cyl(18, 420, 560, -210, 345, 'rubber', c, 'cart-grip', 'y', 16);
+    this.cartLoad = this.box(440, 400, 1, 0, 0, 220, M('cartLoad'), c, 'cart-load', 0);
+
+    /* 砌筑位：两皮墙、灰槽、备砖、铭牌 */
+    const wy = 330, wall = [];
+    for (const x of [760, 1010, 1260]) wall.push({x, z: 10, w: 240});
+    for (const [x, w] of [[760, 115], [885, 240], [1135, 240], [1385, 115]]) wall.push({x, z: 73, w});
+    for (const z of [0, 63]) this.box(740, 115, 10, 1130, wy, z, 'mortar', r, 'wall-bed', 0);
+    for (const b of wall) this.box(b.w, 115, 53, b.x + b.w / 2, wy, b.z, 'brick', r, 'wall-brick', 1.1);
+    const tx = 1060, ty = -110;
+    this.box(440, 280, 8, tx, ty, 0, 'lo', r, 'mortar-trough');
+    for (const y of [ty - 136, ty + 136]) this.box(440, 8, 120, tx, y, 8, 'mid', r, 'trough-side', 1);
+    for (const x of [tx - 216, tx + 216]) this.box(8, 264, 120, x, ty, 8, 'mid', r, 'trough-end', 1);
+    this.trayLoad = this.box(424, 264, 1, tx, ty, 8, M('trayLoad'), r, 'trough-load', 0);
+    this.box(100, 55, 3, tx + 120, ty + 40, 132, 'steel', r, 'trowel'); this.box(14, 55, 17, tx + 182, ty + 40, 128, 'lo', r, 'trowel-handle', 3);
+    for (let i = 0; i < 4; i++) this.box(240, 115, 53, 1340, -470 + (i % 2) * 125, Math.floor(i / 2) * 53, 'brick', r, 'spare-brick');
+    const label = (text, x, y, w) => {
+      const cv = document.createElement('canvas'); cv.width = 640; cv.height = 104; const g = cv.getContext('2d');
+      g.fillStyle = '#e2e7ed'; g.fillRect(0, 0, 640, 104); g.fillStyle = '#30475e'; g.font = '600 51px sans-serif'; g.textAlign = 'center'; g.textBaseline = 'middle'; g.fillText(text, 320, 52);
+      const tex = new THREE.CanvasTexture(cv); tex.colorSpace = THREE.SRGBColorSpace;
+      const mat = new THREE.MeshBasicMaterial({map: tex, polygonOffset: true, polygonOffsetFactor: -1});
+      (this.mortarLabels ||= []).push(mat);
+      this.box(w + 4, 30, 1.5, x, y, 0, 'hi', r, 'label-plate', 1);
+      const face = new THREE.Mesh(new THREE.PlaneGeometry(w, w * 104 / 640), mat); face.position.set(x, y, 1.6); r.add(face);
+    };
+    label('出料位', CART_X[0], -560, 160); label('砌筑位', CART_X[1] + 520, -560, 160);
+    for (let i = 0; i <= 18; i++) this.box(i % 6 === 0 ? 3 : 1.5, i % 6 === 0 ? 16 : 9, .5, lerp(CART_X[0], CART_X[1] + 520, i / 18), -600, 0, 'lo', r, 'route-tick', 0);
+    this.box(CART_X[1] + 520 - CART_X[0], 3, .5, (CART_X[0] + CART_X[1] + 520) / 2, -600, 0, 'lo', r, 'route-line', 0);
+
+    this.mortarColors();
+    // 取景：滚筒倾翻全程 + 灰车两个停位，事先算好，动画中不再改变取景
+    const pts = new Map();
+    for (const [tilt, pos] of [[0, 0], [1, 0], [0, 1], [.5, .5]]) {
+      this.poseMortar({tilt: tilt * 90, cart: {pos}, spin: 0});
+      for (const p of this.pointsOf(r, true)) pts.set(p.map(v => Math.round(v)).join(','), p);
+    }
+    this.mortarFramePoints = [...pts.values()];
+    const box = new THREE.Box3(); for (const p of this.mortarFramePoints) box.expandByPoint(new THREE.Vector3(...p)); box.min.z = -86;
+    this.mortarBounds = box;
+    this.poseMortar({tilt: 0, cart: {pos: 0}, spin: 0});
+  };
+
+  /** 只改姿态：滚筒倾翻角、灰车位置、滚筒转角。tilt 为 0～90°（0 = 搅拌位，开口斜向上）。 */
+  P.poseMortar = function ({tilt = 0, cart = {pos: 0}, spin = 0}) {
+    const a = (35 + tilt) * Math.PI / 180;
+    this.tiltGroup.rotation.y = a;
+    this.handwheel.rotation.y = -tilt * Math.PI / 45;
+    this.spinGroup.rotation.z = spin;
+    this.cart.position.x = lerp(CART_X[0], CART_X[1], cart.pos);
+  };
+
+  /** 根据砂浆模型的状态更新画面。s 来自 MortarModel（另带 spin 转角）。 */
+  P.updateMortar = function (s, quiet) {
+    this.ensureMortar();
+    this.mortarState = s;
+    this.poseMortar(s);
+    const B = this.mortarBase, u = s.uniformity, tot = s.sand + s.cement + s.water;
+    // 滚筒内分层：每份料 22 mm 高；越拌越接近同一颜色
+    let z = -325;
+    const mixColor = B.mix.clone().offsetHSL(0, 0, s.consistency === 'wet' ? -.06 : s.consistency === 'dry' ? .06 : 0);
+    const pouring = s.tilt > 25;
+    for (const q of this.batchLayers) {
+      const k = q.userData.kind, h = s[k] * 22;
+      q.visible = h > .5 && !pouring; q.scale.z = Math.max(h, .01); q.position.z = z; z += h;
+      q.material.color.copy(B[k]).lerp(mixColor, k === 'water' ? Math.min(1, u * 1.6) : u);
+      q.material.opacity = k === 'water' ? lerp(.8, 1, u) : 1; q.material.transparent = k === 'water' && u < 1;
+    }
+    this.lumps.position.z = z + 4;
+    this.lumps.visible = tot > 0 && !pouring && u < .95;
+    this.lumps.children.forEach((g, i) => { const q = g.children[0]; q.scale.setScalar(Math.max(.05, 1 - u)); q.material = this.mortarMat[i % 3 ? 'cement' : 'sand']; });
+    // 灰车与灰槽里的料
+    const colorOf = qual => B.mix.clone().offsetHSL(0, 0, qual === 'wet' ? -.06 : qual === 'dry' ? .06 : 0).lerp(B.sand, qual === 'unmixed' ? .5 : 0).lerp(B.water, qual === 'water' ? .7 : 0);
+    this.cartLoad.visible = s.cart.load > .02; this.cartLoad.scale.z = Math.max(1, s.cart.load * 26); this.mortarMat.cartLoad.color.copy(colorOf(s.cart.quality));
+    this.trayLoad.visible = s.tray.load > .02; this.trayLoad.scale.z = Math.max(1, s.tray.load * 13); this.mortarMat.trayLoad.color.copy(colorOf(s.tray.quality));
+    // 出料流：从开口落到灰车
+    const flowing = s.pouring;
+    this.stream.visible = flowing;
+    if (flowing) {
+      const a = (35 + s.tilt) * Math.PI / 180, mx = MIXER.x + Math.sin(a) * 372, mz = MIXER.pivotZ + Math.cos(a) * 372 - 40;
+      const bottom = 220 + s.cart.load * 26;
+      this.stream.position.set(mx, 0, mz); this.stream.scale.z = Math.max(10, mz - bottom);
+      this.mortarMat.stream.color.copy(colorOf(s.pourQuality));
+    }
+    this.mortarMat.lamp.color.setHex(s.running ? 0x3ec27a : this.dark ? 0x3a4a5c : 0x8a98a8);
+    this.mortarMat.lamp.emissive.setHex(s.running ? 0x1d7a44 : 0x000000);
+    if (!quiet) this.draw();
+  };
+})();
 
 /* The controls and the scene consume the same measured brick model. */
 (() => {
@@ -2056,6 +2363,93 @@ window.MasonryScene=MasonryScene;
   window.ManualGame = ManualGame;
 })();
 
+/* 砂浆机械工位的操作：投料、开机搅拌、摇手轮倾翻出料、推灰车送到砌筑位。状态来自 MortarModel。 */
+(() => {
+  const M = MortarModel;
+  const NAMES = {sand: '砂', cement: '水泥', water: '水'};
+  class MortarStation {
+    constructor(root, {scene, onChange = () => {}, isActive = () => true} = {}) {
+      this.root = root; this.scene = scene; this.onChange = onChange; this.isActive = isActive;
+      this.reset(true);
+      // 控件可能被任务页外壳搬出 root，所以在 document 上监听、按 id 查找
+      document.addEventListener('click', e => this.click(e));
+      document.addEventListener('input', e => { if (e.target.id === 'drumTilt') this.setTilt(+e.target.value); });
+      this.last = 0;
+      setInterval(() => this.tick(), 50);
+    }
+    reset(quiet) {
+      this.s = M.initialMortar(); this.spin = 0; this.note = ''; this.flags = {recipe: false, wet: false};
+      if (!quiet) this.render();
+    }
+    total() { return this.s.sand + this.s.cement + this.s.water; }
+    pouring() { const s = this.s; return s.tilt > M.TILT_POUR && this.total() > 0 && s.cart.pos < .02 && s.cart.load < M.CART_CAPACITY; }
+    say(text) { this.note = text; this.noteAt = performance.now(); }
+    click(e) {
+      const b = e.target.closest?.('button[data-mortar-add], #mixerRun, #cartGo, #cartBack'); if (!b || b.disabled) return;
+      if (b.dataset.mortarAdd) {
+        const key = b.dataset.mortarAdd, delta = +b.dataset.delta;
+        this.s = M.add(this.s, key, delta);
+        if (this.s.note) this.say(this.s.note);
+        else if (delta > 0 && this.s.mixed > 0) this.say(`又加了${NAMES[key]}，新料还没拌开，要接着拌一阵。`);
+      } else if (b.id === 'mixerRun') {
+        this.s = {...this.s, running: !this.s.running};
+        if (this.s.running && !this.total()) this.say('滚筒还是空的：先投料，再搅拌。');
+      } else if (b.id === 'cartGo' || b.id === 'cartBack') {
+        const go = b.id === 'cartGo';
+        if (go && !this.s.cart.load) this.say('灰车是空的：先倾翻滚筒出料，再送过去。');
+        this.s = {...this.s, cart: {...this.s.cart, target: go ? 1 : 0}};
+      } else return;
+      this.render();
+    }
+    setTilt(v) {
+      this.s = {...this.s, tilt: v};
+      if (v > M.TILT_POUR && this.total() && this.s.cart.pos > .02) this.say('灰车不在出料口下方：先把灰车推回出料位。');
+      else if (v > M.TILT_POUR && this.total() && M.uniformity(this.s) < 1) this.say('还没拌匀就出料了，倒出来的料会夹着干砂和水泥。');
+      this.render();
+    }
+    tick() {
+      const now = performance.now(), dt = this.last ? Math.min(.1, (now - this.last) / 1000) : 0; this.last = now;
+      if (!this.isActive() || !dt) return;
+      const before = this.s, full = before.cart.load >= M.CART_CAPACITY - .01;
+      const moving = before.running || Math.abs(before.cart.pos - before.cart.target) > 1e-3 || this.pouring() || (before.cart.pos > .98 && before.cart.load > 0);
+      if (!moving) return;
+      this.s = M.step(before, dt);
+      if (this.s.running) this.spin = (this.spin + dt * 2.6) % (Math.PI * 2);
+      if (!full && this.s.cart.load >= M.CART_CAPACITY - .01 && this.total()) this.say('灰车装满了：推到砌筑位卸料，再回来接。');
+      if (before.cart.load > 0 && this.s.cart.load === 0 && this.s.cart.pos > .98) this.say(this.s.tray.quality === 'good' ? '砂浆倒进灰槽，砌筑位可以接着铺灰了。' : `倒进灰槽的料：${M.QUALITY_TEXT[this.s.tray.quality]}。这样的料不好铺灰。`);
+      this.render(true);
+    }
+    getState() {
+      const s = this.s, u = M.uniformity(s), c = M.consistency(s);
+      if (M.recipeMatched(s)) this.flags.recipe = true;
+      if (c === 'wet' && u >= 1) this.flags.wet = true;
+      return {...s, uniformity: u, consistency: c, consistencyText: M.CONSISTENCY_TEXT[c], quality: M.batchQuality(s),
+        drumLoad: M.drumLoad(s), spin: this.spin, pouring: this.pouring(), pourQuality: M.batchQuality(s),
+        recipeHit: this.flags.recipe, wetMixed: this.flags.wet, note: this.note, noteAt: this.noteAt || 0};
+    }
+    render(fromTick) {
+      const st = this.getState(), $ = id => document.getElementById(id);
+      for (const k of ['sand', 'cement', 'water']) {
+        const out = $('feed-' + k); if (out) out.textContent = `${Math.round(st[k] * 10) / 10} 份`;
+        document.querySelectorAll(`[data-mortar-add="${k}"]`).forEach(b => { b.disabled = st.tilt > 5 || (+b.dataset.delta > 0 ? st[k] >= M.LIMITS[k] : st[k] <= 0); });
+      }
+      const run = $('mixerRun'); if (run) { run.textContent = st.running ? '■ 停机' : '▶ 开机搅拌'; run.setAttribute('aria-pressed', String(st.running)); }
+      const pct = Math.round(st.uniformity * 100);
+      const bar = $('mixBar'); if (bar) bar.style.width = pct + '%';
+      const mv = $('mixValue'); if (mv) mv.textContent = pct + '%';
+      const ms = $('mixState'); if (ms) ms.textContent = !st.drumLoad ? '滚筒里还没有料。' : `稀稠：${st.consistencyText}${st.uniformity < 1 ? ' · 还没拌匀' : ' · 已拌匀'}`;
+      const tilt = $('drumTilt'); if (tilt && +tilt.value !== st.tilt) tilt.value = st.tilt;
+      const tv = $('drumTiltValue'); if (tv) tv.textContent = Math.round(st.tilt) + '°' + (st.tilt > M.TILT_POUR ? ' · 出料' : st.tilt > 5 ? '' : ' · 搅拌位');
+      const cl = $('cartLoadValue'); if (cl) cl.textContent = `灰车 ${Math.round(st.cart.load * 10) / 10} / ${M.CART_CAPACITY} 份 · 灰槽 ${Math.round(st.tray.load * 10) / 10} 份`;
+      const go = $('cartGo'), back = $('cartBack');
+      if (go) go.disabled = st.cart.target === 1; if (back) back.disabled = st.cart.target === 0;
+      this.scene?.updateMortar?.(st);
+      this.onChange(st, fromTick);
+    }
+  }
+  window.MortarStation = MortarStation;
+})();
+
 (() => {
  'use strict';
  const $=id=>document.getElementById(id),text=(id,value)=>{$(id).textContent=value;};
@@ -2072,6 +2466,7 @@ window.MasonryScene=MasonryScene;
   '工具上退后复测位置。发现偏差要回到基准或工艺环节处理；几何通过还需要人工质量复核。'
  ];
  const CONTENT={manual:{title:'砖怎样摆，才是一面墙？',subtitle:'转一转砖，拼一皮墙，再让上下皮接缝错开。',eye:'MASONRY / LEARN BY BUILDING',panel:'人工砌筑挑战',tag:'人工砌筑试排台',takeaway:'先看方向，再看联系。',a:['顺丁是朝向','砖长边顺着墙长是顺砖，垂直墙长是丁砖。'],b:['平侧是放置面','平砌与侧砌改变砖的底面，不能把丁砖理解为立起来的砖。'],c:['组砌要有联系','既看上下皮错缝，也看墙厚方向拉结。先试排，再铺灰。']},
+ mortar:{title:'砂浆是怎样拌出来的？',subtitle:'投料、开机搅拌、倾翻出料，再把砂浆送到砌筑位。',eye:'MORTAR / MIX · POUR · DELIVER',panel:'砂浆机械',tag:'滚筒砂浆搅拌机 · 教学模型',takeaway:'砌筑离不开稳定的砂浆。',a:['机器代替手拌','砂浆搅拌机把水泥、砂、水拌成砂浆，是砌筑里最早机械化的环节。'],b:['拌匀再出料','没拌匀或稀稠不合适的料，铺灰厚度和灰缝都难控制。'],c:['供料不能断','砂浆要连续送到砌筑位，人工和机器人砌筑都一样。']},
  issues:{title:'人工砌筑，难在哪里？',subtitle:'移动一个参数，看小偏差如何变成一面墙的问题。',eye:'CRAFT / FIND THE DIFFICULTY',panel:'把问题放大看',tag:'直墙中部观察窗口',takeaway:'重复动作，也要持续判断。',a:['体力与节拍','搬砖、铺灰、放砖反复进行。搅拌与运输机械先减轻备料负担。'],b:['基准与材料','砖型、皮数、灰缝和控制线共同约束位置。只看坐标不够。'],c:['节点与复核','洞口、转角和收口更复杂，需要工艺安排与现场判断。']},
  robot:{title:'外形不同，砌砖的核心相同。',subtitle:'观察同一块砖的位移、转向与释放，再用偏差实验理解反馈。',eye:'ROBOTICS / POSITION · ORIENTATION · FEEDBACK',panel:'机器人共性原理',tag:'XYZ + 旋转夹具 · 教学机构',takeaway:'目标、动作、反馈要连起来。',a:['位置 + 姿态','目标不只是落点。顺丁朝向、放置高度和工具接近方向都要确定。'],b:['材料 + 执行','供砖、结合材料与取放相互配合。力控、视觉等是不同设备的实现选择。'],c:['测量 + 人工','移动后重新定位；落砖后复测。材料、节点和成墙质量仍需人工检查。']}};
  try{if(new URLSearchParams(location.search).has('fallback'))throw new Error('requested fallback');scene=new MasonryScene($('stage'),{onPick:id=>manual?.selectSlot(id)});}catch(error){$('stage').replaceChildren();scene=new AnatomyFallback($('stage'),{onPick:id=>manual?.selectSlot(id)});$('fallbackNotice').hidden=false;state.fallback=true;}
@@ -2082,6 +2477,8 @@ window.MasonryScene=MasonryScene;
   else{metrics(['墙厚','上皮偏移','学习进度'],[s.width+' mm',s.offset+' mm',`${s.progress} / 3 关完成`]);text('liveReadout',`灰缝示例 ${s.mortar} mm · ${s.inspection.throughCount?'仍有通缝':'接缝已错开'}`);}
  }
  manual=new ManualGame($('manualControls'),{onChange:renderManual});
+ function renderMortar(m){if(state.tab!=='mortar')return;metrics(['滚筒里','稀稠','灰槽'],[m.drumLoad+' 份',m.drumLoad?m.consistencyText+(m.uniformity<1?' · 未拌匀':''):'—',m.tray.load>.02?MortarModel.QUALITY_TEXT[m.tray.quality]:'空']);text('liveReadout',`砂 ${Math.round(m.sand*10)/10} · 水泥 ${Math.round(m.cement*10)/10} · 水 ${Math.round(m.water*10)/10} 份 · 拌匀 ${Math.round(m.uniformity*100)}%`);}
+ const mortar=new MortarStation($('mortarControls'),{scene,isActive:()=>state.tab==='mortar'&&state.visible&&!document.hidden,onChange:renderMortar});
  function renderIssue(){const info=IssuesModel.ISSUES[state.issue],data=IssuesModel.issueScene(state.issue,state.issueAmount);scene.setManual(data);text('issueSliderLabel',info.slider);Object.assign($('issueAmount'),{min:info.min,max:info.max,step:info.step,value:state.issueAmount});text('issueAmountValue',state.issueAmount+' mm');text('issueHint',info.hint);text('issueTitle',info.title);text('issueText',info.text);text('robotHelpTitle',info.robot);text('robotHelpText',info.help);text('humanStill',info.human);document.querySelectorAll('[data-issue]').forEach(b=>b.setAttribute('aria-pressed',b.dataset.issue===state.issue));
   const good=state.issue==='joints'?state.issueAmount>=10:state.issueAmount===0;
   metrics([state.issue==='mortar'?'顶部累计差':'当前示例值','观察结果','机器人切入点'],[data.metric+' mm',good?(state.issue==='joints'&&state.issueAmount!==62.5?'通缝消除，搭接待复核':'已修正几何关系'):state.issue==='joints'?'竖缝贯通':'存在偏差',state.issue==='joints'?'排砖规划':state.issue==='mortar'?'材料与标高':'共同基准']);text('liveReadout',state.issue==='mortar'?`三道灰缝 × ${state.issueAmount} = ${data.metric} mm`:`${info.slider} ${state.issueAmount} mm`);
@@ -2097,8 +2494,8 @@ window.MasonryScene=MasonryScene;
  function pause(){state.playing=false;cancelAnimationFrame(frame);frame=0;last=0;if(state.tab==='robot')text('play','▶ '+(state.t>=8?'重新演示':'开始演示'));}
  function tick(now){frame=0;if(!state.playing||!state.visible||document.hidden||state.tab!=='robot')return;const dt=last?Math.min(.08,(now-last)/1000):0;last=now;state.t=Math.min(8,state.t+dt*state.speed);renderRobot();if(state.t>=8){pause();return;}frame=requestAnimationFrame(tick);}
  function play(){if(motion.matches){pause();state.t=state.t>=8?0:Math.min(8,Math.floor(state.t)+1);renderRobot();return;}if(state.playing){pause();return;}if(state.t>=8)state.t=0;state.playing=true;last=0;renderRobot();frame=requestAnimationFrame(tick);}
- function setTab(tab){pause();state.tab=tab;const c=CONTENT[tab];document.querySelectorAll('[data-tab]').forEach(b=>b.setAttribute('aria-pressed',b.dataset.tab===tab));document.querySelectorAll('[data-panel]').forEach(p=>p.hidden=p.dataset.panel!==tab);for(const [id,v] of [['title',c.title],['subtitle',c.subtitle],['eyebrow',c.eye],['panelTitle',c.panel],['sceneTag',c.tag],['takeawayTitle',c.takeaway]])text(id,v);['A','B','C'].forEach((v,i)=>{const pair=c[['a','b','c'][i]];text('takeaway'+v,pair[0]);text('takeaway'+v+'Text',pair[1]);});text('figureNumber','FIG. 0'+(['manual','issues','robot'].indexOf(tab)+1));text('nextSection',tab==='manual'?'发现人工难点 →':tab==='issues'?'进入机器人工作站 →':'回到人工砌筑 →');scene.setMode(tab);scene.setExplode(0);$('explode').value=0;text('explodeValue','0%');document.querySelectorAll('[data-view]').forEach(b=>b.setAttribute('aria-pressed',b.dataset.view==='iso'));
-  if(tab==='manual')renderManual(manual.getState());else if(tab==='issues')renderIssue();else renderRobot();scene.resize();document.querySelector('.control-panel')?.scrollTo(0,0);
+ function setTab(tab){pause();state.tab=tab;const c=CONTENT[tab];document.querySelectorAll('[data-tab]').forEach(b=>b.setAttribute('aria-pressed',b.dataset.tab===tab));document.querySelectorAll('[data-panel]').forEach(p=>p.hidden=p.dataset.panel!==tab);for(const [id,v] of [['title',c.title],['subtitle',c.subtitle],['eyebrow',c.eye],['panelTitle',c.panel],['sceneTag',c.tag],['takeawayTitle',c.takeaway]])text(id,v);['A','B','C'].forEach((v,i)=>{const pair=c[['a','b','c'][i]];text('takeaway'+v,pair[0]);text('takeaway'+v+'Text',pair[1]);});text('figureNumber','FIG. 0'+(['manual','mortar','issues','robot'].indexOf(tab)+1));text('nextSection',tab==='manual'?'去拌砂浆 →':tab==='mortar'?'发现人工难点 →':tab==='issues'?'进入机器人工作站 →':'回到人工砌筑 →');scene.setMode(tab);scene.setExplode(0);$('explode').value=0;text('explodeValue','0%');document.querySelectorAll('[data-view]').forEach(b=>b.setAttribute('aria-pressed',b.dataset.view==='iso'));
+  if(tab==='manual')renderManual(manual.getState());else if(tab==='mortar')mortar.render();else if(tab==='issues')renderIssue();else renderRobot();scene.resize();document.querySelector('.control-panel')?.scrollTo(0,0);
  }
  // Keep DOM actions explicit so every step is reachable with mouse, touch or keyboard.
  document.querySelectorAll('[data-tab]').forEach(b=>b.addEventListener('click',()=>setTab(b.dataset.tab)));
@@ -2111,14 +2508,14 @@ window.MasonryScene=MasonryScene;
  $('datumFault').onchange=e=>{pause();state.fault=e.target.checked;state.corrected=false;state.t=0;renderRobot();};$('calibrate').onclick=()=>{pause();state.corrected=true;state.t=0;renderRobot();};
  $('explode').oninput=e=>{pause();scene.setExplode(+e.target.value);text('explodeValue',Math.round(+e.target.value*100)+'%');};
  document.querySelectorAll('[data-issue]').forEach(b=>b.onclick=()=>{state.issue=b.dataset.issue;state.issueAmount=IssuesModel.ISSUES[state.issue].start;renderIssue();});$('issueAmount').oninput=e=>{state.issueAmount=+e.target.value;renderIssue();};$('fixIssue').onclick=()=>{state.issueAmount=IssuesModel.ISSUES[state.issue].fix;renderIssue();};
- $('issuesToRobot').onclick=()=>setTab('robot');$('nextSection').onclick=()=>setTab(state.tab==='manual'?'issues':state.tab==='issues'?'robot':'manual');
- $('reset').onclick=()=>{pause();scene.resetView();if(state.tab==='manual')manual.reset();else if(state.tab==='issues'){state.issueAmount=IssuesModel.ISSUES[state.issue].start;renderIssue();}else{state.t=0;state.fault=false;state.corrected=false;$('datumFault').checked=false;scene.setExplode(0);$('explode').value=0;text('explodeValue','0%');renderRobot();}};
+ $('issuesToRobot').onclick=()=>setTab('robot');$('nextSection').onclick=()=>setTab(state.tab==='manual'?'mortar':state.tab==='mortar'?'issues':state.tab==='issues'?'robot':'manual');
+ $('reset').onclick=()=>{pause();scene.resetView();if(state.tab==='manual')manual.reset();else if(state.tab==='mortar')mortar.reset();else if(state.tab==='issues'){state.issueAmount=IssuesModel.ISSUES[state.issue].start;renderIssue();}else{state.t=0;state.fault=false;state.corrected=false;$('datumFault').checked=false;scene.setExplode(0);$('explode').value=0;text('explodeValue','0%');renderRobot();}};
  function setTheme(dark){state.dark=dark;document.documentElement.dataset.theme=dark?'dark':'light';document.body.dataset.theme=dark?'dark':'light';text('theme',dark?'◑ 浅色':'◐ 深色');scene.setTheme(dark);}
  CourseTheme.register(theme => setTheme(theme === 'dark'));$('help').onclick=()=>{$('helpDialog').showModal();pause();};$('fullscreen').onclick=async()=>{try{if(document.fullscreenElement)await document.exitFullscreen();else await document.documentElement.requestFullscreen();scene.resize();}catch{ text('fullscreen','当前窗口不支持全屏');}};
  $('stage').addEventListener('keydown',e=>{if(e.code==='Space'&&state.tab==='robot'){e.preventDefault();play();}});
  new IntersectionObserver(entries=>{state.visible=entries.at(-1).isIntersecting;if(!state.visible){cancelAnimationFrame(frame);frame=0;last=0;}else if(state.playing&&!frame)frame=requestAnimationFrame(tick);}).observe($('stage'));
  document.addEventListener('visibilitychange',()=>{if(document.hidden){cancelAnimationFrame(frame);frame=0;last=0;}else if(state.playing&&state.visible&&!frame)frame=requestAnimationFrame(tick);});motion.addEventListener('change',()=>{if(motion.matches)pause();});
- window.masonryLab={snapshot:()=>({...state,manual:manual.getState(),robot:robotState(),scene:scene.snapshot()}),setTab,scene,game:manual,seek(t){pause();state.t=Math.max(0,Math.min(8,t));if(state.tab!=='robot')setTab('robot');renderRobot();},pause};
+ window.masonryLab={snapshot:()=>({...state,manual:manual.getState(),mortar:mortar.getState(),robot:robotState(),scene:scene.snapshot()}),setTab,scene,game:manual,mortar,seek(t){pause();state.t=Math.max(0,Math.min(8,t));if(state.tab!=='robot')setTab('robot');renderRobot();},pause};
  setTheme(state.dark);setTab('manual');if(state.fallback)text('gestureHint','点视角切换投影 · 使用右侧按钮与时间轴操作');document.body.dataset.ready='true';
 })();
 </script><script data-lab-shell>window.CHAPTER_LAYOUT={"task":"6-1","page":"","nav":"6-1","chapter":{"title":"第六章 · 装饰装修施工","href":"course/chapters/06/overview/index.html","tasks":[{"id":"6-1","label":"6-1","short":"砌筑机器人","href":"course/chapters/06/tasks/6-1/index.html"},{"id":"6-2","label":"6-2","short":"地砖铺贴","href":"course/chapters/06/tasks/6-2/index.html"},{"id":"6-3","label":"6-3","short":"腻子打磨","href":"course/chapters/06/tasks/6-3/index.html"},{"id":"6-4","label":"6-4","short":"室内喷涂","href":"course/chapters/06/tasks/6-4/index.html"}]}};
@@ -2550,7 +2947,7 @@ window.MasonryScene=MasonryScene;
 })();
 
 /* 任务 6-1 砌筑机器人 —— 原页面的三维工作台、砌筑闯关和机器人取放演示保持不变，搬进统一外壳。
- * 原来的三个学习阶段（先亲手砌一砌 / 发现人工难点 / 再让机器人介入）成为三个工位。
+ * 原来的三个学习阶段（先亲手砌一砌 / 发现人工难点 / 再让机器人介入）成为工位，中间加一个“拌砂浆”工位（砂浆搅拌机）。
  * 三维区上方放“选研究对象”：闯关的三关、三种施工问题、固定/移动工位；面板里是原有的改变条件的控件和试一试。
  */
 (() => {
@@ -2560,10 +2957,12 @@ window.MasonryScene=MasonryScene;
   const game = () => lab()?.game;
   const issueBlocks = all('#issueControls > .control-block');
   const robotBlocks = all('#robotControls > .control-block');
+  const mortarBlocks = all('#mortarControls > .control-block');
   const EL = {
     stage: $('.stage-wrap'),
     metrics: $('.metrics'), live: $('#liveReadout'),
     manual: $('#manualControls'),
+    mortarFeed: mortarBlocks[0], mortarMix: mortarBlocks[1], mortarOut: mortarBlocks[2],
     issuePicker: $('#issueChoices'), issueSlider: issueBlocks[1], observation: $('#issueControls .observation'), connection: $('#issueControls .connection'),
     platformPicker: $('#robotControls .segmented'), platformNote: $('#platformNote'),
     timeline: robotBlocks[1], datum: robotBlocks[2],
@@ -2571,7 +2970,7 @@ window.MasonryScene=MasonryScene;
     reset: $('#reset'),
   };
   // 外壳里已有工位名、引子和小标题：原来的阶段标题、“去下一站”链接、重复的小标签收起
-  for (const e of all('#issuesToRobot, #issueControls .section-label, #robotControls .section-label')) e.setAttribute('hidden', '');
+  for (const e of all('#issuesToRobot, #issueControls .section-label, #robotControls .section-label, #mortarControls .section-label')) e.setAttribute('hidden', '');
 
   /* 三维区上方：人工砌筑的三关（原闯关自带的关卡导航每次重绘都会重建，这里另做一排，调用原接口切关） */
   const LESSONS = ['认识一块砖', '拼出墙厚', '检查上下皮'];
@@ -2619,6 +3018,27 @@ window.MasonryScene=MasonryScene;
       },
     },
     {
+      id: 'mortar', name: '拌砂浆', lead: '投料、开机拌匀，再倾翻出料、送到砌筑位。',
+      build(c) {
+        const g = c.section('投料');
+        c.adopt(EL.mortarFeed, g);
+        const g2 = c.section('搅拌');
+        c.adopt(EL.mortarMix, g2);
+        const g3 = c.section('出料与送料');
+        c.adopt(EL.mortarOut, g3);
+        c.challenges([
+          {id: 'recipe', icon: '🥣', title: '按示例投料', hint: '砂 4 · 水泥 1 · 水 1', check: s => s.mortar.recipeHit,
+            result: '砂、水泥、水按设定的份数投进滚筒，砂浆质量先从配料开始。'},
+          {id: 'mixed', icon: '🌀', title: '拌匀再出料', hint: '拌到 100%，再摇手轮', check: s => s.mortar.poured.includes('good'),
+            result: '滚筒转动时叶片不停翻料，拌匀后颜色一致，再倾翻倒进灰车。'},
+          {id: 'wet', icon: '💧', title: '拌一筒太稀的', hint: '多加水，拌匀看看', check: s => s.mortar.wetMixed,
+            result: '水多了砂浆太稀，铺灰会流淌，灰缝厚度就难控制。'},
+          {id: 'deliver', icon: '🧱', title: '送到砌筑位', hint: '合格的料倒进灰槽', check: s => s.mortar.delivered.includes('good'),
+            result: '砂浆要连续送到砌筑位：供料一断，人工和机器人都得停下来等。'},
+        ]);
+      },
+    },
+    {
       id: 'issues', name: '人工难点', lead: '在上方选一个问题，先放大它，再修正回来。',
       build(c) {
         const g = c.section('改变它');
@@ -2662,7 +3082,7 @@ window.MasonryScene=MasonryScene;
     },
   ];
 
-  let lastFeedback = '';
+  let lastFeedback = '', lastNoteAt = 0;
   NativeShell.start({
     task: '6-1', title: '砌筑工程与机器人',
     stage: EL.stage,
@@ -2707,6 +3127,10 @@ window.MasonryScene=MasonryScene;
         const g = game(), text = g?.feedback || '';
         if (id === 'manual' && text && text !== lastFeedback) c.feedback(text, g.feedbackTone === 'retry' ? 'warn' : 'info');
         lastFeedback = text;
+        // 搅拌机的提示（投料、出料、送料）同样转成提示条
+        const m = s.mortar;
+        if (id === 'mortar' && m.note && m.noteAt > lastNoteAt) c.feedback(m.note, /先|没|空|不在|太|不好/.test(m.note) ? 'warn' : 'info');
+        lastNoteAt = Math.max(lastNoteAt, m.noteAt);
       });
     },
   });

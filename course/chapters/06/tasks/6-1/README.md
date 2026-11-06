@@ -6,7 +6,7 @@
 
 2026-10-22 重建。学习顺序为“先亲手砌一砌 → 发现人工难点 → 再让机器人介入”。页面与依赖打包在单个 HTML 中，可直接双击打开，不依赖外网。
 
-2026-11 起页面使用全课程统一任务页外壳（`shared/lab-shell`，原地模式）：三个学习站成为三个工位（亲手砌一砌 / 人工难点 / 机器人取放），面板编排与“试一试”写在 `src/stations.js`、`src/stations.css`；构建时有 `stations.js` 就不再套第六章原来的章节版式。
+2026-11 起页面使用全课程统一任务页外壳（`shared/lab-shell`，原地模式）：学习站成为四个工位（亲手砌一砌 / 拌砂浆 / 人工难点 / 机器人取放），面板编排与“试一试”写在 `src/stations.js`、`src/stations.css`；构建时有 `stations.js` 就不再套第六章原来的章节版式。
 
 ## 三个学习站
 
@@ -42,6 +42,8 @@ node scripts/build.mjs 6-1
 node --test "course/chapters/06/tasks/6-1/qa/manual-model.test.mjs" "course/chapters/06/tasks/6-1/qa/robot-model.test.mjs" "course/chapters/06/tasks/6-1/qa/rebuild/issues-model.test.mjs"
 node "course/chapters/06/tasks/6-1/qa/rebuild/browser-check.mjs"
 ```
+
+“拌砂浆”工位是 2026-11 新增的教学用滚筒砂浆搅拌机（不对应品牌型号）：`src/mortar-model.mjs` 是投料、拌匀、稀稠、出料和送料的数据模型（配料“砂 4 · 水泥 1 · 水 1 份”只是教学设定），`mortar-scene.js` 在同一三维教学台上加搅拌机、灰车和砌筑位灰槽，`mortar-game.js` 负责操作。无 WebGL 的备用画面暂未画搅拌机，只保留操作。
 
 `src/manual-model.mjs`、`robot-model.mjs`、`issues-model.mjs`提供唯一数据模型；`scene3d.js`负责真正三维实体；`fallback.js`使用Anatomy投影工具；`manual-game.js`与`app.js`负责交互。
 
