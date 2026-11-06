@@ -95,7 +95,7 @@
   function fillCover(n) {
     const c = chapter(n);
     $('cv-kicker').textContent = ordinal(n);
-    $('cv-stats').innerHTML = `<p><strong>${String(c.tasks.length).padStart(2, '0')}</strong><span>互动<br>任务</span></p><p><strong>${String(n).padStart(2, '0')}</strong><span>第${numerals[n - 1]}章<br>共八章</span></p>`;
+    $('cv-stats').innerHTML = `<p><strong>${String(c.tasks.length).padStart(2, '0')}</strong><span>互动<br>任务</span></p>`;
     $('cv-side').style.setProperty('--tint', tint(n));
     $('cv-name').textContent = c.title;
     $('cv-lead').textContent = c.description;
