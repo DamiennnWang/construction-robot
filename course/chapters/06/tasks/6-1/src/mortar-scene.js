@@ -44,9 +44,7 @@
     const M = k => 'm_' + k;
 
     /* 教学台面（与机器人工作台同一做法） */
-    this.box(3000, 1300, 32, 0, 0, -35, 'base', r, 'mortar-plate', 8); this.box(2988, 1288, 3, 0, 0, -3, 'hi', r, 'mortar-plate-top', .7);
-    for (const x of [-1440, 1440]) for (const y of [-590, 590]) this.bolt(x, y, 0, r, 6);
-    for (const x of [-1380, 1380]) for (const y of [-540, 540]) { this.cyl(45, 16, x, y, -86, 'rubber', r); this.cyl(25, 35, x, y, -70, 'steel', r); }
+    // 不再画实验台底板：搅拌机、灰车和墙都放在现场地面上（地面由 MasonryScene 统一铺）
 
     /* 搅拌机：底架、轮子、支腿、拖杆 */
     const mx = MIXER.x;
@@ -146,7 +144,7 @@
       for (const p of this.pointsOf(r, true)) pts.set(p.map(v => Math.round(v)).join(','), p);
     }
     this.mortarFramePoints = [...pts.values()];
-    const box = new THREE.Box3(); for (const p of this.mortarFramePoints) box.expandByPoint(new THREE.Vector3(...p)); box.min.z = -86;
+    const box = new THREE.Box3(); for (const p of this.mortarFramePoints) box.expandByPoint(new THREE.Vector3(...p)); box.min.z = 0;
     this.mortarBounds = box;
     this.poseMortar({tilt: 0, cart: {pos: 0}, spin: 0});
   };

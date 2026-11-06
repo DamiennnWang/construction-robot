@@ -13,14 +13,24 @@ class MasonryScene {
     const light=new THREE.DirectionalLight(0xffffff,2.6);light.position.set(-900,-1100,1800);light.castShadow=true;
     Object.assign(light.shadow.camera,{left:-1500,right:1500,top:1500,bottom:-1500,near:10,far:5000});light.shadow.mapSize.set(2048,2048);light.shadow.normalBias=1.7;light.shadow.bias=-.00012;this.scene.add(light);
     const fill=new THREE.DirectionalLight(0xdce8fa,.8);fill.position.set(1000,800,700);this.scene.add(fill);
-    this.mat={};for(const k of ['base','lo','mid','hi','steel','ink','rubber','brick','lit','mortar','glass'])this.mat[k]=new THREE.MeshStandardMaterial({roughness:k==='rubber'?.98:k==='brick'?.87:.49,metalness:k==='steel'?.57:k==='brick'||k==='mortar'?0:.13});
+    this.mat={};for(const k of ['base','lo','mid','hi','steel','ink','rubber','brick','lit','mortar','glass','chalk'])this.mat[k]=new THREE.MeshStandardMaterial({roughness:k==='rubber'?.98:k==='brick'?.87:.49,metalness:k==='steel'?.57:k==='brick'||k==='mortar'?0:.13});
     this.mat.ghost=new THREE.MeshStandardMaterial({color:0x7395bf,transparent:true,opacity:.20,depthWrite:false,roughness:.9});
     this.mat.slot=new THREE.MeshStandardMaterial({color:0xadc4df,transparent:true,opacity:.65,roughness:.9});
     this.edgeMat=new THREE.LineBasicMaterial({color:0x3b536e,transparent:true,opacity:.25});
-    this.floor=new THREE.Mesh(new THREE.PlaneGeometry(7000,7000),new THREE.ShadowMaterial({opacity:.12}));this.floor.position.z=-133;this.floor.receiveShadow=true;this.scene.add(this.floor);
+    this.floor=this.makeGround();this.scene.add(this.floor);
     this.manualRoot=this.group(this.scene);this.robotRoot=this.group(this.scene);this.makeRobot();this.robotRoot.visible=false;
     this.ray=new THREE.Raycaster();this.pointer=new THREE.Vector2();this.bind();
     this.observer=new ResizeObserver(()=>this.resize());this.observer.observe(host);this.setTheme(false);this.resize();
+  }
+  /* 现场地面：浅色混凝土楼板，向四周淡出；不进取景计算，随画面内容居中铺开 */
+  makeGround(){
+    const a=document.createElement('canvas');a.width=a.height=256;const ac=a.getContext('2d'),gr=ac.createRadialGradient(128,128,40,128,128,128);gr.addColorStop(0,'#fff');gr.addColorStop(.45,'#fff');gr.addColorStop(1,'#000');ac.fillStyle=gr;ac.fillRect(0,0,256,256);
+    const n=document.createElement('canvas');n.width=n.height=256;const nc=n.getContext('2d');nc.fillStyle='#f4f4f4';nc.fillRect(0,0,256,256);
+    let seed=7;const rnd=()=>((seed=(seed*16807)%2147483647)/2147483647);
+    for(let i=0;i<4200;i++){const v=226+Math.floor(rnd()*26);nc.fillStyle=`rgb(${v},${v},${v})`;nc.fillRect(rnd()*256,rnd()*256,1+rnd()*1.6,1+rnd()*1.6);}
+    const alpha=new THREE.CanvasTexture(a),map=new THREE.CanvasTexture(n);map.colorSpace=THREE.SRGBColorSpace;map.wrapS=map.wrapT=THREE.RepeatWrapping;map.repeat.set(9,9);
+    const g=new THREE.Mesh(new THREE.PlaneGeometry(1,1),new THREE.MeshStandardMaterial({color:0xe7e4de,map,alphaMap:alpha,transparent:true,depthWrite:false,roughness:.96,metalness:0}));
+    g.name='site-ground';g.receiveShadow=true;g.position.z=-.8;g.renderOrder=-1;return g;
   }
   clamp(v,a,b){return Math.max(a,Math.min(b,v));}
   group(parent,name=''){const g=new THREE.Group();g.name=name;parent.add(g);return g;}
@@ -41,8 +51,8 @@ class MasonryScene {
   meshCount(g){let n=0;g.traverse(o=>{if(o.isMesh)n++;});return n;}
   clear(g){while(g.children.length)g.remove(g.children[0]);}
   setTheme(dark){this.dark=!!dark;
-    const colors=dark?{base:0x29394c,lo:0x5e728b,mid:0x8d9fb2,hi:0xd6e0ea,steel:0xa6b9c9,ink:0x132238,rubber:0x121b2a,brick:0xa8735e,lit:0x84b5ff,mortar:0x536477,glass:0x233a57}:{base:0xc4ced8,lo:0x788b9e,mid:0xa2b2c2,hi:0xe2e7ed,steel:0xb9c8d4,ink:0x30475e,rubber:0x263647,brick:0xc98d70,lit:0x4b82c9,mortar:0xa5adb3,glass:0x5a7898};
-    for(const key of Object.keys(colors))this.mat[key].color.setHex(colors[key]);this.mat.ghost.color.setHex(dark?0xa0c5fa:0x4c7db7);this.mat.slot.color.setHex(dark?0x6685ac:0xadc4df);this.edgeMat.color.setHex(dark?0xc0d0e0:0x3b536e);this.floor.material.opacity=dark?.23:.12;this.draw();
+    const colors=dark?{base:0x29394c,lo:0x5e728b,mid:0x8d9fb2,hi:0xd6e0ea,steel:0xa6b9c9,ink:0x132238,rubber:0x121b2a,brick:0xa8735e,lit:0x84b5ff,mortar:0x536477,glass:0x233a57,chalk:0xd6e0ea}:{base:0xc4ced8,lo:0x788b9e,mid:0xa2b2c2,hi:0xe2e7ed,steel:0xb9c8d4,ink:0x30475e,rubber:0x263647,brick:0xc98d70,lit:0x4b82c9,mortar:0xa5adb3,glass:0x5a7898,chalk:0x6f8196};
+    for(const key of Object.keys(colors))this.mat[key].color.setHex(colors[key]);this.mat.ghost.color.setHex(dark?0xa0c5fa:0x4c7db7);this.mat.slot.color.setHex(dark?0x6685ac:0xadc4df);this.edgeMat.color.setHex(dark?0xc0d0e0:0x3b536e);this.floor.material.color.setHex(dark?0x5c6875:0xe7e4de);this.draw();
   }
   bind(){let dragging=false,lastX=0,lastY=0,distance=0;
     this.host.addEventListener('pointerdown',e=>{if(e.button!==0)return;dragging=true;distance=0;lastX=e.clientX;lastY=e.clientY;this.host.setPointerCapture(e.pointerId);});
@@ -54,7 +64,7 @@ class MasonryScene {
   }
   pick(e){const r=this.host.getBoundingClientRect();this.pointer.set(2*(e.clientX-r.left)/r.width-1,1-2*(e.clientY-r.top)/r.height);this.ray.setFromCamera(this.pointer,this.camera);const hits=this.ray.intersectObjects(this.pickables,false);for(const hit of hits){let p=hit.object,visible=true;while(p){visible=visible&&p.visible;p=p.parent;}if(visible){if(this.onPick)this.onPick(hit.object.userData.pickId);return;}}}
   resize(){const r=this.host.getBoundingClientRect();if(!r.width||!r.height)return;this.renderer.setSize(r.width,r.height,false);this.draw();}
-  setMode(mode){if(!['manual','issues','robot'].includes(mode))mode='manual';const changed=this.mode!==mode;this.mode=mode;this.manualRoot.visible=mode!=='robot';this.robotRoot.visible=mode==='robot';this.floor.position.z=mode==='robot'?-133:-74;if(changed)this.resetView();else this.draw();}
+  setMode(mode){if(!['manual','issues','robot'].includes(mode))mode='manual';const changed=this.mode!==mode;this.mode=mode;this.manualRoot.visible=mode!=='robot';this.robotRoot.visible=mode==='robot';if(changed)this.resetView();else this.draw();}
   setView(view){this.view=view;this.zoom=1;this.yaw=-1.08;this.pitch=this.mode==='robot'?.55:.7;if(view==='top'){this.yaw=-Math.PI/2;this.pitch=Math.PI/2-.001;}else if(view==='front'){this.yaw=-Math.PI/2;this.pitch=.12;}else if(view==='detail'){this.yaw=-1.15;this.pitch=.53;}this.draw();}
   resetView(){this.setView('iso');}
   zoomBy(f){this.zoom=this.clamp(this.zoom*f,.65,3.6);this.draw();}
@@ -68,17 +78,12 @@ class MasonryScene {
     const bricks=data.bricks||[],width=data.width||240,length=data.length||Math.max(740,...bricks.map(b=>b.x+b.w)),w=length+170,d=Math.max(width+180,480),mortar=Number.isFinite(+data.mortar)?+data.mortar:10;
     this.manualDimensions={length,width,w,d,height:Math.max(140,...bricks.map(b=>b.z+b.h))};
     const root=this.manualRoot;
-    for(const x of[-w/2+65,w/2-65])for(const y of[-d/2+55,d/2-55]){this.cyl(24,14,x,y,-72,'rubber',root);this.cyl(17,23,x,y,-58,'lo',root);}
-    this.box(w,d,32,0,0,-35,'base',root,'base',7);this.box(w-6,d-6,3,0,0,-3,'hi',root,'working-surface',2);
-    for(const x of[-w/2+20,w/2-20])for(const y of[-d/2+20,d/2-20])this.bolt(x,y,0,root,4);
-    const ry=-d/2+21;this.box(length+50,18,2,0,ry,0,'lo',root,'ruler-strip',1);
-    for(let i=0;i<=24;i++){const major=i%4===0,len=major?14:8;this.box(1.5,len,.5,-length/2+i*length/24,ry-9+len/2,2,'hi',root,'ruler-tick',0);}
+    const ry=-d/2+21;
     this.box(164,26,1.5,0,ry+32,0,'hi',root,'wall-direction-plate',1);
     if(!this.directionMaterial){const c=document.createElement('canvas');c.width=640;c.height=104;const ctx=c.getContext('2d');ctx.fillStyle='#e2e7ed';ctx.fillRect(0,0,640,104);ctx.fillStyle='#30475e';ctx.font='600 51px sans-serif';ctx.textAlign='center';ctx.textBaseline='middle';ctx.fillText('墙长方向  →',320,52);const tex=new THREE.CanvasTexture(c);tex.colorSpace=THREE.SRGBColorSpace;this.directionMaterial=new THREE.MeshBasicMaterial({map:tex,polygonOffset:true,polygonOffsetFactor:-1});}
     const directionFace=new THREE.Mesh(this.geo('wall-direction-face',()=>new THREE.PlaneGeometry(160,26)),this.directionMaterial);directionFace.position.set(0,ry+32,1.6);root.add(directionFace);
-    for(const x of[-length/2-12,length/2+12])this.box(12,30,10,x,width/2+28,0,'mid',root,'end-guide',1);
-    this.box(length+3,2,0.4,0,-width/2-7,0,'lo',root,'wall-front-datum',0);
-    for(const x of[-length/2,length/2])this.box(2,width+30,.4,x,0,0,'lo',root,'wall-end-datum',0);
+    this.box(length+240,2.5,.6,0,-width/2-7,0,'chalk',root,'wall-front-datum',0);
+    for(const x of[-length/2,length/2])this.box(2.5,width+90,.6,x,0,0,'chalk',root,'wall-end-datum',0);
     const content=this.group(root,'wall-content');content.position.set(-length/2,-width/2,0);
     const courseGroups=new Map();
     for(const b of bricks){const course=b.course??Math.max(0,Math.round((b.z||0)/(53+mortar)));if(!courseGroups.has(course)){const g=this.group(content,`course-${course}`);g.userData.course=course;courseGroups.set(course,g);this.manualCourses.push(g);}const group=courseGroups.get(course);
@@ -93,9 +98,6 @@ class MasonryScene {
       // A narrow solid insert occupies only the actual open joint interval.
       this.box(Math.min(3,seam.w),seam.d,Math.max(1,seam.h),seam.x,seam.y+seam.d/2,seam.z,'lit',content,'aligned-joint',0);
     }
-    // A real square and level resting beside the trial wall, rather than floating dimensions.
-    this.box(145,10,11,w/2-110,d/2-30,0,'lo',root,'square-long');this.box(10,80,11,w/2-177,d/2-65,0,'lo',root,'square-short');
-    this.box(85,19,12,-w/2+75,d/2-30,0,'mid',root,'spirit-level');this.box(27,10,1,-w/2+75,d/2-30,12,'glass',root,'level-window',1);
     this.applyManualExplode();this.draw();
   }
   makeRobot(){
@@ -180,10 +182,10 @@ class MasonryScene {
   updateRobot(state){this.applyRobotPose(state);this.draw();}
   setPlatformQuiet(p){this.platform=p==='mobile'?'mobile':'fixed';this.mobileParts.visible=this.platform==='mobile';this.fixedParts.visible=this.platform==='fixed';}
   draw(){if(!this.renderer||!this.camera)return;const rect=this.host.getBoundingClientRect();if(!rect.width||!rect.height)return;
-    const aspect=rect.width/rect.height,robot=this.mode==='robot',mortar=this.mode==='mortar';this.floor.position.z=robot?(this.platform==='mobile'?-130:-86):mortar?-86:-72;
+    const aspect=rect.width/rect.height,robot=this.mode==='robot',mortar=this.mode==='mortar';
     let box=(mortar?this.mortarBounds:robot?this.robotBounds:this.manualBounds)?.clone(),points=mortar?this.mortarFramePoints:robot?this.robotFramePoints:this.manualFramePoints;
     if(!box||box.isEmpty())box=new THREE.Box3(new THREE.Vector3(-500,-300,-72),new THREE.Vector3(500,300,150));
-    if(robot)box.min.z=this.platform==='mobile'?-130:-86;
+    {const c=box.getCenter(new THREE.Vector3()),sz=box.getSize(new THREE.Vector3()),span=Math.max(sz.x,sz.y,900)*1.9;this.floor.position.set(c.x,c.y,-.8);this.floor.scale.set(span,span,1);}
     if(this.view==='detail'){
       // 砂浆工位近看：滚筒开口与出料位的灰车
       if(mortar){box=new THREE.Box3(new THREE.Vector3(-1150,-450,100),new THREE.Vector3(-150,450,1200));points=null;}

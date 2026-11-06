@@ -1,6 +1,6 @@
 /* 任务 6-1 砌筑机器人 —— 原页面的三维工作台、砌筑闯关、人工难点实验和机器人取放演示保持不变，搬进统一外壳。
  * 三个工位：人工砌墙（原“先亲手砌一砌”和“发现人工难点”合并为五步）/ 拌砂浆（砂浆搅拌机）/ 机器人取放。
- * 三维区上方放“选研究对象”：人工砌墙的五步、固定/移动工位；面板里是原有的改变条件的控件和试一试。
+ * 三维区上方放“选研究对象”：人工砌墙的五步、机器人的原站位/换站位；面板里是原有的改变条件的控件和试一试。
  */
 (() => {
   'use strict';
@@ -121,7 +121,7 @@
       },
     },
     {
-      id: 'robot', name: '机器人取放', lead: '在上方选工位，一步步看它取砖、转向、落砖。',
+      id: 'robot', name: '机器人取放', lead: '在上方选站位，一步步看机械臂取砖、转向、落砖。',
       build(c) {
         const g = c.section('拆开一次取放');
         if (EL.platformNote) { EL.platformNote.classList.add('c61-note'); c.adopt(EL.platformNote, g); }
@@ -134,7 +134,7 @@
         c.challenges([
           {id: 'full', icon: '▶', title: '完整看一次取放', hint: '播放到“复测”', check: () => robot.full,
             result: '先夹紧再提升，先有支承再松夹：位置和姿态都要对。'},
-          {id: 'mobile', icon: '🚚', title: '移动工位也走一遍', hint: '上方换“移动工位”', check: () => robot.mobile,
+          {id: 'mobile', icon: '🚚', title: '换个站位再砌', hint: '上方点“换站位”', check: () => robot.mobile,
             result: '移动到新站位后要先稳住、重新测量，才能用同一套目标。'},
           {id: 'fault', icon: '⚠', title: '找出 18 mm 偏差', hint: '勾选站位偏差，播到复测', check: () => robot.fault,
             result: '动作一样准地重复，砖照样放偏：问题出在基准上。'},
