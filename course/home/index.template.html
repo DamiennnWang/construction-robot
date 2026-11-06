@@ -2,24 +2,30 @@
 <html lang="zh-CN">
 <head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><meta name="theme-color" content="#e8f0f9"><meta name="color-scheme" content="light dark"><title>智能建筑机械与机器人</title><link rel="stylesheet" href="course/home/home.css"></head>
 <body class="is-overview boot">
-<h1 class="sr-only">智能建筑机械与机器人 · 八章 {{TASK_COUNT}} 项互动任务</h1>
 <div id="app">
 <div id="scene"></div>
 <header class="topbar">
-<a class="brand" id="brand" href="index.html">智能建筑机械与机器人</a>
 <a class="back" id="back" href="index.html" hidden>← 全部章节</a>
 <div class="home-tools"><button id="catalog-open" type="button">全部任务</button></div>
 </header>
-<section id="overview" class="overview" aria-label="课程章节">
+<section id="overview" class="overview" aria-label="课程封面">
+<div class="book" id="book">
+<p class="edition">建筑工程 · 互动学习</p>
+<h1 class="book-title">智能建筑机械<span>与机器人</span></h1>
+<div class="book-rule" aria-hidden="true"></div>
+<p class="book-intro">从机械原理，到智能施工。<br>在观察与操作中，理解人机协作。</p>
+<div class="facts"><p><strong>{{CHAPTER_COUNT}}</strong>学习章节</p><i aria-hidden="true"></i><p><strong>{{TASK_COUNT}}</strong>互动任务</p></div>
+<nav class="toc" id="toc" aria-label="章节目录"></nav>
+<a class="primary" id="start" href="#chapter-1">开始学习<span aria-hidden="true">→</span></a>
+</div>
 <div class="ov-info" id="ov-info">
 <p class="kicker" id="ov-kicker"></p>
 <h2 class="ov-name"><a id="ov-name" href="#chapter-1"></a></h2>
 <p class="ov-desc" id="ov-desc"></p>
-<a class="primary" id="ov-enter" href="#chapter-1">进入本章<span aria-hidden="true">→</span></a>
+<a class="secondary" id="ov-enter" href="#chapter-1">进入本章<span aria-hidden="true">→</span></a>
 </div>
 <button class="step prev" id="prev" type="button" aria-label="上一章">‹</button>
 <button class="step next" id="next" type="button" aria-label="下一章">›</button>
-<nav class="rail" id="rail" aria-label="选择章节"></nav>
 <nav class="chapter-grid" id="chapter-grid" aria-label="全部章节" hidden></nav>
 </section>
 <section id="cover" class="cover" aria-labelledby="cv-name" hidden>

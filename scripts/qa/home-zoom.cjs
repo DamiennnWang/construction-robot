@@ -83,7 +83,8 @@ async function clickTarget(p, match) {
     await p.click('#next'); await settle(p, 'overview');
     ok((await p.evaluate(() => CourseHome.state())).focus === (f0 + 2) % 8 + 1, 'next button switches chapter');
     const before = (await p.evaluate(() => CourseHome.state())).focus;
-    const side = await clickTarget(p, t => t.chapter !== before && t.x > 200 && t.x < 1240 && t.y > 80 && t.y < 520);
+    const stageLeft = await p.evaluate(() => document.getElementById('ov-info').getBoundingClientRect().left);
+    const side = await clickTarget(p, t => t.chapter !== before && t.x > stageLeft + 60 && t.x < 1380 && t.y > 80 && t.y < 520);
     await settle(p, 'overview');
     ok((await p.evaluate(() => CourseHome.state())).focus === side.chapter && !new URL(p.url()).hash, 'clicking a side model brings it into focus', side.chapter);
     await p.click('#ov-name'); await p.waitForURL(u => u.hash === '#chapter-' + side.chapter); await settle(p, 'chapter');
@@ -113,10 +114,17 @@ async function clickTarget(p, match) {
     await p.click('.task[data-task="3-1"] .name'); await p.waitForURL(/\/tasks\/3-1\//);
     ok(true, 'clicking a task card (anywhere on it) opens the task');
     await p.goBack(); await settle(p, 'chapter');
-    /* 自动轮换 */
-    await p.click('#back'); await settle(p, 'overview'); await p.mouse.move(5, 790);
-    const fA = (await p.evaluate(() => CourseHome.state())).focus;
-    await p.waitForFunction(f => CourseHome.state().focus !== f, fA, {timeout: 22000}).then(() => ok(true, 'focus auto-advances when idle'), () => ok(false, 'focus auto-advances when idle'));
+    /* 左侧目录：点一章转到这一章，再点一次进入；不再自动轮换 */
+    await p.click('#back'); await settle(p, 'overview');
+    await p.click('#toc button[data-chapter="7"]'); await settle(p, 'overview');
+    ok((await p.evaluate(() => CourseHome.state())).focus === 7 && !new URL(p.url()).hash, 'table of contents brings chapter 7 forward');
+    await p.waitForTimeout(8000);
+    ok((await p.evaluate(() => CourseHome.state())).focus === 7, 'focus stays put when idle (no auto-rotation)');
+    await p.click('#toc button[data-chapter="7"]'); await p.waitForURL(u => u.hash === '#chapter-7'); await settle(p, 'chapter');
+    ok(true, 'clicking the current chapter in the table of contents enters it');
+    await p.click('#back'); await settle(p, 'overview');
+    await p.click('#start'); await p.waitForURL(u => u.hash === '#chapter-1'); await settle(p, 'chapter');
+    ok(true, '开始学习 enters chapter 1');
     /* 旧封面地址 */
     for (const n of [1, 5, 8]) {
       await p.goto(base + `course/chapters/0${n}/overview/index.html`); await p.waitForURL(u => u.hash === '#chapter-' + n); await settle(p, 'chapter');
@@ -162,7 +170,7 @@ async function clickTarget(p, match) {
     ok(a === b, 'reduced motion keeps models still', [a, b]);
     await p.keyboard.press('Escape'); await settle(p, 'overview');
     const f = (await p.evaluate(() => CourseHome.state())).focus; await p.waitForTimeout(9000);
-    ok((await p.evaluate(() => CourseHome.state())).focus === f, 'reduced motion does not auto-advance');
+    ok((await p.evaluate(() => CourseHome.state())).focus === f, 'reduced motion keeps the chapter in place');
     await ctx.close();
   }
   await browser.close();

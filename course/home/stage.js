@@ -162,7 +162,7 @@
   }
 
   /* 状态 */
-  const state = {focus: 1, chapter: null, zoom: 0, zoomFrom: 0, zoomTo: 0, zoomStart: 0, zoomTime: 1150, arrive: 0, rot: 0, rotTarget: 0, hover: null, time: 1.4, paused: false, layout: {overview: {top: 64, bottom: 220}, cover: {top: 200, bottom: 130}}};
+  const state = {focus: 1, chapter: null, zoom: 0, zoomFrom: 0, zoomTo: 0, zoomStart: 0, zoomTime: 1150, arrive: 0, rot: 0, rotTarget: 0, hover: null, time: 1.4, paused: false, layout: {overview: {left: 0, top: 64, bottom: 220}, cover: {left: 0, top: 200, bottom: 130}}, viewW: 1};
   let resolveZoom = null, width = 1, height = 1;
 
   function focus(n, {instant = false} = {}) {
@@ -191,7 +191,7 @@
   const camOver = {pos: new T.Vector3(), target: new T.Vector3()}, camCover = {pos: new T.Vector3(), target: new T.Vector3()};
   const tmp = new T.Vector3();
   function frameCameras() {
-    const vfov = camera.fov * Math.PI / 180, aspect = width / height, tanV = Math.tan(vfov / 2), tanH = tanV * aspect;
+    const vfov = camera.fov * Math.PI / 180, aspect = state.viewW / height, tanV = Math.tan(vfov / 2), tanH = tanV * aspect;
     const o = state.layout.overview, oz = Math.max(160, height - o.top - o.bottom);
     let d = 4.7 * height / (.86 * oz * 2 * tanV);
     d = Math.max(d, 3.4 / tanH);
@@ -297,7 +297,13 @@
       const target = island.id === state.focus ? 1 : island.id === hoverChapter ? .35 : 0;
       if (Math.abs(target - island.w) > 1e-3) { island.w += (target - island.w) * fw; dirty = true; } else island.w = target;
       island.away = island.id === active ? 0 : z;
-      const s = (.52 + .48 * smooth(island.w)) * (1 - .9 * smooth(island.away));
+      /* 概览时书名压在画面左侧：转到书名下面的展品淡出，不和文字叠在一起（用上一帧的镜头投影） */
+      let page = 1;
+      if (island.id !== state.focus && state.layout.overview.left > 0) {
+        island.group.getWorldPosition(tmp).project(camera);
+        page = smooth(((tmp.x + 1) / 2 * width - state.layout.overview.left * (1 - ez) + 10) / 150);
+      }
+      const s = (.52 + .48 * smooth(island.w)) * (1 - .9 * smooth(island.away)) * page;
       island.group.scale.setScalar(Math.max(.001, s));
       island.group.position.y = -2.4 * smooth(island.away);
       island.group.visible = island.away < .98;
@@ -333,7 +339,12 @@
     }
     glow.scale.set(7.5 + 9 * ez, 7.5 + 2 * ez, 1);
 
-    /* 镜头 */
+    /* 镜头：概览只用书名右侧的区域（虚拟画幅），进入章节后铺满整屏 */
+    const o = state.layout.overview, c = state.layout.cover;
+    const viewLeft = o.left + (c.left - o.left) * ez;
+    state.viewW = Math.max(200, width - viewLeft);
+    const viewShift = ((o.top + (c.top - o.top) * ez) - (o.bottom + (c.bottom - o.bottom) * ez)) / 2;
+    camera.aspect = state.viewW / height;
     frameCameras();
     camera.position.lerpVectors(camOver.pos, camCover.pos, ez);
     tmp.lerpVectors(camOver.target, camCover.target, ez);
@@ -341,10 +352,7 @@
     camera.lookAt(tmp);
     const reach = camera.position.distanceTo(tmp);
     scene.fog.near = reach + 3; scene.fog.far = reach + 26;
-    const o = state.layout.overview, c = state.layout.cover;
-    const top = o.top + (c.top - o.top) * ez, bottom = o.bottom + (c.bottom - o.bottom) * ez;
-    const shift = (top - bottom) / 2;
-    camera.setViewOffset(width, height, 0, -shift, width, height);
+    camera.setViewOffset(state.viewW, height, -viewLeft, -viewShift, width, height);
     camera.updateProjectionMatrix();
 
     renderer.render(scene, camera);

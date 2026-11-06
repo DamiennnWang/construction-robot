@@ -24,7 +24,8 @@
   /* ---------- 概览 ---------- */
   let focus = 1;
   try { focus = Number(sessionStorage.getItem('home-focus')) || 1; } catch {}
-  $('rail').innerHTML = data.chapters.map(c => `<button type="button" data-chapter="${c.id}" aria-label="${ordinal(c.id)} ${esc(c.title)}"><b>${c.id}</b><span>${esc(c.title)}</span><i aria-hidden="true"></i></button>`).join('');
+  /* 左侧目录：点一章，右侧展台转到这一章；再点一次进入。 */
+  $('toc').innerHTML = data.chapters.map(c => `<button type="button" data-chapter="${c.id}" aria-label="${ordinal(c.id)} ${esc(c.title)}"><b>${c.id}</b><span>${esc(c.title)}</span></button>`).join('');
   $('chapter-grid').innerHTML = data.chapters.map(c => `<a href="#chapter-${c.id}" data-chapter="${c.id}"><small>${ordinal(c.id)} · ${c.tasks.length} 项任务</small><strong>${esc(c.title)}</strong><span>${esc(c.description)}</span></a>`).join('');
   $('chapter-grid').hidden = stage.webgl;
   function showFocus(n) {
@@ -36,52 +37,28 @@
     $('ov-desc').textContent = c.description;
     for (const a of [$('ov-name'), $('ov-enter')]) a.href = '#chapter-' + n;
     $('ov-enter').setAttribute('aria-label', `进入${ordinal(n)} ${c.title}`);
-    $('rail').querySelectorAll('button').forEach(b => { const on = Number(b.dataset.chapter) === n; b.classList.toggle('on', on); b.setAttribute('aria-current', on ? 'true' : 'false'); });
+    $('toc').querySelectorAll('button').forEach(b => { const on = Number(b.dataset.chapter) === n; b.classList.toggle('on', on); b.setAttribute('aria-current', on ? 'true' : 'false'); });
     $('ov-info').classList.remove('swap'); void $('ov-info').offsetWidth; $('ov-info').classList.add('swap');
-    autoStart = performance.now();
   }
-  function go(n, user = true) {
+  function go(n) {
     n = ((n - 1 + 8) % 8) + 1;
-    if (user) touch();
     if (stage.webgl) stage.focus(n); else showFocus(n);
   }
   if (stage.webgl) stage.on('focus', showFocus);
   $('prev').onclick = () => go(focus - 1);
   $('next').onclick = () => go(focus + 1);
-  $('rail').addEventListener('click', e => {
+  $('toc').addEventListener('click', e => {
     const b = e.target.closest('button[data-chapter]'); if (!b) return;
     const n = Number(b.dataset.chapter);
-    if (n === focus) location.hash = '#chapter-' + n; else go(n);
+    if (n === focus || !stage.webgl) location.hash = '#chapter-' + n; else go(n);
   });
-
-  /* 自动轮换：无人操作时每 7 秒换一章；动手后暂停 12 秒；减少动画时不轮换。 */
-  const AUTO = 7000, IDLE = 12000;
-  let lastTouch = -IDLE, autoStart = performance.now(), hoverHold = false;
-  function touch() { lastTouch = performance.now(); }
-  function autoTick() {
-    const now = performance.now();
-    const running = stage.webgl && body.classList.contains('is-overview') && !reduce.matches && !document.hidden && !$('catalog').open && !hoverHold && now - lastTouch > IDLE;
-    const bar = $('rail').querySelector('.on i');
-    $('rail').querySelectorAll('i').forEach(i => { if (i !== bar) i.style.transform = 'scaleX(0)'; });
-    if (!running) { autoStart = now; if (bar) bar.style.transform = 'scaleX(0)'; return; }
-    const u = (now - autoStart) / AUTO;
-    if (bar) bar.style.transform = `scaleX(${Math.min(1, u)})`;
-    if (u >= 1) go(focus + 1, false);
-  }
-  setInterval(autoTick, 120);
-  for (const node of [$('ov-info'), $('rail'), $('prev'), $('next')]) {
-    node.addEventListener('pointerenter', () => { hoverHold = true; });
-    node.addEventListener('pointerleave', () => { hoverHold = false; });
-  }
-  addEventListener('pointerdown', touch, true);
-  addEventListener('keydown', touch, true);
 
   /* 滚轮、方向键、轻扫切换章节 */
   /* 滚轮累计到一定量才换一章，换后 0.7 秒内不再换（触控板惯性滚动不会连跳） */
   let wheelSum = 0, lastWheel = 0, lastSwitch = 0;
   addEventListener('wheel', e => {
     if (!body.classList.contains('is-overview') || $('catalog').open || !stage.webgl) return;
-    e.preventDefault(); touch();
+    e.preventDefault();
     const now = performance.now();
     if (now - lastWheel > 250) wheelSum = 0;
     lastWheel = now;
@@ -113,7 +90,6 @@
       else go(target.chapter);
     });
     stage.on('hover', target => {
-      hoverHold = Boolean(target) && !target.task;
       document.querySelectorAll('[data-task].hot').forEach(n => n.classList.remove('hot'));
       if (target?.task) document.querySelectorAll(`[data-task="${target.task}"]`).forEach(n => n.classList.add('hot'));
     });
@@ -149,7 +125,7 @@
     body.classList.toggle('is-cover', cover); body.classList.toggle('is-overview', !cover);
     $('cover').hidden = !cover;
     $('overview').inert = cover; $('cover').inert = !cover;
-    $('back').hidden = !cover; $('brand').hidden = cover;
+    $('back').hidden = !cover;
     if (!cover) document.title = '智能建筑机械与机器人';
     measure();
   }
@@ -181,16 +157,16 @@
     route();
   }
   $('back').addEventListener('click', e => { e.preventDefault(); back(); });
-  $('brand').addEventListener('click', e => { if (!parse()) e.preventDefault(); });
   addEventListener('hashchange', () => route());
   addEventListener('popstate', () => route());
 
   /* 留给三维画面的区域：避开标题、卡片与底部章节条 */
   function measure() {
     if (!stage.webgl) return;
-    const h = innerHeight, top = $('ov-info').getBoundingClientRect().top;
+    /* 宽屏：书名在左，展台占右侧；窄屏：书名在上，展台在下 */
+    const h = innerHeight, info = $('ov-info').getBoundingClientRect(), wide = innerWidth > 900;
     const coverTop = document.querySelector('.cv-info').getBoundingClientRect().bottom, coverBottom = $('tasks').getBoundingClientRect().top;
-    stage.layout({overview: {top: 64, bottom: Math.max(120, h - top + 6)}, cover: {top: Math.max(120, coverTop + 4), bottom: Math.max(110, h - coverBottom + 44)}});
+    stage.layout({overview: {left: wide ? info.left : 0, top: wide ? 64 : $('book').getBoundingClientRect().bottom + 4, bottom: Math.max(120, h - info.top + 6)}, cover: {left: 0, top: Math.max(120, coverTop + 4), bottom: Math.max(110, h - coverBottom + 44)}});
   }
   addEventListener('resize', measure);
 
