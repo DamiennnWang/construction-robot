@@ -10,7 +10,9 @@ module.exports=function integrate(html,lab,root='../'){
   const guide=fs.readFileSync(path.join(__dirname,'../../course/chapters/02/tasks',task,'learning-guides.js'),'utf8');
   const workstation=fs.readFileSync(path.join(__dirname,'workstation.js'),'utf8');
   const renderer=fs.readFileSync(path.join(__dirname,'renderer.js'),'utf8');
+  // 三维区统一底色（嵌入时外壳把自己的取值传进来，见 embed-bridge.js）
+  const tone=fs.readFileSync(path.join(__dirname,'../lab-shell/stage-tone.js'),'utf8').replace(/<\/script/gi,'<\\/script');
   const bridge=fs.readFileSync(path.join(__dirname,'embed-bridge.js'),'utf8').replace(/<\/script/gi,'<\\/script');
-  return html.replace('</head>',`<style data-chapter2-layout>${css()}</style><script>${renderer}</script></head>`)
+  return html.replace('</head>',`<style data-chapter2-layout>${css()}</style><script>${tone}\n${renderer}</script></head>`)
     .replace('</body>',`<script data-root="${root}" data-lab="${lab}">${js().replace('/*__CHAPTER_TASKS__*/',JSON.stringify(links))}</script><script>${guide}\n${workstation}</script><script>${bridge}</script></body>`);
 };

@@ -1,4 +1,4 @@
-/* Shared chapter-one exhibition: fitted layout, learning guide and viewport fullscreen. */
+/* Shared chapter-one exhibition: fitted layout and learning guide. (Stage fullscreen is provided by shared/lab-shell.) */
 (() => {
  'use strict';
  const W=Workshop,$=W.$,frame=document.createElement('div');
@@ -6,14 +6,8 @@
  document.body.classList.add('gallery-page');document.body.prepend(frame);
  frame.append(document.querySelector('.course-nav'),document.querySelector('.workshop'));
  frame.style.setProperty('--exhibit-count',W.config.items.length);
- const panel=frame.querySelector('.viewport-panel'),fullscreen=$('fullscreen');
+ const panel=frame.querySelector('.viewport-panel');
  panel.id='exhibit-viewport';
- panel.querySelector('.view-buttons').append(fullscreen);
- fullscreen.classList.add('viewport-fullscreen');
- fullscreen.setAttribute('aria-controls',panel.id);
- fullscreen.setAttribute('aria-pressed','false');
- fullscreen.setAttribute('aria-label','全屏观察三维模型');
- let expanded=false,busy=false;
  const status=document.createElement('span');
  status.className='sr-only';status.setAttribute('role','status');panel.append(status);
 
@@ -24,45 +18,6 @@
   frame.style.width=compact?'100%':'1600px';frame.style.height=compact?'100dvh':'900px';
   W.stage.resize();
  }
- function present(value,fallback=false){
-  expanded=value;
-  document.body.classList.toggle('viewport-expanded',value);
-  document.body.classList.toggle('viewport-fallback',value&&fallback);
-  panel.classList.toggle('is-expanded',value);
-  for(const el of [frame.querySelector('.course-nav'),frame.querySelector('.heading'),$('tabs'),$('side'),frame.querySelector('.work-footer')])el.inert=value;
-  fullscreen.innerHTML=value?'⛶ <span>恢复</span>':'⛶ <span>全屏</span>';
-  fullscreen.setAttribute('aria-label',value?'恢复展厅布局':'全屏观察三维模型');
-  fullscreen.setAttribute('aria-pressed',String(value));
-  fullscreen.title=value?'恢复展厅布局（Esc）':'放大三维展示区';
-  status.textContent=value?(fallback?'已放大展示区；点击恢复或按 Esc 返回。':'已进入全屏观察；点击恢复或按 Esc 返回。'):'已恢复展厅布局，保留当前动作与观察视角。';
-  fit();
-  requestAnimationFrame(()=>{W.stage.resize();fullscreen.focus({preventScroll:true});requestAnimationFrame(()=>{W.stage.preserveViewOnResize=expanded;});});
- }
- async function leave(){
-  if(document.fullscreenElement===panel){
-   try{await document.exitFullscreen();}catch{status.textContent='请按 Esc 退出浏览器全屏。';}
-  }else present(false);
- }
- fullscreen.onclick=async()=>{
-  if(busy)return;
-  busy=true;
-  try{
-   if(expanded){await leave();return;}
-   // Also covers native Escape / browser resize events before fullscreenchange.
-   W.stage.preserveViewOnResize=true;
-   if(panel.requestFullscreen&&document.fullscreenEnabled){
-    try{await panel.requestFullscreen();if(!expanded)present(true);}
-    catch{present(true,true);}
-   }else present(true,true);
-  }finally{busy=false;}
- };
- document.addEventListener('fullscreenchange',()=>{
-  if(document.fullscreenElement===panel&&!expanded)present(true);
-  else if(expanded&&document.fullscreenElement!==panel&&!document.body.classList.contains('viewport-fallback'))present(false);
- });
- document.addEventListener('keydown',e=>{
-  if(e.key==='Escape'&&expanded){e.preventDefault();e.stopImmediatePropagation();leave();}
- },true);
 
  const guide=W.config.learningGuide;
  if(guide){

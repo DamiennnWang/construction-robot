@@ -6,7 +6,12 @@ html.lab-native .c2-native-stage {
   max-width:none !important; max-height:none !important; min-height:0 !important;
   margin:0 !important; border:0 !important; border-radius:0 !important; box-shadow:none !important;
 }
-html.lab-native .c2-view { background:transparent; }
+/* 三维区统一底色（--stage-bg，见 lab-shell.css）：原页面的三维区本身铺底色，
+   它与三维画布之间的各层容器一律透明——原来的渐变、网格、色调底都不再露出。
+   three.js 画布带 data-engine 属性，用它找出“装着三维画布的那几层”。 */
+html.lab-native .c2-view, html.lab-native .c2-native-stage { background:var(--stage-bg) !important; }
+html.lab-native .c2-native-stage :has(canvas[data-engine]),
+html.lab-native .c2-native-stage canvas[data-engine] { background:transparent !important; }
 
 /* 三维区上方一排：模型选择 */
 .c2-stage-top {

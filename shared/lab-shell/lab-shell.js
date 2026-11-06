@@ -10,6 +10,19 @@
   const href = p => (window.courseHref ? window.courseHref(p) : p);
   const fmt = (v, n = 0) => (Number.isFinite(v) ? (Math.abs(v) < Math.pow(10, -n) / 2 ? 0 : v).toFixed(n) : '—');
 
+  /** 外壳 CSS 里的三维区取值（浅色、深色各一份），传给嵌入的原版实验页。 */
+  function stageTones() {
+    const out = {};
+    for (const t of ['light', 'dark']) {
+      const probe = document.createElement('i'); probe.dataset.stageTone = t; probe.hidden = true;
+      document.body.append(probe);
+      const cs = getComputedStyle(probe), v = n => cs.getPropertyValue(n).trim();
+      out[t] = {bg: v('--stage-bg'), floor: v('--stage-floor'), shadow: v('--stage-shadow')};
+      probe.remove();
+    }
+    return out;
+  }
+
   function start(cfg) {
     const native = Boolean(cfg.native);
     document.title = `${cfg.task} ${cfg.title}｜智能建筑机械与机器人`;
@@ -49,8 +62,11 @@
     const loading = h('div', 'c2-loading'); loading.append(h('span', 'c2-spinner'), h('span', '', '正在载入三维模型…'));
     const tools = h('div', 'c2-tools');
     const card = h('div', 'c2-part'); card.hidden = true; card.setAttribute('role', 'status');
-    const hint = h('div', 'c2-hint');
-    view.append(loading, tools, card, hint);
+    const hint = h('div', 'c2-hint'); hint.setAttribute('aria-hidden', 'true');
+    const fs = h('button', 'c2-fs'); fs.type = 'button';
+    fs.innerHTML = '<svg class="c2-fs-in" viewBox="0 0 24 24" aria-hidden="true"><path d="M4 9V4h5M20 9V4h-5M4 15v5h5M20 15v5h-5"/></svg>'
+      + '<svg class="c2-fs-out" viewBox="0 0 24 24" aria-hidden="true"><path d="M9 4v5H4M15 4v5h5M9 20v-5H4M15 20v-5h5"/></svg>';
+    view.append(loading, tools, card, hint, fs);
     const strip = h('div', 'c2-strip');
     const transportBox = h('div', 'c2-transport');
     const readBox = h('div', 'c2-readouts');
@@ -64,7 +80,8 @@
     const feedback = h('div', 'c2-feedback'); feedback.setAttribute('role', 'status'); feedback.setAttribute('aria-live', 'polite');
     const redo = h('button', 'c2-redo', '↺ 重来'); redo.type = 'button'; redo.title = '把这个工位恢复到开始的样子';
     const next = h('button', 'c2-btn c2-primary c2-next', '去下一站 →'); next.type = 'button';
-    panel.append(head, body);
+    const credit = h('div', 'c2-credit'); credit.hidden = true;
+    panel.append(head, body, credit);
     view.append(feedback);
     let toastTimer = 0;
     main.append(stageBox, panel);
@@ -78,7 +95,35 @@
       if (cfg.redo === false) redo.hidden = true;
     }
 
-    let current = -1, ctx = null, frame = null, cleanup = [];
+    /* 全屏：整块三维区（三维视图 + 上方选择条 + 提示条）。进出全屏都补发 resize，Esc 退出。 */
+    const full = () => document.fullscreenElement === stageBox || stageBox.classList.contains('c2-full-fallback');
+    const relayout = () => { for (const t of [0, 80, 300]) setTimeout(() => { dispatchEvent(new Event('resize')); frame?.contentWindow?.postMessage({c2: 'cmd', op: 'resize'}, '*'); }, t); };
+    const syncFs = () => {
+      const on = full();
+      stageBox.classList.toggle('c2-full', on);
+      fs.setAttribute('aria-pressed', String(on));
+      fs.setAttribute('aria-label', on ? '退出全屏' : '全屏查看三维模型');
+      fs.title = on ? '退出全屏（Esc）' : '全屏';
+    };
+    const setFull = async on => {
+      if (on === full()) return;
+      if (document.fullscreenEnabled && stageBox.requestFullscreen) {
+        try { if (on) await stageBox.requestFullscreen(); else await document.exitFullscreen(); return; } catch { /* 改用铺满窗口 */ }
+      }
+      stageBox.classList.toggle('c2-full-fallback', on); syncFs(); relayout();
+    };
+    fs.addEventListener('click', () => setFull(!full()));
+    document.addEventListener('fullscreenchange', () => { syncFs(); relayout(); });
+    document.addEventListener('keydown', e => { if (e.key === 'Escape' && stageBox.classList.contains('c2-full-fallback')) setFull(false); });
+    syncFs();
+
+    /* 操作提示：只出现一次，第一次拖动、滚轮或几秒后淡出 */
+    let hintDone = false, hintTimer = 0;
+    const dismissHint = () => { if (hintDone) return; hintDone = true; clearTimeout(hintTimer); hint.classList.add('gone'); setTimeout(() => { hint.hidden = true; }, 700); };
+    for (const type of ['pointerdown', 'wheel']) view.addEventListener(type, dismissHint, {passive: true, capture: true});
+    window.addEventListener('blur', () => { if (document.activeElement === frame) dismissHint(); }); // 第二章：在 iframe 里的第一次操作
+
+    let current = -1, ctx = null, frame = null, cleanup = [], floorAll = () => {};
     const tabButtons = cfg.stations.map((s, i) => {
       const b = h('button', 'c2-station'); b.type = 'button'; b.setAttribute('role', 'tab');
       b.append(h('span', 'c2-num', String(i + 1)), h('span', 'c2-name', s.name), h('span', 'c2-check', '✓'));
@@ -103,7 +148,8 @@
       if (d.type === 'ready' || (d.type === 'state' && ctx && !ctx.lab.ready)) { loading.hidden = true; sendTheme(); ctx?._ready(); }
       if (d.type === 'state') ctx?._state(d.data);
     });
-    const sendTheme = () => frame?.contentWindow?.postMessage({c2: 'cmd', op: 'theme', value: window.CourseTheme?.get?.() || 'light'}, '*');
+    // 主题和三维区底色一起传给原版实验页，嵌入的三维视图与外壳同一底色
+    const sendTheme = () => frame?.contentWindow?.postMessage({c2: 'cmd', op: 'theme', value: window.CourseTheme?.get?.() || 'light', stage: stageTones()}, '*');
     window.addEventListener('course-theme-change', sendTheme);
 
     // 原页面的控件始终留在文档里（原程序可能随时读写它们），换工位时先放回停放处
@@ -122,8 +168,12 @@
       parkAll();
       body.replaceChildren(); clearTimeout(toastTimer); feedback.textContent = ''; feedback.className = 'c2-feedback';
       transportBox.replaceChildren(); readBox.replaceChildren(); tools.replaceChildren(); card.hidden = true;
-      hint.textContent = (s.note ? s.note + '　' : '') + (s.hint ?? cfg.hint ?? '拖动旋转 · 滚轮缩放');
-      hint.hidden = !hint.textContent;
+      if (!hintDone) {
+        hint.textContent = s.hint ?? cfg.hint ?? '拖动旋转 · 滚轮缩放';
+        hint.hidden = !hint.textContent;
+        clearTimeout(hintTimer); if (!hint.hidden) hintTimer = setTimeout(dismissHint, 9000);
+      }
+      credit.hidden = true; credit.replaceChildren();
       if (native) {
         if (!fromPage) cfg.select?.(s.id);
       } else {
@@ -139,7 +189,7 @@
       syncTabs();
       // 原页面的渲染器按容器尺寸重新取景；布局稳定后再通知一次
       dispatchEvent(new Event('resize'));
-      if (native) for (const t of [60, 300, 900]) setTimeout(() => dispatchEvent(new Event('resize')), t);
+      if (native) for (const t of [60, 300, 900]) setTimeout(() => { dispatchEvent(new Event('resize')); floorAll(); }, t);
     }
     redo.addEventListener('click', () => { const i = current; current = -1; cfg.reset?.(cfg.stations[i].id); select(i); });
     next.addEventListener('click', () => select(Math.min(current + 1, cfg.stations.length - 1)));
@@ -184,6 +234,21 @@
           card.replaceChildren(h('strong', '', name), h('span', '', desc || ''));
           const x = h('button', 'c2-x', '×'); x.type = 'button'; x.setAttribute('aria-label', '关闭'); x.onclick = () => { card.hidden = true; };
           card.append(x); card.hidden = false;
+        },
+        /** 模型来源与许可：面板最底下的 ⓘ，点开才显示。lines 为文字数组，link = {href, label}。 */
+        credit(lines, link) {
+          lines = [].concat(lines || []).filter(Boolean);
+          credit.replaceChildren(); credit.hidden = !lines.length;
+          if (!lines.length) return;
+          const btn = h('button', 'c2-credit-btn'); btn.type = 'button'; btn.setAttribute('aria-expanded', 'false');
+          btn.append(h('i', '', 'i'), document.createTextNode('模型来源'));
+          btn.title = lines.join('\n');
+          const pop = h('div', 'c2-credit-pop'); pop.hidden = true; pop.id = 'c2-credit-' + s.id;
+          btn.setAttribute('aria-controls', pop.id);
+          for (const l of lines) pop.append(h('p', '', l));
+          if (link?.href) { const a = h('a', '', (link.label || '许可证') + ' ↗'); a.href = link.href; a.target = '_blank'; a.rel = 'noopener'; pop.append(h('p')); pop.lastChild.append(a); }
+          btn.addEventListener('click', () => { pop.hidden = !pop.hidden; btn.setAttribute('aria-expanded', String(!pop.hidden)); });
+          credit.append(pop, btn);
         },
         /* —— 面板控件 —— */
         section(titleText, extra, into = body) {
@@ -364,6 +429,41 @@
       return c;
     }
 
+    /* 字号下限（原地模式）：搬进外壳的原页面文字——面板、三维区里的浮层与 SVG 标注——不小于 12px，
+       面板里的段落不小于 13px。原页面按 1600×900 整页缩放设计，常有 7～11px 的小字，这里统一放大到可读、可投影的字号；
+       低价值的小字（英文小标、图号、重复的操作提示）由各任务 stations.css 直接隐藏。SVG 文字按屏幕上的实际大小计算。 */
+    const MIN_TEXT = 12, MIN_PARA = 13;
+    const floorText = root => {
+      if (!root?.querySelectorAll) return;
+      for (const el of [root, ...root.querySelectorAll('*')]) {
+        if (el.closest('.c2-parking, .c3-legacy, script, style')) continue;
+        if (![...el.childNodes].some(n => n.nodeType === 3 && n.textContent.trim())) continue;
+        const cs = getComputedStyle(el);
+        if (cs.display === 'none' || cs.position === 'absolute' && cs.clip !== 'auto' && /rect\(0/.test(cs.clip)) continue;
+        const size = parseFloat(cs.fontSize);
+        if (el instanceof SVGElement) {
+          const m = el.getScreenCTM?.(), k = m ? Math.hypot(m.a, m.b) : 1;
+          if (k > 0 && size * k < MIN_TEXT - .05) el.style.fontSize = (MIN_TEXT / k).toFixed(2) + 'px';
+          continue;
+        }
+        const min = el.tagName === 'P' && el.closest('.c2-panel') ? MIN_PARA : MIN_TEXT;
+        if (size < min - .05) el.style.setProperty('font-size', min + 'px', 'important');
+      }
+    };
+    if (native) {
+      // 观察者回调在本轮脚本结束、画面重绘之前执行：原页面每帧重写的读数也不会先以小字闪现
+      const mo = new MutationObserver(recs => {
+        const seen = new Set();
+        for (const r of recs) for (const n of r.addedNodes) {
+          const el = n.nodeType === 1 ? n : n.parentElement;
+          if (el && el.isConnected && !seen.has(el)) { seen.add(el); floorText(el); }
+        }
+      });
+      for (const root of [panel, stageBox]) mo.observe(root, {childList: true, subtree: true});
+      window.addEventListener('course-theme-change', () => floorText(stageBox));
+      floorAll = () => { floorText(panel); floorText(stageBox); };
+    }
+
     /* 原地模式：定时读原页面状态；原页面自己切换了活动时，工位条跟着变 */
     if (native) {
       setInterval(() => {
@@ -381,7 +481,7 @@
     };
     window.addEventListener('hashchange', () => select(fromHash(), true));
     select(fromHash(), true);
-    window.c2Lab = {select, get ctx() { return ctx; }, get frame() { return frame; }, get current() { return current; }};
+    window.c2Lab = {select, setFull, get ctx() { return ctx; }, get frame() { return frame; }, get current() { return current; }};
   }
 
   window.LabShell = {

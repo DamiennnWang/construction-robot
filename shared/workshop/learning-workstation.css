@@ -57,7 +57,7 @@ body.learning-page{height:100dvh;overflow:hidden;background:#dce7ef}
 .compact-lesson #lesson-frame .heading .eyebrow{font-size:7px;letter-spacing:1px}
 .compact-lesson #lesson-frame .heading p{display:none}
 .compact-lesson #lesson-frame .heading-tools{display:flex;gap:4px}
-.compact-lesson #lesson-frame #fullscreen{display:none}
+
 .compact-lesson #lesson-frame #help{font-size:10px;padding:7px}
 .compact-lesson .lesson-toolbar{gap:7px}
 .compact-lesson #learning-cases{overflow:auto}

@@ -40,7 +40,6 @@ body.gallery-page{height:100dvh;overflow:hidden;background:#dce7ef}
 .compact-gallery #gallery-frame .heading .eyebrow{font-size:8px;letter-spacing:1px}
 .compact-gallery #gallery-frame .heading p{display:none}
 .compact-gallery #gallery-frame .heading-tools{display:flex;gap:4px}
-.compact-gallery #gallery-frame #fullscreen{display:inline-flex}
 .compact-gallery #gallery-frame #help{font-size:10px;padding:7px}
 .compact-gallery #gallery-frame .tabs{display:flex!important;overflow:auto;gap:6px}
 .compact-gallery #gallery-frame .tabs button{flex:0 0 128px;height:40px;padding:5px 8px}
@@ -67,23 +66,10 @@ body.gallery-page{height:100dvh;overflow:hidden;background:#dce7ef}
 /* A consistent observation toolbar for both first-chapter exhibits. */
 .gallery-page #gallery-frame .scene-top{gap:12px;min-height:46px}
 .gallery-page #gallery-frame .view-buttons{display:flex;gap:5px;align-items:center;flex-shrink:0}
-.gallery-page #gallery-frame .scene-top .viewport-fullscreen{display:inline-flex;align-items:center;gap:6px;margin-left:8px;padding:7px 12px;border-color:var(--blue);color:var(--blue);background:var(--soft)}
 .gallery-page #learning-guide{background:var(--soft);border-color:var(--blue);color:var(--blue)}
 .gallery-page .heading-tools{display:flex;gap:8px}
 .gallery-page button:focus-visible{outline:3px solid var(--blue);outline-offset:3px}
 
-/* Native fullscreen and an in-page equivalent for browsers without its API. */
-.gallery-page #gallery-frame .viewport-panel.is-expanded{width:100vw;height:100dvh;max-width:none;max-height:none;min-height:0;border:0;border-radius:0;background:var(--paper);display:flex;flex-direction:column;padding:0}
-.gallery-page #gallery-frame .viewport-panel.is-expanded .scene-host{height:auto;min-height:0;flex:1}
-.gallery-page #gallery-frame .viewport-panel.is-expanded .scene-top{min-height:54px;padding:8px 22px}
-.gallery-page #gallery-frame .viewport-panel.is-expanded .scene-top button{font-size:12px;padding:8px 12px;min-height:34px}
-.gallery-page #gallery-frame .viewport-panel.is-expanded .hero-playback{padding:13px 22px}
-.gallery-page #gallery-frame .viewport-panel.is-expanded .scene-tools{right:22px;bottom:22px}
-.gallery-page #gallery-frame .viewport-panel.is-expanded .scene-tools button{min-height:36px;font-size:12px;padding:7px 11px}
-.gallery-page #gallery-frame .viewport-panel.is-expanded .hero-caption{top:28px;left:30px}
-.gallery-page.viewport-fallback #gallery-frame{position:fixed;inset:0;transform:none;width:100vw!important;height:100dvh!important}
-.gallery-page.viewport-fallback #gallery-frame .viewport-panel.is-expanded{position:fixed;inset:0;z-index:100}
-.gallery-page.viewport-fallback #gallery-frame .course-nav,.gallery-page.viewport-fallback #gallery-frame .heading,.gallery-page.viewport-fallback #gallery-frame .tabs,.gallery-page.viewport-fallback #gallery-frame .side,.gallery-page.viewport-fallback #gallery-frame .work-footer{visibility:hidden}
 
 /* Learning content is supplied by each task; presentation is shared. */
 .learning-guide-dialog{box-sizing:border-box;width:min(760px,calc(100vw - 32px));max-width:none;max-height:calc(100dvh - 40px);padding:28px 32px;border:1px solid var(--line);border-radius:16px;background:var(--paper);color:var(--ink);overflow:auto;box-shadow:0 24px 90px #071e4433}
@@ -114,11 +100,6 @@ body.gallery-page{height:100dvh;overflow:hidden;background:#dce7ef}
  .compact-gallery #gallery-frame .scene-top>span{font-size:8px;letter-spacing:0}
  .compact-gallery #gallery-frame .view-buttons{gap:3px}
  .compact-gallery #gallery-frame .scene-top button{min-height:26px;padding:4px 6px}
- .compact-gallery #gallery-frame .scene-top .viewport-fullscreen{margin-left:3px;padding:4px 7px;gap:3px}
- .compact-gallery #gallery-frame .viewport-panel.is-expanded .scene-top{padding:8px;min-height:42px}
- .compact-gallery #gallery-frame .viewport-panel.is-expanded .scene-top button{font-size:10px;padding:6px;min-height:30px}
- .compact-gallery #gallery-frame .viewport-panel.is-expanded .hero-playback{padding:9px}
- .compact-gallery #gallery-frame .viewport-panel.is-expanded .hero-caption{top:16px;left:16px}
  .learning-guide-dialog{padding:21px 18px;width:calc(100vw - 20px);max-height:calc(100dvh - 24px);border-radius:12px}
  .learning-guide-dialog h2{font-size:21px}
  .guide-heading{gap:10px}

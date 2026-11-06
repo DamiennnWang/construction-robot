@@ -18,6 +18,8 @@ def relative(path):
     return result if result.startswith('.') else './'+result
 def script(path):return '<script src="'+relative(path)+'"></script>'
 scripts=['shared/vendor/three-r160.min.js','shared/navigation.js','shared/workshop/shell.js','shared/workshop/machines.js','shared/workshop/machine-models.js','shared/workshop/stage.js']
+# 任务页：三维区统一底色取值器（shared/lab-shell/stage-tone.js）要在建场景之前载入
+if not ident.startswith('overview-'):scripts.insert(2,'shared/lab-shell/stage-tone.js')
 if config['mode']=='gallery':
     scripts+=['shared/workshop/robots.js','shared/workshop/robot-parts.js','shared/workshop/hero-model.js','shared/workshop/hero-stage.js']
     if ident=='1-2':
