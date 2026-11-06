@@ -77,15 +77,16 @@
   addEventListener('keydown', touch, true);
 
   /* 滚轮、方向键、轻扫切换章节 */
-  let wheelSum = 0, wheelAt = 0;
+  /* 滚轮累计到一定量才换一章，换后 0.7 秒内不再换（触控板惯性滚动不会连跳） */
+  let wheelSum = 0, lastWheel = 0, lastSwitch = 0;
   addEventListener('wheel', e => {
     if (!body.classList.contains('is-overview') || $('catalog').open || !stage.webgl) return;
     e.preventDefault(); touch();
     const now = performance.now();
-    if (now - wheelAt > 260) wheelSum = 0;
+    if (now - lastWheel > 250) wheelSum = 0;
+    lastWheel = now;
     wheelSum += Math.abs(e.deltaY) > Math.abs(e.deltaX) ? e.deltaY : e.deltaX;
-    if (Math.abs(wheelSum) > 60 && now - wheelAt > 650) { go(focus + Math.sign(wheelSum)); wheelSum = 0; wheelAt = now; }
-    else if (now - wheelAt > 650) wheelAt = now - 400;
+    if (Math.abs(wheelSum) > 50 && now - lastSwitch > 700) { go(focus + Math.sign(wheelSum)); wheelSum = 0; lastSwitch = now; }
   }, {passive: false});
   addEventListener('keydown', e => {
     if ($('catalog').open || e.altKey || e.ctrlKey || e.metaKey) return;

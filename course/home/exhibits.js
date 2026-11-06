@@ -104,9 +104,9 @@
   /* 第六章 · 喷涂：喷枪沿墙上下往复，喷雾锥随之移动。 */
   function spray(model) {
     const nozzle = model.rig.nozzle;
-    const mist = new T.Mesh(new T.ConeGeometry(.3, .55, 24, 1, true), new T.MeshBasicMaterial({color: 0xbfe2ff, transparent: true, opacity: .4, side: T.DoubleSide, depthWrite: false}));
+    const mist = new T.Mesh(new T.ConeGeometry(.3, .55, 24, 1, true), new T.MeshBasicMaterial({color: 0x4f9be8, transparent: true, opacity: .5, side: T.DoubleSide, depthWrite: false}));
     mist.position.set(.98, 0, -.98); mist.rotation.x = -Math.PI / 2; mist.rotation.z = .7; nozzle.add(mist);
-    return t => { model.pose(t * 2.4); mist.material.opacity = .3 + .12 * Math.sin(t * 13); };
+    return t => { model.pose(t * 2.4); mist.material.opacity = .42 + .14 * Math.sin(t * 13); };
   }
 
   /* 第七章 · 无人机巡检：沿立面逐行飞过，旋翼高速转动。 */
