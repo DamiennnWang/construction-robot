@@ -27,8 +27,8 @@
       id: 'earth', name: '土方机械', items: ['excavator', 'dozer', 'loader'],
       lead: '挖掘机挖、推土机推、装载机装。挑一台，拖滑杆让它干活的部件动起来。',
       challenges: [
-        {id: 'slew', icon: '↻', title: '让挖掘机转个身', hint: '“回转平台”拖过 45°', check: s => reach(s, 'excavator', 'slew') >= 45,
-          result: '驾驶室、动臂和配重都装在回转平台上一起转，下面的履带底盘不动。'},
+        {id: 'dig', icon: '↻', title: '让挖掘机转身挖一斗', hint: '四根滑杆各拖一拖', check: s => reach(s, 'excavator', 'slew') >= 30 && ['boom', 'stick', 'bucket'].every(k => swept(s, 'excavator', k) >= 15),
+          result: '回转平台带着上车转，动臂抬落、斗杆收放、铲斗翻转——各靠一根液压缸推动，配合起来就是一次挖掘。'},
         {id: 'blade', icon: '⛏', title: '把推土机铲刀抬起来', hint: '“铲刀抬升”拖过 12°', check: s => range(s, 'dozer', 'blade').max >= 12,
           result: '两侧提升液压缸一伸，推架带着铲刀离地；放低铲刀往前开，就能推土。'},
         {id: 'scoop', icon: '🪣', title: '装载机举臂又收斗', hint: '两根滑杆都拖过 18°', check: s => s.selected === 'loader' && s.val.lift >= 18 && s.val.bucket >= 18,

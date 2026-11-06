@@ -51,6 +51,13 @@
     if(override)return override;
     if(/TrackFrame|Wheels_[LR]/.test(path))return 'tracks';
     if(/Cab(?:\/|Frame|Interior)/.test(path))return 'cab';
+    // Hydraulic cylinders and the bucket linkage move on their own pins.
+    const seg=name=>new RegExp('(^|/)'+name+'(/|$)').test(path);
+    if(seg('BoomCylinderTube'))return 'boomCylBarrel';if(seg('BoomPistonRod'))return 'boomCylRod';
+    if(seg('ArmCylinderTube'))return 'armCylBarrel';if(seg('ArmPistionRod'))return 'armCylRod';
+    if(seg('BucketCylinderTube'))return 'bucketCylBarrel';if(seg('BucketPistonRod'))return 'bucketCylRod';
+    if(seg('ILink'))return 'iLink';if(seg('HLink'))return 'hLink';
+    if(/^BucketCylinderTubePin\//.test(path))return 'stick';
     if(/Bucket|HLink|ILink/.test(path))return 'bucket';
     if(/Arm(?:\/|Foot|PistonRodPin)/.test(path))return 'stick';
     if(/Boom|ArmCylinder|ArmPistion/.test(path)&&!/UpperStructure/.test(path))return 'boom';return 'upper';
@@ -127,25 +134,54 @@
    const node=new T.Group();node.name='pivot:'+keys.join(',');node.position.copy(position);parent.add(node);parent.updateMatrixWorld(true);
    for(const key of keys){const g=group(key);node.attach(g);}return node;
   }
-  function part(key,label,keys=[key]){
-   const members=keys.map(group),bounds=new T.Box3();members.forEach(g=>bounds.union(new T.Box3().setFromObject(g)));
+  function part(key,label,keys=[key],anchorKeys=keys){
+   const members=keys.map(group),bounds=new T.Box3();anchorKeys.map(group).forEach(g=>bounds.union(new T.Box3().setFromObject(g)));
    const anchor=new T.Object3D(),host=members[0];body.updateMatrixWorld(true);anchor.position.copy(host.worldToLocal(bounds.getCenter(V())));host.add(anchor);
    members.forEach(g=>g.userData.partId=key);parts.push({id:key,label,node:anchor,members,description:label+'：原始模型总成，可旋转、近看或展开观察。'});
   }
   function control(key,label,min,max){controls.push({id:key,label,min,max,step:1,default:0});state[key]=0;}
   // A cylinder keeps its original barrel/rod lengths: only angle and insertion change.
   // Both ends are explicit pins, so the actuator stays connected throughout the motion.
-  function cylinder(prefix,a,b,endpoint,basepoint=()=>a.clone()){
-   const barrel=pivot(body,a,[prefix+'Barrel']),rod=pivot(body,b,[prefix+'Rod']),original=b.clone().sub(a).normalize();
-   rig.push(()=>{const start=basepoint(),end=endpoint(),q=new T.Quaternion().setFromUnitVectors(original,end.clone().sub(start).normalize());barrel.position.copy(start);rod.position.copy(end);barrel.quaternion.copy(q);rod.quaternion.copy(q);});
+  // parent/origin: the cylinder may ride on a moving member; points are then given in that
+  // member's rest frame and origin is the member's pivot (its local origin).
+  function cylinder(prefix,a,b,endpoint,basepoint=()=>a.clone(),parent=body,origin=V()){
+   const barrel=pivot(parent,a.clone().sub(origin),[prefix+'Barrel']),rod=pivot(parent,b.clone().sub(origin),[prefix+'Rod']),original=b.clone().sub(a).normalize();
+   rig.push(()=>{const start=basepoint(),end=endpoint(),q=new T.Quaternion().setFromUnitVectors(original,end.clone().sub(start).normalize());barrel.position.copy(start).sub(origin);rod.position.copy(end).sub(origin);barrel.quaternion.copy(q);rod.quaternion.copy(q);});
   }
   function transformed(point,hinge){body.updateMatrixWorld(true);return body.worldToLocal(hinge.localToWorld(point.clone().sub(hinge.userData.pivot)));}
   function markPivot(node,p){node.userData.pivot=p.clone();return node;}
   let animate;
   if(id==='excavator'){
-   const p=source.getObjectByName('UpperStructure').getWorldPosition(V()),yaw=markPivot(pivot(body,p,['upper','cab','boom','stick','bucket']),p);
-   control('slew','回转平台',-65,65);animate=()=>{yaw.rotation.y=rad(state.slew);};
-   part('tracks','履带底盘');part('upper','回转平台与配重');part('cab','驾驶室与操纵台');part('boom','动臂与油缸');part('stick','斗杆');part('bucket','铲斗与连杆');
+   const p=source.getObjectByName('UpperStructure').getWorldPosition(V()),yaw=markPivot(pivot(body,p,['upper','cab']),p);
+   // Work equipment pins, read from the author's pin meshes (rest pose, source frame).
+   const pin=name=>namedCenter(name),node=name=>{const o=source.getObjectByName(name);if(!o)throw Error('缺少原模型定位部件：'+name);return new T.Box3().setFromObject(o).getCenter(V());},mid=(a,b)=>a.clone().add(b).multiplyScalar(.5);
+   const boomFoot=pin('BoomFootPin'),boomCylBase=mid(pin('BoomCylinderTubePin_L'),pin('BoomCylinderTubePin_R')),boomCylEnd=node('BoomPistonRodPin');
+   const armFoot=pin('ArmFootPin'),armCylBase=pin('ArmCylinderTubePin'),armCylEnd=pin('ArmPistonRodPin');
+   const bucketFoot=pin('BucketFootPin'),bucketCylBase=pin('BucketCylinderTubePin'),hPin=pin('BucketHLinkPin'),iPin=node('ILinkPin'),joint=node('ILinkPin001');
+   const boomP=markPivot(pivot(body,boomFoot,['boom']),boomFoot),stickP=markPivot(pivot(body,armFoot,['stick']),armFoot),bucketP=markPivot(pivot(body,bucketFoot,['bucket']),bucketFoot);
+   const iLink=pivot(body,iPin,['iLink']),hLink=pivot(body,joint,['hLink']);
+   yaw.attach(boomP);boomP.attach(stickP);stickP.attach(bucketP);stickP.attach(iLink);stickP.attach(hLink);
+   // Points are kept in each member's rest frame; turn(v,c,deg) rotates about the lateral pin axis.
+   const turn=(v,c,deg)=>v.clone().sub(c).applyAxisAngle(V(0,0,1),rad(deg)).add(c);
+   const flat=v=>new T.Vector2(v.x,v.y),rIJ=flat(joint).distanceTo(flat(iPin)),rHJ=flat(joint).distanceTo(flat(hPin));
+   let linkage={j:joint.clone(),i:0,h:0};
+   // Bucket four-bar: the joint lies on the I-link circle and the H-link circle around the moved bucket pin.
+   const solveLinkage=()=>{
+    const h=turn(hPin,bucketFoot,state.bucket),a=flat(iPin),b=flat(h),d=a.distanceTo(b);
+    if(d>rIJ+rHJ||d<Math.abs(rIJ-rHJ))return linkage;
+    const x=(rIJ*rIJ-rHJ*rHJ+d*d)/(2*d),y=Math.sqrt(Math.max(0,rIJ*rIJ-x*x)),u=b.clone().sub(a).normalize(),n=new T.Vector2(-u.y,u.x);
+    const options=[1,-1].map(s=>a.clone().add(u.clone().multiplyScalar(x)).add(n.clone().multiplyScalar(s*y)));
+    const prev=flat(linkage.j),best=options.sort((p,q)=>p.distanceTo(prev)-q.distanceTo(prev))[0],j=V(best.x,best.y,joint.z);
+    const ang=(v,c)=>Math.atan2(v.y-c.y,v.x-c.x);
+    return linkage={j,i:ang(j,iPin)-ang(joint,iPin),h:ang(h,j)-ang(hPin,joint)};
+   };
+   cylinder('boomCyl',boomCylBase,boomCylEnd,()=>turn(boomCylEnd,boomFoot,state.boom),()=>boomCylBase.clone(),yaw,p);
+   cylinder('armCyl',armCylBase,armCylEnd,()=>turn(armCylEnd,armFoot,state.stick),()=>armCylBase.clone(),boomP,boomFoot);
+   cylinder('bucketCyl',bucketCylBase,joint,()=>linkage.j.clone(),()=>bucketCylBase.clone(),stickP,armFoot);
+   control('slew','回转平台',-65,65);control('boom','动臂升降',-10,22);control('stick','斗杆收放',-25,28);control('bucket','铲斗翻转',-40,55);
+   animate=()=>{yaw.rotation.y=rad(state.slew);boomP.rotation.z=rad(state.boom);stickP.rotation.z=rad(state.stick);bucketP.rotation.z=rad(state.bucket);
+    const l=solveLinkage();iLink.rotation.z=l.i;hLink.position.copy(l.j).sub(armFoot);hLink.rotation.z=l.h;};
+   part('tracks','履带底盘');part('upper','回转平台与配重');part('cab','驾驶室与操纵台');part('boom','动臂与油缸',['boom','boomCylBarrel','boomCylRod'],['boom']);part('stick','斗杆与油缸',['stick','armCylBarrel','armCylRod'],['stick']);part('bucket','铲斗与连杆',['bucket','iLink','hLink','bucketCylBarrel','bucketCylRod'],['bucket']);
   }else if(id==='dozer'){
    const p=V(-1.4055,.7647232,0),blade=markPivot(pivot(body,p,['blade','pushArms','bladeMounts']),p);
    for(const side of [1,-1]){const a=V(.2945,1.8547232,-side*.78),b=V(2.1845,1.1447232,-side*1.27);cylinder('ram'+side,a,b,()=>transformed(b,blade));}
