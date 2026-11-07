@@ -43,6 +43,7 @@ for family in ('dozer','drone'):
     pending.append(model_manifest)
     pending.extend(ROOT/row[key] for row in json.loads(model_manifest.read_text(encoding='utf-8')) for key in ('runtime','license','provenance'))
 pending.append(ROOT/'shared/models/manifest.json')  # 教材文档在仓库外，不随网站发布
+pending.append(ROOT/'resources/media/promo-720p.mp4')  # 宣传片，README 封面链接到线上这份
 for pattern in ('course/chapters/*/overview/*.html', 'course/chapters/*/tasks/*/*.html',
                 'course/chapters/*/tasks/*/assets/**/*', 'shared/vendor/**/*', 'shared/anatomy/LICENSE*'):
     pending.extend(p for p in ROOT.glob(pattern) if p.is_file())

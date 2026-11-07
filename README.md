@@ -13,9 +13,9 @@
 
 ## 宣传片
 
-[![宣传片封面：智能建筑机械与机器人 · 游戏化 · 任务式 · 数字教材](.github/readme/promo-cover.jpg)](.github/readme/promo-720p.mp4)
+[![宣传片封面：智能建筑机械与机器人 · 游戏化 · 任务式 · 数字教材](.github/readme/promo-cover.jpg)](https://construction-robotics.644019085.workers.dev/resources/media/promo-720p.mp4)
 
-▶ 点击封面观看宣传片（25 秒，720p）。
+▶ 点击封面在线观看宣传片（25 秒，720p）。视频文件：[resources/media/promo-720p.mp4](resources/media/promo-720p.mp4)，原片保存在仓库外的 `教材制作/成片/宣传片/`。
 
 ## 课程画面
 
@@ -49,9 +49,10 @@ website/
 │  ├─ navigation.js        统一站点路径解析
 │  └─ 各教学主题/          章节导航、共用界面和教学组件
 ├─ resources/              原始资料
+│  ├─ media/               宣传片（随网站发布）
 │  └─ robot-atlas/         原网址兼容跳转；完整图鉴已归档
 ├─ scripts/                构建、检查、打包和部署工具
-├─ .github/readme/         本说明用到的截图与宣传片
+├─ .github/readme/         本说明用到的截图与宣传片封面
 ├─ artifacts/              开发产物（不进入 Git）
 │  ├─ screenshots/         全部检查截图及历史截图
 │  ├─ packages/            课程 ZIP、模型 ZIP、迁移备份
