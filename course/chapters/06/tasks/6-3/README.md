@@ -66,4 +66,4 @@ Hero 检查覆盖真实相机拖转／缩放、镜头切换、关节运动、随
 - [Festool：PLANEX M 墙面打磨与集尘](https://www.festool.com/blog/news/planex-m)
 - [Festool：打磨知识](https://www.festool.com/press/special-topics/sanding-knowhow)
 
-教材任务原文快照见 [来源 12](../../../../../resources/textbook/12_6.装饰装修施工分项.txt)。网页为教学模拟，不输出真实机器人控制指令或实际质量合格率。
+教材任务原文快照见 来源 12（教材正文快照《12_6.装饰装修施工分项.txt》，保存在仓库外的 教材文档/，不上传）。网页为教学模拟，不输出真实机器人控制指令或实际质量合格率。

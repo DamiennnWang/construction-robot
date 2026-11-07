@@ -85,7 +85,7 @@
 1. [Pix4D：影像采集与摄影测量最佳实践](https://support.pix4d.com/hc/best-practices-for-image-acquisition-and-photogrammetry)：距离、采样间距、拍摄角度、曝光与影像质量。
 2. [Pix4D：GSD 与画面范围计算工具](https://support.pix4d.com/hc/en-us/articles/202560249)：感光面宽、焦距、距离及图像尺寸之间的关系。
 3. [FHWA：桥梁检查问答 Q313-1、Q313-2](https://www.fhwa.dot.gov/bridge/nbis2022/qanda/08.cfm)：无人机影像的辅助作用，以及无法提供敲击等接触检查信息的限制。仅作为检测方法能力参考，不作为国内飞行管理要求。
-4. [教材原文快照](../../../../../resources/textbook/13_7.监测管养质量管控.txt)：本课程的任务来源；其中范围较广的内容保留在原教学方案中。
+4. 教材原文快照（教材正文快照《13_7.监测管养质量管控.txt》，保存在仓库外的 教材文档/，不上传）：本课程的任务来源；其中范围较广的内容保留在原教学方案中。
 
 ## 源码、构建与检查
 

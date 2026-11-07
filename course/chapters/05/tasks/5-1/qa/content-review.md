@@ -113,7 +113,7 @@
 5. [SIMA DEL/COMBI 官方手册](https://www.simasa.com/wp-content/uploads/2021/07/0840102_GR-DEL-COMBI-ES-ENG-FR.pdf)，弯曲转盘与芯轴/销部件识读。
 6. [Metabo HPT VB16Y 官方说明书](https://www.metabo-hpt.com/docs/default-source/product-owners-manuals/29fd3e5bbb614f529ca5976cfb53d903.pdf?sfvrsn=59c710a_2)：切刀组合、中心滚轮与弯曲滚轮部件示意。只用于机构对照，不采用其能力与尺寸作为全体设备规则。
 
-本地依据：[任务5-1](../README.md)、[来源11](../../../../../../resources/textbook/11_5.主体结构施工协同.txt)。后续对页面的最终验收应按实际实现逐项核对，本报告不宣称尚未构建的网页已通过。
+本地依据：[任务5-1](../README.md)、来源11（教材正文快照《11_5.主体结构施工协同.txt》，保存在仓库外的 教材文档/，不上传）。后续对页面的最终验收应按实际实现逐项核对，本报告不宣称尚未构建的网页已通过。
 
 ## 实际实现验收记录
 

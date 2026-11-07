@@ -28,7 +28,7 @@
 
 ## 资料依据与范围
 
-- 课程依据：[原文对应任务](https://my.feishu.cn/wiki/UtqMwe7yti9zuJkBlLrcywi7nJe#doxcnpjZeYmLuiyF0C8Y56Qjw9d)，本地快照为[来源11](../../../../../resources/textbook/11_5.主体结构施工协同.txt)。
+- 课程依据：[原文对应任务](https://my.feishu.cn/wiki/UtqMwe7yti9zuJkBlLrcywi7nJe#doxcnpjZeYmLuiyF0C8Y56Qjw9d)，本地快照为来源11（教材正文快照《11_5.主体结构施工协同.txt》，保存在仓库外的 教材文档/，不上传）。
 
 游戏容差、动作时长、送丝百分比和复核反馈均为教学设定，不对应真实设备的毫米精度、拉力、额定速度或验收阈值。卡丝停在归一化周期 0.51（送丝进度55%）只是可复现的演示事件。模拟轻拉只说明样例的预设状态，不能替代现场检查。具体设备的切断、回抽、收紧、扭结、折弯次序以所用设备的说明书为准。
 

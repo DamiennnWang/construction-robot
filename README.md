@@ -1,8 +1,35 @@
 # 智能建筑机械与机器人 · 互动课程
 
-8 个章节、24 项活动任务。章节负责导览，任务负责教学内容；公共代码、开发产物和历史材料分别保存。
+游戏化、任务式的数字教材：8 个章节、24 项活动任务，每项任务都是可以动手操作的三维教学工位。章节负责导览，任务负责教学内容；公共代码、开发产物和历史材料分别保存。
 
-**[打开课程](course/home/index.html)** · [项目目录与修改位置](docs/项目目录.md) · [维护说明](docs/仓库维护说明.md) · [任务清单](course/catalog.json)
+## 在线访问
+
+| 线路 | 网址 | 说明 |
+|---|---|---|
+| 国外 | **<https://construction-robotics.644019085.workers.dev>** | Cloudflare Workers，执行 `npm run deploy` 时自动更新 |
+| 国内 | **<https://artidrop.ai/a/grgIMfRCVJ>** | Artidrop，手动上传 `artifacts/packages/course.zip` |
+
+本地打开：**[课程首页](course/home/index.html)** · [任务清单](course/catalog.json) · [AI 操作协议](AGENTS.md)
+
+## 宣传片
+
+[![宣传片封面：智能建筑机械与机器人 · 游戏化 · 任务式 · 数字教材](.github/readme/promo-cover.jpg)](.github/readme/promo-720p.mp4)
+
+▶ 点击封面观看宣传片（25 秒，720p）。
+
+## 课程画面
+
+| 课程首页：八章转台 | 1-2 认识施工机械 |
+|---|---|
+| ![课程首页](.github/readme/home.jpg) | ![任务 1-2 认识施工机械](.github/readme/1-2.jpg) |
+| **3-2 六轴机械臂与点动示教** | **5-3 混凝土泵送、振捣与整平** |
+| ![任务 3-2 六轴机械臂](.github/readme/3-2.jpg) | ![任务 5-3 混凝土泵送](.github/readme/5-3.jpg) |
+| **6-4 室内喷涂** | **7-1 桥梁巡检机器人** |
+| ![任务 6-4 室内喷涂](.github/readme/6-4.jpg) | ![任务 7-1 桥梁巡检机器人](.github/readme/7-1.jpg) |
+
+画面截自线上版本（1600×900）。三维场景都可以拖动旋转、点选部件，并配有"试一试"关卡。
+
+## 目录结构
 
 ```text
 website/
@@ -22,10 +49,9 @@ website/
 │  ├─ navigation.js        统一站点路径解析
 │  └─ 各教学主题/          章节导航、共用界面和教学组件
 ├─ resources/              原始资料
-│  ├─ textbook/            教材来源快照
 │  └─ robot-atlas/         原网址兼容跳转；完整图鉴已归档
-├─ scripts/                构建、检查和打包工具
-├─ docs/                   项目说明、迁移映射
+├─ scripts/                构建、检查、打包和部署工具
+├─ .github/readme/         本说明用到的截图与宣传片
 ├─ artifacts/              开发产物（不进入 Git）
 │  ├─ screenshots/         全部检查截图及历史截图
 │  ├─ packages/            课程 ZIP、模型 ZIP、迁移备份
@@ -34,12 +60,15 @@ website/
 │  └─ site/                可直接部署的网站
 ├─ archive/                历史版本、本地工作副本、旧工具（不进入 Git）
 ├─ index.html              打开课程的兼容入口
+├─ wrangler.jsonc          Cloudflare 部署配置
 └─ package.json            统一命令
 ```
 
+教材正文（Word、各章《学生操作与关卡指南》、教材正文快照）不放在仓库里，统一保存在仓库外一层的 `教材文档/`，不上传 GitHub，也不随网站发布。
+
 ## 日常使用
 
-需要 Node.js 20+ 和 Python 3.9+。课程构建使用系统自带模块，无需先安装 npm 依赖。
+需要 Node.js 20+ 和 Python 3.9+。课程构建使用系统自带模块；只有部署和浏览器测试需要先执行 `npm install`。
 
 ```powershell
 npm run build                       # 构建全部课程，统一公共资源引用
@@ -52,6 +81,7 @@ npm run package                     # 网站写入 artifacts/site，ZIP 写入 a
 npm run serve                       # 从仓库根目录提供 HTTP 预览
 npm run preview                     # 只预览已打包的网站
 npm run build:models                # 更新共享机器人离线资源（含机械手）
+npm run deploy -- cf                # 打包并发布到 Cloudflare（国外线路）
 ```
 
 在 Windows PowerShell 中如 npm.ps1 被执行策略拦截，可使用 `npm.cmd`，或直接执行 scripts/ 中相应的 Node/Python 命令。
@@ -63,10 +93,12 @@ npm run build:models                # 更新共享机器人离线资源（含机
 - 修改共同导航、样式和组件：只改 `shared/`；首页与各章展品模型在 `shared/chapter-cover/` 和 `shared/workshop/`。
 - 新截图放入 `artifacts/screenshots/章节或任务编号/`，新 ZIP 放入 `artifacts/packages/`。教学图片和测试输入保留在任务的 `assets/`、`qa/fixtures/` 或 `qa/source/`，不按扩展名当作截图搬走。
 
-## 交付
+## 发布
 
-先执行 `npm run build`，再执行 `npm run package`。上传 `artifacts/site/` 内的全部内容，或使用 `artifacts/packages/course.zip`；网站入口是包根目录的 `index.html`。公共资源依靠相对路径加载，必须保持目录结构。
+1. `npm run package`：打包网站，写入 `artifacts/site/` 和 `artifacts/packages/course.zip`。网站入口是包根目录的 `index.html`；公共资源依靠相对路径加载，必须保持目录结构。
+2. 国外线路：`npm run deploy -- cf` 会重新打包并发布到 Cloudflare。首次使用前执行一次 `npx wrangler login`。
+3. 国内线路：把 `artifacts/packages/course.zip` 上传到 Artidrop。`npm run deploy -- eo` 可发布到腾讯云 EdgeOne Makers，但目前腾讯云接口在上传环节报 `Project is not exist`，暂时无法使用。
 
 本轮整理保留了教学内容与证据边界：任务导读、数字仿真和现场结果的含义不因目录调整而改变。
 
-本轮改版：第一章保留机械与机器人两项三维展厅；5-3 为混凝土互动，入口名为 `index.html`；第八章合并为安全操作与保养排查。AI 修改前须阅读 [AGENTS.md](AGENTS.md) 和 [详细操作协议](docs/AI操作协议.md)。
+本轮改版：第一章保留机械与机器人两项三维展厅；5-3 为混凝土互动，入口名为 `index.html`；第八章合并为安全操作与保养排查。AI 修改前须阅读 [AGENTS.md](AGENTS.md)。

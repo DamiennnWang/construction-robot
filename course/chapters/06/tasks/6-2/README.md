@@ -49,7 +49,7 @@ Three.js 场景使用深度缓冲。anatomy 的 SVG 绘制顺序或纹理线审�
 
 ### 原文依据与网页定位
 
-依据[飞书原文对应任务](https://my.feishu.cn/wiki/BnHmwjoi8iqcQtkNwbRc33ufn7f#doxcnYWPJBkWDkwK9wd1Hl7Madf)，快照见[来源12](../../../../../resources/textbook/12_6.装饰装修施工分项.txt)。锚定基层、边界、门口/地漏、材料通道，排版与基准，薄贴工艺，视觉伺服、力反馈、标高控制和空鼓风险复核。
+依据[飞书原文对应任务](https://my.feishu.cn/wiki/BnHmwjoi8iqcQtkNwbRc33ufn7f#doxcnYWPJBkWDkwK9wd1Hl7Madf)，快照见来源12（教材正文快照《12_6.装饰装修施工分项.txt》，保存在仓库外的 教材文档/，不上传）。锚定基层、边界、门口/地漏、材料通道，排版与基准，薄贴工艺，视觉伺服、力反馈、标高控制和空鼓风险复核。
 
 **适合做二维排砖工具与三维单砖铺贴演示。** 主页面“Floor-A铺砖规划台”先显示整间房的排布；用户可点任意砖查看铺放、胶层和局部对位。排砖、视觉与材料案例各自可进入，不把所有操作压成一条固定练习路线。
 
