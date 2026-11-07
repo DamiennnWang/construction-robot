@@ -42,7 +42,7 @@ for family in ('dozer','drone'):
     model_manifest=ROOT/f'shared/models/{family}/manifest.json'
     pending.append(model_manifest)
     pending.extend(ROOT/row[key] for row in json.loads(model_manifest.read_text(encoding='utf-8')) for key in ('runtime','license','provenance'))
-pending.extend([ROOT/'shared/models/manifest.json',ROOT/'docs/内容来源与模型说明.md',ROOT/'docs/第一章教学结构与目标.md'])
+pending.append(ROOT/'shared/models/manifest.json')  # 教材文档在仓库外，不随网站发布
 for pattern in ('course/chapters/*/overview/*.html', 'course/chapters/*/tasks/*/*.html',
                 'course/chapters/*/tasks/*/assets/**/*', 'shared/vendor/**/*', 'shared/anatomy/LICENSE*'):
     pending.extend(p for p in ROOT.glob(pattern) if p.is_file())

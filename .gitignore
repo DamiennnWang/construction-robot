@@ -114,3 +114,6 @@ $RECYCLE.BIN/
 /shared/装饰装修施工/assets/anatomy/
 /shared/装饰装修施工/assets/tiling-anatomy/
 /course/chapters/03/tasks/3-2/assets/vendor/
+
+# 教材正文已移到仓库外 ../教材文档/，不上传
+/resources/textbook/
