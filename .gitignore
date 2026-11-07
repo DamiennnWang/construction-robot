@@ -117,3 +117,13 @@ $RECYCLE.BIN/
 
 # 教材正文已移到仓库外 ../教材文档/，不上传
 /resources/textbook/
+
+# 部署工具的本地缓存与登录信息
+.wrangler/
+.edgeone/
+
+# Tencent Cloud EdgeOne
+.env
+.edgeone/*
+.tef_dist/*
+  
