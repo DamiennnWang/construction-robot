@@ -309,7 +309,7 @@
     const beacon = group(es); beacon.position.set(ep.x + .5, 1.72, ep.z);
     cyl(beacon, .09, .06, M.darkSteel, 0, -.06, 0, 20); cyl(beacon, .085, .2, M.beacon, 0, .07, 0, 24);
     const reflector = box(beacon, .14, .1, .01, M.galv, 0, .07, 0);
-    const horn = mesh(es, new T.RingGeometry(.2, .26, 40), new T.MeshBasicMaterial({color: 0xffb020, transparent: true, opacity: 0, side: T.DoubleSide, depthWrite: false}), ep.x + .5, 1.8, ep.z); horn.castShadow = false;
+    const horn = mesh(es, new T.RingGeometry(.2, .26, 40), new T.MeshBasicMaterial({color: 0xffb020, transparent: true, opacity: 0, side: T.DoubleSide, depthWrite: false}), ep.x + .5, 1.8, ep.z); horn.castShadow = false; horn.visible = false; horn.raycast = () => {}; // 鸣笛光圈只是提示效果，永远不参与点选
 
     /* —— 处置后才出现的防护 —— */
     const swingFence = group(scene, 'swing'); swingFence.visible = false;
@@ -548,7 +548,7 @@
       // 警示灯与鸣笛
       if (running && motion) reflector.rotation.y += dt * 6;
       M.beacon.emissiveIntensity = running ? 1.4 + Math.sin(performance.now() / 120) * .6 : .05;
-      hornT += dt; horn.material.opacity = hornT < 1.6 ? (1 - hornT / 1.6) * .8 : 0; horn.scale.setScalar(1 + hornT * 3); horn.lookAt(camera.position);
+      hornT += dt; horn.material.opacity = hornT < 1.6 ? (1 - hornT / 1.6) * .8 : 0; horn.scale.setScalar(1 + Math.min(hornT, 1.6) * 3); horn.visible = hornT < 1.6; // 看不见时不参与点选，也不再无限放大 horn.lookAt(camera.position);
       // 工人
       const route = S?.fixed.swing ? ROUTE_B : ROUTE_A;
       if (running && motion) walkT += dt * 1.25;

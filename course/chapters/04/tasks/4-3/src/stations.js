@@ -70,8 +70,10 @@
 
   /* 试一试用到的标记（原页面状态里没有的“做过某事”） */
   const flags = {};
-  const resetFlags = () => Object.assign(flags, {quiz: false, zoom2: false, seen: new Set(), counted: false, revealed: false});
+  const resetFlags = () => Object.assign(flags, {quiz: false, zoom2: false, seen: new Set(), counted: false, revealed: false, iouDragged: false});
   resetFlags();
+  // IoU 卡片：要学生亲手拖动预测框（只改上方门槛不算）
+  document.addEventListener('input', e => { if (e.target.id === 'iou-offset') flags.iouDragged = true; }, true);
   document.addEventListener('click', e => {
     const ans = e.target.closest?.('[data-answer]');
     if (ans && ans.dataset.answer === 'no' && flags.zoom2) flags.quiz = true;
@@ -103,7 +105,7 @@
             result: '放大只改变显示大小，标签始终按原图宽高计算。'},
           {id: 'wide', icon: '↔', title: '换宽幅图，看分母怎么变', hint: '选“练习 B · 宽幅场景”，选中一个框', check: s => s.a.key === 'wide' && Boolean(s.a.line),
             result: '原图宽 960：x 中心和宽度除以 960，y 方向仍除以 640。'},
-          {id: 'review', icon: '?', title: '遮挡图里留一个待复核', hint: '选“练习 C”，看不清的头部标“待复核”', check: s => s.a.key === 'occluded' && s.a.boxes.some(b => b.cls === 'review'),
+          {id: 'review', icon: '?', title: '遮挡图里留一个待复核', hint: '选“练习 C”：看得清的头照常标，看不清的那个标“待复核”', check: s => s.a.key === 'occluded' && s.a.boxes.some(b => b.cls === 'review'),
             result: '看不清就留下问题：待复核不是第三个训练类别，这张图只能存草稿。'},
         ]);
         if (EL.a.quiz) c.adopt(EL.a.quiz, c.section('想一想'));
@@ -144,7 +146,7 @@
             result: '真值还在图里，只是没有同类且位置达标的预测与它配对。'},
           {id: 'count', icon: '✍', title: '自己数出 TP、FP、FN', hint: '开始独立核验，填三个数', check: () => flags.counted,
             result: '数对了：一个真值最多配一个预测，剩下的就是误检和漏检。'},
-          {id: 'iou', icon: '▣', title: '把 IoU 演示拖到不达标', hint: '在下方拖动预测框', check: s => s.e.iouDemo.iou < s.e.iouThreshold,
+          {id: 'iou', icon: '▣', title: '把 IoU 演示拖到不达标', hint: '在下方拖动【预测框向右移动】', check: s => flags.iouDragged && s.e.iouDemo.iou < s.e.iouThreshold,
             result: '两框错开后交集变小、并集变大，IoU 掉到门槛以下就不能配对。'},
         ]);
         c.adopt(EL.e.challenge, c.section('自己数一遍'));

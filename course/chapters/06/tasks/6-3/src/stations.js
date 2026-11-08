@@ -47,10 +47,10 @@
             result: '位置不变、墙面凸起，磨盘被压得更紧，接触力随之上升。'},
           {id: 'follow', icon: '↔', title: '开恒力，看它退让', hint: '同样的凸起，开启恒力', check: s => s.followSeen,
             result: '力偏大就后退、偏小就贴近，力回到目标附近。'},
+          {id: 'record', icon: '📋', title: '记录一次对比', hint: '两种方式都看过后先记录，再去顶停机线', check: s => s.done.force,
+            result: '固定位置与反馈后的接触力已记下；接触稳定，还要再检查表面。'},
           {id: 'lock', icon: '⛔', title: '把力顶到停机线', hint: '固定位置下把凸起调到最大', check: () => seen.locked,
             result: '超过示例停机线，进给立即锁定，必须复位才能继续。'},
-          {id: 'record', icon: '📋', title: '记录一次对比', hint: '两种方式都看过后记录', check: s => s.done.force,
-            result: '固定位置与反馈后的接触力已记下；接触稳定，还要再检查表面。'},
         ]);
         if (EL.force.note) c.adopt(EL.force.note, c.body);
       },

@@ -12,7 +12,7 @@ spec=[
  ('course/chapters/02/overview','动力与工作机构','看动力如何产生、传递，再变成施工需要的动作。'),
  ('course/chapters/03/overview','机器人结构与运动','认构型、动关节、看传动、换工具，再对照底盘与行走。'),
  ('course/chapters/04/overview','感知与智能识别','认识自身状态、环境扫描与图像识别，保留观测和复核依据。'),
- ('course/chapters/05/overview','主体结构施工','钢筋加工、绑扎与人工复核，再进入混凝土泵送、振捣和整平。'),
+ ('course/chapters/05/overview','主体结构施工协同','钢筋加工、绑扎与人工复核，再进入混凝土泵送、振捣和整平。'),
  ('course/chapters/06/overview','装饰装修施工','走进砌筑、铺贴、打磨与喷涂，对照工艺、反馈和质量。'),
  ('course/chapters/07/overview','巡检与数据复核','利用移动机器人与无人机取证，复核检测与影像线索。'),
  ('course/chapters/08/overview','安全操作与维护','在现场暂停推演中处理危险，在四个工位练习保养与排查。')

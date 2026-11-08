@@ -6,7 +6,7 @@
   const queryThreshold = new URLSearchParams(location.search).get('threshold');
   const parsedThreshold = queryThreshold === null || queryThreshold.trim() === '' ? .25 : Number(queryThreshold);
   const state = {threshold: Number.isFinite(parsedThreshold) && parsedThreshold >= 0 && parsedThreshold <= 1 ? Math.round(parsedThreshold * 100) / 100 : .25, iouThreshold: .5, showTruth: true, showPrediction: true, showMetrics: true, blind: false, selection: null, offset: 30};
-  const className = cls => cls === 0 ? '已戴安全帽' : '未戴安全帽';
+  const className = cls => cls === 0 ? '戴安全帽' : '未戴安全帽';
   const calculate = () => matchPredictions(truths, candidates, state.threshold, state.iouThreshold);
   const percent = value => value === null ? '不适用' : `${(value * 100).toFixed(1)}%`;
   function bestTruth(prediction) {return [...truths].sort((a, b) => iou(prediction.bbox, b.bbox) - iou(prediction.bbox, a.bbox))[0];}
@@ -80,7 +80,7 @@
     $('iou-intersection-area').textContent = `${intersection.toLocaleString()} px²`;
     $('iou-union-area').textContent = `${union.toLocaleString()} px²`;
     $('iou-demo-value').textContent = value.toFixed(3);
-    $('iou-demo-judgment').textContent = `${value >= state.iouThreshold ? '达到' : '未达到'}当前位置门槛 ${state.iouThreshold.toFixed(2)}`;
+    $('iou-demo-judgment').textContent = `${value >= state.iouThreshold ? '达到' : '未达到'} IoU 门槛 ${state.iouThreshold.toFixed(2)}`;
     $('iou-demo-judgment').classList.toggle('iou-below', value < state.iouThreshold);
   }
   function render() {

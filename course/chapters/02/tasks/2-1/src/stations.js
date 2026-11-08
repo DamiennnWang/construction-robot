@@ -63,7 +63,7 @@
         result: '四个部件装对位置、两极分别接 A 和 B、猜对转向，电机就转起来了。'},
     ]);
 
-    const read = c.readouts([{id: 'n', label: '转速', unit: 'r/min'}, {id: 'I', label: '电流', unit: 'A'}, {id: 'T', label: '输出转矩', unit: 'N·m'}, {id: 'P', label: '输出功率', unit: 'W'}]);
+    const read = c.readouts([{id: 'n', label: '转速（负号=反转）', unit: 'r/min'}, {id: 'I', label: '电流', unit: 'A'}, {id: 'T', label: '输出转矩', unit: 'N·m'}, {id: 'P', label: '输出功率', unit: 'W'}]);
     let playing = false, lastFeedback = '';
     const tr = c.transport({onToggle: p => { if (p !== playing) lab.click('#pauseBtn'); }, onStep: () => lab.click('#stepBtn'), onReset: () => lab.click('#resetBtn'), stepText: '单步 15°'});
     c.view('全景', () => lab.click('#viewReset'));
@@ -71,7 +71,7 @@
     const em = c.tool('磁场与受力', () => lab.click('#emToggle'), true);
     const chipName = p => ({magnet: '永磁定子', rotor: '电枢与铜线圈', comm: '分裂环换向器', brush: '碳刷与接线端'}[p] || '');
     lab.onState(s => {
-      read('n', fmt(s.n)); read('I', fmt(s.I, 1)); read('T', fmt(s.T, 2)); read('P', fmt(s.P));
+      read('n', (s.dir < 0 && Math.abs(s.n) > 0.5 ? '−' : '') + fmt(Math.abs(s.n))); read('I', fmt(s.I, 1)); read('T', fmt(s.T, 2)); read('P', fmt(s.P));
       volt.sync(s.voltage); load.sync(s.load); dir.set(s.dir); look.set(s.view); em.set(s.showEM);
       playing = !s.paused; tr.setPlaying(playing);
       const st = s.student;
@@ -117,7 +117,7 @@
         result: '发动机在挖掘机后部。它转起来以后，动力还要传到履带和动臂——这就是 2-2“传递与变换”。'},
     ]);
 
-    const read = c.readouts([{id: 'stroke', label: '冲程'}, {id: 'angle', label: '曲轴转角', unit: '°'}, {id: 'rpm', label: '发动机'}, {id: 'cyl', label: '气缸'}]);
+    const read = c.readouts([{id: 'stroke', label: '冲程'}, {id: 'angle', label: '曲轴转角', unit: '°'}, {id: 'rpm', label: '演示慢放速度'}, {id: 'cyl', label: '气缸'}]);
     let running = false;
     const tr = c.transport({onToggle: p => { if (p !== running) lab.click('#playBtn'); }, onStep: () => lab.click('#stepBtn'), onReset: () => lab.click('#resetAll'), stepText: '前进 15°',
       speeds: [[0.25, '慢'], [0.5, '中'], [1.2, '快']], speed: 0.5, onSpeed: v => lab.set('#speedRange', v)});

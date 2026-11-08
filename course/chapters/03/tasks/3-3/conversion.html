@@ -527,13 +527,13 @@ html[data-theme="dark"] .c2-station[aria-selected="true"] { background:linear-gr
 }
 .c2-toolseg button { height:28px; font-size:14px; padding:0 10px; }
 .c2-hint {
-  position:absolute; left:50%; top:14px; transform:translateX(-50%); z-index:2; pointer-events:none;
+  position:absolute; left:50%; bottom:14px; transform:translateX(-50%); z-index:2; pointer-events:none;
   max-width:min(80%,560px); white-space:nowrap; overflow:hidden; text-overflow:ellipsis;
   padding:5px 14px; border-radius:999px; font-size:14px; line-height:1.4; color:var(--stage-ink);
   background:var(--stage-chip); border:1px solid var(--stage-chip-line); backdrop-filter:blur(6px);
   transition:opacity .6s ease, transform .6s ease;
 }
-.c2-hint.gone { opacity:0; transform:translate(-50%,-6px); }
+.c2-hint.gone { opacity:0; transform:translate(-50%,6px); }
 
 /* 全屏：外壳统一一个按钮，钉在三维区右上角；全屏的是整块三维区（含上方选择条和提示条） */
 .c2-fs {
@@ -736,7 +736,7 @@ html[data-theme="dark"] .c2-banner { background:#3b2d16; border-color:#6b5124; c
 
 /* 提示条：在三维区下方弹出，几秒后收起 */
 .c2-feedback {
-  position:absolute; left:50%; top:56px; transform:translateX(-50%); z-index:4; max-width:min(640px,80%);
+  position:absolute; left:50%; top:56px; transform:translateX(-50%); z-index:4; max-width:min(560px,62%); cursor:pointer;
   display:flex; align-items:center; gap:10px; font-size:15px; line-height:1.55; border-radius:14px;
 }
 .c2-feedback:empty { display:none; }
@@ -822,7 +822,7 @@ html[data-theme="dark"] .c2-task-id { background:linear-gradient(135deg,#8abaff,
   .c2-tools { left:16px; top:16px; gap:8px; }
   .c2-tool { height:40px; padding:0 15px; border-radius:12px; font-size:15.5px; }
   .c2-toolseg button { height:32px; font-size:15.5px; padding:0 13px; }
-  .c2-hint { top:18px; font-size:15.5px; padding:6px 17px; }
+  .c2-hint { bottom:18px; font-size:15.5px; padding:6px 17px; }
   .c2-fs { right:16px; top:16px; width:40px; height:40px; border-radius:12px; }
   .c2-shot { right:16px; top:62px; width:40px; height:40px; border-radius:12px; }
   .c2-fs svg, .c2-shot svg { width:21px; height:21px; }
@@ -973,6 +973,18 @@ html[data-theme="dark"] .c2-task-id { background:linear-gradient(135deg,#8abaff,
 /* 手机横屏：三维区占大半屏高 */
 @media (max-width:900px) and (orientation:landscape) { .c2-view { height:clamp(240px,74vh,420px); } }
 @media (prefers-reduced-motion:reduce) { * { transition:none !important; animation:none !important; } }
+
+/* 试一试卡片钉在面板底部：面板内容再长，卡片也始终在一屏里看得见（上面的控件在卡片后面滚动） */
+@media (min-width:901px) {
+  .c2-panel .c2-cards {
+    position:sticky; bottom:-14px; z-index:3; margin:0 -16px; padding:10px 16px 14px;
+    background:var(--course-surface); border-top:1px solid var(--hair); box-shadow:0 -10px 18px -14px rgba(18,44,78,.35);
+  }
+  .c2-panel .c2-cards .c2-ch-text span { -webkit-line-clamp:2; }
+}
+@media (min-width:1680px) and (min-height:860px) {
+  .c2-panel .c2-cards { bottom:-18px; margin:0 -22px; padding:12px 22px 18px; }
+}
 
 /* 第三章：原页面元素放进统一外壳后的补充样式。外壳本身的样式在 shared/lab-shell/lab-shell.css。 */
 
@@ -1169,6 +1181,10 @@ html.lab-native .c2-stage-top :is(button, label, a) { font-family:inherit; }
   html.lab-native :is(.c2-panel, .c2-strip) .segmented button { height:34px; font-size:16px; }
   html.lab-native .c2-stage-top { padding:10px 13px; gap:10px; }
 }
+
+/* 原页面自带的提示条（#toast）原来弹在屏幕底部，会盖住三维区下方的读数条；外壳里改到三维区顶部 */
+html.lab-native body > :is(#toast, .toast) { top:138px !important; bottom:auto !important; max-width:min(560px, 60vw) !important; }
+@media (max-width:900px) { html.lab-native body > :is(#toast, .toast) { top:auto !important; bottom:16px !important; max-width:calc(100% - 24px) !important; } }
 
 /* 3-3：底栏放原页面的运行按钮和输入/输出/传动比读数 */
 .c2-strip .transport { display:flex; align-items:center; gap:6px; margin:0 !important; flex:0 0 auto; }
@@ -1583,7 +1599,7 @@ function saveWin(){const key=state.mode;scores[key]??=[false,false,false];scores
 function stars(){const ss=scores[state.mode]||[];$('stars').textContent=[0,1,2].map(i=>ss[i]?'●':'○').join(' ');$('stars').setAttribute('aria-label',`本机构已完成${ss.filter(Boolean).length}项挑战`)}
 function pickPart(role){const s=SPECS[state.mode],labels={input:s.input,fixed:s.fixed,output:s.output,planet:'行星轮',rod:'连杆'},desc={input:'输入件 · 由手轮驱动',fixed:'固定件 · 与机座连接',output:'输出件 · 观察实际位移',planet:'一边绕太阳轮公转，一边自转',rod:'长度不变，把曲柄运动传给滑块'};$('partName').textContent=labels[role]||'';$('partRole').textContent=desc[role]||'';bench?.highlight(role);if(state.level===0&&['input','fixed','output'].includes(role)){state.choice=role;paintChoices()}}
 function missionData(){const mode=state.mode,s=SPECS[mode];if(state.level===0)return{title:reducer?'谁被固定住了？':{screw:'钻头跟着谁走？',rack:'砖跟着谁走？',crank:'锯架装在谁上？'}[mode],text:reducer?'点击模型里的零件，或从下面选择。先找出连接机座、不跟随输入转动的那个部件。':{screw:'让丝杠转起来，看钻头装在哪个零件上、跟着谁沿导轨走。',rack:'让齿轮转起来，看托盘和砖跟着哪个零件走。',crank:'让曲柄转起来，看锯架跟着哪个零件来回走。'}[mode]+'可以直接点击模型，也可以选下面的名称。',choices:[[s.input,'input'],[s.fixed,'fixed'],[s.output,'output']],answer:reducer?'fixed':'output'};
- if(state.level===1){if(mode==='planet')return{title:'转一圈，会剩多少？',text:'太阳轮转一整圈，行星架怎样转？先预测，再点击“输入一圈”亲眼验证。',choices:[['同向 90°','correct'],['同向 360°','wrong1'],['反向 90°','wrong2']],answer:'correct'};if(mode==='harmonic')return{title:'找到“退后两齿”',text:'波发生器转一圈，柔轮怎样运动？先选，再运行一圈，盯住底部输出标记。',choices:[['同向 3.6°','wrong1'],['反向 3.6°','correct'],['反向 360°','wrong2']],answer:'correct'};if(mode==='screw')return{title:'两圈正好到下一孔',text:'墙板上的孔每 16 mm 一个。想让丝杠转两圈，钻头正好走到下一个孔，导程该选几毫米？选好后运行一圈验证。',choices:[['一圈走多远由导程决定','correct'],['转得快，一圈就走得远','wrong1']],answer:'correct'};if(mode==='rack')return{title:'送料一圈走多远？',text:'齿轮节圆半径12 mm。先猜托盘一圈能送多远，再归零运行一圈，看砖走了多少。',choices:[['约 12 mm','wrong1'],['约 24 mm','wrong2'],['约 75.4 mm','correct']],answer:'correct'};return{title:'锯条要来回拉 50 mm',text:'砌块要求锯条每次拉 50 mm。选曲柄半径，再运行一圈，看锯架两端停在哪里。',choices:[['行程是曲柄半径的两倍','correct'],['行程等于连杆长度','wrong1']],answer:'correct'}}
+ if(state.level===1){if(mode==='planet')return{title:'转一圈，会剩多少？',text:'太阳轮转一整圈，行星架怎样转？先预测，再点击“输入一圈”亲眼验证。',choices:[['同向 90°','correct'],['同向 360°','wrong1'],['反向 90°','wrong2']],answer:'correct'};if(mode==='harmonic')return{title:'找到“退后两齿”',text:'波发生器转一圈，柔轮怎样运动？先选，再运行一圈，盯住底部输出标记。',choices:[['同向 3.6°','wrong1'],['反向 3.6°','correct'],['反向 360°','wrong2']],answer:'correct'};if(mode==='screw')return{title:'两圈正好到下一孔',text:'墙板上的孔每 16 mm 一个，想让丝杠转两圈，钻头正好走到下一个孔。先判断下面哪句话说得对，再到【做实验】里选导程，运行一圈验证。',choices:[['一圈走多远由导程决定','correct'],['转得快，一圈就走得远','wrong1']],answer:'correct'};if(mode==='rack')return{title:'送料一圈走多远？',text:'齿轮节圆半径12 mm。先猜托盘一圈能送多远，再归零运行一圈，看砖走了多少。',choices:[['约 12 mm','wrong1'],['约 24 mm','wrong2'],['约 75.4 mm','correct']],answer:'correct'};return{title:'锯条要来回拉 50 mm',text:'砌块要求锯条每次拉 50 mm。先判断下面哪句话说得对，再到【做实验】里选曲柄半径，运行一圈，看锯架两端停在哪里。',choices:[['行程是曲柄半径的两倍','correct'],['行程等于连杆长度','wrong1']],answer:'correct'}}
  const target=mode==='crank'?state.setting*2:s.target,unit=reducer?'°':' mm';if(!reducer)return{title:{screw:'钻头对准目标孔',rack:'把砖送到抓取位',crank:'锯架停到最外端'}[mode],text:{screw:`把钻头停在 ${target} mm 处、加圈的那个孔位。播放接近，再暂停，用正反单步微调；停稳后检查。`,rack:`把托盘送到 ${target} mm 处的抓取位，机器人才抓得到砖。播放接近，再暂停，用单步微调。`,crank:`换锯条要把锯架停在最外端（${target} mm）。播放接近，再暂停，用单步微调。`}[mode],choices:[],answer:null};return{title:'停到目标位置',text:`把${s.output}停在 ${target}${unit}。播放接近目标，再暂停，用正反单步微调；停稳后检查。${mode==='harmonic'?'反向很慢是真实减速关系。':''}`,choices:[],answer:null};
 }
 function paintChoices(){document.querySelectorAll('#choices button').forEach(b=>b.classList.toggle('active',b.dataset.value===state.choice))}
@@ -1596,7 +1612,8 @@ function interact(){if(state.apartTarget>0||state.apart>.001){feedback('请先�
 function renderReadouts(){const v=sample(state.mode,state.theta,state.setting),s=SPECS[state.mode];$('inputValue').textContent=(state.theta/TAU).toFixed(2);$('inputDetail').textContent=s.input;$('outputLabel').textContent=reducer?'输出转角':'滑台位移';$('outputValue').textContent=(reducer?v.output*180/Math.PI:v.output).toFixed(state.mode==='harmonic'?2:1);$('outputUnit').textContent=reducer?'°':'mm';$('outputDetail').textContent=s.output+(reducer?(s.ratio<0?' · 反向':' · 同向'):' · 从行程起点计');$('ratioLabel').textContent=reducer?'减速比':state.mode==='crank'?'总行程':state.mode==='screw'?'每圈进给':'每圈路程';$('ratioValue').textContent=reducer?`${Math.abs(s.ratio)} : 1`:state.mode==='crank'?`${2*state.setting} mm`:state.mode==='screw'?`${state.setting} mm`:'75.4 mm';$('ratioDetail').textContent=reducer?'固定件保持不动':state.mode==='crank'?'曲柄半径 × 2':'有限行程 · 到端点停机';$('play').textContent=reduced.matches?'+ 单步输入':state.playing?'Ⅱ 暂停':'▶ 播放';$('play').setAttribute('aria-label',reduced.matches?'静态模式单步输入':'播放或暂停');$('speed').disabled=reduced.matches;$('oneTurn').disabled=state.runTarget!==null;
   const d=dock(state.mode,state.theta,state.setting),max=state.mode==='planet'?180:state.mode==='harmonic'?14.4:state.mode==='crank'?2*state.setting:80;const x=reducer?Math.abs(d.actual):d.actual;$('positionMark').style.left=clamp(x/max*100,0,100)+'%';$('targetMark').style.left=Math.abs(d.target)/max*100+'%';$('meterStart').textContent='0';$('meterEnd').textContent=(state.mode==='harmonic'?'-':'')+max+(reducer?'°':' mm');renderMotion(v);
 }
-$('modules').innerHTML=modes.map(mode=>`<button data-mode="${mode}">${SPECS[mode].title}</button>`).join('');document.querySelectorAll('[data-mode]').forEach(b=>b.onclick=()=>setMode(b.dataset.mode));document.querySelectorAll('[data-level]').forEach(b=>b.onclick=()=>{state.level=+b.dataset.level;state.choice=null;state.trialDone=false;pause();mission()});
+$('modules').innerHTML=modes.map(mode=>`<button data-mode="${mode}">${SPECS[mode].title}</button>`).join('');document.querySelectorAll('[data-mode]').forEach(b=>b.onclick=()=>setMode(b.dataset.mode));document.querySelectorAll('[data-level]').forEach(b=>b.onclick=()=>enterLevel(+b.dataset.level));
+function enterLevel(v){state.level=v;state.choice=null;state.trialDone=false;pause();if(v===2&&state.mode==='crank'){setAngle(Math.PI);state.moved=false}mission();wake()}
 $('play').onclick=()=>{if(!interact())return;if(reduced.matches){step(1);return;}state.playing=!state.playing;state.runTarget=null;renderReadouts();wake()};
 function step(sign){if(!interact())return;pause();setAngle(state.theta+sign*Math.PI/(state.mode==='harmonic'?4:state.mode==='planet'?12:36));wake()}
 $('step').onclick=()=>step(1);$('stepBack').onclick=()=>step(-1);$('reset').onclick=reset;$('oneTurn').onclick=()=>runTurns(1);$('manyTurns').onclick=()=>{if(state.mode==='harmonic'&&state.speed<4){state.speed=4;$('speed').value='4';toast('所有运动同比加速至 4×，减速比保持 100 : 1。')}runTurns(+$('turnCount').value)};if($('inputTurns'))$('inputTurns').oninput=()=>{const target=+$('inputTurns').value*TAU;if(!interact()){renderReadouts();return}pause();state.trialDone=false;setAngle(target);wake()};$('markers').onclick=()=>{state.markers=!state.markers;bench?.markers?.(state.markers);$('markers').setAttribute('aria-pressed',String(state.markers))};$('speed').onchange=()=>{state.speed=+$('speed').value;renderReadouts()};
@@ -1610,9 +1627,9 @@ document.addEventListener('keydown',e=>{if(e.code==='Escape'&&$('about').open){$
 const reduced=matchMedia('(prefers-reduced-motion: reduce)');let raf=0;function frame(t){raf=0;const dt=Math.min((t-(state.last||t))/1000,1/30);state.last=t;if(state.playing&&state.visible&&!document.hidden){const wanted=state.theta+dt*Math.PI*state.speed,next=state.runTarget===null?wanted:Math.min(wanted,state.runTarget),real=setAngle(next);if(state.runTarget!==null&&real>=state.runTarget-1e-8){state.trialDone=state.runTurns===1;const turns=state.runTurns;pause();feedback(`${turns}圈实验完成。${turns===1?'现在可以核对你的预测。':'对照累计输入与输出，观察减速关系。'}`)}else if(real<wanted-1e-6&&state.runTarget===null){pause();toast('已到导轨端点 · 输入同步停止')}}if(Math.abs(state.apart-state.apartTarget)>.0001){state.apart=reduced.matches?state.apartTarget:state.apart+(state.apartTarget-state.apart)*(1-Math.exp(-dt*8));bench?.update(state.theta,state.apart);renderReadouts()}if(state.visible&&!document.hidden&&(state.playing||Math.abs(state.apart-state.apartTarget)>.0001))wake()}
 function wake(){if(!raf)raf=requestAnimationFrame(frame)}
 reduced.addEventListener('change',()=>{if(reduced.matches){pause();state.apart=state.apartTarget;bench?.update(state.theta,state.apart)}renderReadouts()});
-new IntersectionObserver(es=>{state.visible=es[es.length-1].isIntersecting;state.last=0;if(state.visible)wake()}).observe(document.querySelector('.workspace'));document.addEventListener('visibilitychange',()=>{state.last=0;if(!document.hidden)wake()});setMode(modes[0]);
+new IntersectionObserver(es=>{state.visible=es[es.length-1].isIntersecting;state.last=0;if(state.visible)wake()}).observe(document.querySelector('figure.figure')||document.querySelector('.workspace'));document.addEventListener('visibilitychange',()=>{state.last=0;if(!document.hidden)wake()});setMode(modes[0]);
 if(bench)bench.onTurn=delta=>{if(!interact())return;pause();setAngle(state.theta+delta);wake()};
-window.MechanismLab={state,sample,runTurns,scene:()=>bench,setMode,setAngle,reset,pause,choose:(choice)=>{state.choice=choice;paintChoices()},level:(v)=>{state.level=v;state.choice=null;state.trialDone=false;pause();mission()},check:()=>$('check').click(),snapshot:()=>({mode:state.mode,theta:state.theta,setting:state.setting,output:sample(state.mode,state.theta,state.setting).output,parts:bench?.partCount,score:scores[state.mode],playing:state.playing,trialDone:state.trialDone,runTarget:state.runTarget,runTurns:state.runTurns,apart:state.apart,markers:state.markers,geometry:bench?.inspect?.()})};
+window.MechanismLab={state,sample,runTurns,scene:()=>bench,setMode,setAngle,reset,pause,choose:(choice)=>{state.choice=choice;paintChoices()},level:(v)=>enterLevel(v),check:()=>$('check').click(),snapshot:()=>({mode:state.mode,theta:state.theta,setting:state.setting,output:sample(state.mode,state.theta,state.setting).output,parts:bench?.partCount,score:scores[state.mode],playing:state.playing,trialDone:state.trialDone,runTarget:state.runTarget,runTurns:state.runTurns,apart:state.apart,markers:state.markers,geometry:bench?.inspect?.()})};
 
 introTour=setTimeout(()=>{introTour=0;if(!reduced.matches&&state.visible&&!document.hidden&&reducer&&!state.moved&&!state.playing)runTurns(1)},1600);
 for(const event of ['pointerdown','keydown','wheel'])document.addEventListener(event,()=>{clearTimeout(introTour);introTour=0},{passive:true});
@@ -1651,7 +1668,12 @@ for(const event of ['pointerdown','keydown','wheel'])document.addEventListener(e
     const store = 'c2-progress-' + (cfg.progressKey || cfg.task);
     let progress = {};
     try { progress = JSON.parse(localStorage.getItem(store) || '{}') || {}; } catch {}
+    if (!progress.cards || typeof progress.cards !== 'object') progress.cards = {};
     const save = () => { try { localStorage.setItem(store, JSON.stringify(progress)); } catch {} };
+    /* 卡片完成记录按工位保存在浏览器里：换工位、刷新页面都不丢；只有本工位的【↺ 重来】清掉本工位的记录 */
+    const savedCards = id => new Set(Array.isArray(progress.cards[id]) ? progress.cards[id] : []);
+    const allDone = () => cfg.stations.every(st => progress[st.id]);
+    const nextUndone = () => { for (let k = 1; k <= cfg.stations.length; k++) { const j = (current + k) % cfg.stations.length; if (!progress[cfg.stations[j].id]) return j; } return -1; };
 
     /* 页头 */
     const top = h('header', 'c2-top course-nav');
@@ -1709,7 +1731,10 @@ for(const event of ['pointerdown','keydown','wheel'])document.addEventListener(e
     const credit = h('div', 'c2-credit'); credit.hidden = true;
     panel.append(head, body, credit);
     view.append(feedback);
-    let toastTimer = 0;
+    let toastTimer = 0, holdUntil = 0, holdTimer = 0, pendingToast = null;
+    // 点一下提示条就收起（不挡住正在看的画面）；“去下一站”按钮照常可点
+    feedback.addEventListener('click', e => { if (e.target.closest('.c2-next')) return; clearTimeout(toastTimer); holdUntil = 0; feedback.textContent = ''; feedback.className = 'c2-feedback'; });
+    feedback.title = '点一下收起';
     main.append(stageBox, panel);
     /* 原页面里暂时不用的控件停放处（仍在文档里，原有程序照常工作） */
     const parking = h('div', 'c2-parking'); parking.hidden = true;
@@ -1813,7 +1838,7 @@ for(const event of ['pointerdown','keydown','wheel'])document.addEventListener(e
       ht.append(name, redo);
       head.replaceChildren(ht, h('p', '', s.lead || ''));
       parkAll();
-      body.replaceChildren(); clearTimeout(toastTimer); feedback.textContent = ''; feedback.className = 'c2-feedback';
+      body.replaceChildren(); clearTimeout(toastTimer); clearTimeout(holdTimer); holdUntil = 0; pendingToast = null; feedback.textContent = ''; feedback.className = 'c2-feedback';
       transportBox.replaceChildren(); readBox.replaceChildren(); tools.replaceChildren(); card.hidden = true;
       if (!hintDone) {
         hint.textContent = s.hint ?? cfg.hint ?? '拖动旋转 · 滚轮缩放';
@@ -1838,8 +1863,14 @@ for(const event of ['pointerdown','keydown','wheel'])document.addEventListener(e
       dispatchEvent(new Event('resize'));
       if (native) for (const t of [60, 300, 900]) setTimeout(() => { dispatchEvent(new Event('resize')); floorAll(); }, t);
     }
-    redo.addEventListener('click', () => { const i = current; current = -1; cfg.reset?.(cfg.stations[i].id); select(i); });
-    next.addEventListener('click', () => select(Math.min(current + 1, cfg.stations.length - 1)));
+    if (cfg.redoConfirm) redo.title = cfg.redoConfirm.replace(/确定.*$/, '').trim();
+    redo.addEventListener('click', () => {
+      if (cfg.redoConfirm && !window.confirm(cfg.redoConfirm)) return;
+      const i = current, id = cfg.stations[i].id;
+      delete progress.cards[id]; delete progress[id]; save();
+      current = -1; cfg.reset?.(id); select(i);
+    });
+    next.addEventListener('click', () => { const j = nextUndone(); select(j >= 0 ? j : Math.min(current + 1, cfg.stations.length - 1)); });
 
     function makeContext(s, index) {
       const stateFns = new Set(), readyFns = new Set();
@@ -1869,11 +1900,27 @@ for(const event of ['pointerdown','keydown','wheel'])document.addEventListener(e
         },
         /* —— 反馈 —— */
         /** 反馈以提示条形式出现在三维区上方，几秒后自动收起，不挤占面板。 */
-        feedback(text, kind = 'info', keep = false) {
+        /* 卡片结论、警告会停留一会儿：期间到来的普通提示排在后面显示，不把它们盖掉（只保留最新一条）；
+           同一句话重复发送（有的页面每帧都发）只续时，不重播动画。 */
+        feedback(text, kind = 'info', keep = false, hold = 0) {
+          const now = performance.now();
+          const same = text && feedback.querySelector('.c2-toast-text')?.textContent === text && feedback.classList.contains(kind);
+          if (!same && now < holdUntil && !hold) {
+            if (text) {
+              pendingToast = [text, kind, keep];
+              clearTimeout(holdTimer);
+              holdTimer = setTimeout(() => { const p = pendingToast; pendingToast = null; holdUntil = 0; if (p) c.feedback(...p); }, holdUntil - now);
+            }
+            return;
+          }
           clearTimeout(toastTimer);
-          feedback.replaceChildren();
-          if (text) feedback.append(h('span', 'c2-toast-icon', kind === 'ok' ? '✓' : kind === 'warn' ? '!' : 'i'), h('span', 'c2-toast-text', text));
-          feedback.className = 'c2-feedback ' + kind;
+          if (!same) {
+            feedback.replaceChildren();
+            if (text) feedback.append(h('span', 'c2-toast-icon', kind === 'ok' ? '✓' : kind === 'warn' ? '!' : 'i'), h('span', 'c2-toast-text', text));
+            feedback.className = 'c2-feedback ' + kind;
+          }
+          const hd = hold || (kind === 'warn' && text ? 2200 : 0);
+          if (hd) holdUntil = Math.max(holdUntil, now + hd);
           if (!keep && text) toastTimer = setTimeout(() => { feedback.textContent = ''; feedback.className = 'c2-feedback'; }, kind === 'warn' ? 5000 : 7000);
         },
         showPart(name, desc) {
@@ -1992,12 +2039,14 @@ for(const event of ['pointerdown','keydown','wheel'])document.addEventListener(e
         challenges(list, titleText = '试一试', into = body) {
           const counter = h('span', 'c2-count');
           const sec = c.section(titleText, counter, into);
+          sec.classList.add('c2-cards');
           const bar = h('div', 'c2-progress'); const fill = h('span'); bar.append(fill);
           const grid = h('div', 'c2-challenges'); sec.append(bar, grid);
           const done = new Set();
-          const items = list.map(ch => {
+          // 卡片图标统一用序号（不用各系统显示不一的表情符号）
+          const items = list.map((ch, n) => {
             const li = h('div', 'c2-challenge');
-            const mark = h('span', 'c2-mark', ch.icon || '★');
+            const mark = h('span', 'c2-mark', String(n + 1));
             const txt = h('div', 'c2-ch-text');
             txt.append(h('b', '', ch.title));
             const sub = h('span', '', ch.hint || ''); txt.append(sub);
@@ -2011,22 +2060,31 @@ for(const event of ['pointerdown','keydown','wheel'])document.addEventListener(e
             return {ch, li, sub, mark};
           });
           const update = () => { counter.textContent = `${done.size} / ${list.length}`; fill.style.width = (done.size / list.length * 100) + '%'; };
-          const complete = id => {
+          const complete = (id, restoring = false) => {
             if (done.has(id)) return;
             const it = items.find(x => x.ch.id === id); if (!it) return;
             done.add(id); it.li.classList.add('done'); it.mark.textContent = '✓';
-            if (it.ch.result) c.feedback(it.ch.title + '：' + it.ch.result, 'ok');
+            if (it.ch.result && !restoring) c.feedback(it.ch.title + '：' + it.ch.result, 'ok', false, 4500);
             it.sub.textContent = '完成';
             update();
+            if (restoring) return;
+            const kept = savedCards(s.id); kept.add(id); progress.cards[s.id] = [...kept];
+            if (done.size === list.length) progress[s.id] = true;
+            save();
             if (done.size === list.length) {
-              progress[s.id] = true; save(); syncTabs();
+              syncTabs();
               setTimeout(() => {
                 if (ctx !== c) return;
-                c.feedback(current < cfg.stations.length - 1 ? '这一站的挑战都完成了！' : '本任务的挑战都完成了！还可以接着随便调一调。', 'ok', current < cfg.stations.length - 1);
-                if (current < cfg.stations.length - 1) feedback.append(next);
-              }, 2600);
+                const j = nextUndone();
+                if (allDone() || j < 0) { c.feedback('本任务的挑战都完成了！还可以接着随便调一调。', 'ok'); return; }
+                c.feedback('这一站的挑战都完成了！', 'ok', true);
+                next.textContent = j === current + 1 ? '去下一站 →' : `去第 ${j + 1} 站 →`;
+                feedback.append(next);
+              }, 4600);
             }
           };
+          // 以前做完的卡片直接显示完成（不再弹结论）
+          for (const id of savedCards(s.id)) complete(id, true);
           c.lab.onState(st => { for (const it of items) if (!done.has(it.ch.id)) { try { if (it.ch.check?.(st)) complete(it.ch.id); } catch {} } });
           update();
           return {complete, isDone: id => done.has(id), section: sec};

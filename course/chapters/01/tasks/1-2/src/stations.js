@@ -31,7 +31,7 @@
           result: '回转平台带着上车转，动臂抬落、斗杆收放、铲斗翻转——各靠一根液压缸推动，配合起来就是一次挖掘。'},
         {id: 'blade', icon: '⛏', title: '把推土机铲刀抬起来', hint: '“铲刀抬升”拖过 12°', check: s => range(s, 'dozer', 'blade').max >= 12,
           result: '两侧提升液压缸一伸，推架带着铲刀离地；放低铲刀往前开，就能推土。'},
-        {id: 'scoop', icon: '🪣', title: '装载机举臂又收斗', hint: '两根滑杆都拖过 18°', check: s => s.selected === 'loader' && s.val.lift >= 18 && s.val.bucket >= 18,
+        {id: 'scoop', icon: '🪣', title: '装载机举臂又收斗', hint: '两根滑杆都拖过 18°', check: s => s.selected === 'loader' && s.man.lift >= 18 && s.man.bucket >= 18,
           result: '铲斗收拢兜住料，举升臂再抬高，就能把料倒进车厢。'},
         {id: 'tool', icon: '🔍', title: '三台都点出干活的部件', hint: '点编号：斗、铲刀、举升臂', check: s => picked(s, 'excavator', ['boom', 'stick', 'bucket']) && picked(s, 'dozer', ['blade']) && picked(s, 'loader', ['arms', 'bucket']),
           result: '直接碰到土石的是工作装置；履带、轮胎负责把整机带到位。'},
@@ -44,7 +44,7 @@
         {id: 'crane', icon: '🏗', title: '让塔吊起重臂转 40°', hint: '拖“起重臂回转”', check: s => reach(s, 'crane', 'slew') >= 40,
           result: '塔身不动，起重臂、平衡臂和操作室在塔顶一起转，吊钩就能到达一圈上的各处。'},
         {id: 'hoist', icon: '⬆', title: '把吊笼升到高处', hint: '“吊笼高度”拖过 90%', check: s => liftPct(range(s, 'lift', 'height').max) >= 90,
-          result: '吊笼沿导轨架上的齿条一路爬升，把材料或人员送到楼层。'},
+          result: '吊笼沿导轨架上的齿条一路爬升，把材料送到楼层；能不能载人要看设备设计和使用许可。'},
         {id: 'boom', icon: '🦾', title: '泵车三节臂都动一动', hint: '一级、二级、三级臂各拖一下', check: s => ['boom', 'fold', 'tip'].every(k => swept(s, 'pump', k) >= 5),
           result: '三节布料臂各有一个关节，配合起来，末端软管就能伸到要浇筑的位置。'},
         {id: 'legs', icon: '🔩', title: '找出泵车的支腿', hint: '在泵车上点“支腿”', check: s => picked(s, 'pump', ['supports']),
@@ -92,9 +92,13 @@
         lastT = now;
         s.val = {};
         for (const r of s.readings) s.val[r.id] = r.value;
+        s.man = {};
+        for (const [k, v] of Object.entries(s.manual || {})) s.man[k] = +v;
         if (!s.loading && s.selected && G().model()) {
           const r = rec(s.selected);
-          for (const [k, v] of Object.entries(s.val)) {
+          // 只记学生亲手拖滑杆的值（演示播放带动的读数不算）；用滑杆值本身比较，拖到卡片写的数就算过
+          for (const [k, raw] of Object.entries(s.playing ? {} : s.man)) {
+            const v = +raw; if (!Number.isFinite(v)) continue;
             const x = r.range[k] ||= {min: v, max: v};
             x.min = Math.min(x.min, v); x.max = Math.max(x.max, v);
           }

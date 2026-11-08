@@ -29,9 +29,9 @@
           result: '连杆一节接一节由关节串起来；每个关节转一点，末端就能到达很多位置。'},
         {id: 'flange', icon: '🔩', title: '找到装工具的地方', hint: '在机械臂上点“末端连接法兰”', check: s => picked(s, 'iiwa', ['tool']),
           result: '末端法兰用来安装工具，换上不同工具，机械臂就能干不同的活。'},
-        {id: 'fist', icon: '✊', title: '让机械手握拳', hint: '五根手指都拖过 80%', check: s => s.selected === 'sharpa' && FINGERS.every(k => s.val[k] >= 80),
+        {id: 'fist', icon: '✊', title: '让机械手握拳', hint: '五根手指都拖过 80%', check: s => s.selected === 'sharpa' && FINGERS.every(k => s.man[k] >= 80),
           result: '五根手指一起弯曲合拢，就能把东西握在手里。'},
-        {id: 'point', icon: '☝', title: '只伸出食指', hint: '食指放平，其余拖过 70%', check: s => s.selected === 'sharpa' && s.val.index <= 15 && FINGERS.slice(1).every(k => s.val[k] >= 70),
+        {id: 'point', icon: '☝', title: '只伸出食指', hint: '食指放平，其余拖过 70%', check: s => s.selected === 'sharpa' && (s.man.index ?? s.val.index) <= 15 && FINGERS.slice(1).every(k => s.man[k] >= 70),
           result: '每根手指都能单独控制，所以机械手能做出不同的手势。'},
       ],
     },
@@ -90,9 +90,13 @@
         lastT = now;
         s.val = {};
         for (const r of s.readings) s.val[r.id] = r.value;
+        s.man = {};
+        for (const [k, v] of Object.entries(s.manual || {})) s.man[k] = +v;
         if (!s.loading && s.selected && G().model()) {
           const r = rec(s.selected);
-          for (const [k, v] of Object.entries(s.val)) {
+          // 只记学生亲手拖滑杆的值（演示播放带动的读数不算）；用滑杆值本身比较，拖到卡片写的数就算过
+          for (const [k, raw] of Object.entries(s.playing ? {} : s.man)) {
+            const v = +raw; if (!Number.isFinite(v)) continue;
             const x = r.range[k] ||= {min: v, max: v};
             x.min = Math.min(x.min, v); x.max = Math.max(x.max, v);
           }

@@ -53,7 +53,7 @@
       stop.classList.add('c8-stop'); into.append(c.row(st, stop));
       c.lab.onState(s => {
         const [cls, b, t] = s.running ? ['on', s.started ? '已重新启动' : '现场运行中', s.started ? '按新通道恢复作业' : '挖掘机在回转，皮带在转']
-          : s.armed ? ['ready', '已复位，静止', '等单独的启动指令'] : ['off', '急停已按下', '机械停住，能量还在'];
+          : s.armed ? ['ready', '已复位，静止', '等单独的启动指令'] : ['off', '急停已按下', M.energyLeft(s) > 0 ? '机械停住，能量还在' : '机械停住，能量已全部隔离'];
         const html = `<i></i><b>${b}</b><span>${t}</span>`;
         st.className = 'c8-run ' + cls; if (st.innerHTML !== html) st.innerHTML = html;
       });
@@ -176,14 +176,14 @@
         },
       },
       {
-        id: 'restart', name: '复位重启', lead: '复位不等于开机：撤锁送电、急停复位、鸣笛启动，一步一步来。',
+        id: 'restart', name: '复位重启', lead: '复位不等于开机：急停复位、撤锁送电、鸣笛启动，一步一步来。卡片 1 要趁六处还没复查完时做，卡片 3 要在送电之前做。',
         build(c) {
           const g = c.section('现场');
           statusRow(c, g);
           const g2 = c.section('重新启动');
           g2.append(c.row(
-            c.button('撤锁送电', () => { scene.focus('electric'); send({type: 'unlock'}); }),
             c.button('急停复位', () => { scene.view('home'); send({type: 'reset'}); }),
+            c.button('撤锁送电', () => { scene.focus('electric'); send({type: 'unlock'}); }),
             c.button('鸣笛启动', () => { scene.view('home'); send({type: 'start'}); }, {primary: true}),
           ));
           const g3 = c.section('启动前核对');
@@ -196,13 +196,13 @@
           ].map(([label, val, ok]) => { const r = c.h('div', 'c8-check'); r.innerHTML = `<span>${label}</span><b></b>`; list.append(r); return {r, val, ok}; });
           c.lab.onState(s => rows.forEach(({r, val, ok}) => { r.className = 'c8-check ' + (ok(s) ? 'ok' : 'no'); const t = val(s), b = r.querySelector('b'); if (b.textContent !== t) b.textContent = t; }));
           c.challenges([
-            {id: 'blocked', icon: '🚫', title: '复位被拦住', hint: '没复查完时试“急停复位”', check: () => flags['reset:unverified'] || flags['unlock:unverified'],
+            {id: 'blocked', icon: '🚫', title: '复位被拦住', hint: '先做这张：按下急停后，趁六处没复查完点【急停复位】', check: () => flags['reset:unverified'] || flags['unlock:unverified'],
               result: '还有危险没复查，复位和送电都会被拦下。'},
-            {id: 'still', icon: '🔓', title: '复位后它会动吗', hint: '复查完后点“急停复位”', check: s => s.armed && !s.running,
+            {id: 'still', icon: '🔓', title: '复位后它会动吗', hint: '六处复查完后点【急停复位】', check: s => s.armed && !s.running,
               result: '复位只是解开急停，设备照样静止。'},
-            {id: 'power', icon: '🔌', title: '没送电启动不了', hint: '挂着锁时点“鸣笛启动”', check: () => flags['start:power'],
+            {id: 'power', icon: '🔌', title: '没送电启动不了', hint: '复位后、送电前，点【鸣笛启动】', check: () => flags['start:power'],
               result: '锁还挂在配电箱上，谁也启动不了——这正是挂锁的用处。'},
-            {id: 'start', icon: '📢', title: '鸣笛后单独启动', hint: '送电、复位，再启动', check: s => s.started && s.running,
+            {id: 'start', icon: '📢', title: '鸣笛后单独启动', hint: '复位、送电，再点【鸣笛启动】', check: s => s.started && s.running,
               result: '启动是一条单独的指令，先鸣笛提醒，人员走新通道。'},
           ]);
         },
@@ -234,7 +234,8 @@
           paintPicker(s);
           read('found', count(s, 'found'), '/ 6'); read('ver', count(s, 'verified'), '/ 6');
           read('run', s.running ? '运行' : s.armed ? '已复位' : '急停', '');
-          read('energy', M.energyLeft(s), '项');
+          // 复查完、重新送电以后是“恢复作业”，不再说“未隔离”
+          if (s.power === 'on' && M.allVerified(s) && !s.latched) read('energy', '—', '已送电恢复'); else read('energy', M.energyLeft(s), '项');
         });
         const off = lab.onChange((s, ev) => {
           if (s.seq === lastSeq) return; lastSeq = s.seq;

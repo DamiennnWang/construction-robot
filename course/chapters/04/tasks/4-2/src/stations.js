@@ -41,7 +41,7 @@
     if (id && EL.feedback?.classList.contains('correct')) answered.add(id);
   });
   const quizCard = id => ({
-    id: 'answer', icon: '❓', title: '用证据回答', hint: '下方先选预测，再核对', check: () => answered.has(id),
+    id: 'answer', icon: '❓', title: '用证据回答', hint: id === 'beam' ? '先按【记录】存两条不同方向的回波，再在下方选预测、核对' : '先按【记录】留下证据，再在下方选预测、核对', check: () => answered.has(id),
     result: '答案不是猜出来的，是用你刚记录的扫描条件和坐标核对出来的。',
   });
 
@@ -66,7 +66,7 @@
     },
     {
       id: 'density', name: '点云怎样变密', hint: '拖动旋转 · 滚轮缩放 · 视角改变不增加点',
-      lead: '把方位角间隔在 10°、2°、1° 之间切换，数一数细柱被扫到几个点；再把雷达挪个位置看看。',
+      lead: '把方位角间隔在 10°、2°、1° 之间切换，数一数细柱被扫到几个点（细柱比 2° 的间隔还窄，2° 和 1° 时每层都只打中一束，点数相同；10° 时可能整个漏掉）；再把雷达挪个位置看看。',
       build(c) {
         c.adopt(EL.density, c.section('改采样'));
         c.adopt([EL.progress, EL.secondary], c.section('本帧扫描'));
@@ -113,7 +113,7 @@
     c.adopt(EL.quiz, c.section('先预测，再用证据回答'));
   }
 
-  let lastToast = '';
+  let lastToast = '', lastSource = '', hadPicks = false;
   NativeShell.start({
     task: '4-2', title: '激光雷达与点云',
     stage: EL.stage,
@@ -128,6 +128,9 @@
     },
     poll() {
       const s = lab().snapshot();
+      // 换数据来源时页面会清空已选的 P1、P2：提醒一声，免得以为点丢了
+      if (lastSource && s.state.source !== lastSource && hadPicks) window.c2Lab?.ctx?.feedback('换了数据来源，P1、P2 已清空。换之前先把两点的坐标和距离记下来。', 'warn');
+      lastSource = s.state.source; hadPicks = Boolean(s.picks?.[0] || s.picks?.[1]);
       if (s.playing.pulse) flags.pulse = true;
       s.pole = s.state.experiment === 'density' ? poleHits() : -1;
       return s;

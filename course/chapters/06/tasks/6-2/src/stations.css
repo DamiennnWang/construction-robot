@@ -67,3 +67,6 @@ html.lab-native .c2-panel #occlude[aria-pressed="true"] { border-color:#c77a12; 
 /* 三维区：去掉“TL–06 / 铺砖工作站”这类编号小字；相机画面让出右上角的全屏按钮 */
 html.lab-native .scene-area #sceneStatus { display:none !important; }
 html.lab-native .scene-area #cameraPanel { top:56px; }
+
+/* 6-2：相机小窗让开右上角的全屏、截图按钮，标题状态字不再被相机图标压住 */
+html.lab-native .scene-area #cameraPanel, .c2-native-stage .camera-panel { right:56px !important; }

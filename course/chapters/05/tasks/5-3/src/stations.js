@@ -79,6 +79,9 @@
         build(c) {
           floorMap(c, c.section('楼面分区'));
           const g = c.section('泵送');
+          // 剖面里看不到楼面：提醒学生楼面分区同时在进料
+          let lastStrokes = lab().state().strokes;
+          c.lab.onState(s => { if (s.strokes > lastStrokes && cutaway()) c.feedback(`剖面里每泵一个行程，楼面分区 ${M().label(s.cell)} 也同时进料（${Math.round(s.pumped[s.cell] * 100)}%）。`, 'info'); lastStrokes = s.strokes; });
           const run = c.toggle('连续泵送', running(), () => press('pump-run'));
           g.append(c.row(c.button('泵一个行程', () => press('pump-step'), {primary: true}), run.el));
           c.lab.onState(() => run.set(running()));
@@ -100,9 +103,10 @@
           floorMap(c, c.section('楼面分区'));
           const g = c.section('振捣棒', ex(c));
           g.append(c.button('插入振捣棒', () => press('insert'), {primary: true}));
+          g.append(c.row(c.button('清空这个分区', () => lab().dispatch({type: 'clear-cell'}), {small: true, title: '只清掉当前分区的料，其他分区和已完成的卡片不变'})));
           g.append(c.row(c.button('振捣一步', () => press('vibrate')), c.button('提棒换点', () => press('withdraw'))));
           c.challenges([
-            {id: 'empty', icon: '🚫', title: '往空分区插棒', hint: '选一个还没布料的分区', check: () => flags.emptyInsert,
+            {id: 'empty', icon: '🚫', title: '往空分区插棒', hint: '选还没布料的分区插棒；都布满了先点【清空这个分区】', check: () => flags.emptyInsert,
               result: '先布料、后振捣：没料的分区插不了棒。'},
             {id: 'two', icon: '〰', title: '在一个点振两步', hint: '插棒后振捣两次', check: () => vibratedBy.size >= 1,
               result: '振过两步，这个分区就记为已振捣（示意，不计算密实度）。'},
@@ -143,6 +147,7 @@
       task: '5-3', title: '混凝土泵送、振捣与整平',
       stage: EL.stage,
       stations: STATIONS,
+      redoConfirm: '【↺ 重来】会清空三道工序的楼面数据（布料、振捣、整平），本工位的卡片也重新开始；其他工位已完成的卡片保留。确定重来吗？',
       current: () => lab()?.state().station,
       select: id => document.querySelector(`#tabs [data-tab="${id}"]`)?.click(),
       reset: id => { press('reset-work'); for (const k in flags) delete flags[k]; pumpedBy.clear(); vibratedBy.clear(); prev = null; document.querySelector(`#tabs [data-tab="${id}"]`)?.click(); },

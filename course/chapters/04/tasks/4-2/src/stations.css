@@ -115,3 +115,9 @@ html.lab-native .stage .world-note { display:none !important; }
 
 /* 手机：读数条放到“慢放 / 重扫”按钮上方，两者不再叠在一起 */
 @media (max-width:900px) { html.lab-native .c2-native-stage .stage-readouts { top:auto !important; bottom:94px !important; } }
+
+/* 4-2：截面示例、实验单弹窗里的说明和按钮用正文字号，投影和截图都看得清 */
+#sectionDialog .hint, #sectionDialog .model-disclaimer, #recordsDialog .hint { font-size:15px !important; line-height:1.6 !important; }
+#sectionDialog .shortcuts button { font-size:14.5px !important; min-height:34px; padding:4px 12px !important; }
+#sectionDialog .section-results span { font-size:14px !important; }
+#sectionDialog .eyebrow, #recordsDialog .eyebrow { letter-spacing:.04em; font-size:13px !important; }

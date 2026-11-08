@@ -13,8 +13,11 @@
   EL.target?.firstElementChild?.setAttribute('hidden', '');
   $('#spaceType')?.setAttribute('hidden', '');
   const seen = {types: new Set(), rigs: new Set()};
-  let toured = false, directPlayed = false, detourPlayed = false;
+  let toured = false, directPlayed = false, detourPlayed = false, pathsLoaded = false;
+  // 连接卡片：选了这种连接、并且亲手拖动过刚体才算（固定连接没有可拖的量，选中即可）
+  let lastRig = null, rigQ0 = [];
   EL.tour?.addEventListener('click', () => { toured = true; });
+  $('#loadPaths')?.addEventListener('click', () => { pathsLoaded = true; });
   $('#playDirect')?.addEventListener('click', () => { directPlayed = true; });
   $('#playDetour')?.addEventListener('click', () => { detourPlayed = true; });
   // 原页面换构型时会自动回到“构型与连接”；在“空间边界”“路径与障碍”里换构型时留在原工位
@@ -35,11 +38,11 @@
         const g = c.section('拖动试试：它还能怎样动');
         c.adopt(EL.rows, g);
         c.challenges([
-          {id: 'free', icon: '🧊', title: '自由刚体', hint: '不加任何约束', check: s => seen.rigs.has('free'),
+          {id: 'free', icon: '🧊', title: '自由刚体', hint: '选自由刚体，拖动 Tx、Rz 等滑杆', check: s => seen.rigs.has('free'),
             result: '空中的刚体能沿三个方向平移、绕三个轴转动：6 个自由度。'},
-          {id: 'hinge', icon: '🚪', title: '合页门', hint: '只剩下什么运动？', check: s => seen.rigs.has('hinge'),
+          {id: 'hinge', icon: '🚪', title: '合页门', hint: '选合页门，拖一拖：只剩下什么运动？', check: s => seen.rigs.has('hinge'),
             result: '合页只允许绕合页轴转动：1 个自由度。'},
-          {id: 'slide', icon: '🗄', title: '导轨抽屉', hint: '它往哪个方向走？', check: s => seen.rigs.has('slide'),
+          {id: 'slide', icon: '🗄', title: '导轨抽屉', hint: '选导轨抽屉，拖一拖：它往哪个方向走？', check: s => seen.rigs.has('slide'),
             result: '导轨只允许沿导轨平移：1 个自由度。'},
           {id: 'fixed', icon: '🔩', title: '固定连接', hint: '还能动吗？', check: s => seen.rigs.has('fixed'),
             result: '固定连接与支座相对静止：0 个自由度。底座固定，不等于关节没有自由度。'},
@@ -79,7 +82,7 @@
             result: '行程变小，能到的范围跟着缩小。'},
           {id: 'tool', icon: '🔧', title: '换一个更长的工具', hint: '工具长度调到 120 以上', check: s => s.length >= 120,
             result: '工具变长，工作点跟着外移，边界也就变了。'},
-          {id: 'out', icon: '🎯', title: '试一个够不着的点', hint: '按“超出范围”或自己填', check: s => s.reachMiss,
+          {id: 'out', icon: '🎯', title: '试一个够不着的点', hint: '按【范围外点】或自己填', check: s => s.reachMiss,
             result: '目标点在边界外，关节怎么转都到不了。'},
         ]);
       },
@@ -89,16 +92,16 @@
       build(c) {
         const g = c.section('起点到终点');
         c.adopt(EL.paths, g);
-        const g2 = c.section('挪动障碍');
+        const g2 = c.section('移动障碍');
         c.adopt(EL.obstacles, g2);
         c.challenges([
-          {id: 'load', icon: '📥', title: '载入对照', hint: '先载入起点和终点', check: s => s.route != null,
+          {id: 'load', icon: '📥', title: '载入对照', hint: '点【载入对照】，载入起点和终点', check: s => pathsLoaded && s.route != null,
             result: '起点、终点都能到——这只说明“能到”，还没说明“能过去”。'},
           {id: 'direct', icon: '⛔', title: '看直连撞上障碍', hint: '播放直接运动', check: s => s.directBlocked,
             result: '关节直接插值时，连杆或工具扫过了障碍，运动被叫停。'},
           {id: 'detour', icon: '✅', title: '让它绕过去', hint: '播放绕行样例', check: s => s.detourOk,
             result: '换一条路线，整台机器人都没碰到障碍，才算真正能通过。'},
-          {id: 'move', icon: '🧱', title: '挪动障碍再试', hint: '改障碍的位置或高度', check: s => s.obstacleMoved,
+          {id: 'move', icon: '🧱', title: '移动障碍再试', hint: '改障碍的位置或高度', check: s => s.obstacleMoved,
             result: '障碍一变，原来能过的路线可能就不行了——每次都要重新检查。'},
         ]);
       },
@@ -116,7 +119,9 @@
     reset: () => $('#reset')?.click(),
     poll() {
       const s = lab().getState();
-      seen.types.add(s.id); if (s.rig) seen.rigs.add(s.rig);
+      seen.types.add(s.id);
+      if (s.rig !== lastRig) { lastRig = s.rig; rigQ0 = s.q.slice(); }
+      if (s.rig && (s.q.length === 0 || s.q.some((v, i) => Math.abs(v - rigQ0[i]) > 0.5))) seen.rigs.add(s.rig);
       if (!q0 || q0.id !== s.id) q0 = {id: s.id, q: s.q.slice()};
       const moved = s.q.some((v, i) => Math.abs(v - q0.q[i]) > 1);
       const key = JSON.stringify(s.obstacles.map(o => [o.enabled, o.c, o.size]));

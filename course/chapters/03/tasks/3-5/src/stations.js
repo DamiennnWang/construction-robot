@@ -39,7 +39,7 @@
         c.challenges([
           {id: 'three', icon: '🚗', title: '三种底盘都开一开', hint: '差速、转向轮、麦克纳姆', check: () => seen.wheels.size >= 3,
             result: '同样往前走，三种底盘转弯的办法完全不同。'},
-          {id: 'spin', icon: '🔄', title: '原地转一圈', hint: '差速或麦克纳姆能做到', check: () => spun,
+          {id: 'spin', icon: '🔄', title: '原地转身', hint: '差速或麦克纳姆：点【原地转身】', check: () => spun,
             result: '两侧轮子反向转，车身就原地打转——转向轮底盘做不到。'},
           {id: 'strafe', icon: '↔', title: '让它横着走', hint: '换麦克纳姆轮试试', check: () => strafed,
             result: '麦克纳姆轮的 45° 滚子把力分到侧面，车头不转也能横移。'},
@@ -60,7 +60,7 @@
             result: '履带贴地的那一段不打滑，回程段从上方绕回来。'},
           {id: 'legs', icon: '🦿', title: '一步步看四足', hint: '选四足，按单步', check: () => stepped.has('legs'),
             result: '总有几条腿撑着地，另外几条抬起换位——这就是步态。'},
-          {id: 'rail', icon: '🚆', title: '试试轨道能不能侧移', hint: '选轨道，打开侧移试验', check: s => s.type === 'rail' && s.railProbe,
+          {id: 'rail', icon: '🚆', title: '试试轨道能不能侧移', hint: '选轨道，点【尝试侧移】', check: s => s.type === 'rail' && s.railProbe,
             result: '轮缘卡在轨道上，横向一点也走不动：轨道限定了路线。'},
         ]);
       },

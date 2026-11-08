@@ -56,40 +56,43 @@
   function cylinder(c, kind) {
     const {lab, fmt} = c;
     const hyd = kind === 'hyd';
+    // 开场的自动往返演示不算：学生第一次亲手拨阀、调参数之后才开始判定
+    let touched = false;
+    const touch = fn => v => { if (!touched) { touched = true; sawOut = sawIn = false; } fn(v); };
     const g1 = c.section(hyd ? '换向阀：让油往哪边走' : '换向阀：让气往哪边走');
-    const valve = c.segmented([{value: -1, label: '← 缩回'}, {value: 0, label: '中位'}, {value: 1, label: '伸出 →'}], 1, v => lab.click(`[data-command="${v}"]`), '换向阀');
+    const valve = c.segmented([{value: -1, label: '← 缩回'}, {value: 0, label: '中位'}, {value: 1, label: '伸出 →'}], 1, touch(v => lab.click(`[data-command="${v}"]`)), '换向阀');
     g1.append(valve.el);
     const g2 = c.section(hyd ? '泵、负载和缸' : '气源、负载和缸');
     const flow = hyd
-      ? c.slider({label: '泵的流量', min: 0.5, max: 8, step: 0.1, value: 3, unit: 'L/min', format: v => v.toFixed(1), onInput: v => lab.set('#flow', v)})
-      : c.slider({label: '供气能力', min: 20, max: 300, step: 5, value: 100, unit: 'L/min', onInput: v => lab.set('#flow', v)});
+      ? c.slider({label: '泵的流量', min: 0.5, max: 8, step: 0.1, value: 3, unit: 'L/min', format: v => v.toFixed(1), onInput: touch(v => lab.set('#flow', v))})
+      : c.slider({label: '供气能力', min: 20, max: 300, step: 5, value: 100, unit: 'L/min', onInput: touch(v => lab.set('#flow', v))});
     const pressure = hyd
-      ? c.slider({label: '最高压力', min: 0.5, max: 12, step: 0.1, value: 5, unit: 'MPa', format: v => v.toFixed(1), onInput: v => lab.set('#pressure', v)})
-      : c.slider({label: '气源压力', min: 0.1, max: 0.8, step: 0.01, value: 0.6, unit: 'MPa', format: v => v.toFixed(2), onInput: v => lab.set('#pressure', v)});
+      ? c.slider({label: '最高压力', min: 0.5, max: 12, step: 0.1, value: 5, unit: 'MPa', format: v => v.toFixed(1), onInput: touch(v => lab.set('#pressure', v))})
+      : c.slider({label: '气源压力', min: 0.1, max: 0.8, step: 0.01, value: 0.6, unit: 'MPa', format: v => v.toFixed(2), onInput: touch(v => lab.set('#pressure', v))});
     const load = hyd
-      ? c.slider({label: '负载', min: 0, max: 20000, step: 100, value: 1800, unit: 'N', onInput: v => lab.set('#load', v)})
-      : c.slider({label: '负载', min: 0, max: 1500, step: 10, value: 180, unit: 'N', onInput: v => lab.set('#load', v)});
+      ? c.slider({label: '负载', min: 0, max: 20000, step: 100, value: 1800, unit: 'N', onInput: touch(v => lab.set('#load', v))})
+      : c.slider({label: '负载', min: 0, max: 1500, step: 10, value: 180, unit: 'N', onInput: touch(v => lab.set('#load', v))});
     const bores = hyd ? [40, 50, 63, 80] : [32, 40, 50, 63];
-    const bore = c.segmented(bores.map(d => ({value: d, label: '缸径 ' + d})), hyd ? 50 : 40, v => lab.set('#bore', v), '缸径（毫米）');
+    const bore = c.segmented(bores.map(d => ({value: d, label: '缸径 ' + d})), hyd ? 50 : 40, touch(v => lab.set('#bore', v)), '缸径（毫米）');
     const pair = c.h('div', 'c2-grid2'); pair.append(flow.el, pressure.el);
     g2.append(pair, load.el, bore.el);
 
     let sawOut = false, sawIn = false, sawWait = false;
     c.challenges(hyd ? [
-      {id: 'cycle', icon: '↔', title: '伸出去，再收回来', hint: '拨换向阀', check: s => { if (s.state.v > 1e-4) sawOut = true; if (s.state.v < -1e-4) sawIn = true; return sawOut && sawIn; },
+      {id: 'cycle', icon: '↔', title: '伸出去，再收回来', hint: '拨换向阀', check: s => { if (!touched) return false; if (s.state.v > 1e-4) sawOut = true; if (s.state.v < -1e-4) sawIn = true; return sawOut && sawIn; },
         result: '伸出：油进无杆腔，有杆腔的油回油箱；缩回反过来。一边进油，另一边一定在回油。'},
       {id: 'fast', icon: '⏩', title: '让活塞杆跑得更快', hint: '速度 50 mm/s 以上', check: s => Math.abs(s.state.v) * 1000 >= 50,
         result: '流量越大，活塞走得越快。阀管方向，流量管快慢。'},
-      {id: 'stuck', icon: '🛑', title: '让它推不动', hint: '负载加大，或者把最高压力调低', check: s => /负载超限/.test(s.state.status),
+      {id: 'stuck', icon: '🛑', title: '让它推不动', hint: '负载加大，或者把最高压力调低', check: s => touched && /负载超限/.test(s.state.status),
         result: '要推动负载需要的压力，超过了溢流阀允许的最高压力，油从溢流阀流回油箱，活塞停住。'},
       {id: 'big', icon: '🏋', title: '推动 15000 N 以上的负载', hint: '压力有上限，那就换一个缸', check: s => s.params.load >= 15000 && Math.abs(s.state.v) > 1e-4,
         result: '推力 ≈ 压力 × 活塞面积。缸径大，同样压力推得更重——但同样流量下走得更慢。'},
     ] : [
-      {id: 'cycle', icon: '↔', title: '伸出去，再收回来', hint: '拨换向阀', check: s => { if (s.state.v > 1e-3) sawOut = true; if (s.state.v < -1e-3) sawIn = true; return sawOut && sawIn; },
+      {id: 'cycle', icon: '↔', title: '伸出去，再收回来', hint: '拨换向阀', check: s => { if (!touched) return false; if (s.state.v > 1e-3) sawOut = true; if (s.state.v < -1e-3) sawIn = true; return sawOut && sawIn; },
         result: '气缸和液压缸一样：一腔进气，另一腔排气。'},
       {id: 'wait', icon: '⏳', title: '看见“先憋气，再动”', hint: '负载加到 500 N 以上，再伸出', check: s => { if (/充气建压/.test(s.state.status) && s.params.load >= 500) sawWait = true; return sawWait && Math.abs(s.state.v) > 1e-3; },
         result: '空气能被压缩：负载大时，要先把缸里的气压憋高，活塞才开始动。液压油几乎压缩不了，就没有这么明显。'},
-      {id: 'stuck', icon: '🛑', title: '让它推不动', hint: '负载调大，或者气压调低', check: s => /负载超限/.test(s.state.status),
+      {id: 'stuck', icon: '🛑', title: '让它推不动', hint: '负载调大，或者气压调低', check: s => touched && /负载超限/.test(s.state.status),
         result: '气压乘活塞面积不够推动负载，活塞停住。'},
       {id: 'big', icon: '🏋', title: '推动 1200 N 以上的负载', hint: '气压开大，或换大缸', check: s => s.params.load >= 1200 && Math.abs(s.state.v) > 1e-3,
         result: '推力 ≈ 气压 × 活塞面积。气压最高才零点几兆帕，所以气缸多用在推、夹这类轻活上。'},

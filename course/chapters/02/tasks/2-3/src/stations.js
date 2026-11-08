@@ -22,15 +22,19 @@
   /* ---------------- 工位 1：液压缸带动臂 ---------------- */
   function boom(c) {
     const {lab, fmt} = c;
+    // “最难推”要亲手点过姿势按钮；“改杆长”要改了以后再把缸拉一遍、画出新轨迹
+    let posePicked = false, changed = false;
+    const sw = {min: Infinity, max: -Infinity};
+    const rod = (sel) => v => { changed = true; sw.min = Infinity; sw.max = -Infinity; lab.set(sel, v); };
     const g1 = c.section('推液压缸');
     const stroke = c.slider({label: '液压缸伸出量', min: 0, max: 50, step: 0.5, value: 10, unit: 'mm', format: v => v.toFixed(1), onInput: v => lab.set('#stroke', v)});
-    const pose = c.segmented([{value: 'normal-pose', label: '正常姿势'}, {value: 'hyd-dead', label: '缸最难推'}, {value: 'link-dead', label: '连杆最难推'}], null, v => lab.click('#' + v), '姿势');
+    const pose = c.segmented([{value: 'normal-pose', label: '正常姿势'}, {value: 'hyd-dead', label: '缸最难推'}, {value: 'link-dead', label: '连杆最难推'}], null, v => { if (v !== 'normal-pose') posePicked = true; lab.click('#' + v); }, '姿势');
     g1.append(stroke.el, pose.el);
     const g2 = c.section('改一改杆的长度');
     const grid = c.h('div', 'c2-grid2');
-    const a = c.slider({label: '动臂 A', min: 60, max: 120, step: 1, value: 100, unit: 'mm', onInput: v => lab.set('#a', v)});
-    const b = c.slider({label: '连杆 B', min: 100, max: 210, step: 1, value: 170, unit: 'mm', onInput: v => lab.set('#b', v)});
-    const cc = c.slider({label: '从动臂 C', min: 70, max: 160, step: 1, value: 120, unit: 'mm', onInput: v => lab.set('#c', v)});
+    const a = c.slider({label: '动臂 A', min: 60, max: 120, step: 1, value: 100, unit: 'mm', onInput: rod('#a')});
+    const b = c.slider({label: '连杆 B', min: 100, max: 210, step: 1, value: 170, unit: 'mm', onInput: rod('#b')});
+    const cc = c.slider({label: '从动臂 C', min: 70, max: 160, step: 1, value: 120, unit: 'mm', onInput: rod('#c')});
     grid.append(a.el, b.el, cc.el);
     g2.append(grid);
 
@@ -38,9 +42,12 @@
     c.challenges([
       {id: 'sweep', icon: '⤴', title: '从最低抬到最高', hint: '把伸出量从头拉到尾', check: s => { if (s.stroke <= s.strokeMin + 0.6) sawLow = true; if (s.stroke >= s.strokeMax - 0.6) sawHigh = true; return sawLow && sawHigh; },
         result: '液压缸只会直线伸缩，动臂却绕固定铰点转了一个角度：直线运动变成了转动。'},
-      {id: 'hard', icon: '⚠', title: '找到最难推的姿势', hint: '看力臂读数变得很小', check: s => Number.isFinite(s.moment) && s.moment < 8,
+      {id: 'hard', icon: '⚠', title: '找到最难推的姿势', hint: '点【缸最难推】或【连杆最难推】，看力臂读数', check: s => posePicked && Number.isFinite(s.moment) && s.moment < 8,
         result: '液压缸的力几乎对准铰点推，力臂很小，推力再大也很难让动臂转——机器设计时要避开这种姿势。'},
-      {id: 'shape', icon: '〰', title: '改一根杆，让轨迹变样', hint: '打开轨迹，再拖杆长', check: s => s.a !== 100 || s.b !== 170 || s.c !== 120,
+      {id: 'shape', icon: '〰', title: '改一根杆，让轨迹变样', hint: '拖杆长，再打开轨迹把伸出量拉一遍', check: s => {
+        if (changed && (s.a !== 100 || s.b !== 170 || s.c !== 120) && Number.isFinite(s.stroke)) { sw.min = Math.min(sw.min, s.stroke); sw.max = Math.max(sw.max, s.stroke); }
+        return Boolean(s.trace) && sw.max - sw.min >= 10;
+      },
         result: '杆长一变，能转的范围和末端走的路线都跟着变——机构的样子决定了动作的样子。'},
     ]);
 

@@ -35,7 +35,7 @@ function materialIcon(kind){
 }
 function orderArt(){
  const a=s.machine==='bend'?s.angleDeg:90,rad=a*Math.PI/180,x=110+47*Math.cos(rad),y=74-47*Math.sin(rad);
- return '<svg viewBox="0 0 190 105"><defs><pattern id="orderGrid" width="15" height="15" patternUnits="userSpaceOnUse"><path d="M15 0H0V15" fill="none" stroke="#e1eaf7" stroke-width=".6"/></pattern></defs><rect width="190" height="105" rx="8" fill="#f4f8ff"/><rect width="190" height="105" fill="url(#orderGrid)"/><path d="M20 74h79q11 0 11-11V20" stroke="#8eabd2" stroke-width="6" fill="none" stroke-dasharray="4 5"/><path d="M20 74h90L'+x.toFixed(1)+' '+y.toFixed(1)+'" stroke="'+(a===90?'#2469ed':'#f39b36')+'" stroke-width="6" fill="none" stroke-linejoin="round"/><text x="134" y="53" font-size="17" fill="#2469ed" font-family="Microsoft YaHei">90°</text><text x="19" y="97" font-size="11" fill="#5f7b9d" font-family="Microsoft YaHei">目标轮廓 · 对照形状</text></svg>';
+ return '<svg viewBox="0 0 190 105"><defs><pattern id="orderGrid" width="15" height="15" patternUnits="userSpaceOnUse"><path d="M15 0H0V15" fill="none" stroke="#e1eaf7" stroke-width=".6"/></pattern></defs><rect width="190" height="105" rx="8" fill="#f4f8ff"/><rect width="190" height="105" fill="url(#orderGrid)"/><path d="M20 74h79q11 0 11-11V20" stroke="#8eabd2" stroke-width="6" fill="none" stroke-dasharray="4 5"/><path d="M20 74h90L'+x.toFixed(1)+' '+y.toFixed(1)+'" stroke="'+(a===90?'#2469ed':'#f39b36')+'" stroke-width="6" fill="none" stroke-linejoin="round"/><text x="146" y="97" font-size="15" fill="#2469ed" stroke="#f4f8ff" stroke-width="3" paint-order="stroke" font-family="Microsoft YaHei">90°</text><text x="19" y="97" font-size="11" fill="#5f7b9d" font-family="Microsoft YaHei">目标轮廓 · 对照形状</text></svg>';
 }
 function render(){
  $('game').dataset.stage=s.stage;
@@ -45,7 +45,7 @@ function render(){
  $('progressLabel').textContent=['加工订单','巡查与检查','作业分区'][s.stage];$('progressCount').innerHTML=count+' <small>/ '+total+'</small>';$('progressFill').style.width=count/total*100+'%';
  document.querySelectorAll('[data-stage]').forEach(b=>{const n=Number(b.dataset.stage);b.setAttribute('aria-current',n===s.stage?'step':'false');b.setAttribute('aria-disabled',!unlocked(n));b.classList.toggle('complete',n===0?s.stock===3:n===1?stageReady():s.finished);});
  $('orderCard').hidden=s.stage!==0;$('siteNote').hidden=s.stage===0;$('orderDrawing').innerHTML=orderArt();
- const needSetting=s.stage===0&&s.stock>0&&s.stock<3&&s.machine===machines[s.stock];
+ const needSetting=s.stage===0&&s.stock>0&&s.stock<3; // 上一道完成后直接显示下一台机械的设定，不必先点一次启动
  $('machineSetting').hidden=!needSetting||busy;
  if(needSetting){const cut=s.stock===1,range=$('settingRange');range.min=cut?1600:30;range.max=cut?2800:135;range.step=cut?100:5;range.value=cut?s.lengthMM:s.angleDeg;$('settingLabel').textContent=cut?'移动定尺挡块':'调整弯曲转角';$('settingValue').textContent=range.value+(cut?' mm':'°');$('settingHint').textContent=cut?'对照订单，把挡块移到 2400 mm。':'转到 90°，让钢筋与订单轮廓贴合。';}
  $('inspectionCount').textContent='四项检查 · '+s.inspected.length+' / 4';$('inspectBtn').textContent=s.inspected.length===4?'再看检查样板 ↗':'拿起检查工具 ↗';
@@ -111,7 +111,7 @@ function performSite(id){
 }
 function paint(region){
  s.selected=region;$('objectTitle').textContent=regionNames[region];$('objectDescription').textContent=region==='regular'?'钢筋排列规则、交点连续清楚，是本例中的机器人候选区。':region==='column'?'密集钢筋限制工具进入，需要人工配合。': '洞口是缺口，护栏内侧及隔离边界保持禁入。';
- if(!zoneNames[s.tool]){say('先从下方拿起一枚彩色区标，再放到'+regionNames[region]+'。');return;}
+ if(!zoneNames[s.tool]){say('先在右侧拿起一枚彩色区标，再放到'+regionNames[region]+'。');return;}
  s.game.zones[region]=s.tool;
  const ok=s.tool===expectedZones[region];
  const reasons={regular:'这里交点规则、空间开阔，可标为机器人候选区。',column:'这里钢筋密集，工具进入空间不足，应交给人工配合。',opening:'这里有真实缺口，设置护栏后仍应保留禁止进入区。'};

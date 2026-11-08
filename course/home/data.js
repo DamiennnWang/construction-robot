@@ -240,8 +240,8 @@ window.COURSE = {
     },
     {
       "id": 5,
-      "title": "主体结构施工",
-      "nav": "主体结构施工",
+      "title": "主体结构施工协同",
+      "nav": "主体结构施工协同",
       "description": "钢筋加工、绑扎与人工复核，再进入混凝土泵送、振捣和整平。",
       "entry": "course/home/index.html#chapter-5",
       "kind": "互动课堂",
@@ -409,7 +409,7 @@ window.COURSE = {
         {
           "id": "8-2",
           "title": "保养排查",
-          "note": "喷涂、泵车、发动机与轴承保养",
+          "note": "发动机点检、润滑与管路清洗",
           "demo": "course/chapters/08/tasks/8-2/index.html",
           "entries": [
             {

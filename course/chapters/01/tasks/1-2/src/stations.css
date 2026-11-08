@@ -24,3 +24,7 @@ html.lab-native .c2-panel .c1-dyn .c2-chips { display:grid; grid-template-column
 html.lab-native .c2-panel .c1-dyn .c2-chip { text-align:left; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; }
 html.lab-native .c2-panel .c1-sliders { display:grid; gap:8px 14px; }
 html.lab-native .c2-panel .c1-sliders.c1-two { grid-template-columns:1fr 1fr; }
+
+/* 下方“观察部件”读数：部件名较长时缩小字号、允许换行，显示完整名称（如“支腿与支承垫板”） */
+.c2-readouts .c2-read:nth-child(3) .c2-val { white-space:normal; overflow:visible; }
+.c2-readouts .c2-read:nth-child(3) .c2-val b { font-size:clamp(15px, 1.25vw, 20px); line-height:1.2; white-space:normal; word-break:keep-all; }

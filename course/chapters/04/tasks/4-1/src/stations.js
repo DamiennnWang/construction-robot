@@ -28,6 +28,12 @@
   // 原页面每个案例打开时就停在一个典型时刻；“停在……”类挑战要等学生自己动过时间轴才算
   const mark = (k) => { flags[k] = true; };
   $('#phaseButtons')?.addEventListener('click', e => { if (e.target.closest('[data-time]')) { const k = snap()?.state.case; if (k) moved[k] = true; } });
+  // 原地转向：换快慢时页面会自动跳到中点，“停在转了一半时”要学生自己拖时间轴或点片段才算；“看完一次”要真的播放过
+  const played = {};
+  document.addEventListener('click', e => { if (e.target.closest?.('[data-duration]')) flags.turnScrub = false; }, true);
+  const scrub = e => { if (e.target.closest?.('.timeline, #phaseButtons') && snap()?.state.case === 'turn') flags.turnScrub = true; };
+  document.addEventListener('input', scrub, true);
+  document.addEventListener('click', e => { if (e.target.closest?.('#phaseButtons [data-time]')) scrub(e); }, true);
   const near = (a, b, d) => Math.abs(a - b) <= d;
 
   const STATIONS = [
@@ -88,11 +94,11 @@
         const g = c.section('此刻的数据'); c.adopt([EL.readings, EL.axis, EL.explain], g);
         const g2 = c.section('改变条件'); c.adopt([EL.controls.turn, EL.gravity], g2);
         c.challenges([
-          {id: 'slow', icon: '🐢', title: '看完一次慢转', hint: '停转后再看转角', check: s => s.state.turnDuration === 4 && s.state.time >= 5.2,
+          {id: 'slow', icon: '🐢', title: '看完一次慢转', hint: '慢转播放到停转，再看转角', check: s => played[4] && s.state.turnDuration === 4 && s.state.time >= 5.2,
             result: '慢转 4 秒：角速度一直不高，累计转角慢慢到 90°。'},
-          {id: 'quick', icon: '🐇', title: '换成快转', hint: '看完 1 秒的转向', check: s => s.state.turnDuration === 1 && s.state.time >= 2.1,
+          {id: 'quick', icon: '🐇', title: '换成快转', hint: '换快转，播放看完 1 秒的转向', check: s => played[1] && s.state.turnDuration === 1 && s.state.time >= 2.1,
             result: '快转 1 秒也只转到 90°：角速度峰值更高，持续时间更短。'},
-          {id: 'half', icon: '🎯', title: '停在转了一半时', hint: '一共转了约 45°', check: s => near(s.sample.yaw, 45, 5) && !s.state.playing,
+          {id: 'half', icon: '🎯', title: '停在转了一半时', hint: '自己拖时间轴，停在约 45°', check: s => flags.turnScrub && near(s.sample.yaw, 45, 5) && !s.state.playing,
             result: '转到一半时角速度最大；转过多少和转得多快要分开看。'},
           {id: 'compare', icon: '📊', title: '快转叠上慢转比', hint: '快转时打开“叠加基准”', check: s => s.state.compare && s.state.turnDuration === 1,
             result: '实线快转、虚线慢转：一个高而窄，一个矮而宽，最后都停在 90°。'},
@@ -108,11 +114,12 @@
     stations: STATIONS,
     current: () => snap()?.state.case,
     select: id => { if (snap()?.state.case !== id) lab()?.chooseCase(id); },
-    reset: id => lab()?.chooseCase(id),
+    reset: id => { delete moved[id]; delete startTime[id]; if (id === 'turn') { flags.turnScrub = false; delete played[1]; delete played[4]; } lab()?.chooseCase(id); },
     poll() {
       const s = snap(), k = s.state.case;
       if (startTime[k] == null) startTime[k] = s.state.time;
       if (s.state.playing || Math.abs(s.state.time - startTime[k]) > 0.05) moved[k] = true;
+      if (k === 'turn' && s.state.playing) played[s.state.turnDuration] = true;
       if (s.state.case === 'drive') {
         if (s.state.playing && s.state.time < 1.5) flags.driveStart = true;
         if (flags.driveStart && s.state.time >= 7.4) mark('driveWhole');

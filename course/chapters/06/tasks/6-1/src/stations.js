@@ -65,9 +65,12 @@
 
   // 挑战和步骤勾选用到的“做到过”标记（原状态只记当前值）
   let built = new Set(), sawMortar = false, sawDatum = false, fixed = {}, robot = {};
+  // 取放卡片要真的播放或单步走过（只把时间滑杆拖到最右不算）；换了偏差/修正设置后要重新走一遍
+  let ran = false;
+  document.addEventListener('click', e => { if (e.target.closest?.('#play, #step')) ran = true; if (e.target.closest?.('#datumFault, #calibrate')) ran = false; }, true);
   const clearMarks = id => {
     if (id === 'manual') { built = new Set(); sawMortar = false; sawDatum = false; fixed = {}; }
-    if (id === 'robot') robot = {};
+    if (id === 'robot') { robot = {}; ran = false; }
   };
 
   const STATIONS = [
@@ -132,7 +135,7 @@
         const row = c.h('div', 'c61-explode'); g3.append(row);
         c.adopt([EL.explodeLabel, EL.explode], row);
         c.challenges([
-          {id: 'full', icon: '▶', title: '完整看一次取放', hint: '播放到“复测”', check: () => robot.full,
+          {id: 'full', icon: '▶', title: '完整看一次取放', hint: '点【▶ 开始演示】或【下一步 →】走到“复测”', check: () => robot.full,
             result: '先夹紧再提升，先有支承再松夹：位置和姿态都要对。'},
           {id: 'mobile', icon: '🚚', title: '换个站位再砌', hint: '上方点“换站位”', check: () => robot.mobile,
             result: '移动到新站位后要先稳住、重新测量，才能用同一套目标。'},
@@ -178,7 +181,7 @@
     if (m.lesson === 1 && m.completed[1]) built.add(m.width);
     if (s.tab === 'issues' && s.issue === 'mortar') { if (s.issueAmount > 0) sawMortar = true; else if (sawMortar) fixed.mortar = true; }
     if (s.tab === 'issues' && s.issue === 'datum') { if (s.issueAmount > 0) sawDatum = true; else if (sawDatum) fixed.datum = true; }
-    if (s.tab === 'robot' && r.measured) {
+    if (s.tab === 'robot' && r.measured && ran) {
       robot.full = true;
       if (r.platform === 'mobile') robot.mobile = true;
       if (r.fault && !r.corrected && r.error > 0) robot.fault = true;

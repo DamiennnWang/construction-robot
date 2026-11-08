@@ -86,7 +86,7 @@
             result: '道间距比喷幅还宽，两道之间就空出一条没涂到的带子。'},
           {id: 'overlap', icon: '🎯', title: '让两道喷幅搭上', hint: '调小间距或拉远喷嘴', check: () => flags.overlapTrial,
             result: '喷嘴离墙越远喷幅越宽；间距小于喷幅，相邻两道才会搭接。'},
-          {id: 'even', icon: '⚖️', title: '两端不堆厚', hint: '打开流量随速度调整', check: () => flags.evenTrial,
+          {id: 'even', icon: '⚖️', title: '两端不堆厚', hint: '打开流量随速度调整，再把速度调到约 300 mm/s', check: () => flags.evenTrial,
             result: '起收段减速时流量也跟着减小，两端和中段的涂层就一样厚。'},
         ]);
       },

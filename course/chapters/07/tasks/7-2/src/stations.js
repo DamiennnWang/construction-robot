@@ -149,7 +149,7 @@
   // 原页面的提示（#toast、复核反馈）转成外壳三维区上方的提示条
   const say = (text, kind) => { const c = window.c2Lab?.ctx; if (c && text) c.feedback(text, kind); };
   const warnRe = /请|不足|偏|无法|先|尚未|不能|错误|不对|再/;
-  if (EL.toast) new MutationObserver(() => { const t = EL.toast.textContent.trim(); if (t) say(t, warnRe.test(t) && !/已保存.*可进入/.test(t) ? 'warn' : 'info'); })
+  if (EL.toast) new MutationObserver(() => { const t = EL.toast.textContent.trim(); if (t) say(t, /^已(导出|保存|下载|完成|记录)/.test(t) ? 'ok' : warnRe.test(t) && !/已保存.*可进入/.test(t) ? 'warn' : 'info'); })
     .observe(EL.toast, {childList: true, characterData: true, subtree: true});
   if (EL.reviewFeedback) new MutationObserver(() => {
     const t = EL.reviewFeedback.textContent.trim();

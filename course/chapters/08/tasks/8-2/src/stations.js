@@ -60,7 +60,7 @@
     /* 情境 */
     caseBar.replaceChildren(h('span', 'm82-cases-label', '情境'));
     const caseButtons = st.cases.map(([value, text]) => {
-      const b = btn('m82-case', text, () => { if (lab.state().work[id].scenario !== value || closed()) act({type: 'case', value}); });
+      const b = btn('m82-case', text, () => { if (lab.state().work[id].scenario !== value || closed()) { act({type: 'case', value}); setTimeout(() => lab.frame(), 0); } }); // 换情境后镜头回到全景，编号标记都在画面里
       b.setAttribute('role', 'radio'); b.dataset.value = value;
       if (value === 'unknown') b.classList.add('unk'); else if (value !== 'normal') b.classList.add('abn');
       caseBar.append(b); return b;
@@ -101,7 +101,7 @@
     const bar = h('div', 'm82-bar'), fill = h('span'); bar.append(fill); sService.li.append(bar);
     if (id === 'excavator') sService.li.append(h('p', 'm82-tip', '检查过的黄油嘴再点一次就加注；也可以按这一步，按顺序加注下一个。'));
     const ends = h('li', 'm82-step m82-ends');
-    ends.append(btn('c2-btn c2-primary', '复查', () => act({type: 'verify'})), btn('c2-btn m82-hand', '移交检修', () => act({type: 'handoff'})));
+    ends.append(btn('c2-btn c2-primary', '复查', () => (act({type: 'verify'}), setTimeout(() => lab.frame(), 0))), btn('c2-btn m82-hand', '移交检修', () => act({type: 'handoff'})));
     flow.append(ends);
     const verdict = h('div', 'm82-verdict'); verdict.hidden = true; gFlow.append(verdict);
 
@@ -113,7 +113,7 @@
       {id: 'anomaly', icon: spec.anomaly[0], title: spec.anomaly[1], hint: spec.anomaly[2], result: spec.anomaly[3],
         check: s => mine(s, r => spec.anomalyCases.includes(r.scenario) && !r.resolved && r.unresolved.some(u => !u.startsWith('未发现')))},
       {id: 'early', icon: spec.early[0], title: spec.early[1], hint: spec.early[2], result: spec.early[3],
-        check: s => !!s.tried?.[id]?.early},
+        check: s => !!s.tried?.[id]?.[id === 'engine' ? 'hotCoolant' : 'raisedBucket']},
       {id: 'unknown', icon: '❓', title: '资料不明时不猜', hint: '选资料不明的情境，核对资料后移交', result: '查不到规格就不补加、不混用，把待确认事项交出去。',
         check: s => mine(s, r => r.scenario === 'unknown' && !r.resolved)},
     ]);
@@ -173,7 +173,7 @@
         {id: 'cup', icon: '🥛', title: '样杯出液变清', hint: '冲洗时盯着样杯，变清了再停泵', result: '出液从涂料色变清，说明管里的残漆冲出来了。',
           check: s => { const w = s.work.spray; return w.flushed && !w.flushing && w.rinse >= M.SPRAY.clear; }},
         {id: 'zero', icon: '⚠', title: '压力回零再拆枪', hint: '压力表没回零时点一下喷嘴', result: '带压拆枪，涂料会射进皮肤造成高压注射伤——先锁枪泄压。',
-          check: s => !!s.tried?.spray?.early},
+          check: s => !!s.tried?.spray?.pressureGun},
         {id: 'filter', icon: '🔍', title: '找出堵住的滤网', hint: '选“喷幅变窄”，冲洗后拆开看', result: '残漆干结在枪内滤网上，喷幅就变窄；拆洗通透后恢复。',
           check: s => !!s.tried?.spray?.found},
         {id: 'oil', icon: '🧪', title: '油性涂料选对清洗液', hint: '选“油性涂料”，洗完通过复查', result: '油性涂料要用配套溶剂；水性涂料用清水。以说明书为准。',
@@ -189,8 +189,8 @@
           check: s => !!s.tried?.mortar?.found},
         {id: 'person', icon: '🚫', title: '出口不对人', hint: '出口对着旁边的人去推球', result: '推球时余浆和球会猛地冲出，出口只能对准桶。',
           check: s => !!s.tried?.mortar?.person},
-        {id: 'tank', icon: '🪣', title: '废水进沉淀桶', hint: '出口对准沉淀桶，把球推出来', result: '废水进沉淀桶沉淀，清水回用、沉渣按现场要求处理，不进下水口。',
-          check: s => { const w = s.work.mortar; return w.ball === 'out' && w.aim === 'tank'; }},
+        {id: 'tank', icon: '🪣', title: '废水进沉淀桶', hint: '先试出口对准下水口看提示，再改对准沉淀桶把球推出来', result: '废水进沉淀桶沉淀，清水回用、沉渣按现场要求处理，不进下水口。',
+          check: s => { const w = s.work.mortar; return !!s.tried?.mortar?.drain && w.ball === 'out' && w.aim === 'tank'; }},
       ],
     },
   };
@@ -256,7 +256,7 @@
       ui.drain = step('放空存水（冬季必做）', 'drain');
     }
     const ends = h('li', 'm82-step m82-ends');
-    ends.append(btn('c2-btn c2-primary', '复查', () => act({type: 'verify'})), btn('c2-btn m82-hand', '移交检修', () => act({type: 'handoff'})));
+    ends.append(btn('c2-btn c2-primary', '复查', () => (act({type: 'verify'}), setTimeout(() => lab.frame(), 0))), btn('c2-btn m82-hand', '移交检修', () => act({type: 'handoff'})));
     flow.append(ends);
     const verdict = h('div', 'm82-verdict'); verdict.hidden = true; gFlow.append(verdict);
     gFlow.append(h('p', 'm82-note', '计时、压力（格）和颜色都是课堂示意。清洗介质与顺序以设备与材料说明书为准。'));

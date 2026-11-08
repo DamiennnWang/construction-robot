@@ -252,3 +252,6 @@ html.lab-native .c2-panel .evaluation-metrics .metric { grid-column:span 2; }
 html.lab-native .c2-panel .evaluation-metrics .metric:nth-child(n+4) { grid-column:span 3; }
 html.lab-native .c2-panel .evaluation-metrics.metrics-hidden .metric strong { color:var(--course-muted) !important; }
 html.lab-native .c2-panel :is(.candidate-row, .missed-row) strong { color:var(--course-ink) !important; }
+
+/* 4-3 是二维图片，没有三维画面可存：隐藏外壳的“保存三维截图”按钮（截图用系统截图） */
+html[data-c2-lab="4-3"] .c2-shot { display:none !important; }

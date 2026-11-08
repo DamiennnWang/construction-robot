@@ -204,6 +204,7 @@ export function saveRecord(state, observation, disposition) {
   const wide = [...photos].reverse().find(p => p.mode === 'wide');
   const detail = [...photos].reverse().find(p => p.mode === 'detail');
   if (!wide || !detail) return result(false, !wide && !detail ? '先保存一张合格全景和一张合格细部照片。' : !wide ? '还缺少能定位的合格全景照片。' : '还缺少看清异常的合格细部照片。');
+  if (!observation || !disposition) return result(false, !observation && !disposition ? '请先选择可见现象和处置方式。' : !observation ? '请先选择可见现象。' : '请先选择处置方式。');
   if (observation !== mission.observation) return result(false, '记录应只写照片能支持的可见现象，不要把异常直接写成原因或结构安全结论。');
   if (disposition !== mission.disposition) return result(false, '请安排与现有证据相符的管养处置，保留需要复查或专业确认的事项。');
   const record = freeze({

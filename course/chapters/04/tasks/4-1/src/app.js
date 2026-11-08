@@ -14,7 +14,7 @@ function labels(s){
   explanation=state.gravity?(Math.abs(s.tilt)<.05?'平放时，x、y接近0，z约9.81 m/s²。':'车身斜了，重力分到了不同的轴上；三根轴合起来仍约9.81 m/s²。'):'去掉重力的影响后，停着不动时三轴都接近0；车身斜了多少，要看含重力的读数。';
   context='观察坡道停靠或平台调平时，先看倾角是否稳定；保持倾斜与持续转动对应不同的数据。';
  }else if(state.case==='drive'){
-  markup=reading('向前的加速度',fmt(s.ax),'m/s²')+reading('行走速度',fmt(s.speed),'m/s',true);measure='前进 '+fmt(s.pos)+' m';
+  markup=reading('向前的加速度',fmt(s.ax),'m/s²')+reading('行走速度',fmt(s.speed),'m/s',true)+reading('走了多远',fmt(s.pos),'m');measure='前进 '+fmt(s.pos)+' m';
   explanation=s.phase==='匀速前进'?'还在前进，但速度不再变化，所以向前的加速度为0。':s.phase==='起步加速'?'向前为正。速度正在增加，向前的加速度为正值。':s.phase==='减速制动'?'仍在向前行走，速度逐渐下降；向前的加速度为负值。':s.pos>0?'已停稳，加速度和速度都归零；到达的位置没有回到起点。':'还没起步：速度和加速度都是0。';
   context='沿施工通道行走时，把起步、匀速和制动分开观察；单个加速度为0的读数不能判断是否停车。';
  }else if(state.case==='bump'){

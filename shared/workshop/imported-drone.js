@@ -45,7 +45,7 @@
    const bounds=new T.Box3().setFromObject(nodes.length>1?nodes[0]:group),anchor=new T.Object3D();
    anchor.position.copy(group.worldToLocal(bounds.getCenter(vector())));group.add(anchor);
    groups.set(key,{node:group,offset});
-   parts.push({id:key,label,node:anchor,members:[group],description:key==='propellers'?'原模型的四片独立螺旋桨，绕各自电机轴缓慢旋转。演示速度便于观察，不对应实际转速。':label+'：保留 Cesium 原始网格和贴图，可近看或展开观察。'});
+   parts.push({id:key,label,node:anchor,members:[group],description:({"body": "整流机壳：包住里面的电路板和电池，挡风挡雨，也让飞行时空气阻力更小。", "frame": "机架与四臂：把四个电机撑在四个角上，是无人机的骨架。", "camera": "前置镜头：拍照、录像，让操作人员看清现场，比如检查外墙和桥梁。", "motors": "四个电机：各带一片螺旋桨转动；改变各个电机的转速，无人机就能升降、转向和前后飞。", "propellers": "四片螺旋桨：转起来把空气往下推，产生升力。画面里转得慢是为了便于观察，不是实际转速。", "antenna": "天线：接收遥控指令、传回画面和数据。"})[key]||label+'。'});
   }
   body.updateMatrixWorld(true);
   const bounds=new T.Box3().setFromObject(body),size=bounds.getSize(vector()),center=bounds.getCenter(vector()),scale=5/Math.max(size.x,size.y,size.z);

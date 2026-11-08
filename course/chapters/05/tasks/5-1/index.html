@@ -231,13 +231,13 @@ html[data-theme="dark"] .c2-station[aria-selected="true"] { background:linear-gr
 }
 .c2-toolseg button { height:28px; font-size:14px; padding:0 10px; }
 .c2-hint {
-  position:absolute; left:50%; top:14px; transform:translateX(-50%); z-index:2; pointer-events:none;
+  position:absolute; left:50%; bottom:14px; transform:translateX(-50%); z-index:2; pointer-events:none;
   max-width:min(80%,560px); white-space:nowrap; overflow:hidden; text-overflow:ellipsis;
   padding:5px 14px; border-radius:999px; font-size:14px; line-height:1.4; color:var(--stage-ink);
   background:var(--stage-chip); border:1px solid var(--stage-chip-line); backdrop-filter:blur(6px);
   transition:opacity .6s ease, transform .6s ease;
 }
-.c2-hint.gone { opacity:0; transform:translate(-50%,-6px); }
+.c2-hint.gone { opacity:0; transform:translate(-50%,6px); }
 
 /* 全屏：外壳统一一个按钮，钉在三维区右上角；全屏的是整块三维区（含上方选择条和提示条） */
 .c2-fs {
@@ -440,7 +440,7 @@ html[data-theme="dark"] .c2-banner { background:#3b2d16; border-color:#6b5124; c
 
 /* 提示条：在三维区下方弹出，几秒后收起 */
 .c2-feedback {
-  position:absolute; left:50%; top:56px; transform:translateX(-50%); z-index:4; max-width:min(640px,80%);
+  position:absolute; left:50%; top:56px; transform:translateX(-50%); z-index:4; max-width:min(560px,62%); cursor:pointer;
   display:flex; align-items:center; gap:10px; font-size:15px; line-height:1.55; border-radius:14px;
 }
 .c2-feedback:empty { display:none; }
@@ -526,7 +526,7 @@ html[data-theme="dark"] .c2-task-id { background:linear-gradient(135deg,#8abaff,
   .c2-tools { left:16px; top:16px; gap:8px; }
   .c2-tool { height:40px; padding:0 15px; border-radius:12px; font-size:15.5px; }
   .c2-toolseg button { height:32px; font-size:15.5px; padding:0 13px; }
-  .c2-hint { top:18px; font-size:15.5px; padding:6px 17px; }
+  .c2-hint { bottom:18px; font-size:15.5px; padding:6px 17px; }
   .c2-fs { right:16px; top:16px; width:40px; height:40px; border-radius:12px; }
   .c2-shot { right:16px; top:62px; width:40px; height:40px; border-radius:12px; }
   .c2-fs svg, .c2-shot svg { width:21px; height:21px; }
@@ -677,6 +677,18 @@ html[data-theme="dark"] .c2-task-id { background:linear-gradient(135deg,#8abaff,
 /* 手机横屏：三维区占大半屏高 */
 @media (max-width:900px) and (orientation:landscape) { .c2-view { height:clamp(240px,74vh,420px); } }
 @media (prefers-reduced-motion:reduce) { * { transition:none !important; animation:none !important; } }
+
+/* 试一试卡片钉在面板底部：面板内容再长，卡片也始终在一屏里看得见（上面的控件在卡片后面滚动） */
+@media (min-width:901px) {
+  .c2-panel .c2-cards {
+    position:sticky; bottom:-14px; z-index:3; margin:0 -16px; padding:10px 16px 14px;
+    background:var(--course-surface); border-top:1px solid var(--hair); box-shadow:0 -10px 18px -14px rgba(18,44,78,.35);
+  }
+  .c2-panel .c2-cards .c2-ch-text span { -webkit-line-clamp:2; }
+}
+@media (min-width:1680px) and (min-height:860px) {
+  .c2-panel .c2-cards { bottom:-18px; margin:0 -22px; padding:12px 22px 18px; }
+}
 
 /* 第三章：原页面元素放进统一外壳后的补充样式。外壳本身的样式在 shared/lab-shell/lab-shell.css。 */
 
@@ -873,6 +885,10 @@ html.lab-native .c2-stage-top :is(button, label, a) { font-family:inherit; }
   html.lab-native :is(.c2-panel, .c2-strip) .segmented button { height:34px; font-size:16px; }
   html.lab-native .c2-stage-top { padding:10px 13px; gap:10px; }
 }
+
+/* 原页面自带的提示条（#toast）原来弹在屏幕底部，会盖住三维区下方的读数条；外壳里改到三维区顶部 */
+html.lab-native body > :is(#toast, .toast) { top:138px !important; bottom:auto !important; max-width:min(560px, 60vw) !important; }
+@media (max-width:900px) { html.lab-native body > :is(#toast, .toast) { top:auto !important; bottom:16px !important; max-width:calc(100% - 24px) !important; } }
 
 /* 5-1：原页面元素放进统一外壳后的样式。原页面尺寸以 .game 的 cqw 为单位，搬出 .game 后在这里改用固定像素。 */
 html.lab-native .c5-off { display:none !important; }
@@ -1521,7 +1537,7 @@ function materialIcon(kind){
 }
 function orderArt(){
  const a=s.machine==='bend'?s.angleDeg:90,rad=a*Math.PI/180,x=110+47*Math.cos(rad),y=74-47*Math.sin(rad);
- return '<svg viewBox="0 0 190 105"><defs><pattern id="orderGrid" width="15" height="15" patternUnits="userSpaceOnUse"><path d="M15 0H0V15" fill="none" stroke="#e1eaf7" stroke-width=".6"/></pattern></defs><rect width="190" height="105" rx="8" fill="#f4f8ff"/><rect width="190" height="105" fill="url(#orderGrid)"/><path d="M20 74h79q11 0 11-11V20" stroke="#8eabd2" stroke-width="6" fill="none" stroke-dasharray="4 5"/><path d="M20 74h90L'+x.toFixed(1)+' '+y.toFixed(1)+'" stroke="'+(a===90?'#2469ed':'#f39b36')+'" stroke-width="6" fill="none" stroke-linejoin="round"/><text x="134" y="53" font-size="17" fill="#2469ed" font-family="Microsoft YaHei">90°</text><text x="19" y="97" font-size="11" fill="#5f7b9d" font-family="Microsoft YaHei">目标轮廓 · 对照形状</text></svg>';
+ return '<svg viewBox="0 0 190 105"><defs><pattern id="orderGrid" width="15" height="15" patternUnits="userSpaceOnUse"><path d="M15 0H0V15" fill="none" stroke="#e1eaf7" stroke-width=".6"/></pattern></defs><rect width="190" height="105" rx="8" fill="#f4f8ff"/><rect width="190" height="105" fill="url(#orderGrid)"/><path d="M20 74h79q11 0 11-11V20" stroke="#8eabd2" stroke-width="6" fill="none" stroke-dasharray="4 5"/><path d="M20 74h90L'+x.toFixed(1)+' '+y.toFixed(1)+'" stroke="'+(a===90?'#2469ed':'#f39b36')+'" stroke-width="6" fill="none" stroke-linejoin="round"/><text x="146" y="97" font-size="15" fill="#2469ed" stroke="#f4f8ff" stroke-width="3" paint-order="stroke" font-family="Microsoft YaHei">90°</text><text x="19" y="97" font-size="11" fill="#5f7b9d" font-family="Microsoft YaHei">目标轮廓 · 对照形状</text></svg>';
 }
 function render(){
  $('game').dataset.stage=s.stage;
@@ -1531,7 +1547,7 @@ function render(){
  $('progressLabel').textContent=['加工订单','巡查与检查','作业分区'][s.stage];$('progressCount').innerHTML=count+' <small>/ '+total+'</small>';$('progressFill').style.width=count/total*100+'%';
  document.querySelectorAll('[data-stage]').forEach(b=>{const n=Number(b.dataset.stage);b.setAttribute('aria-current',n===s.stage?'step':'false');b.setAttribute('aria-disabled',!unlocked(n));b.classList.toggle('complete',n===0?s.stock===3:n===1?stageReady():s.finished);});
  $('orderCard').hidden=s.stage!==0;$('siteNote').hidden=s.stage===0;$('orderDrawing').innerHTML=orderArt();
- const needSetting=s.stage===0&&s.stock>0&&s.stock<3&&s.machine===machines[s.stock];
+ const needSetting=s.stage===0&&s.stock>0&&s.stock<3; // 上一道完成后直接显示下一台机械的设定，不必先点一次启动
  $('machineSetting').hidden=!needSetting||busy;
  if(needSetting){const cut=s.stock===1,range=$('settingRange');range.min=cut?1600:30;range.max=cut?2800:135;range.step=cut?100:5;range.value=cut?s.lengthMM:s.angleDeg;$('settingLabel').textContent=cut?'移动定尺挡块':'调整弯曲转角';$('settingValue').textContent=range.value+(cut?' mm':'°');$('settingHint').textContent=cut?'对照订单，把挡块移到 2400 mm。':'转到 90°，让钢筋与订单轮廓贴合。';}
  $('inspectionCount').textContent='四项检查 · '+s.inspected.length+' / 4';$('inspectBtn').textContent=s.inspected.length===4?'再看检查样板 ↗':'拿起检查工具 ↗';
@@ -1597,7 +1613,7 @@ function performSite(id){
 }
 function paint(region){
  s.selected=region;$('objectTitle').textContent=regionNames[region];$('objectDescription').textContent=region==='regular'?'钢筋排列规则、交点连续清楚，是本例中的机器人候选区。':region==='column'?'密集钢筋限制工具进入，需要人工配合。': '洞口是缺口，护栏内侧及隔离边界保持禁入。';
- if(!zoneNames[s.tool]){say('先从下方拿起一枚彩色区标，再放到'+regionNames[region]+'。');return;}
+ if(!zoneNames[s.tool]){say('先在右侧拿起一枚彩色区标，再放到'+regionNames[region]+'。');return;}
  s.game.zones[region]=s.tool;
  const ok=s.tool===expectedZones[region];
  const reasons={regular:'这里交点规则、空间开阔，可标为机器人候选区。',column:'这里钢筋密集，工具进入空间不足，应交给人工配合。',opening:'这里有真实缺口，设置护栏后仍应保留禁止进入区。'};
@@ -1754,7 +1770,12 @@ say('先让弯曲的钢筋变直。找到调直机，开始第一棒。');render
     const store = 'c2-progress-' + (cfg.progressKey || cfg.task);
     let progress = {};
     try { progress = JSON.parse(localStorage.getItem(store) || '{}') || {}; } catch {}
+    if (!progress.cards || typeof progress.cards !== 'object') progress.cards = {};
     const save = () => { try { localStorage.setItem(store, JSON.stringify(progress)); } catch {} };
+    /* 卡片完成记录按工位保存在浏览器里：换工位、刷新页面都不丢；只有本工位的【↺ 重来】清掉本工位的记录 */
+    const savedCards = id => new Set(Array.isArray(progress.cards[id]) ? progress.cards[id] : []);
+    const allDone = () => cfg.stations.every(st => progress[st.id]);
+    const nextUndone = () => { for (let k = 1; k <= cfg.stations.length; k++) { const j = (current + k) % cfg.stations.length; if (!progress[cfg.stations[j].id]) return j; } return -1; };
 
     /* 页头 */
     const top = h('header', 'c2-top course-nav');
@@ -1812,7 +1833,10 @@ say('先让弯曲的钢筋变直。找到调直机，开始第一棒。');render
     const credit = h('div', 'c2-credit'); credit.hidden = true;
     panel.append(head, body, credit);
     view.append(feedback);
-    let toastTimer = 0;
+    let toastTimer = 0, holdUntil = 0, holdTimer = 0, pendingToast = null;
+    // 点一下提示条就收起（不挡住正在看的画面）；“去下一站”按钮照常可点
+    feedback.addEventListener('click', e => { if (e.target.closest('.c2-next')) return; clearTimeout(toastTimer); holdUntil = 0; feedback.textContent = ''; feedback.className = 'c2-feedback'; });
+    feedback.title = '点一下收起';
     main.append(stageBox, panel);
     /* 原页面里暂时不用的控件停放处（仍在文档里，原有程序照常工作） */
     const parking = h('div', 'c2-parking'); parking.hidden = true;
@@ -1916,7 +1940,7 @@ say('先让弯曲的钢筋变直。找到调直机，开始第一棒。');render
       ht.append(name, redo);
       head.replaceChildren(ht, h('p', '', s.lead || ''));
       parkAll();
-      body.replaceChildren(); clearTimeout(toastTimer); feedback.textContent = ''; feedback.className = 'c2-feedback';
+      body.replaceChildren(); clearTimeout(toastTimer); clearTimeout(holdTimer); holdUntil = 0; pendingToast = null; feedback.textContent = ''; feedback.className = 'c2-feedback';
       transportBox.replaceChildren(); readBox.replaceChildren(); tools.replaceChildren(); card.hidden = true;
       if (!hintDone) {
         hint.textContent = s.hint ?? cfg.hint ?? '拖动旋转 · 滚轮缩放';
@@ -1941,8 +1965,14 @@ say('先让弯曲的钢筋变直。找到调直机，开始第一棒。');render
       dispatchEvent(new Event('resize'));
       if (native) for (const t of [60, 300, 900]) setTimeout(() => { dispatchEvent(new Event('resize')); floorAll(); }, t);
     }
-    redo.addEventListener('click', () => { const i = current; current = -1; cfg.reset?.(cfg.stations[i].id); select(i); });
-    next.addEventListener('click', () => select(Math.min(current + 1, cfg.stations.length - 1)));
+    if (cfg.redoConfirm) redo.title = cfg.redoConfirm.replace(/确定.*$/, '').trim();
+    redo.addEventListener('click', () => {
+      if (cfg.redoConfirm && !window.confirm(cfg.redoConfirm)) return;
+      const i = current, id = cfg.stations[i].id;
+      delete progress.cards[id]; delete progress[id]; save();
+      current = -1; cfg.reset?.(id); select(i);
+    });
+    next.addEventListener('click', () => { const j = nextUndone(); select(j >= 0 ? j : Math.min(current + 1, cfg.stations.length - 1)); });
 
     function makeContext(s, index) {
       const stateFns = new Set(), readyFns = new Set();
@@ -1972,11 +2002,27 @@ say('先让弯曲的钢筋变直。找到调直机，开始第一棒。');render
         },
         /* —— 反馈 —— */
         /** 反馈以提示条形式出现在三维区上方，几秒后自动收起，不挤占面板。 */
-        feedback(text, kind = 'info', keep = false) {
+        /* 卡片结论、警告会停留一会儿：期间到来的普通提示排在后面显示，不把它们盖掉（只保留最新一条）；
+           同一句话重复发送（有的页面每帧都发）只续时，不重播动画。 */
+        feedback(text, kind = 'info', keep = false, hold = 0) {
+          const now = performance.now();
+          const same = text && feedback.querySelector('.c2-toast-text')?.textContent === text && feedback.classList.contains(kind);
+          if (!same && now < holdUntil && !hold) {
+            if (text) {
+              pendingToast = [text, kind, keep];
+              clearTimeout(holdTimer);
+              holdTimer = setTimeout(() => { const p = pendingToast; pendingToast = null; holdUntil = 0; if (p) c.feedback(...p); }, holdUntil - now);
+            }
+            return;
+          }
           clearTimeout(toastTimer);
-          feedback.replaceChildren();
-          if (text) feedback.append(h('span', 'c2-toast-icon', kind === 'ok' ? '✓' : kind === 'warn' ? '!' : 'i'), h('span', 'c2-toast-text', text));
-          feedback.className = 'c2-feedback ' + kind;
+          if (!same) {
+            feedback.replaceChildren();
+            if (text) feedback.append(h('span', 'c2-toast-icon', kind === 'ok' ? '✓' : kind === 'warn' ? '!' : 'i'), h('span', 'c2-toast-text', text));
+            feedback.className = 'c2-feedback ' + kind;
+          }
+          const hd = hold || (kind === 'warn' && text ? 2200 : 0);
+          if (hd) holdUntil = Math.max(holdUntil, now + hd);
           if (!keep && text) toastTimer = setTimeout(() => { feedback.textContent = ''; feedback.className = 'c2-feedback'; }, kind === 'warn' ? 5000 : 7000);
         },
         showPart(name, desc) {
@@ -2095,12 +2141,14 @@ say('先让弯曲的钢筋变直。找到调直机，开始第一棒。');render
         challenges(list, titleText = '试一试', into = body) {
           const counter = h('span', 'c2-count');
           const sec = c.section(titleText, counter, into);
+          sec.classList.add('c2-cards');
           const bar = h('div', 'c2-progress'); const fill = h('span'); bar.append(fill);
           const grid = h('div', 'c2-challenges'); sec.append(bar, grid);
           const done = new Set();
-          const items = list.map(ch => {
+          // 卡片图标统一用序号（不用各系统显示不一的表情符号）
+          const items = list.map((ch, n) => {
             const li = h('div', 'c2-challenge');
-            const mark = h('span', 'c2-mark', ch.icon || '★');
+            const mark = h('span', 'c2-mark', String(n + 1));
             const txt = h('div', 'c2-ch-text');
             txt.append(h('b', '', ch.title));
             const sub = h('span', '', ch.hint || ''); txt.append(sub);
@@ -2114,22 +2162,31 @@ say('先让弯曲的钢筋变直。找到调直机，开始第一棒。');render
             return {ch, li, sub, mark};
           });
           const update = () => { counter.textContent = `${done.size} / ${list.length}`; fill.style.width = (done.size / list.length * 100) + '%'; };
-          const complete = id => {
+          const complete = (id, restoring = false) => {
             if (done.has(id)) return;
             const it = items.find(x => x.ch.id === id); if (!it) return;
             done.add(id); it.li.classList.add('done'); it.mark.textContent = '✓';
-            if (it.ch.result) c.feedback(it.ch.title + '：' + it.ch.result, 'ok');
+            if (it.ch.result && !restoring) c.feedback(it.ch.title + '：' + it.ch.result, 'ok', false, 4500);
             it.sub.textContent = '完成';
             update();
+            if (restoring) return;
+            const kept = savedCards(s.id); kept.add(id); progress.cards[s.id] = [...kept];
+            if (done.size === list.length) progress[s.id] = true;
+            save();
             if (done.size === list.length) {
-              progress[s.id] = true; save(); syncTabs();
+              syncTabs();
               setTimeout(() => {
                 if (ctx !== c) return;
-                c.feedback(current < cfg.stations.length - 1 ? '这一站的挑战都完成了！' : '本任务的挑战都完成了！还可以接着随便调一调。', 'ok', current < cfg.stations.length - 1);
-                if (current < cfg.stations.length - 1) feedback.append(next);
-              }, 2600);
+                const j = nextUndone();
+                if (allDone() || j < 0) { c.feedback('本任务的挑战都完成了！还可以接着随便调一调。', 'ok'); return; }
+                c.feedback('这一站的挑战都完成了！', 'ok', true);
+                next.textContent = j === current + 1 ? '去下一站 →' : `去第 ${j + 1} 站 →`;
+                feedback.append(next);
+              }, 4600);
             }
           };
+          // 以前做完的卡片直接显示完成（不再弹结论）
+          for (const id of savedCards(s.id)) complete(id, true);
           c.lab.onState(st => { for (const it of items) if (!done.has(it.ch.id)) { try { if (it.ch.check?.(st)) complete(it.ch.id); } catch {} } });
           update();
           return {complete, isDone: id => done.has(id), section: sec};
@@ -2329,9 +2386,12 @@ say('先让弯曲的钢筋变直。找到调直机，开始第一棒。');render
         c.adopt([EL.carry, EL.tools], g2); keep(c, [EL.setting], g2);
         actionRow.replaceChildren(); g2.append(actionRow); c.adopt(EL.action, actionRow);
         c.challenges([
-          {id: 'straight', icon: '〰', title: '把钢筋调直', hint: '送入调直机', check: s => s.state.stock >= 1},
-          {id: 'cut', icon: '✂', title: '切出 2400 mm', hint: '先把挡块移到 2400 mm', check: s => s.state.stock >= 2},
-          {id: 'bend', icon: '↱', title: '弯出 90° 直角', hint: '转角调到 90° 再启动', check: s => s.state.stock >= 3},
+          {id: 'straight', icon: '〰', title: '把钢筋调直', hint: '送入调直机', check: s => s.state.stock >= 1,
+            result: '调直机把盘条拉直：后面切断、弯曲都要从一根直的钢筋开始。'},
+          {id: 'cut', icon: '✂', title: '切出 2400 mm', hint: '先把挡块移到 2400 mm', check: s => s.state.stock >= 2,
+            result: '定尺挡块决定下料长度：挡块对准 2400 mm，切出来的每一段都一样长。'},
+          {id: 'bend', icon: '↱', title: '弯出 90° 直角', hint: '转角调到 90° 再启动', check: s => s.state.stock >= 3,
+            result: '弯曲机按设定转角把钢筋弯成订单要的形状：转角错了，整根就要返工。'},
         ]);
       },
     },
@@ -2346,10 +2406,14 @@ say('先让弯曲的钢筋变直。找到调直机，开始第一棒。');render
         c.adopt(EL.carry, g3);
         actionRow.replaceChildren(); g3.append(actionRow); c.adopt(EL.action, actionRow);
         c.challenges([
-          {id: 'read', icon: '👁', title: '认清边线、柱边和交点', hint: '点这三处标记', check: s => ['slab', 'column', 'joint'].every(k => s.state.visited.includes(k))},
-          {id: 'clear', icon: '📦', title: '腾出作业面和通道', hint: '堆料、料箱搬到场外料架', check: s => s.state.game.materialMoved && s.state.game.routeCleared},
-          {id: 'guard', icon: '🚧', title: '给洞口围上护栏', hint: '拿起护栏，点洞口', check: s => s.state.game.openingGuarded},
-          {id: 'inspect', icon: '🔍', title: '完成四项样板检查', hint: '漏绑、间距、垫块、松扣', check: s => s.state.inspected.length >= 4},
+          {id: 'read', icon: '👁', title: '认清边线、柱边和交点', hint: '点这三处标记', check: s => ['slab', 'column', 'joint'].every(k => s.state.visited.includes(k)),
+            result: '边线、柱边和钢筋交点是读懂作业面的三个基准：机器人和工人都靠它们定位。'},
+          {id: 'clear', icon: '📦', title: '腾出作业面和通道', hint: '堆料、料箱搬到场外料架', check: s => s.state.game.materialMoved && s.state.game.routeCleared,
+            result: '堆料和料箱搬走后，作业面和通道都空出来了：机器人要有地方走、有地方干活。'},
+          {id: 'guard', icon: '🚧', title: '给洞口围上护栏', hint: '拿起护栏，点洞口', check: s => s.state.game.openingGuarded,
+            result: '洞口围上护栏，人和机器都不会误入：先保证安全，再开始作业。'},
+          {id: 'inspect', icon: '🔍', title: '完成四项样板检查', hint: '漏绑、间距、垫块、松扣', check: s => s.state.inspected.length >= 4,
+            result: '漏绑、间距、垫块、松扣四项都看过了：样板合格，才好大面积照着做。'},
         ]);
       },
     },
@@ -2362,10 +2426,14 @@ say('先让弯曲的钢筋变直。找到调直机，开始第一棒。');render
         c.adopt(EL.tools, g2);
         actionRow.replaceChildren(); g2.append(actionRow); c.adopt(EL.action, actionRow);
         c.challenges([
-          {id: 'regular', icon: '🟩', title: '规则大面', hint: '交点规则、空间开阔', check: s => s.state.game.zones.regular === 'auto'},
-          {id: 'column', icon: '🟧', title: '柱边节点', hint: '钢筋密集、工具难进', check: s => s.state.game.zones.column === 'manual'},
-          {id: 'opening', icon: '🟥', title: '洞口周边', hint: '真实缺口', check: s => s.state.game.zones.opening === 'blocked'},
-          {id: 'handoff', icon: '📋', title: '提交交接图', hint: '三处都放好后提交', check: s => s.state.finished},
+          {id: 'regular', icon: '🟩', title: '规则大面', hint: '交点规则、空间开阔', check: s => s.state.game.zones.regular === 'auto',
+            result: '规则大面交点整齐、空间开阔，适合交给机器人做。'},
+          {id: 'column', icon: '🟧', title: '柱边节点', hint: '钢筋密集、工具难进', check: s => s.state.game.zones.column === 'manual',
+            result: '柱边钢筋密、工具伸不进去，这里留给人工处理。'},
+          {id: 'opening', icon: '🟥', title: '洞口周边', hint: '真实缺口', check: s => s.state.game.zones.opening === 'blocked',
+            result: '洞口周边是真实缺口，划为禁止进入区，机器人和人都不能进。'},
+          {id: 'handoff', icon: '📋', title: '提交交接图', hint: '三处都放好后提交', check: s => s.state.finished,
+            result: '交接图提交了：哪里机器人做、哪里人工做、哪里不能进，一目了然。'},
         ]);
       },
     },

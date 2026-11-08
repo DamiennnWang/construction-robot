@@ -252,13 +252,13 @@ html[data-theme="dark"] .c2-station[aria-selected="true"] { background:linear-gr
 }
 .c2-toolseg button { height:28px; font-size:14px; padding:0 10px; }
 .c2-hint {
-  position:absolute; left:50%; top:14px; transform:translateX(-50%); z-index:2; pointer-events:none;
+  position:absolute; left:50%; bottom:14px; transform:translateX(-50%); z-index:2; pointer-events:none;
   max-width:min(80%,560px); white-space:nowrap; overflow:hidden; text-overflow:ellipsis;
   padding:5px 14px; border-radius:999px; font-size:14px; line-height:1.4; color:var(--stage-ink);
   background:var(--stage-chip); border:1px solid var(--stage-chip-line); backdrop-filter:blur(6px);
   transition:opacity .6s ease, transform .6s ease;
 }
-.c2-hint.gone { opacity:0; transform:translate(-50%,-6px); }
+.c2-hint.gone { opacity:0; transform:translate(-50%,6px); }
 
 /* 全屏：外壳统一一个按钮，钉在三维区右上角；全屏的是整块三维区（含上方选择条和提示条） */
 .c2-fs {
@@ -461,7 +461,7 @@ html[data-theme="dark"] .c2-banner { background:#3b2d16; border-color:#6b5124; c
 
 /* 提示条：在三维区下方弹出，几秒后收起 */
 .c2-feedback {
-  position:absolute; left:50%; top:56px; transform:translateX(-50%); z-index:4; max-width:min(640px,80%);
+  position:absolute; left:50%; top:56px; transform:translateX(-50%); z-index:4; max-width:min(560px,62%); cursor:pointer;
   display:flex; align-items:center; gap:10px; font-size:15px; line-height:1.55; border-radius:14px;
 }
 .c2-feedback:empty { display:none; }
@@ -547,7 +547,7 @@ html[data-theme="dark"] .c2-task-id { background:linear-gradient(135deg,#8abaff,
   .c2-tools { left:16px; top:16px; gap:8px; }
   .c2-tool { height:40px; padding:0 15px; border-radius:12px; font-size:15.5px; }
   .c2-toolseg button { height:32px; font-size:15.5px; padding:0 13px; }
-  .c2-hint { top:18px; font-size:15.5px; padding:6px 17px; }
+  .c2-hint { bottom:18px; font-size:15.5px; padding:6px 17px; }
   .c2-fs { right:16px; top:16px; width:40px; height:40px; border-radius:12px; }
   .c2-shot { right:16px; top:62px; width:40px; height:40px; border-radius:12px; }
   .c2-fs svg, .c2-shot svg { width:21px; height:21px; }
@@ -698,6 +698,18 @@ html[data-theme="dark"] .c2-task-id { background:linear-gradient(135deg,#8abaff,
 /* 手机横屏：三维区占大半屏高 */
 @media (max-width:900px) and (orientation:landscape) { .c2-view { height:clamp(240px,74vh,420px); } }
 @media (prefers-reduced-motion:reduce) { * { transition:none !important; animation:none !important; } }
+
+/* 试一试卡片钉在面板底部：面板内容再长，卡片也始终在一屏里看得见（上面的控件在卡片后面滚动） */
+@media (min-width:901px) {
+  .c2-panel .c2-cards {
+    position:sticky; bottom:-14px; z-index:3; margin:0 -16px; padding:10px 16px 14px;
+    background:var(--course-surface); border-top:1px solid var(--hair); box-shadow:0 -10px 18px -14px rgba(18,44,78,.35);
+  }
+  .c2-panel .c2-cards .c2-ch-text span { -webkit-line-clamp:2; }
+}
+@media (min-width:1680px) and (min-height:860px) {
+  .c2-panel .c2-cards { bottom:-18px; margin:0 -22px; padding:12px 22px 18px; }
+}
 
 /* 第三章：原页面元素放进统一外壳后的补充样式。外壳本身的样式在 shared/lab-shell/lab-shell.css。 */
 
@@ -894,6 +906,10 @@ html.lab-native .c2-stage-top :is(button, label, a) { font-family:inherit; }
   html.lab-native :is(.c2-panel, .c2-strip) .segmented button { height:34px; font-size:16px; }
   html.lab-native .c2-stage-top { padding:10px 13px; gap:10px; }
 }
+
+/* 原页面自带的提示条（#toast）原来弹在屏幕底部，会盖住三维区下方的读数条；外壳里改到三维区顶部 */
+html.lab-native body > :is(#toast, .toast) { top:138px !important; bottom:auto !important; max-width:min(560px, 60vw) !important; }
+@media (max-width:900px) { html.lab-native body > :is(#toast, .toast) { top:auto !important; bottom:16px !important; max-width:calc(100% - 24px) !important; } }
 
 /* 8-1：三维区上方的六类危险选择条 */
 .c8-hazards { display:grid; grid-template-columns:repeat(6, minmax(0, 1fr)); gap:6px; width:100%; }
@@ -1597,7 +1613,7 @@ function createExcavator(THREE,scene,renderer){
     const beacon = group(es); beacon.position.set(ep.x + .5, 1.72, ep.z);
     cyl(beacon, .09, .06, M.darkSteel, 0, -.06, 0, 20); cyl(beacon, .085, .2, M.beacon, 0, .07, 0, 24);
     const reflector = box(beacon, .14, .1, .01, M.galv, 0, .07, 0);
-    const horn = mesh(es, new T.RingGeometry(.2, .26, 40), new T.MeshBasicMaterial({color: 0xffb020, transparent: true, opacity: 0, side: T.DoubleSide, depthWrite: false}), ep.x + .5, 1.8, ep.z); horn.castShadow = false;
+    const horn = mesh(es, new T.RingGeometry(.2, .26, 40), new T.MeshBasicMaterial({color: 0xffb020, transparent: true, opacity: 0, side: T.DoubleSide, depthWrite: false}), ep.x + .5, 1.8, ep.z); horn.castShadow = false; horn.visible = false; horn.raycast = () => {}; // 鸣笛光圈只是提示效果，永远不参与点选
 
     /* —— 处置后才出现的防护 —— */
     const swingFence = group(scene, 'swing'); swingFence.visible = false;
@@ -1836,7 +1852,7 @@ function createExcavator(THREE,scene,renderer){
       // 警示灯与鸣笛
       if (running && motion) reflector.rotation.y += dt * 6;
       M.beacon.emissiveIntensity = running ? 1.4 + Math.sin(performance.now() / 120) * .6 : .05;
-      hornT += dt; horn.material.opacity = hornT < 1.6 ? (1 - hornT / 1.6) * .8 : 0; horn.scale.setScalar(1 + hornT * 3); horn.lookAt(camera.position);
+      hornT += dt; horn.material.opacity = hornT < 1.6 ? (1 - hornT / 1.6) * .8 : 0; horn.scale.setScalar(1 + Math.min(hornT, 1.6) * 3); horn.visible = hornT < 1.6; // 看不见时不参与点选，也不再无限放大 horn.lookAt(camera.position);
       // 工人
       const route = S?.fixed.swing ? ROUTE_B : ROUTE_A;
       if (running && motion) walkT += dt * 1.25;
@@ -1960,7 +1976,12 @@ function createExcavator(THREE,scene,renderer){
     const store = 'c2-progress-' + (cfg.progressKey || cfg.task);
     let progress = {};
     try { progress = JSON.parse(localStorage.getItem(store) || '{}') || {}; } catch {}
+    if (!progress.cards || typeof progress.cards !== 'object') progress.cards = {};
     const save = () => { try { localStorage.setItem(store, JSON.stringify(progress)); } catch {} };
+    /* 卡片完成记录按工位保存在浏览器里：换工位、刷新页面都不丢；只有本工位的【↺ 重来】清掉本工位的记录 */
+    const savedCards = id => new Set(Array.isArray(progress.cards[id]) ? progress.cards[id] : []);
+    const allDone = () => cfg.stations.every(st => progress[st.id]);
+    const nextUndone = () => { for (let k = 1; k <= cfg.stations.length; k++) { const j = (current + k) % cfg.stations.length; if (!progress[cfg.stations[j].id]) return j; } return -1; };
 
     /* 页头 */
     const top = h('header', 'c2-top course-nav');
@@ -2018,7 +2039,10 @@ function createExcavator(THREE,scene,renderer){
     const credit = h('div', 'c2-credit'); credit.hidden = true;
     panel.append(head, body, credit);
     view.append(feedback);
-    let toastTimer = 0;
+    let toastTimer = 0, holdUntil = 0, holdTimer = 0, pendingToast = null;
+    // 点一下提示条就收起（不挡住正在看的画面）；“去下一站”按钮照常可点
+    feedback.addEventListener('click', e => { if (e.target.closest('.c2-next')) return; clearTimeout(toastTimer); holdUntil = 0; feedback.textContent = ''; feedback.className = 'c2-feedback'; });
+    feedback.title = '点一下收起';
     main.append(stageBox, panel);
     /* 原页面里暂时不用的控件停放处（仍在文档里，原有程序照常工作） */
     const parking = h('div', 'c2-parking'); parking.hidden = true;
@@ -2122,7 +2146,7 @@ function createExcavator(THREE,scene,renderer){
       ht.append(name, redo);
       head.replaceChildren(ht, h('p', '', s.lead || ''));
       parkAll();
-      body.replaceChildren(); clearTimeout(toastTimer); feedback.textContent = ''; feedback.className = 'c2-feedback';
+      body.replaceChildren(); clearTimeout(toastTimer); clearTimeout(holdTimer); holdUntil = 0; pendingToast = null; feedback.textContent = ''; feedback.className = 'c2-feedback';
       transportBox.replaceChildren(); readBox.replaceChildren(); tools.replaceChildren(); card.hidden = true;
       if (!hintDone) {
         hint.textContent = s.hint ?? cfg.hint ?? '拖动旋转 · 滚轮缩放';
@@ -2147,8 +2171,14 @@ function createExcavator(THREE,scene,renderer){
       dispatchEvent(new Event('resize'));
       if (native) for (const t of [60, 300, 900]) setTimeout(() => { dispatchEvent(new Event('resize')); floorAll(); }, t);
     }
-    redo.addEventListener('click', () => { const i = current; current = -1; cfg.reset?.(cfg.stations[i].id); select(i); });
-    next.addEventListener('click', () => select(Math.min(current + 1, cfg.stations.length - 1)));
+    if (cfg.redoConfirm) redo.title = cfg.redoConfirm.replace(/确定.*$/, '').trim();
+    redo.addEventListener('click', () => {
+      if (cfg.redoConfirm && !window.confirm(cfg.redoConfirm)) return;
+      const i = current, id = cfg.stations[i].id;
+      delete progress.cards[id]; delete progress[id]; save();
+      current = -1; cfg.reset?.(id); select(i);
+    });
+    next.addEventListener('click', () => { const j = nextUndone(); select(j >= 0 ? j : Math.min(current + 1, cfg.stations.length - 1)); });
 
     function makeContext(s, index) {
       const stateFns = new Set(), readyFns = new Set();
@@ -2178,11 +2208,27 @@ function createExcavator(THREE,scene,renderer){
         },
         /* —— 反馈 —— */
         /** 反馈以提示条形式出现在三维区上方，几秒后自动收起，不挤占面板。 */
-        feedback(text, kind = 'info', keep = false) {
+        /* 卡片结论、警告会停留一会儿：期间到来的普通提示排在后面显示，不把它们盖掉（只保留最新一条）；
+           同一句话重复发送（有的页面每帧都发）只续时，不重播动画。 */
+        feedback(text, kind = 'info', keep = false, hold = 0) {
+          const now = performance.now();
+          const same = text && feedback.querySelector('.c2-toast-text')?.textContent === text && feedback.classList.contains(kind);
+          if (!same && now < holdUntil && !hold) {
+            if (text) {
+              pendingToast = [text, kind, keep];
+              clearTimeout(holdTimer);
+              holdTimer = setTimeout(() => { const p = pendingToast; pendingToast = null; holdUntil = 0; if (p) c.feedback(...p); }, holdUntil - now);
+            }
+            return;
+          }
           clearTimeout(toastTimer);
-          feedback.replaceChildren();
-          if (text) feedback.append(h('span', 'c2-toast-icon', kind === 'ok' ? '✓' : kind === 'warn' ? '!' : 'i'), h('span', 'c2-toast-text', text));
-          feedback.className = 'c2-feedback ' + kind;
+          if (!same) {
+            feedback.replaceChildren();
+            if (text) feedback.append(h('span', 'c2-toast-icon', kind === 'ok' ? '✓' : kind === 'warn' ? '!' : 'i'), h('span', 'c2-toast-text', text));
+            feedback.className = 'c2-feedback ' + kind;
+          }
+          const hd = hold || (kind === 'warn' && text ? 2200 : 0);
+          if (hd) holdUntil = Math.max(holdUntil, now + hd);
           if (!keep && text) toastTimer = setTimeout(() => { feedback.textContent = ''; feedback.className = 'c2-feedback'; }, kind === 'warn' ? 5000 : 7000);
         },
         showPart(name, desc) {
@@ -2301,12 +2347,14 @@ function createExcavator(THREE,scene,renderer){
         challenges(list, titleText = '试一试', into = body) {
           const counter = h('span', 'c2-count');
           const sec = c.section(titleText, counter, into);
+          sec.classList.add('c2-cards');
           const bar = h('div', 'c2-progress'); const fill = h('span'); bar.append(fill);
           const grid = h('div', 'c2-challenges'); sec.append(bar, grid);
           const done = new Set();
-          const items = list.map(ch => {
+          // 卡片图标统一用序号（不用各系统显示不一的表情符号）
+          const items = list.map((ch, n) => {
             const li = h('div', 'c2-challenge');
-            const mark = h('span', 'c2-mark', ch.icon || '★');
+            const mark = h('span', 'c2-mark', String(n + 1));
             const txt = h('div', 'c2-ch-text');
             txt.append(h('b', '', ch.title));
             const sub = h('span', '', ch.hint || ''); txt.append(sub);
@@ -2320,22 +2368,31 @@ function createExcavator(THREE,scene,renderer){
             return {ch, li, sub, mark};
           });
           const update = () => { counter.textContent = `${done.size} / ${list.length}`; fill.style.width = (done.size / list.length * 100) + '%'; };
-          const complete = id => {
+          const complete = (id, restoring = false) => {
             if (done.has(id)) return;
             const it = items.find(x => x.ch.id === id); if (!it) return;
             done.add(id); it.li.classList.add('done'); it.mark.textContent = '✓';
-            if (it.ch.result) c.feedback(it.ch.title + '：' + it.ch.result, 'ok');
+            if (it.ch.result && !restoring) c.feedback(it.ch.title + '：' + it.ch.result, 'ok', false, 4500);
             it.sub.textContent = '完成';
             update();
+            if (restoring) return;
+            const kept = savedCards(s.id); kept.add(id); progress.cards[s.id] = [...kept];
+            if (done.size === list.length) progress[s.id] = true;
+            save();
             if (done.size === list.length) {
-              progress[s.id] = true; save(); syncTabs();
+              syncTabs();
               setTimeout(() => {
                 if (ctx !== c) return;
-                c.feedback(current < cfg.stations.length - 1 ? '这一站的挑战都完成了！' : '本任务的挑战都完成了！还可以接着随便调一调。', 'ok', current < cfg.stations.length - 1);
-                if (current < cfg.stations.length - 1) feedback.append(next);
-              }, 2600);
+                const j = nextUndone();
+                if (allDone() || j < 0) { c.feedback('本任务的挑战都完成了！还可以接着随便调一调。', 'ok'); return; }
+                c.feedback('这一站的挑战都完成了！', 'ok', true);
+                next.textContent = j === current + 1 ? '去下一站 →' : `去第 ${j + 1} 站 →`;
+                feedback.append(next);
+              }, 4600);
             }
           };
+          // 以前做完的卡片直接显示完成（不再弹结论）
+          for (const id of savedCards(s.id)) complete(id, true);
           c.lab.onState(st => { for (const it of items) if (!done.has(it.ch.id)) { try { if (it.ch.check?.(st)) complete(it.ch.id); } catch {} } });
           update();
           return {complete, isDone: id => done.has(id), section: sec};
@@ -2550,7 +2607,7 @@ function createExcavator(THREE,scene,renderer){
       stop.classList.add('c8-stop'); into.append(c.row(st, stop));
       c.lab.onState(s => {
         const [cls, b, t] = s.running ? ['on', s.started ? '已重新启动' : '现场运行中', s.started ? '按新通道恢复作业' : '挖掘机在回转，皮带在转']
-          : s.armed ? ['ready', '已复位，静止', '等单独的启动指令'] : ['off', '急停已按下', '机械停住，能量还在'];
+          : s.armed ? ['ready', '已复位，静止', '等单独的启动指令'] : ['off', '急停已按下', M.energyLeft(s) > 0 ? '机械停住，能量还在' : '机械停住，能量已全部隔离'];
         const html = `<i></i><b>${b}</b><span>${t}</span>`;
         st.className = 'c8-run ' + cls; if (st.innerHTML !== html) st.innerHTML = html;
       });
@@ -2673,14 +2730,14 @@ function createExcavator(THREE,scene,renderer){
         },
       },
       {
-        id: 'restart', name: '复位重启', lead: '复位不等于开机：撤锁送电、急停复位、鸣笛启动，一步一步来。',
+        id: 'restart', name: '复位重启', lead: '复位不等于开机：急停复位、撤锁送电、鸣笛启动，一步一步来。卡片 1 要趁六处还没复查完时做，卡片 3 要在送电之前做。',
         build(c) {
           const g = c.section('现场');
           statusRow(c, g);
           const g2 = c.section('重新启动');
           g2.append(c.row(
-            c.button('撤锁送电', () => { scene.focus('electric'); send({type: 'unlock'}); }),
             c.button('急停复位', () => { scene.view('home'); send({type: 'reset'}); }),
+            c.button('撤锁送电', () => { scene.focus('electric'); send({type: 'unlock'}); }),
             c.button('鸣笛启动', () => { scene.view('home'); send({type: 'start'}); }, {primary: true}),
           ));
           const g3 = c.section('启动前核对');
@@ -2693,13 +2750,13 @@ function createExcavator(THREE,scene,renderer){
           ].map(([label, val, ok]) => { const r = c.h('div', 'c8-check'); r.innerHTML = `<span>${label}</span><b></b>`; list.append(r); return {r, val, ok}; });
           c.lab.onState(s => rows.forEach(({r, val, ok}) => { r.className = 'c8-check ' + (ok(s) ? 'ok' : 'no'); const t = val(s), b = r.querySelector('b'); if (b.textContent !== t) b.textContent = t; }));
           c.challenges([
-            {id: 'blocked', icon: '🚫', title: '复位被拦住', hint: '没复查完时试“急停复位”', check: () => flags['reset:unverified'] || flags['unlock:unverified'],
+            {id: 'blocked', icon: '🚫', title: '复位被拦住', hint: '先做这张：按下急停后，趁六处没复查完点【急停复位】', check: () => flags['reset:unverified'] || flags['unlock:unverified'],
               result: '还有危险没复查，复位和送电都会被拦下。'},
-            {id: 'still', icon: '🔓', title: '复位后它会动吗', hint: '复查完后点“急停复位”', check: s => s.armed && !s.running,
+            {id: 'still', icon: '🔓', title: '复位后它会动吗', hint: '六处复查完后点【急停复位】', check: s => s.armed && !s.running,
               result: '复位只是解开急停，设备照样静止。'},
-            {id: 'power', icon: '🔌', title: '没送电启动不了', hint: '挂着锁时点“鸣笛启动”', check: () => flags['start:power'],
+            {id: 'power', icon: '🔌', title: '没送电启动不了', hint: '复位后、送电前，点【鸣笛启动】', check: () => flags['start:power'],
               result: '锁还挂在配电箱上，谁也启动不了——这正是挂锁的用处。'},
-            {id: 'start', icon: '📢', title: '鸣笛后单独启动', hint: '送电、复位，再启动', check: s => s.started && s.running,
+            {id: 'start', icon: '📢', title: '鸣笛后单独启动', hint: '复位、送电，再点【鸣笛启动】', check: s => s.started && s.running,
               result: '启动是一条单独的指令，先鸣笛提醒，人员走新通道。'},
           ]);
         },
@@ -2731,7 +2788,8 @@ function createExcavator(THREE,scene,renderer){
           paintPicker(s);
           read('found', count(s, 'found'), '/ 6'); read('ver', count(s, 'verified'), '/ 6');
           read('run', s.running ? '运行' : s.armed ? '已复位' : '急停', '');
-          read('energy', M.energyLeft(s), '项');
+          // 复查完、重新送电以后是“恢复作业”，不再说“未隔离”
+          if (s.power === 'on' && M.allVerified(s) && !s.latched) read('energy', '—', '已送电恢复'); else read('energy', M.energyLeft(s), '项');
         });
         const off = lab.onChange((s, ev) => {
           if (s.seq === lastSeq) return; lastSeq = s.seq;

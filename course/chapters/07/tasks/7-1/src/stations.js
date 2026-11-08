@@ -119,6 +119,7 @@
     stage: EL.stage,
     stageTop: [EL.points],
     stations: STATIONS,
+    redoConfirm: '【↺ 重来】会清空三处检查点的到位状态、全部照片、记录和复查结果（不只是这个工位）。照片和记录刷新页面也会清空，导出前不要点。确定重来吗？',
     hint: '拖动旋转 · 滚轮缩放 · 点 A / B / C 选点',
     current,
     select: id => { const l = lab(); if (l && l.state.stage !== id) l.changeStage(id); lastStage = id; },

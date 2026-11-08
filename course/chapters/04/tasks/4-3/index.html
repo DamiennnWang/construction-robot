@@ -225,13 +225,13 @@ html[data-theme="dark"] .c2-station[aria-selected="true"] { background:linear-gr
 }
 .c2-toolseg button { height:28px; font-size:14px; padding:0 10px; }
 .c2-hint {
-  position:absolute; left:50%; top:14px; transform:translateX(-50%); z-index:2; pointer-events:none;
+  position:absolute; left:50%; bottom:14px; transform:translateX(-50%); z-index:2; pointer-events:none;
   max-width:min(80%,560px); white-space:nowrap; overflow:hidden; text-overflow:ellipsis;
   padding:5px 14px; border-radius:999px; font-size:14px; line-height:1.4; color:var(--stage-ink);
   background:var(--stage-chip); border:1px solid var(--stage-chip-line); backdrop-filter:blur(6px);
   transition:opacity .6s ease, transform .6s ease;
 }
-.c2-hint.gone { opacity:0; transform:translate(-50%,-6px); }
+.c2-hint.gone { opacity:0; transform:translate(-50%,6px); }
 
 /* 全屏：外壳统一一个按钮，钉在三维区右上角；全屏的是整块三维区（含上方选择条和提示条） */
 .c2-fs {
@@ -434,7 +434,7 @@ html[data-theme="dark"] .c2-banner { background:#3b2d16; border-color:#6b5124; c
 
 /* 提示条：在三维区下方弹出，几秒后收起 */
 .c2-feedback {
-  position:absolute; left:50%; top:56px; transform:translateX(-50%); z-index:4; max-width:min(640px,80%);
+  position:absolute; left:50%; top:56px; transform:translateX(-50%); z-index:4; max-width:min(560px,62%); cursor:pointer;
   display:flex; align-items:center; gap:10px; font-size:15px; line-height:1.55; border-radius:14px;
 }
 .c2-feedback:empty { display:none; }
@@ -520,7 +520,7 @@ html[data-theme="dark"] .c2-task-id { background:linear-gradient(135deg,#8abaff,
   .c2-tools { left:16px; top:16px; gap:8px; }
   .c2-tool { height:40px; padding:0 15px; border-radius:12px; font-size:15.5px; }
   .c2-toolseg button { height:32px; font-size:15.5px; padding:0 13px; }
-  .c2-hint { top:18px; font-size:15.5px; padding:6px 17px; }
+  .c2-hint { bottom:18px; font-size:15.5px; padding:6px 17px; }
   .c2-fs { right:16px; top:16px; width:40px; height:40px; border-radius:12px; }
   .c2-shot { right:16px; top:62px; width:40px; height:40px; border-radius:12px; }
   .c2-fs svg, .c2-shot svg { width:21px; height:21px; }
@@ -671,6 +671,18 @@ html[data-theme="dark"] .c2-task-id { background:linear-gradient(135deg,#8abaff,
 /* 手机横屏：三维区占大半屏高 */
 @media (max-width:900px) and (orientation:landscape) { .c2-view { height:clamp(240px,74vh,420px); } }
 @media (prefers-reduced-motion:reduce) { * { transition:none !important; animation:none !important; } }
+
+/* 试一试卡片钉在面板底部：面板内容再长，卡片也始终在一屏里看得见（上面的控件在卡片后面滚动） */
+@media (min-width:901px) {
+  .c2-panel .c2-cards {
+    position:sticky; bottom:-14px; z-index:3; margin:0 -16px; padding:10px 16px 14px;
+    background:var(--course-surface); border-top:1px solid var(--hair); box-shadow:0 -10px 18px -14px rgba(18,44,78,.35);
+  }
+  .c2-panel .c2-cards .c2-ch-text span { -webkit-line-clamp:2; }
+}
+@media (min-width:1680px) and (min-height:860px) {
+  .c2-panel .c2-cards { bottom:-18px; margin:0 -22px; padding:12px 22px 18px; }
+}
 
 /* 第三章：原页面元素放进统一外壳后的补充样式。外壳本身的样式在 shared/lab-shell/lab-shell.css。 */
 
@@ -867,6 +879,10 @@ html.lab-native .c2-stage-top :is(button, label, a) { font-family:inherit; }
   html.lab-native :is(.c2-panel, .c2-strip) .segmented button { height:34px; font-size:16px; }
   html.lab-native .c2-stage-top { padding:10px 13px; gap:10px; }
 }
+
+/* 原页面自带的提示条（#toast）原来弹在屏幕底部，会盖住三维区下方的读数条；外壳里改到三维区顶部 */
+html.lab-native body > :is(#toast, .toast) { top:138px !important; bottom:auto !important; max-width:min(560px, 60vw) !important; }
+@media (max-width:900px) { html.lab-native body > :is(#toast, .toast) { top:auto !important; bottom:16px !important; max-width:calc(100% - 24px) !important; } }
 
 /* 4-3 安全帽识别：二维画布放进外壳的大区，原控件放进面板。只用外壳的颜色变量，浅色/深色自动跟随。 */
 #toast { display:none !important; }
@@ -1122,6 +1138,9 @@ html.lab-native .c2-panel .evaluation-metrics .metric { grid-column:span 2; }
 html.lab-native .c2-panel .evaluation-metrics .metric:nth-child(n+4) { grid-column:span 3; }
 html.lab-native .c2-panel .evaluation-metrics.metrics-hidden .metric strong { color:var(--course-muted) !important; }
 html.lab-native .c2-panel :is(.candidate-row, .missed-row) strong { color:var(--course-ink) !important; }
+
+/* 4-3 是二维图片，没有三维画面可存：隐藏外壳的“保存三维截图”按钮（截图用系统截图） */
+html[data-c2-lab="4-3"] .c2-shot { display:none !important; }
 </style><script data-course-navigation src="../../../../../shared/navigation.js"></script><link data-course-theme rel="stylesheet" href="../../../../../shared/styles/theme.css"><script data-course-theme src="../../../../../shared/theme.js"></script></head>
 <body><main id="lesson-main"><div id="workbench"><div class="h43-lesson" id="lesson-annotation" data-lesson="annotation"><div class="workspace">
  <section class="panel" aria-label="二维标注实验台">
@@ -1455,7 +1474,7 @@ function zipStore(files) {
   const queryThreshold = new URLSearchParams(location.search).get('threshold');
   const parsedThreshold = queryThreshold === null || queryThreshold.trim() === '' ? .25 : Number(queryThreshold);
   const state = {threshold: Number.isFinite(parsedThreshold) && parsedThreshold >= 0 && parsedThreshold <= 1 ? Math.round(parsedThreshold * 100) / 100 : .25, showFiltered: false, selectedId: null, answer: null};
-  const className = cls => cls === 0 ? '已戴安全帽' : '未戴安全帽';
+  const className = cls => cls === 0 ? '戴安全帽' : '未戴安全帽';
   const sortedCandidates = () => [...candidates].sort((a, b) => b.score - a.score);
   function render() {
     const focused = document.activeElement;
@@ -1530,7 +1549,7 @@ function zipStore(files) {
   const queryThreshold = new URLSearchParams(location.search).get('threshold');
   const parsedThreshold = queryThreshold === null || queryThreshold.trim() === '' ? .25 : Number(queryThreshold);
   const state = {threshold: Number.isFinite(parsedThreshold) && parsedThreshold >= 0 && parsedThreshold <= 1 ? Math.round(parsedThreshold * 100) / 100 : .25, iouThreshold: .5, showTruth: true, showPrediction: true, showMetrics: true, blind: false, selection: null, offset: 30};
-  const className = cls => cls === 0 ? '已戴安全帽' : '未戴安全帽';
+  const className = cls => cls === 0 ? '戴安全帽' : '未戴安全帽';
   const calculate = () => matchPredictions(truths, candidates, state.threshold, state.iouThreshold);
   const percent = value => value === null ? '不适用' : `${(value * 100).toFixed(1)}%`;
   function bestTruth(prediction) {return [...truths].sort((a, b) => iou(prediction.bbox, b.bbox) - iou(prediction.bbox, a.bbox))[0];}
@@ -1604,7 +1623,7 @@ function zipStore(files) {
     $('iou-intersection-area').textContent = `${intersection.toLocaleString()} px²`;
     $('iou-union-area').textContent = `${union.toLocaleString()} px²`;
     $('iou-demo-value').textContent = value.toFixed(3);
-    $('iou-demo-judgment').textContent = `${value >= state.iouThreshold ? '达到' : '未达到'}当前位置门槛 ${state.iouThreshold.toFixed(2)}`;
+    $('iou-demo-judgment').textContent = `${value >= state.iouThreshold ? '达到' : '未达到'} IoU 门槛 ${state.iouThreshold.toFixed(2)}`;
     $('iou-demo-judgment').classList.toggle('iou-below', value < state.iouThreshold);
   }
   function render() {
@@ -1714,7 +1733,12 @@ function zipStore(files) {
     const store = 'c2-progress-' + (cfg.progressKey || cfg.task);
     let progress = {};
     try { progress = JSON.parse(localStorage.getItem(store) || '{}') || {}; } catch {}
+    if (!progress.cards || typeof progress.cards !== 'object') progress.cards = {};
     const save = () => { try { localStorage.setItem(store, JSON.stringify(progress)); } catch {} };
+    /* 卡片完成记录按工位保存在浏览器里：换工位、刷新页面都不丢；只有本工位的【↺ 重来】清掉本工位的记录 */
+    const savedCards = id => new Set(Array.isArray(progress.cards[id]) ? progress.cards[id] : []);
+    const allDone = () => cfg.stations.every(st => progress[st.id]);
+    const nextUndone = () => { for (let k = 1; k <= cfg.stations.length; k++) { const j = (current + k) % cfg.stations.length; if (!progress[cfg.stations[j].id]) return j; } return -1; };
 
     /* 页头 */
     const top = h('header', 'c2-top course-nav');
@@ -1772,7 +1796,10 @@ function zipStore(files) {
     const credit = h('div', 'c2-credit'); credit.hidden = true;
     panel.append(head, body, credit);
     view.append(feedback);
-    let toastTimer = 0;
+    let toastTimer = 0, holdUntil = 0, holdTimer = 0, pendingToast = null;
+    // 点一下提示条就收起（不挡住正在看的画面）；“去下一站”按钮照常可点
+    feedback.addEventListener('click', e => { if (e.target.closest('.c2-next')) return; clearTimeout(toastTimer); holdUntil = 0; feedback.textContent = ''; feedback.className = 'c2-feedback'; });
+    feedback.title = '点一下收起';
     main.append(stageBox, panel);
     /* 原页面里暂时不用的控件停放处（仍在文档里，原有程序照常工作） */
     const parking = h('div', 'c2-parking'); parking.hidden = true;
@@ -1876,7 +1903,7 @@ function zipStore(files) {
       ht.append(name, redo);
       head.replaceChildren(ht, h('p', '', s.lead || ''));
       parkAll();
-      body.replaceChildren(); clearTimeout(toastTimer); feedback.textContent = ''; feedback.className = 'c2-feedback';
+      body.replaceChildren(); clearTimeout(toastTimer); clearTimeout(holdTimer); holdUntil = 0; pendingToast = null; feedback.textContent = ''; feedback.className = 'c2-feedback';
       transportBox.replaceChildren(); readBox.replaceChildren(); tools.replaceChildren(); card.hidden = true;
       if (!hintDone) {
         hint.textContent = s.hint ?? cfg.hint ?? '拖动旋转 · 滚轮缩放';
@@ -1901,8 +1928,14 @@ function zipStore(files) {
       dispatchEvent(new Event('resize'));
       if (native) for (const t of [60, 300, 900]) setTimeout(() => { dispatchEvent(new Event('resize')); floorAll(); }, t);
     }
-    redo.addEventListener('click', () => { const i = current; current = -1; cfg.reset?.(cfg.stations[i].id); select(i); });
-    next.addEventListener('click', () => select(Math.min(current + 1, cfg.stations.length - 1)));
+    if (cfg.redoConfirm) redo.title = cfg.redoConfirm.replace(/确定.*$/, '').trim();
+    redo.addEventListener('click', () => {
+      if (cfg.redoConfirm && !window.confirm(cfg.redoConfirm)) return;
+      const i = current, id = cfg.stations[i].id;
+      delete progress.cards[id]; delete progress[id]; save();
+      current = -1; cfg.reset?.(id); select(i);
+    });
+    next.addEventListener('click', () => { const j = nextUndone(); select(j >= 0 ? j : Math.min(current + 1, cfg.stations.length - 1)); });
 
     function makeContext(s, index) {
       const stateFns = new Set(), readyFns = new Set();
@@ -1932,11 +1965,27 @@ function zipStore(files) {
         },
         /* —— 反馈 —— */
         /** 反馈以提示条形式出现在三维区上方，几秒后自动收起，不挤占面板。 */
-        feedback(text, kind = 'info', keep = false) {
+        /* 卡片结论、警告会停留一会儿：期间到来的普通提示排在后面显示，不把它们盖掉（只保留最新一条）；
+           同一句话重复发送（有的页面每帧都发）只续时，不重播动画。 */
+        feedback(text, kind = 'info', keep = false, hold = 0) {
+          const now = performance.now();
+          const same = text && feedback.querySelector('.c2-toast-text')?.textContent === text && feedback.classList.contains(kind);
+          if (!same && now < holdUntil && !hold) {
+            if (text) {
+              pendingToast = [text, kind, keep];
+              clearTimeout(holdTimer);
+              holdTimer = setTimeout(() => { const p = pendingToast; pendingToast = null; holdUntil = 0; if (p) c.feedback(...p); }, holdUntil - now);
+            }
+            return;
+          }
           clearTimeout(toastTimer);
-          feedback.replaceChildren();
-          if (text) feedback.append(h('span', 'c2-toast-icon', kind === 'ok' ? '✓' : kind === 'warn' ? '!' : 'i'), h('span', 'c2-toast-text', text));
-          feedback.className = 'c2-feedback ' + kind;
+          if (!same) {
+            feedback.replaceChildren();
+            if (text) feedback.append(h('span', 'c2-toast-icon', kind === 'ok' ? '✓' : kind === 'warn' ? '!' : 'i'), h('span', 'c2-toast-text', text));
+            feedback.className = 'c2-feedback ' + kind;
+          }
+          const hd = hold || (kind === 'warn' && text ? 2200 : 0);
+          if (hd) holdUntil = Math.max(holdUntil, now + hd);
           if (!keep && text) toastTimer = setTimeout(() => { feedback.textContent = ''; feedback.className = 'c2-feedback'; }, kind === 'warn' ? 5000 : 7000);
         },
         showPart(name, desc) {
@@ -2055,12 +2104,14 @@ function zipStore(files) {
         challenges(list, titleText = '试一试', into = body) {
           const counter = h('span', 'c2-count');
           const sec = c.section(titleText, counter, into);
+          sec.classList.add('c2-cards');
           const bar = h('div', 'c2-progress'); const fill = h('span'); bar.append(fill);
           const grid = h('div', 'c2-challenges'); sec.append(bar, grid);
           const done = new Set();
-          const items = list.map(ch => {
+          // 卡片图标统一用序号（不用各系统显示不一的表情符号）
+          const items = list.map((ch, n) => {
             const li = h('div', 'c2-challenge');
-            const mark = h('span', 'c2-mark', ch.icon || '★');
+            const mark = h('span', 'c2-mark', String(n + 1));
             const txt = h('div', 'c2-ch-text');
             txt.append(h('b', '', ch.title));
             const sub = h('span', '', ch.hint || ''); txt.append(sub);
@@ -2074,22 +2125,31 @@ function zipStore(files) {
             return {ch, li, sub, mark};
           });
           const update = () => { counter.textContent = `${done.size} / ${list.length}`; fill.style.width = (done.size / list.length * 100) + '%'; };
-          const complete = id => {
+          const complete = (id, restoring = false) => {
             if (done.has(id)) return;
             const it = items.find(x => x.ch.id === id); if (!it) return;
             done.add(id); it.li.classList.add('done'); it.mark.textContent = '✓';
-            if (it.ch.result) c.feedback(it.ch.title + '：' + it.ch.result, 'ok');
+            if (it.ch.result && !restoring) c.feedback(it.ch.title + '：' + it.ch.result, 'ok', false, 4500);
             it.sub.textContent = '完成';
             update();
+            if (restoring) return;
+            const kept = savedCards(s.id); kept.add(id); progress.cards[s.id] = [...kept];
+            if (done.size === list.length) progress[s.id] = true;
+            save();
             if (done.size === list.length) {
-              progress[s.id] = true; save(); syncTabs();
+              syncTabs();
               setTimeout(() => {
                 if (ctx !== c) return;
-                c.feedback(current < cfg.stations.length - 1 ? '这一站的挑战都完成了！' : '本任务的挑战都完成了！还可以接着随便调一调。', 'ok', current < cfg.stations.length - 1);
-                if (current < cfg.stations.length - 1) feedback.append(next);
-              }, 2600);
+                const j = nextUndone();
+                if (allDone() || j < 0) { c.feedback('本任务的挑战都完成了！还可以接着随便调一调。', 'ok'); return; }
+                c.feedback('这一站的挑战都完成了！', 'ok', true);
+                next.textContent = j === current + 1 ? '去下一站 →' : `去第 ${j + 1} 站 →`;
+                feedback.append(next);
+              }, 4600);
             }
           };
+          // 以前做完的卡片直接显示完成（不再弹结论）
+          for (const id of savedCards(s.id)) complete(id, true);
           c.lab.onState(st => { for (const it of items) if (!done.has(it.ch.id)) { try { if (it.ch.check?.(st)) complete(it.ch.id); } catch {} } });
           update();
           return {complete, isDone: id => done.has(id), section: sec};
@@ -2321,8 +2381,10 @@ function zipStore(files) {
 
   /* 试一试用到的标记（原页面状态里没有的“做过某事”） */
   const flags = {};
-  const resetFlags = () => Object.assign(flags, {quiz: false, zoom2: false, seen: new Set(), counted: false, revealed: false});
+  const resetFlags = () => Object.assign(flags, {quiz: false, zoom2: false, seen: new Set(), counted: false, revealed: false, iouDragged: false});
   resetFlags();
+  // IoU 卡片：要学生亲手拖动预测框（只改上方门槛不算）
+  document.addEventListener('input', e => { if (e.target.id === 'iou-offset') flags.iouDragged = true; }, true);
   document.addEventListener('click', e => {
     const ans = e.target.closest?.('[data-answer]');
     if (ans && ans.dataset.answer === 'no' && flags.zoom2) flags.quiz = true;
@@ -2354,7 +2416,7 @@ function zipStore(files) {
             result: '放大只改变显示大小，标签始终按原图宽高计算。'},
           {id: 'wide', icon: '↔', title: '换宽幅图，看分母怎么变', hint: '选“练习 B · 宽幅场景”，选中一个框', check: s => s.a.key === 'wide' && Boolean(s.a.line),
             result: '原图宽 960：x 中心和宽度除以 960，y 方向仍除以 640。'},
-          {id: 'review', icon: '?', title: '遮挡图里留一个待复核', hint: '选“练习 C”，看不清的头部标“待复核”', check: s => s.a.key === 'occluded' && s.a.boxes.some(b => b.cls === 'review'),
+          {id: 'review', icon: '?', title: '遮挡图里留一个待复核', hint: '选“练习 C”：看得清的头照常标，看不清的那个标“待复核”', check: s => s.a.key === 'occluded' && s.a.boxes.some(b => b.cls === 'review'),
             result: '看不清就留下问题：待复核不是第三个训练类别，这张图只能存草稿。'},
         ]);
         if (EL.a.quiz) c.adopt(EL.a.quiz, c.section('想一想'));
@@ -2395,7 +2457,7 @@ function zipStore(files) {
             result: '真值还在图里，只是没有同类且位置达标的预测与它配对。'},
           {id: 'count', icon: '✍', title: '自己数出 TP、FP、FN', hint: '开始独立核验，填三个数', check: () => flags.counted,
             result: '数对了：一个真值最多配一个预测，剩下的就是误检和漏检。'},
-          {id: 'iou', icon: '▣', title: '把 IoU 演示拖到不达标', hint: '在下方拖动预测框', check: s => s.e.iouDemo.iou < s.e.iouThreshold,
+          {id: 'iou', icon: '▣', title: '把 IoU 演示拖到不达标', hint: '在下方拖动【预测框向右移动】', check: s => flags.iouDragged && s.e.iouDemo.iou < s.e.iouThreshold,
             result: '两框错开后交集变小、并集变大，IoU 掉到门槛以下就不能配对。'},
         ]);
         c.adopt(EL.e.challenge, c.section('自己数一遍'));

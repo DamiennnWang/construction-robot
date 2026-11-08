@@ -224,13 +224,13 @@ html[data-theme="dark"] .c2-station[aria-selected="true"] { background:linear-gr
 }
 .c2-toolseg button { height:28px; font-size:14px; padding:0 10px; }
 .c2-hint {
-  position:absolute; left:50%; top:14px; transform:translateX(-50%); z-index:2; pointer-events:none;
+  position:absolute; left:50%; bottom:14px; transform:translateX(-50%); z-index:2; pointer-events:none;
   max-width:min(80%,560px); white-space:nowrap; overflow:hidden; text-overflow:ellipsis;
   padding:5px 14px; border-radius:999px; font-size:14px; line-height:1.4; color:var(--stage-ink);
   background:var(--stage-chip); border:1px solid var(--stage-chip-line); backdrop-filter:blur(6px);
   transition:opacity .6s ease, transform .6s ease;
 }
-.c2-hint.gone { opacity:0; transform:translate(-50%,-6px); }
+.c2-hint.gone { opacity:0; transform:translate(-50%,6px); }
 
 /* 全屏：外壳统一一个按钮，钉在三维区右上角；全屏的是整块三维区（含上方选择条和提示条） */
 .c2-fs {
@@ -433,7 +433,7 @@ html[data-theme="dark"] .c2-banner { background:#3b2d16; border-color:#6b5124; c
 
 /* 提示条：在三维区下方弹出，几秒后收起 */
 .c2-feedback {
-  position:absolute; left:50%; top:56px; transform:translateX(-50%); z-index:4; max-width:min(640px,80%);
+  position:absolute; left:50%; top:56px; transform:translateX(-50%); z-index:4; max-width:min(560px,62%); cursor:pointer;
   display:flex; align-items:center; gap:10px; font-size:15px; line-height:1.55; border-radius:14px;
 }
 .c2-feedback:empty { display:none; }
@@ -519,7 +519,7 @@ html[data-theme="dark"] .c2-task-id { background:linear-gradient(135deg,#8abaff,
   .c2-tools { left:16px; top:16px; gap:8px; }
   .c2-tool { height:40px; padding:0 15px; border-radius:12px; font-size:15.5px; }
   .c2-toolseg button { height:32px; font-size:15.5px; padding:0 13px; }
-  .c2-hint { top:18px; font-size:15.5px; padding:6px 17px; }
+  .c2-hint { bottom:18px; font-size:15.5px; padding:6px 17px; }
   .c2-fs { right:16px; top:16px; width:40px; height:40px; border-radius:12px; }
   .c2-shot { right:16px; top:62px; width:40px; height:40px; border-radius:12px; }
   .c2-fs svg, .c2-shot svg { width:21px; height:21px; }
@@ -670,6 +670,18 @@ html[data-theme="dark"] .c2-task-id { background:linear-gradient(135deg,#8abaff,
 /* 手机横屏：三维区占大半屏高 */
 @media (max-width:900px) and (orientation:landscape) { .c2-view { height:clamp(240px,74vh,420px); } }
 @media (prefers-reduced-motion:reduce) { * { transition:none !important; animation:none !important; } }
+
+/* 试一试卡片钉在面板底部：面板内容再长，卡片也始终在一屏里看得见（上面的控件在卡片后面滚动） */
+@media (min-width:901px) {
+  .c2-panel .c2-cards {
+    position:sticky; bottom:-14px; z-index:3; margin:0 -16px; padding:10px 16px 14px;
+    background:var(--course-surface); border-top:1px solid var(--hair); box-shadow:0 -10px 18px -14px rgba(18,44,78,.35);
+  }
+  .c2-panel .c2-cards .c2-ch-text span { -webkit-line-clamp:2; }
+}
+@media (min-width:1680px) and (min-height:860px) {
+  .c2-panel .c2-cards { bottom:-18px; margin:0 -22px; padding:12px 22px 18px; }
+}
 
 /* 第三章：原页面元素放进统一外壳后的补充样式。外壳本身的样式在 shared/lab-shell/lab-shell.css。 */
 
@@ -867,6 +879,10 @@ html.lab-native .c2-stage-top :is(button, label, a) { font-family:inherit; }
   html.lab-native .c2-stage-top { padding:10px 13px; gap:10px; }
 }
 
+/* 原页面自带的提示条（#toast）原来弹在屏幕底部，会盖住三维区下方的读数条；外壳里改到三维区顶部 */
+html.lab-native body > :is(#toast, .toast) { top:138px !important; bottom:auto !important; max-width:min(560px, 60vw) !important; }
+@media (max-width:900px) { html.lab-native body > :is(#toast, .toast) { top:auto !important; bottom:16px !important; max-width:calc(100% - 24px) !important; } }
+
 /* 4-2：原页面的扫描台搬进外壳后的微调（只作用于本页） */
 
 /* 三维区：“怎么看”的视角与显示方式放左上；慢放按钮与读数留在原来的底部位置 */
@@ -984,6 +1000,12 @@ html.lab-native .stage .world-note { display:none !important; }
 
 /* 手机：读数条放到“慢放 / 重扫”按钮上方，两者不再叠在一起 */
 @media (max-width:900px) { html.lab-native .c2-native-stage .stage-readouts { top:auto !important; bottom:94px !important; } }
+
+/* 4-2：截面示例、实验单弹窗里的说明和按钮用正文字号，投影和截图都看得清 */
+#sectionDialog .hint, #sectionDialog .model-disclaimer, #recordsDialog .hint { font-size:15px !important; line-height:1.6 !important; }
+#sectionDialog .shortcuts button { font-size:14.5px !important; min-height:34px; padding:4px 12px !important; }
+#sectionDialog .section-results span { font-size:14px !important; }
+#sectionDialog .eyebrow, #recordsDialog .eyebrow { letter-spacing:.04em; font-size:13px !important; }
 </style><script data-course-navigation src="../../../../../shared/navigation.js"></script><link data-course-theme rel="stylesheet" href="../../../../../shared/styles/theme.css"><script data-course-theme src="../../../../../shared/theme.js"></script></head><body>
 <header class="site-header"><a href="../../../../../shared/感知与识别/index.html" class="brand"><span class="brand-icon">L<svg viewBox="0 0 15 15"><path d="M3 12L12 3M4 3h8v8"/></svg></span><span>机器人感知<small>INTERACTIVE LAB</small></span></a><div class="header-title">激光雷达与点云<span class="tag">任务 4-2</span></div><div class="header-actions"><div class="theme-picker" aria-label="配色"><button id="lightTheme" aria-pressed="true">蓝白</button><button id="darkTheme" aria-pressed="false">深色</button></div><button class="header-button" id="recordBtn"><svg viewBox="0 0 20 20"><path d="M5 3h10v14H5zM8 7h4M8 10h4M8 13h3"/></svg>实验记录 <b id="recordCount">0</b></button><button id="helpBtn" class="help-button" aria-label="原理与使用说明">?</button></div></header>
 <div class="lab-shell"><main class="lab-layout"><section class="workspace" aria-label="激光雷达与点云三维实验台"><div class="stage"><div class="intro"><div class="eyebrow"><i></i>LIDAR / POINT CLOUD <span id="experimentNumber">01</span></div><h1 id="stageTitle">一束光，留下一个坐标。</h1><p id="stageSubtitle">距离加上方向，才知道这个点在哪里。</p><div class="status-line"><span class="live-dot"></span><span id="phaseText">已显示完整教学帧</span><span>/</span><span id="sourceLabel">教学几何模拟</span></div></div>
@@ -1008,8 +1030,8 @@ html.lab-native .stage .world-note { display:none !important; }
 <nav class="experiments" aria-label="三个激光雷达实验"><div class="experiment-heading"><div class="eyebrow">ONE BEAM / A CLOUD OF EVIDENCE</div><h2>看见点，读懂它的来路。</h2><p>三个实验可自由切换 <span id="completionText">0 / 3 已验证</span></p></div><div class="experiment-cards"><button class="experiment-card active" data-experiment="beam" aria-pressed="true"><span class="card-top">01 / ONE RETURN <i>↗</i></span><h3>一束光到一个点<span>方向 · 距离 · XYZ</span></h3><p>只有距离，能知道点在哪里吗？</p><div class="card-progress"><i></i></div></button><button class="experiment-card" data-experiment="density" aria-pressed="false"><span class="card-top">02 / SAMPLING <i>⠿</i></span><h3>点云怎样变密<span>角间距 · 垂直采样</span></h3><p>更多点，就一定测得更准吗？</p><div class="card-progress"><i></i></div></button><button class="experiment-card" data-experiment="evidence" aria-pressed="false"><span class="card-top">04 / READ A CLOUD <i>⌖</i></span><h3>在点云里找证据<span>取点 · 单位 · 截面</span></h3><p>一个点距，能直接叫净宽吗？</p><div class="card-progress"><i></i></div></button></div></nav></div>
 <footer><a href="../4-1/index.html">← 自身状态感知</a><span>SELF / WORLD / POINT CLOUD</span><button id="footerNotes">查看我的实验单 ↗</button></footer>
 <dialog id="helpDialog"><button class="dialog-close" data-close="helpDialog" aria-label="关闭">×</button><div class="eyebrow">THE MEASUREMENT BEHIND EVERY POINT</div><h2>点云不是一张照片，<br>是有坐标、有条件的测量。</h2><div class="help-grid"><article><h3>01 一束回波</h3><p>本页以脉冲飞行时间法为例：r=cΔt/2。知道距离，再知道光束的方向，就能定下这个点的位置。</p></article><article><h3>02 平面与空间</h3><p>静止单层通常得到一个截面，多层提供不同仰角的采样。转动画面只是换个角度看，不会多出新的点。</p></article><article><h3>03 密度与精度</h3><p>角间距决定采样方向有多密，单次测距波动是另一件事。离雷达越远，相邻两束光隔得越开。</p></article><article><h3>04 颜色与空白</h3><p>高度色、距离色、A/B来源色都是属性映射，不直接代表材料。没点可能来自未覆盖、遮挡、距离限制或回波条件，不能直接认定为空闲。</p></article></div><p class="model-disclaimer">默认是有限不透明几何的最近交点模型，忽略光束宽度、玻璃、多径、反射强度与多回波。真实设备还需光束角与光学原点标定。脉冲动画大幅放慢，纳秒读数按c=299,792,458m/s计算。台座、网格与实体是教学参照；原始点、抽样点、导入点始终分清来源。</p><div class="references"><a href="https://sickag.github.io/sick_lidar_developer_guide/lidar-basics/" target="_blank" rel="noopener">SICK · 测距与扫描原理 ↗</a><a href="https://docs.ouster.com/sensor-docs/firmware/coordinate-system" target="_blank" rel="noopener">Ouster · 真实坐标标定 ↗</a><a href="https://pointclouds.org/documentation/tutorials/statistical_outlier.html" target="_blank" rel="noopener">PCL · 公开点云示例 ↗</a></div></dialog>
-<dialog id="recordsDialog" class="records-dialog"><button class="dialog-close" data-close="recordsDialog" aria-label="关闭">×</button><div class="eyebrow">MY POINT CLOUD NOTEBOOK</div><h2>把点和它的条件，一起留下。</h2><div class="notebook-toolbar"><label>姓名 / 小组<input id="studentName" maxlength="40" placeholder="例如：第3组"></label><button id="exportRecords">导出实验单 JSON</button><button id="exportPoints">导出当前点云 PLY</button><button id="exportSelected">导出选点 CSV</button><button id="clearRecords" class="quiet-danger">清空记录</button></div><div id="notebook" class="notebook"></div><details class="point-table-details"><summary>当前点表与显示变换</summary><p id="tableSource" class="hint"></p><div class="point-table-wrap"><table><thead><tr><th>原点号</th><th>X</th><th>Y</th><th>Z</th><th>来源 / 属性</th></tr></thead><tbody id="pointTable"></tbody></table></div><p class="hint">表中仅列前100个当前可见点，导出包含全部当前筛选数据。居中、缩放和相机变化不改写原坐标。</p></details><details class="import-section" id="importDetails"><summary>导入自己的 ASCII PLY / PCD 点云</summary><p class="hint">支持ASCII PLY/PCD，最大20MB、200000点。不支持binary/compressed上传；缺失XYZ或非法数字会拒绝，缺少RGB不伪造颜色。</p><input type="file" id="pointFile" accept=".ply,.pcd,.txt"><p id="importStatus" role="status">未导入。请同时核对原文件的单位和坐标约定。</p><label class="range-label" for="importUnit">原文件坐标单位</label><select id="importUnit"><option value="unknown">待核对 / 未知</option><option value="m">米 m</option><option value="mm">毫米 mm</option><option value="cm">厘米 cm</option></select><button id="applyImport" class="capture-button" disabled>使用这份点云</button></details><details class="import-section"><summary>PCL样本的来源、抽样与许可</summary><p id="sampleProvenance" class="hint"></p><pre id="sampleLicense"></pre></details></dialog>
-<dialog id="sectionDialog"><button class="dialog-close" data-close="sectionDialog" aria-label="关闭">×</button><div class="eyebrow">A DISTANCE NEEDS CONTEXT</div><h2>先确认截面，再谈净宽。</h2><p class="hint">以下是独立教学截面示例，不是上方点云的自动量测结果。机器人宽0.60m，两侧各预留0.10m，需净宽0.80m。</p><div class="shortcuts"><button data-width=".9" aria-pressed="true">0.90m截面</button><button data-width=".7">0.70m截面</button><button id="wrongSection" aria-pressed="false">故意错选前后端点</button></div><svg id="sectionSVG" viewBox="0 0 680 260" role="img" aria-label="同截面端点与错位端点比较"></svg><div class="section-results"><div><span>两点三维距离</span><strong id="sectionDistance">0.90m</strong></div><div><span>教学截面真实净宽</span><strong id="sectionWidth">0.90m</strong></div><div><span>相对0.80m需求的余量</span><strong id="sectionMargin">+0.10m</strong></div></div><p id="sectionNote" class="model-disclaimer"></p></dialog>
+<dialog id="recordsDialog" class="records-dialog"><button class="dialog-close" data-close="recordsDialog" aria-label="关闭">×</button><div class="eyebrow">我的点云实验单</div><h2>把点和它的条件，一起留下。</h2><div class="notebook-toolbar"><label>姓名 / 小组<input id="studentName" maxlength="40" placeholder="例如：第3组"></label><button id="exportRecords">导出实验单 JSON</button><button id="exportPoints">导出当前点云 PLY</button><button id="exportSelected">导出选点 CSV</button><button id="clearRecords" class="quiet-danger">清空记录</button></div><div id="notebook" class="notebook"></div><details class="point-table-details"><summary>当前点表与显示变换</summary><p id="tableSource" class="hint"></p><div class="point-table-wrap"><table><thead><tr><th>原点号</th><th>X</th><th>Y</th><th>Z</th><th>来源 / 属性</th></tr></thead><tbody id="pointTable"></tbody></table></div><p class="hint">表中仅列前100个当前可见点，导出包含全部当前筛选数据。居中、缩放和相机变化不改写原坐标。</p></details><details class="import-section" id="importDetails"><summary>导入自己的 ASCII PLY / PCD 点云</summary><p class="hint">支持ASCII PLY/PCD，最大20MB、200000点。不支持binary/compressed上传；缺失XYZ或非法数字会拒绝，缺少RGB不伪造颜色。</p><input type="file" id="pointFile" accept=".ply,.pcd,.txt"><p id="importStatus" role="status">未导入。请同时核对原文件的单位和坐标约定。</p><label class="range-label" for="importUnit">原文件坐标单位</label><select id="importUnit"><option value="unknown">待核对 / 未知</option><option value="m">米 m</option><option value="mm">毫米 mm</option><option value="cm">厘米 cm</option></select><button id="applyImport" class="capture-button" disabled>使用这份点云</button></details><details class="import-section"><summary>PCL样本的来源、抽样与许可</summary><p id="sampleProvenance" class="hint"></p><pre id="sampleLicense"></pre></details></dialog>
+<dialog id="sectionDialog"><button class="dialog-close" data-close="sectionDialog" aria-label="关闭">×</button><div class="eyebrow">距离要有前提</div><h2>先确认截面，再谈净宽。</h2><p class="hint">以下是独立教学截面示例，不是上方点云的自动量测结果。机器人宽0.60m，两侧各预留0.10m，需净宽0.80m。</p><div class="shortcuts"><button data-width=".9" aria-pressed="true">0.90m截面</button><button data-width=".7">0.70m截面</button><button id="wrongSection" aria-pressed="false">故意错选前后端点</button></div><svg id="sectionSVG" viewBox="0 0 680 260" role="img" aria-label="同截面端点与错位端点比较"></svg><div class="section-results"><div><span>两点三维距离</span><strong id="sectionDistance">0.90m</strong></div><div><span>教学截面真实净宽</span><strong id="sectionWidth">0.90m</strong></div><div><span>相对0.80m需求的余量</span><strong id="sectionMargin">+0.10m</strong></div></div><p id="sectionNote" class="model-disclaimer"></p></dialog>
 <div id="toast" class="toast" role="status" hidden></div><div id="announcement" class="sr-only" aria-live="polite"></div>
 <script>/*
 The MIT License
@@ -1680,8 +1702,8 @@ function createLidarScene(T,host,M,callbacks={}){
 const $=id=>document.getElementById(id),$$=s=>[...document.querySelectorAll(s)],clamp=(v,a,b)=>Math.max(a,Math.min(b,v)),fmt=(v,n=2)=>Number.isFinite(v)?Number(v).toFixed(n):'—',vec=(v,n=3)=>v?'['+v.map(x=>fmt(x,n)).join(', ')+']':'—',esc=s=>String(s).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
 const META={
  beam:{number:'01',name:'一束光到一个点',title:'一束光，留下一个坐标。',subtitle:'距离加上方向，才知道这个点在哪里。',action:'慢放这一束',hint:'重演这个点的发射、回波与XYZ形成',question:'已知一个点距光心1.8m，还需要什么才能定位它？',choices:['把点画大，就能确定位置','还要知道这束光朝哪个方向','只要等待更长时间'],answer:1},
- density:{number:'02',name:'采样密度与测距波动',title:'更多点，更完整；也要问误差。',subtitle:'真正改变发射方向，分清采样密度与单次测距误差。',action:'重新扫描这一帧',hint:'比较10°与1°，再单独改变测距波动',question:'10°没扫到细柱，1°扫到了，最合适的解释是？',choices:['细柱在两次扫描之间凭空出现','1°测距一定完全没有误差','更细的角采样增加命中机会，单次误差是另一项指标'],answer:2},
- evidence:{number:'04',name:'点云取点与证据边界',title:'读懂一个点，也读懂它的条件。',subtitle:'在教学点云与公开样本中取点，核对坐标、单位和来源。',action:'选择两点，记录观察',hint:'点击点云或点表，原坐标始终保留',question:'任意选两个点，它们的距离就能直接叫“通道净宽”吗？',choices:['能，三维点距总是净宽','不能，还需核对单位、同截面和边界含义','能，只要点云足够密'],answer:1}
+ density:{number:'02',name:'点云怎样变密',title:'更多点，更完整；也要问误差。',subtitle:'真正改变发射方向，分清采样密度与单次测距误差。',action:'重新扫描这一帧',hint:'比较10°与1°，再单独改变测距波动',question:'10°没扫到细柱，1°扫到了，最合适的解释是？',choices:['细柱在两次扫描之间凭空出现','1°测距一定完全没有误差','更细的角采样增加命中机会，单次误差是另一项指标'],answer:2},
+ evidence:{number:'04',name:'在点云里找证据',title:'读懂一个点，也读懂它的条件。',subtitle:'在教学点云与公开样本中取点，核对坐标、单位和来源。',action:'选择两点，记录观察',hint:'点击点云或点表，原坐标始终保留',question:'任意选两个点，它们的距离就能直接叫“通道净宽”吗？',choices:['能，三维点距总是净宽','不能，还需核对单位、同截面和边界含义','能，只要点云足够密'],answer:1}
 };
 const INITIAL={experiment:'beam',source:'simulation',position:'A',height:.7,step:2,channels:16,angle:0,channel:8,sigma:0,maxRange:12,seed:1,progress:1,viewMode:'hybrid',colorMode:'height',pointSize:2.2,axes:true,beam:true,slice:false,sliceZ:.7,unit:'m',theme:'light'};
 let state={...INITIAL},frameData=null,simPoints=[],renderPoints=[],activePoints=[],selectedPoint=null,picks=[null,null],pickSlot=0,records=[],completed=new Set(),answers={},selectedChoice=null,scene=null,imported=null,pendingImport=null,importToken=0,datasetSerial=0,scanPlaying=false,pulsePlaying=false,pulseTime=0,raf=0,lastFrame=0,inView=true,sceneDirty=true,cloudDirty=true,toastTimer,sectionWidth=.9,wrongSection=false;
@@ -1763,7 +1785,7 @@ function showStage(){if(innerWidth<=800||!inView)$('viewport').scrollIntoView({b
 function scanFrame(){if(state.source!=='simulation'){toast('公开样本和导入点云是已有数据，不由当前教学雷达重新扫描。');return;}if(scanPlaying){stop();updateReadouts();return;}resetPicks();if(reduced.matches){state.progress=state.progress>=.999?.1:clamp(state.progress+.1,0,1);followProgressRay();refresh();toast('减少动态效果：本次增加10%采样方向，可用进度条定位。');}else{state.progress=0;followProgressRay();scanPlaying=true;pulsePlaying=false;showStage();refresh();}}
 function pulse(){if(state.source!=='simulation'){toast('请在教学点云中观察单束测距；真实样本不伪造光路。');return;}stop();selectedPoint=null;const r=currentRay();if(!r.hit){toast('这一方向没有有效回波。没有生成点，不能据此认定为空闲。');updateReadouts();sceneDirty=true;wake();return;}if(reduced.matches){pulseTime=1;sceneDirty=true;updateReadouts();wake();toast('静态展示最近命中点；往返时间见纳秒读数。');return;}pulseTime=0;pulsePlaying=true;state.viewMode='hybrid';showStage();refresh();}
 function primary(){if(state.experiment==='beam')pulse();else if(state.experiment==='density')scanFrame();else{pickSlot=picks[0]?1:0;state.viewMode='cloud';refresh();showStage();toast('点击两个点，或在“点表与来源”中精确选点。');}}
-function selectExperiment(id){if(!META[id])return;stop();state.experiment=id;state.source='simulation';state.unit='m';state.slice=false;state.progress=1;selectedChoice=null;const m=META[id];$('experimentNumber').textContent=m.number;$('stageTitle').textContent=m.title;$('stageSubtitle').textContent=m.subtitle;$('controlTitle').textContent=m.name;$('actionTitle').textContent=m.action;$('actionHint').textContent=m.hint;$('primaryText').textContent=m.action;$('primaryIcon').textContent={beam:'↗',density:'⠿',evidence:'⌖'}[id];
+function selectExperiment(id){if(!META[id])return;stop();state.experiment=id;for(const k of ['position','height','step','channels','angle','channel','sigma','maxRange','seed'])state[k]=INITIAL[k];state.source='simulation';state.unit='m';state.slice=false;state.progress=1;selectedChoice=null;const m=META[id];$('experimentNumber').textContent=m.number;$('stageTitle').textContent=m.title;$('stageSubtitle').textContent=m.subtitle;$('controlTitle').textContent=m.name;$('actionTitle').textContent=m.action;$('actionHint').textContent=m.hint;$('primaryText').textContent=m.action;$('primaryIcon').textContent={beam:'↗',density:'⠿',evidence:'⌖'}[id];
  for(const e of Object.keys(META))$(e+'Controls').hidden=e!==id;$$('[data-experiment]').forEach(b=>{const active=b.dataset.experiment===id;b.classList.toggle('active',active);b.setAttribute('aria-pressed',String(active));});
  $('challengeQuestion').textContent=m.question;$('challengeChoices').innerHTML=m.choices.map((s,i)=>`<button data-choice="${i}" aria-pressed="false"><span>${String.fromCharCode(65+i)}</span> ${s}</button>`).join('');$('challengeFeedback').textContent='先选一个预测，再留下证据。';$('challengeFeedback').className='challenge-feedback';
  state.viewMode=id==='evidence'?'cloud':'hybrid';rebuildFrame();setSliceBounds(simPoints);refresh({clearPicks:true});updateRecords();
@@ -1792,7 +1814,7 @@ function openNotes({table=false,importer=false}={}){updateRecords();$('recordsDi
  $('sampleProvenance').textContent=`${LIDAR_SAMPLE.title}。原文件${LIDAR_SAMPLE.originalCount}点，随页保留${LIDAR_SAMPLE.retainedCount}个原始点。${LIDAR_SAMPLE.selectionMethod}。源文件未声明坐标单位与完整采集设置，未提供RGB。来源：${LIDAR_SAMPLE.sourceURL}。SHA256：${LIDAR_SAMPLE.sha256}`;$('sampleLicense').textContent=LIDAR_SAMPLE_LICENSE;if(table){document.querySelector('.point-table-details').open=true;document.querySelector('.point-table-details').scrollIntoView({block:'start'});}if(importer){$('importDetails').open=true;$('importDetails').scrollIntoView({block:'start'});}}
 function download(name,body,type){const url=URL.createObjectURL(new Blob([body],{type})),a=document.createElement('a');a.href=url;a.download=name;a.click();setTimeout(()=>URL.revokeObjectURL(url),5000);}
 function exportRecords(){download('激光雷达与点云-实验单.json',JSON.stringify({title:'激光雷达与点云',student:$('studentName').value,exportedAt:new Date().toISOString(),records:records.map(({points,...r})=>({...r,cloudPointsOmitted:points?.length||0})),answers,sample:{source:LIDAR_SAMPLE.sourceURL,sha256:LIDAR_SAMPLE.sha256,unit:LIDAR_SAMPLE.coordinateUnit,selection:LIDAR_SAMPLE.selectionMethod},note:'完整当前点云可单独导出PLY；原坐标与单位状态不被显示变换改写。'},null,2),'application/json;charset=utf-8');}
-function exportPLY(){const rgb=activePoints.length>0&&activePoints.every(p=>p.rgb?.length===3),comments=[`comment source ${sourceTitle().replace(/[\r\n]/g,' ')}`,`comment coordinate_unit ${state.unit}`,`comment coordinate_frame ${state.source==='simulation'?'teaching_world':'original_file'}`,`comment view_transform_is_display_only`,...(state.source==='sample'?['comment source_url '+LIDAR_SAMPLE.sourceURL,'comment original_file_sha256 '+LIDAR_SAMPLE.sha256,'comment selection '+String(LIDAR_SAMPLE.selectionMethod).replace(/[\r\n]/g,' ')]:[])];const header=['ply','format ascii 1.0',...comments,'element vertex '+activePoints.length,'property double x','property double y','property double z','property uint source_index','property uchar station',...(rgb?['property uchar red','property uchar green','property uchar blue']:[]),'end_header'];const rows=activePoints.map((p,i)=>[...originalXYZ(p),p.sourceIndex??p.index??i,p.station==='A'?1:p.station==='B'?2:0,...(rgb?p.rgb:[])].join(' '));download('激光点云-'+state.source+'.ply',header.join('\n')+'\n'+rows.join('\n'),'text/plain;charset=utf-8');}
+function exportPLY(){const rgb=activePoints.length>0&&activePoints.every(p=>p.rgb?.length===3),comments=[`comment source ${sourceTitle().replace(/[\r\n]/g,' ')}`,`comment coordinate_unit ${state.unit}`,`comment coordinate_frame ${state.source==='simulation'?'teaching_world':'original_file'}`,`comment view_transform_is_display_only`,...(state.source==='sample'?['comment source_url '+LIDAR_SAMPLE.sourceURL,'comment original_file_sha256 '+LIDAR_SAMPLE.sha256,'comment selection '+String(LIDAR_SAMPLE.selectionMethod).replace(/[\r\n]/g,' ')]:[])];const header=['ply','format ascii 1.0',...comments,'element vertex '+activePoints.length,'property double x','property double y','property double z','property uint source_index','property uchar station',...(rgb?['property uchar red','property uchar green','property uchar blue']:[]),'end_header'];const rows=activePoints.map((p,i)=>[...originalXYZ(p),p.sourceIndex??p.index??i,p.station==='A'?1:p.station==='B'?2:0,...(rgb?p.rgb:[])].join(' '));download('激光点云-'+({simulation:'教学模拟',sample:'公开样本'}[state.source]||'导入')+'.ply',header.join('\n')+'\n'+rows.join('\n'),'text/plain;charset=utf-8');}
 const csvCell=v=>{if(v===null||v===undefined)return'';let s=String(v);if(typeof v==='string'&&/^[=+@-]/.test(s))s="'"+s;return /[",\r\n]/.test(s)?'"'+s.replace(/"/g,'""')+'"':s;};
 function exportSelection(){const rows=[['label','source','station','original_index','x_original','y_original','z_original','original_unit','sensor_origin','azimuth_deg','elevation_deg','distance_m_if_confirmed']];for(let i=0;i<2;i++)if(picks[i]){const p=picks[i];rows.push(['P'+(i+1),sourceTitle(),p.station||'',p.sourceIndex??p.index,...originalXYZ(p),state.unit,p.origin?vec(p.origin,8):'',p.azimuth??'',p.elevation??'',picks.every(Boolean)&&unitScale()!==null?M.pointDistance(...picks.map(originalXYZ))*unitScale():null]);}download('点云-所选原坐标.csv','\ufeff'+rows.map(r=>r.map(csvCell).join(',')).join('\r\n'),'text/csv;charset=utf-8');}
 async function readImport(file){if(!file)return;const token=++importToken;pendingImport=null;$('applyImport').disabled=true;try{if(file.size>20*1024*1024)throw Error('文件超过20MB，请先在点云软件中裁剪所需区域。');const parsed=parsePointFile(await file.text(),file.name);if(token!==importToken)return;pendingImport={...parsed,name:file.name,serial:++datasetSerial};$('importStatus').textContent=`已读取${file.name}，${parsed.count}点。请核对单位后使用；当前场景仍保持原数据。${parsed.warnings?.join(' ')||''}`;$('applyImport').disabled=false;}catch(e){if(token===importToken)$('importStatus').textContent=e.message;}}
@@ -1855,7 +1877,12 @@ selectExperiment('beam');wake();
     const store = 'c2-progress-' + (cfg.progressKey || cfg.task);
     let progress = {};
     try { progress = JSON.parse(localStorage.getItem(store) || '{}') || {}; } catch {}
+    if (!progress.cards || typeof progress.cards !== 'object') progress.cards = {};
     const save = () => { try { localStorage.setItem(store, JSON.stringify(progress)); } catch {} };
+    /* 卡片完成记录按工位保存在浏览器里：换工位、刷新页面都不丢；只有本工位的【↺ 重来】清掉本工位的记录 */
+    const savedCards = id => new Set(Array.isArray(progress.cards[id]) ? progress.cards[id] : []);
+    const allDone = () => cfg.stations.every(st => progress[st.id]);
+    const nextUndone = () => { for (let k = 1; k <= cfg.stations.length; k++) { const j = (current + k) % cfg.stations.length; if (!progress[cfg.stations[j].id]) return j; } return -1; };
 
     /* 页头 */
     const top = h('header', 'c2-top course-nav');
@@ -1913,7 +1940,10 @@ selectExperiment('beam');wake();
     const credit = h('div', 'c2-credit'); credit.hidden = true;
     panel.append(head, body, credit);
     view.append(feedback);
-    let toastTimer = 0;
+    let toastTimer = 0, holdUntil = 0, holdTimer = 0, pendingToast = null;
+    // 点一下提示条就收起（不挡住正在看的画面）；“去下一站”按钮照常可点
+    feedback.addEventListener('click', e => { if (e.target.closest('.c2-next')) return; clearTimeout(toastTimer); holdUntil = 0; feedback.textContent = ''; feedback.className = 'c2-feedback'; });
+    feedback.title = '点一下收起';
     main.append(stageBox, panel);
     /* 原页面里暂时不用的控件停放处（仍在文档里，原有程序照常工作） */
     const parking = h('div', 'c2-parking'); parking.hidden = true;
@@ -2017,7 +2047,7 @@ selectExperiment('beam');wake();
       ht.append(name, redo);
       head.replaceChildren(ht, h('p', '', s.lead || ''));
       parkAll();
-      body.replaceChildren(); clearTimeout(toastTimer); feedback.textContent = ''; feedback.className = 'c2-feedback';
+      body.replaceChildren(); clearTimeout(toastTimer); clearTimeout(holdTimer); holdUntil = 0; pendingToast = null; feedback.textContent = ''; feedback.className = 'c2-feedback';
       transportBox.replaceChildren(); readBox.replaceChildren(); tools.replaceChildren(); card.hidden = true;
       if (!hintDone) {
         hint.textContent = s.hint ?? cfg.hint ?? '拖动旋转 · 滚轮缩放';
@@ -2042,8 +2072,14 @@ selectExperiment('beam');wake();
       dispatchEvent(new Event('resize'));
       if (native) for (const t of [60, 300, 900]) setTimeout(() => { dispatchEvent(new Event('resize')); floorAll(); }, t);
     }
-    redo.addEventListener('click', () => { const i = current; current = -1; cfg.reset?.(cfg.stations[i].id); select(i); });
-    next.addEventListener('click', () => select(Math.min(current + 1, cfg.stations.length - 1)));
+    if (cfg.redoConfirm) redo.title = cfg.redoConfirm.replace(/确定.*$/, '').trim();
+    redo.addEventListener('click', () => {
+      if (cfg.redoConfirm && !window.confirm(cfg.redoConfirm)) return;
+      const i = current, id = cfg.stations[i].id;
+      delete progress.cards[id]; delete progress[id]; save();
+      current = -1; cfg.reset?.(id); select(i);
+    });
+    next.addEventListener('click', () => { const j = nextUndone(); select(j >= 0 ? j : Math.min(current + 1, cfg.stations.length - 1)); });
 
     function makeContext(s, index) {
       const stateFns = new Set(), readyFns = new Set();
@@ -2073,11 +2109,27 @@ selectExperiment('beam');wake();
         },
         /* —— 反馈 —— */
         /** 反馈以提示条形式出现在三维区上方，几秒后自动收起，不挤占面板。 */
-        feedback(text, kind = 'info', keep = false) {
+        /* 卡片结论、警告会停留一会儿：期间到来的普通提示排在后面显示，不把它们盖掉（只保留最新一条）；
+           同一句话重复发送（有的页面每帧都发）只续时，不重播动画。 */
+        feedback(text, kind = 'info', keep = false, hold = 0) {
+          const now = performance.now();
+          const same = text && feedback.querySelector('.c2-toast-text')?.textContent === text && feedback.classList.contains(kind);
+          if (!same && now < holdUntil && !hold) {
+            if (text) {
+              pendingToast = [text, kind, keep];
+              clearTimeout(holdTimer);
+              holdTimer = setTimeout(() => { const p = pendingToast; pendingToast = null; holdUntil = 0; if (p) c.feedback(...p); }, holdUntil - now);
+            }
+            return;
+          }
           clearTimeout(toastTimer);
-          feedback.replaceChildren();
-          if (text) feedback.append(h('span', 'c2-toast-icon', kind === 'ok' ? '✓' : kind === 'warn' ? '!' : 'i'), h('span', 'c2-toast-text', text));
-          feedback.className = 'c2-feedback ' + kind;
+          if (!same) {
+            feedback.replaceChildren();
+            if (text) feedback.append(h('span', 'c2-toast-icon', kind === 'ok' ? '✓' : kind === 'warn' ? '!' : 'i'), h('span', 'c2-toast-text', text));
+            feedback.className = 'c2-feedback ' + kind;
+          }
+          const hd = hold || (kind === 'warn' && text ? 2200 : 0);
+          if (hd) holdUntil = Math.max(holdUntil, now + hd);
           if (!keep && text) toastTimer = setTimeout(() => { feedback.textContent = ''; feedback.className = 'c2-feedback'; }, kind === 'warn' ? 5000 : 7000);
         },
         showPart(name, desc) {
@@ -2196,12 +2248,14 @@ selectExperiment('beam');wake();
         challenges(list, titleText = '试一试', into = body) {
           const counter = h('span', 'c2-count');
           const sec = c.section(titleText, counter, into);
+          sec.classList.add('c2-cards');
           const bar = h('div', 'c2-progress'); const fill = h('span'); bar.append(fill);
           const grid = h('div', 'c2-challenges'); sec.append(bar, grid);
           const done = new Set();
-          const items = list.map(ch => {
+          // 卡片图标统一用序号（不用各系统显示不一的表情符号）
+          const items = list.map((ch, n) => {
             const li = h('div', 'c2-challenge');
-            const mark = h('span', 'c2-mark', ch.icon || '★');
+            const mark = h('span', 'c2-mark', String(n + 1));
             const txt = h('div', 'c2-ch-text');
             txt.append(h('b', '', ch.title));
             const sub = h('span', '', ch.hint || ''); txt.append(sub);
@@ -2215,22 +2269,31 @@ selectExperiment('beam');wake();
             return {ch, li, sub, mark};
           });
           const update = () => { counter.textContent = `${done.size} / ${list.length}`; fill.style.width = (done.size / list.length * 100) + '%'; };
-          const complete = id => {
+          const complete = (id, restoring = false) => {
             if (done.has(id)) return;
             const it = items.find(x => x.ch.id === id); if (!it) return;
             done.add(id); it.li.classList.add('done'); it.mark.textContent = '✓';
-            if (it.ch.result) c.feedback(it.ch.title + '：' + it.ch.result, 'ok');
+            if (it.ch.result && !restoring) c.feedback(it.ch.title + '：' + it.ch.result, 'ok', false, 4500);
             it.sub.textContent = '完成';
             update();
+            if (restoring) return;
+            const kept = savedCards(s.id); kept.add(id); progress.cards[s.id] = [...kept];
+            if (done.size === list.length) progress[s.id] = true;
+            save();
             if (done.size === list.length) {
-              progress[s.id] = true; save(); syncTabs();
+              syncTabs();
               setTimeout(() => {
                 if (ctx !== c) return;
-                c.feedback(current < cfg.stations.length - 1 ? '这一站的挑战都完成了！' : '本任务的挑战都完成了！还可以接着随便调一调。', 'ok', current < cfg.stations.length - 1);
-                if (current < cfg.stations.length - 1) feedback.append(next);
-              }, 2600);
+                const j = nextUndone();
+                if (allDone() || j < 0) { c.feedback('本任务的挑战都完成了！还可以接着随便调一调。', 'ok'); return; }
+                c.feedback('这一站的挑战都完成了！', 'ok', true);
+                next.textContent = j === current + 1 ? '去下一站 →' : `去第 ${j + 1} 站 →`;
+                feedback.append(next);
+              }, 4600);
             }
           };
+          // 以前做完的卡片直接显示完成（不再弹结论）
+          for (const id of savedCards(s.id)) complete(id, true);
           c.lab.onState(st => { for (const it of items) if (!done.has(it.ch.id)) { try { if (it.ch.check?.(st)) complete(it.ch.id); } catch {} } });
           update();
           return {complete, isDone: id => done.has(id), section: sec};
@@ -2433,7 +2496,7 @@ selectExperiment('beam');wake();
     if (id && EL.feedback?.classList.contains('correct')) answered.add(id);
   });
   const quizCard = id => ({
-    id: 'answer', icon: '❓', title: '用证据回答', hint: '下方先选预测，再核对', check: () => answered.has(id),
+    id: 'answer', icon: '❓', title: '用证据回答', hint: id === 'beam' ? '先按【记录】存两条不同方向的回波，再在下方选预测、核对' : '先按【记录】留下证据，再在下方选预测、核对', check: () => answered.has(id),
     result: '答案不是猜出来的，是用你刚记录的扫描条件和坐标核对出来的。',
   });
 
@@ -2458,7 +2521,7 @@ selectExperiment('beam');wake();
     },
     {
       id: 'density', name: '点云怎样变密', hint: '拖动旋转 · 滚轮缩放 · 视角改变不增加点',
-      lead: '把方位角间隔在 10°、2°、1° 之间切换，数一数细柱被扫到几个点；再把雷达挪个位置看看。',
+      lead: '把方位角间隔在 10°、2°、1° 之间切换，数一数细柱被扫到几个点（细柱比 2° 的间隔还窄，2° 和 1° 时每层都只打中一束，点数相同；10° 时可能整个漏掉）；再把雷达挪个位置看看。',
       build(c) {
         c.adopt(EL.density, c.section('改采样'));
         c.adopt([EL.progress, EL.secondary], c.section('本帧扫描'));
@@ -2505,7 +2568,7 @@ selectExperiment('beam');wake();
     c.adopt(EL.quiz, c.section('先预测，再用证据回答'));
   }
 
-  let lastToast = '';
+  let lastToast = '', lastSource = '', hadPicks = false;
   NativeShell.start({
     task: '4-2', title: '激光雷达与点云',
     stage: EL.stage,
@@ -2520,6 +2583,9 @@ selectExperiment('beam');wake();
     },
     poll() {
       const s = lab().snapshot();
+      // 换数据来源时页面会清空已选的 P1、P2：提醒一声，免得以为点丢了
+      if (lastSource && s.state.source !== lastSource && hadPicks) window.c2Lab?.ctx?.feedback('换了数据来源，P1、P2 已清空。换之前先把两点的坐标和距离记下来。', 'warn');
+      lastSource = s.state.source; hadPicks = Boolean(s.picks?.[0] || s.picks?.[1]);
       if (s.playing.pulse) flags.pulse = true;
       s.pole = s.state.experiment === 'density' ? poleHits() : -1;
       return s;

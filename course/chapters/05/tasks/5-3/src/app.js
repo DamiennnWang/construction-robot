@@ -39,6 +39,6 @@
   $('scene-label').textContent=cutaway?'双缸与切换阀 · 剖面教学模型':'同一楼面 · '+stations.find(x=>x.id===s.station).label;
  }
  stage.onPart=p=>{if(p.id.startsWith('cell-'))dispatch({type:'cell',value:Number(p.id.slice(5))});else if(p.id==='pump-machine'){state.station='pump';cutaway=true;build();render();}else{W.feedback(p.description);stage.focus(p.id);}};
- stage.onTick=(dt)=>{anim+=dt;if(burst>0){burst=Math.max(0,burst-dt);if(burst===0&&!continuous)stage.running=false;}if(continuous){tick+=dt;if(tick>.45){tick=0;state=M.reduce(state,{type:'pump'});if(state.pumped[state.cell]>=.999){const next=state.pumped.findIndex(x=>x<.999);if(next<0){continuous=false;stage.running=false;}else state.cell=next;}render();}}updateScene();};
+ stage.onTick=(dt)=>{anim+=dt;if(burst>0){burst=Math.max(0,burst-dt);if(burst===0&&!continuous)stage.running=false;}if(continuous){tick+=dt;if(tick>.45){tick=0;state=M.reduce(state,{type:'pump',auto:true});if(state.pumped[state.cell]>=.999){const next=state.pumped.findIndex(x=>x<.999);if(next<0){continuous=false;stage.running=false;}else state.cell=next;}render();}}updateScene();};
  window.ConcreteLab={dispatch,state:()=>JSON.parse(JSON.stringify(state)),summary:()=>M.summary(state),stage:()=>({webgl:!!stage.renderer,...stage.stats})};build();render();
 })();

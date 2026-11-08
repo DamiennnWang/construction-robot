@@ -238,7 +238,7 @@
     }
     if (fault.active) updateFault();
     if (!renderer && !student.active)
-      document.querySelector(".view-hint").textContent = "二维备用视图 · 换向见电磁原理页";
+      document.querySelector(".view-hint").textContent = "二维备用视图 · 换向看【磁场与受力】";
     updatePageControls();
     updateSupplyPolarity();
   }
@@ -636,7 +636,7 @@
       set("renderBadge", "二维结构备用视图");
       set(
         "partText",
-        "当前浏览器未启用三维渲染，已使用二维结构图；可切换到电磁原理页查看受力与换向，数据计算仍可使用。",
+        "当前浏览器未启用三维渲染，已使用二维结构图；可打开【磁场与受力】查看受力与换向，数据计算仍可使用。",
       );
       console.info("Motor fallback:", err.message);
     }
@@ -1868,7 +1868,7 @@
               (d > 0 ? "A＋ / B−" : "A− / B＋") +
               " 接法的电流方向会产生" +
               (d > 0 ? "逆时针" : "顺时针") +
-              "转矩。可切换到电磁原理页对照受力图，修改预测后再验证。",
+              "转矩。回到调试，打开【磁场与受力】对照受力图，修改预测后再验证。",
         "error",
       );
       studentTone(false);

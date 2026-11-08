@@ -34,7 +34,7 @@
 
   // 原页面状态里没有的操作记录
   // “只用微调键对准”：一次微调让枪口从偏离交点变成对准交点才算
-  let jogAligned = false, pausedMid = false;
+  let jogAligned = false, pausedMid = false, studyFrom = false, fullWatched = false;
   const aligned = () => { const h = hero(); return h && h.state.game.stage === 'tying' && !!h.model.alignedPoint(h.state.game); };
   const watchJog = () => { const before = aligned(); setTimeout(() => { if (!before && aligned()) jogAligned = true; }, 0); };
   document.addEventListener('click', e => { if (e.target.closest?.('[data-jog]')) watchJog(); }, true);
@@ -45,7 +45,7 @@
   }, 0));
   // 完成卡里的“再操作一次”：原页面已重置，工位回到第一站
   $('#complete-reset')?.addEventListener('click', () => setTimeout(() => {
-    jogAligned = pausedMid = false; everMarked.clear(); window.c2Lab?.select(0);
+    jogAligned = pausedMid = studyFrom = fullWatched = false; everMarked.clear(); window.c2Lab?.select(0);
   }, 0));
   const everMarked = new Set();
 
@@ -72,7 +72,7 @@
         c.challenges([
           {id: 'first', icon: '🎯', title: '亲手绑好一个点', hint: '选点 → 等稳定 → 启动', check: s => s.tied >= 1,
             result: '枪口就位、稳住不动，绑丝才能同时绕住两根钢筋。'},
-          {id: 'jog', icon: '✥', title: '只用微调键对准', hint: '先偏开，再用 ↑↓←→ 推回交点', check: () => jogAligned,
+          {id: 'jog', icon: '✥', title: '只用微调键对准', hint: '先连按两次方向键偏开（一次只走 0.05），再推回交点', check: () => jogAligned,
             result: '枪口离交点稍远一点，“启动”就不让按——对不准就不绑。'},
           {id: 'pause', icon: '⏸', title: '绑到一半暂停看看', hint: '动作中按“暂停动作”', check: () => pausedMid,
             result: '暂停时画面定格在当前动作：此时枪口仍压在交点上。'},
@@ -117,9 +117,9 @@
         const g2 = c.section('送丝受阻');
         c.adopt(EL.study.fault, g2);
         c.challenges([
-          {id: 'full', icon: '🎞', title: '完整看一次正常绑扎', hint: '正常工况，进度走到底', check: s => !s.study.fault && s.study.p >= 0.99,
+          {id: 'full', icon: '🎞', title: '完整看一次正常绑扎', hint: '正常工况，点【播放慢动作】从头看到底', check: () => fullWatched,
             result: '定位 → 就位 → 送丝 → 扭结 → 离开，绑丝先成环再收紧。'},
-          {id: 'jam', icon: '⚠', title: '让送丝卡住', hint: '切到“送丝受阻”再播放', check: s => s.study.fault && s.study.p >= 0.51,
+          {id: 'jam', icon: '⚠', title: '让送丝卡住', hint: '点【切换到送丝受阻】，再播放', check: s => s.study.fault && s.study.p >= 0.51,
             result: '送丝轮还在转，绑丝却停在导向槽里，没有绕全。'},
           {id: 'handle', icon: '🛡', title: '按顺序处置卡丝', hint: '保留异常 → 停机隔离 → 查供丝路径', check: s => s.study.inspected,
             result: '先停、再隔离、后检查；实际清障按设备说明书执行。'},
@@ -131,6 +131,10 @@
   const stateOf = () => {
     const h = hero(), s = h.state, g = s.game, m = h.model;
     if (g.busy && s.paused) pausedMid = true;
+    // “完整看一次”：正常工况下从开头附近播放，一直播到结束（拖进度条、直接点【05 离开】不算）
+    if (s.study.playing && !s.study.fault && s.study.p < 0.2) studyFrom = true;
+    if (studyFrom && !s.study.fault && s.study.p >= 0.99) fullWatched = true;
+    if (s.study.fault) studyFrom = false;
     for (const p of g.points) if (p.marked) everMarked.add(p.id);
     return {mode: s.mode, stage: g.stage, tied: m.tiedCount(g), checked: m.checkedCount(g), study: s.study, game: g, paused: s.paused};
   };
@@ -150,7 +154,7 @@
     },
     select(id) { station = id; hero()?.setMode(id); },
     poll: stateOf,
-    reset() { EL.reset?.click(); jogAligned = pausedMid = false; everMarked.clear(); },
+    reset() { EL.reset?.click(); jogAligned = pausedMid = studyFrom = fullWatched = false; everMarked.clear(); },
     build(c) {
       station = c.station.id;
       // 工位内容建好之后再追加范围说明（cfg.build 先于工位自己的 build 执行）
@@ -161,7 +165,7 @@
         const t = s.game.message || '';
         if (t && t !== lastMessage) {
           lastMessage = t;
-          c.feedback(t, /还|偏离|先|无需|不能|没有|松动|位移|标记/.test(t) && !/完成|通过/.test(t) ? 'warn' : 'info');
+          c.feedback(t, /还|偏离|先|无需|不能|没有|松动|位移|标记/.test(t) && !/完成|通过|点：先观察/.test(t) ? 'warn' : 'info');
         }
       });
     },

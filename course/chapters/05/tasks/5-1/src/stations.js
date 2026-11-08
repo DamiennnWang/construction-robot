@@ -38,9 +38,12 @@
         c.adopt([EL.carry, EL.tools], g2); keep(c, [EL.setting], g2);
         actionRow.replaceChildren(); g2.append(actionRow); c.adopt(EL.action, actionRow);
         c.challenges([
-          {id: 'straight', icon: '〰', title: '把钢筋调直', hint: '送入调直机', check: s => s.state.stock >= 1},
-          {id: 'cut', icon: '✂', title: '切出 2400 mm', hint: '先把挡块移到 2400 mm', check: s => s.state.stock >= 2},
-          {id: 'bend', icon: '↱', title: '弯出 90° 直角', hint: '转角调到 90° 再启动', check: s => s.state.stock >= 3},
+          {id: 'straight', icon: '〰', title: '把钢筋调直', hint: '送入调直机', check: s => s.state.stock >= 1,
+            result: '调直机把盘条拉直：后面切断、弯曲都要从一根直的钢筋开始。'},
+          {id: 'cut', icon: '✂', title: '切出 2400 mm', hint: '先把挡块移到 2400 mm', check: s => s.state.stock >= 2,
+            result: '定尺挡块决定下料长度：挡块对准 2400 mm，切出来的每一段都一样长。'},
+          {id: 'bend', icon: '↱', title: '弯出 90° 直角', hint: '转角调到 90° 再启动', check: s => s.state.stock >= 3,
+            result: '弯曲机按设定转角把钢筋弯成订单要的形状：转角错了，整根就要返工。'},
         ]);
       },
     },
@@ -55,10 +58,14 @@
         c.adopt(EL.carry, g3);
         actionRow.replaceChildren(); g3.append(actionRow); c.adopt(EL.action, actionRow);
         c.challenges([
-          {id: 'read', icon: '👁', title: '认清边线、柱边和交点', hint: '点这三处标记', check: s => ['slab', 'column', 'joint'].every(k => s.state.visited.includes(k))},
-          {id: 'clear', icon: '📦', title: '腾出作业面和通道', hint: '堆料、料箱搬到场外料架', check: s => s.state.game.materialMoved && s.state.game.routeCleared},
-          {id: 'guard', icon: '🚧', title: '给洞口围上护栏', hint: '拿起护栏，点洞口', check: s => s.state.game.openingGuarded},
-          {id: 'inspect', icon: '🔍', title: '完成四项样板检查', hint: '漏绑、间距、垫块、松扣', check: s => s.state.inspected.length >= 4},
+          {id: 'read', icon: '👁', title: '认清边线、柱边和交点', hint: '点这三处标记', check: s => ['slab', 'column', 'joint'].every(k => s.state.visited.includes(k)),
+            result: '边线、柱边和钢筋交点是读懂作业面的三个基准：机器人和工人都靠它们定位。'},
+          {id: 'clear', icon: '📦', title: '腾出作业面和通道', hint: '堆料、料箱搬到场外料架', check: s => s.state.game.materialMoved && s.state.game.routeCleared,
+            result: '堆料和料箱搬走后，作业面和通道都空出来了：机器人要有地方走、有地方干活。'},
+          {id: 'guard', icon: '🚧', title: '给洞口围上护栏', hint: '拿起护栏，点洞口', check: s => s.state.game.openingGuarded,
+            result: '洞口围上护栏，人和机器都不会误入：先保证安全，再开始作业。'},
+          {id: 'inspect', icon: '🔍', title: '完成四项样板检查', hint: '漏绑、间距、垫块、松扣', check: s => s.state.inspected.length >= 4,
+            result: '漏绑、间距、垫块、松扣四项都看过了：样板合格，才好大面积照着做。'},
         ]);
       },
     },
@@ -71,10 +78,14 @@
         c.adopt(EL.tools, g2);
         actionRow.replaceChildren(); g2.append(actionRow); c.adopt(EL.action, actionRow);
         c.challenges([
-          {id: 'regular', icon: '🟩', title: '规则大面', hint: '交点规则、空间开阔', check: s => s.state.game.zones.regular === 'auto'},
-          {id: 'column', icon: '🟧', title: '柱边节点', hint: '钢筋密集、工具难进', check: s => s.state.game.zones.column === 'manual'},
-          {id: 'opening', icon: '🟥', title: '洞口周边', hint: '真实缺口', check: s => s.state.game.zones.opening === 'blocked'},
-          {id: 'handoff', icon: '📋', title: '提交交接图', hint: '三处都放好后提交', check: s => s.state.finished},
+          {id: 'regular', icon: '🟩', title: '规则大面', hint: '交点规则、空间开阔', check: s => s.state.game.zones.regular === 'auto',
+            result: '规则大面交点整齐、空间开阔，适合交给机器人做。'},
+          {id: 'column', icon: '🟧', title: '柱边节点', hint: '钢筋密集、工具难进', check: s => s.state.game.zones.column === 'manual',
+            result: '柱边钢筋密、工具伸不进去，这里留给人工处理。'},
+          {id: 'opening', icon: '🟥', title: '洞口周边', hint: '真实缺口', check: s => s.state.game.zones.opening === 'blocked',
+            result: '洞口周边是真实缺口，划为禁止进入区，机器人和人都不能进。'},
+          {id: 'handoff', icon: '📋', title: '提交交接图', hint: '三处都放好后提交', check: s => s.state.finished,
+            result: '交接图提交了：哪里机器人做、哪里人工做、哪里不能进，一目了然。'},
         ]);
       },
     },

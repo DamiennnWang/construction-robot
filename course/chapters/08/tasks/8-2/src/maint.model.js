@@ -135,7 +135,8 @@
     }
     const id = s.station, st = STATIONS[id], w = s.work[id], steps = st.steps;
     const ok = m => { s.message = m; return s; };
-    const fail = (m, flag) => { if (flag) s.tried[id][flag] = true; s.error = true; s.message = m; return s; };
+    // 具体的越步（hotCoolant / raisedBucket / pressureGun）同时也记为一般的“抢步”（early）
+    const fail = (m, flag) => { if (flag) { s.tried[id][flag] = true; if (['hotCoolant', 'raisedBucket', 'pressureGun'].includes(flag)) s.tried[id].early = true; } s.error = true; s.message = m; return s; };
     const closed = () => w.verified || w.handoff;
     s.tried[id] = s.tried[id] || {};
     if (st.kind === 'flush' && event.type !== 'case') {
@@ -170,7 +171,9 @@
           const why = id === 'engine'
             ? (!w.prepared ? '发动机还在运转，不能靠近检查。' : (p === 'coolant' && !w.energy) ? '机体还烫，冷却系统带压，现在拧开冷却液盖会喷出热液。' : '先完成停机、隔离和冷却，再动手检查。')
             : (!w.prepared ? '铲斗还悬在空中，人不能进到工作装置下面。' : '先完成隔离和泄压，再靠近工作装置。');
-          return fail(why, 'early');
+          // 卡片“还烫就开冷却液盖？”“铲斗悬空就去加注？”各有自己的标记，别的越步不算
+          const flag = id === 'engine' ? (w.prepared && p === 'coolant' && !w.energy ? 'hotCoolant' : 'early') : (!w.prepared ? 'raisedBucket' : 'early');
+          return fail(why, flag);
         }
         w.checked[p] = true;
         const f = finding(id, w.scenario, p);
@@ -243,7 +246,7 @@
   /* —— 喷涂管路清洗：停喷 → 断电挂牌 → 锁枪泄压 → 选清洗液、吸料管换桶 → 低压循环冲洗（看样杯）→ 再断电泄压 → 拆洗三件 → 保护液/排空 → 废液进回收桶 —— */
   function spray(s, w, e, ok, fail) {
     const st = STATIONS.spray, need = SPRAY.liquid[w.scenario];
-    const injury = () => fail('压力表没回零就拆，高压涂料会从缝隙射出、扎进皮肤，造成高压注射伤。先锁枪泄压，压力回零再拆。', 'early');
+    const injury = () => fail('压力表没回零就拆，高压涂料会从缝隙射出、扎进皮肤，造成高压注射伤。先锁枪泄压，压力回零再拆。', 'pressureGun');
     const point = e.type === 'spot' ? e.point : e.point;
     switch (e.type === 'spot' ? ({relief: 'energy', pipe: 'suction'}[point] || 'part') : e.type) {
       case 'prepare':

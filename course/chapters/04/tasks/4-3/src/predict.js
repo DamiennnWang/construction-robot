@@ -6,7 +6,7 @@
   const queryThreshold = new URLSearchParams(location.search).get('threshold');
   const parsedThreshold = queryThreshold === null || queryThreshold.trim() === '' ? .25 : Number(queryThreshold);
   const state = {threshold: Number.isFinite(parsedThreshold) && parsedThreshold >= 0 && parsedThreshold <= 1 ? Math.round(parsedThreshold * 100) / 100 : .25, showFiltered: false, selectedId: null, answer: null};
-  const className = cls => cls === 0 ? '已戴安全帽' : '未戴安全帽';
+  const className = cls => cls === 0 ? '戴安全帽' : '未戴安全帽';
   const sortedCandidates = () => [...candidates].sort((a, b) => b.score - a.score);
   function render() {
     const focused = document.activeElement;

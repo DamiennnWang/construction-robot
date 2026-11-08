@@ -182,7 +182,11 @@
   }
   function exportRecord() {
     if(state.stage!=='deliver')return;
-    const s=summary();const rows=[['室内喷涂工坊 · 教学作业记录'],['墙面','WALL A 3600 × 2400 mm'],['完成时间',new Date().toLocaleString('zh-CN')],['道间距 mm',state.params.spacing],['喷距 mm',state.params.distance],['设定速度 mm/s',state.params.speed],['洞口保护',state.params.guard],['流量同步',state.params.compensate?'是':'否'],['已喷覆盖 %',fmt(s.coverage)],['窗面污染 %',fmt(s.pollution)],['涂层厚薄合适 %',fmt(s.uniformity)],['范围说明','教学示意模型，不代表实际漆膜厚度与工程验收'],[],['时间','操作','详情'],...logs.map(l=>[l.time,l.action,l.detail])];
+    // 导出给学生看的表格：参数名、选项都用页面上的中文
+    const GUARD_CN={footprint:'完整喷幅避让',center:'只按喷嘴中心',off:'不停喷 · 观察污染'};
+    const KEY_CN={spacing:['道间距','mm'],distance:['喷距','mm'],speed:['速度','mm/s'],guard:['洞口保护',''],compensate:['流量随速度调整',''],slow:['起收段减速','']};
+    const detailCN=d=>{let o=d;if(typeof d==='string'&&/^\s*\{/.test(d)){try{o=JSON.parse(d)}catch{return d}}if(!o||typeof o!=='object')return d;return Object.entries(o).map(([k,v])=>{const [n,u]=KEY_CN[k]||[k,''];const val=k==='guard'?(GUARD_CN[v]||v):typeof v==='boolean'?(v?'是':'否'):v;return n+' '+val+(u?' '+u:'')}).join('；')};
+    const s=summary();const rows=[['室内喷涂工坊 · 教学作业记录'],['墙面','WALL A 3600 × 2400 mm'],['完成时间',new Date().toLocaleString('zh-CN')],['道间距 mm',state.params.spacing],['喷距 mm',state.params.distance],['设定速度 mm/s',state.params.speed],['洞口保护',GUARD_CN[state.params.guard]||state.params.guard],['流量同步',state.params.compensate?'是':'否'],['已喷覆盖 %',fmt(s.coverage)],['窗面污染 %',fmt(s.pollution)],['涂层厚薄合适 %',fmt(s.uniformity)],['范围说明','教学示意模型，不代表实际漆膜厚度与工程验收'],[],['时间','操作','详情'],...logs.map(l=>[l.time,l.action,detailCN(l.detail)])];
     rows.push([],['返修编号','X mm','高度 mm','处理内容','处理网格数'],...state.run.repairs.map(a=>[a.id,a.x,a.z,a.label,a.changed]));
     const csv='\uFEFF'+rows.map(row=>row.map(v=>'"'+String(v).replace(/"/g,'""')+'"').join(',')).join('\r\n');
     const url=URL.createObjectURL(new Blob([csv],{type:'text/csv;charset=utf-8'}));const a=document.createElement('a');a.href=url;a.download='WALL-A_喷涂项目作业记录.csv';a.click();setTimeout(()=>URL.revokeObjectURL(url),1000);toast('作业记录已导出。');

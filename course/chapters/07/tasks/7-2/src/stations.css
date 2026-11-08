@@ -21,7 +21,8 @@ html.lab-native .scene-card:not([data-c7-station="capture"]) .c7-viewfinder,
 html.lab-native .scene-card:not([data-c7-station="review"]) .c7-photo,
 html.lab-native .scene-card:not([data-c7-station="report"]) .c7-ledger { display:none !important; }
 html.lab-native .c7-viewfinder { right:12px; top:12px; width:min(330px, 38%); background:#bdbbb4; }
-html.lab-native .c7-photo { right:12px; top:50%; transform:translateY(-50%); width:min(600px, 58%, calc((100% - 60px) * 5 / 3)); background:#bdbbb4; }
+/* 复核照片在三维区里上下居中（别处的 top 规则会覆盖 top:50%，所以不用位移居中，改用上下 0 + 自动外边距） */
+html.lab-native .scene-card .c7-photo { right:12px; top:0 !important; bottom:0 !important; margin:auto 0 !important; height:fit-content; max-height:calc(100% - 24px); transform:none !important; width:min(600px, 58%, calc((100% - 60px) * 5 / 3)); background:#bdbbb4; }
 html.lab-native .c7-photo canvas { aspect-ratio:5 / 3 !important; cursor:crosshair; }
 html.lab-native .c7-overlay .image-stamp { font-size:11px; padding:5px 10px; background:rgba(16,32,52,.72); }
 html.lab-native .c7-ledger { right:12px; top:12px; width:min(620px, 62%); padding:10px 14px 8px; border-bottom:1px solid var(--hair); }
@@ -177,3 +178,6 @@ html.lab-native .c7-hw-body td:nth-child(2) { font-weight:800; color:var(--cours
 
 /* 右上角的取景画面、记录表让出全屏按钮 */
 html.lab-native .scene-card :is(.preview-frame, .evidence-ledger) { top:56px; }
+
+/* 交付记录：证据台账在三维区右上角，外壳提示条改到三维区底部，不压台账表头 */
+html.lab-native .c2-view:has(.scene-card[data-c7-station="report"]) .c2-feedback { top:auto; bottom:14px; }

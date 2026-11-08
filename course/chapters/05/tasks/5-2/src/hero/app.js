@@ -126,7 +126,7 @@
    text('study-headline',c.jammed?'轮子在转，绑丝却没有绕全':c.phase===2?'送丝轮推动，导向槽带路':c.phase===3?'成环后收紧，再形成绑扣':'枪口就位，给绑丝留出完整路径');
    if($('study-progress')&&document.activeElement!==$('study-progress'))$('study-progress').value=Math.round(s.p*1000);
    text('study-play',reduced.matches?'向前一步':s.playing?'暂停观察':'播放慢动作');
-   text('fault-toggle',s.fault?'工况：送丝受阻':'工况：正常送丝');$('fault-toggle')?.setAttribute('aria-pressed',s.fault);
+   text('fault-toggle',s.fault?'切换回正常送丝':'切换到送丝受阻');$('fault-toggle')?.setAttribute('aria-pressed',s.fault);
    show('fault-actions',s.fault);disable('mark-fault',!c.jammed||s.marked);disable('isolate-fault',!s.marked||s.isolated);disable('inspect-fault',!s.isolated);
    all('[data-phase]').forEach(b=>{b.classList.toggle('active',Number(b.dataset.phase)===c.phase);b.setAttribute('aria-pressed',Number(b.dataset.phase)===c.phase)});
    if(!ready)all('#tie-panel button,#review-panel button,#study-panel button,#study-panel input').forEach(b=>b.disabled=true);

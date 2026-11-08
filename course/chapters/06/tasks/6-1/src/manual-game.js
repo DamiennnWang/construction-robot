@@ -10,7 +10,7 @@
   class ManualGame {
     constructor(root, { onChange = () => {}, onComplete = () => {} } = {}) {
       this.root = root; this.onChange = onChange; this.onComplete = onComplete;
-      this.lesson = 0; this.completed = [false, false, false]; this.orientationStep = 0;
+      this.lesson = 0; this.completed = [false, false, false]; this.passed = [false, false, false]; this.orientationStep = 0;
       this.kind = 'header'; this.width = 240; this.placed = []; this.slot = 'slot-0';
       this.offset = 0; this.mortar = 14; this.sameBond = false; this.feedback = '';
       this.feedbackTone = ''; this.boundClick = e => this.click(e); this.boundInput = e => this.input(e);
@@ -52,7 +52,7 @@
       return { ...scene, lesson: this.lesson, completed: [...this.completed], orientationStep: this.orientationStep,
         orientation: this.kind, placedCount: this.placed.length, selectedSlot: this.slot,
         offset: this.offset, mortar: this.mortar, sameBond: this.sameBond, feedback: this.feedback,
-        progress: this.completed.filter(Boolean).length, model: 'standard-brick-mm' };
+        progress: this.passed.filter(Boolean).length, model: 'standard-brick-mm' };
     }
     reset() {
       this.feedback = ''; this.feedbackTone = '';
@@ -63,7 +63,7 @@
     }
     finish(message) {
       const fresh = !this.completed[this.lesson];
-      this.completed[this.lesson] = true; this.feedback = message; this.feedbackTone = 'success';
+      this.completed[this.lesson] = true; this.passed[this.lesson] = true; this.feedback = message; this.feedbackTone = 'success';
       if (fresh) this.onComplete({ lesson: this.lesson, completed: [...this.completed] });
     }
     invalidate(lesson) {
@@ -144,7 +144,7 @@
         if (badge) badge.textContent = this.completed[i] ? '✓' : String(i + 1);
       });
       const progress = this.root.querySelector('[data-game-progress-count]');
-      if (progress) progress.textContent = `已完成 ${this.completed.filter(Boolean).length} / 3 关`;
+      if (progress) progress.textContent = `已完成 ${this.passed.filter(Boolean).length} / 3 关`;
       const note = this.root.querySelector('[data-game-feedback]');
       if (note) { note.textContent = this.feedback || this.defaultFeedback(); note.dataset.tone = this.feedbackTone; }
       const stats = this.root.querySelector('[data-game-stats]');

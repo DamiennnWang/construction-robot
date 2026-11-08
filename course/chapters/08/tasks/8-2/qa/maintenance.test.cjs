@@ -15,7 +15,7 @@ test('四个工位共用同一条流程：准备 → 隔离 → 能量确认，�
 
 test('发动机还烫时开冷却液盖被拦下，并记为“抢步”尝试', () => {
   let s = run(at('engine'), 'prepare', 'isolate', {type: 'inspect', point: 'coolant'});
-  assert(s.error); assert(!s.work.engine.checked.coolant); assert(s.tried.engine.early);
+  assert(s.error); assert(!s.work.engine.checked.coolant); assert(s.tried.engine.early); assert(s.tried.engine.hotCoolant);
   assert(s.work.engine.temp > M.SAFE_TEMP);
   s = run(s, 'energy'); assert(s.work.engine.temp <= M.SAFE_TEMP);
   s = run(s, {type: 'inspect', point: 'coolant'}); assert(!s.error); assert(s.work.engine.checked.coolant);
@@ -23,7 +23,7 @@ test('发动机还烫时开冷却液盖被拦下，并记为“抢步”尝试',
 
 test('挖掘机铲斗未落地就去检查铰点被拦下', () => {
   const s = run(at('excavator'), {type: 'inspect', point: 'bucketPin'});
-  assert(s.error); assert(s.tried.excavator.early); assert(!s.work.excavator.checked.bucketPin);
+  assert(s.error); assert(s.tried.excavator.early); assert(s.tried.excavator.raisedBucket); assert(!s.work.excavator.checked.bucketPin);
 });
 
 test('正常案例：检查全部点、核对资料、用指定材料处理后才能复查', () => {
@@ -83,7 +83,7 @@ const cleanParts = s => run(s, ...M.STATIONS.spray.points.flatMap(([point]) => [
 
 test('喷涂：压力没回零就拆枪被拦下（高压注射伤），记为抢步', () => {
   let s = run(at('spray', 'water'), 'prepare', 'isolate', {type: 'part', point: 'nozzle'});
-  assert(s.error); assert(/高压注射伤/.test(s.message)); assert(s.tried.spray.early); assert(!s.work.spray.checked.nozzle);
+  assert(s.error); assert(/高压注射伤/.test(s.message)); assert(s.tried.spray.early); assert(s.tried.spray.pressureGun); assert(!s.work.spray.checked.nozzle);
   assert(s.work.spray.pressure > 0);
   s = run(s, 'energy'); assert.equal(s.work.spray.pressure, 0);
 });

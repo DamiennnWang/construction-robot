@@ -23,6 +23,10 @@
   $('#compareTool')?.addEventListener('click', () => { flags.tool = true; });
   $('#rotateTCP')?.addEventListener('click', () => { flags.rotate = true; });
   $('#play')?.addEventListener('click', () => { flags.played = true; });
+  // “用工具坐标点动”：学生自己在工具坐标下按 −/+ 或拖滑轨才算（对照按钮切到工具坐标不算）
+  const markToolJog = e => { if (e.target.closest?.('#jogRows') && lab()?.getState().frame === 'tool') flags.toolJog = true; };
+  document.addEventListener('pointerdown', markToolJog, true);
+  document.addEventListener('input', markToolJog, true);
 
   /* 示教器放在三维区底栏，像真的示教器一样分三块：
    * 左：六个轴，每个都有滑轨和 −/+ 点动；
@@ -59,7 +63,7 @@
             result: '基坐标固定在底座上，+Z 永远竖直向上。'},
           {id: 'tool', icon: '↗', title: '沿工具 +Z 走一次', hint: '按“沿工具 +Z 走 40 mm”', check: () => flags.tool,
             result: '工具坐标跟着工具走，工具斜着，+Z 就斜着。'},
-          {id: 'toolFrame', icon: '🧭', title: '用工具坐标点动', hint: '参照系选“工具坐标”', check: s => s.frame === 'tool' && s.moved,
+          {id: 'toolFrame', icon: '🧭', title: '用工具坐标点动', hint: '参照系选【工具坐标】，再按 −/+ 点动', check: s => flags.toolJog && s.frame === 'tool' && s.moved,
             result: '对准工件时用工具坐标更顺手：前后左右都按工具自己的方向。'},
           {id: 'rotate', icon: '🔄', title: '工具点不动，只改朝向', hint: '试“保持 TCP 改朝向”', check: () => flags.rotate,
             result: '六个关节一起配合，可以只改工具朝向，而工作点停在原处。'},

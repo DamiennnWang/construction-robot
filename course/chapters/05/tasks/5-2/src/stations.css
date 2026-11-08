@@ -102,3 +102,9 @@ html.lab-native .c2-panel .c52-scope { margin:2px 0 0; padding-top:10px; border-
 
 /* 看法按钮放到三维区左上角（右上角是全屏按钮） */
 html.lab-native #scene-shell .scene-top { justify-content:flex-start; right:60px; }
+
+/* 5-2：三维区左下角的状态条加底色，镜头靠近模型时也看得清 */
+html.lab-native .scene-bottom .scene-state {
+  background:var(--stage-chip, rgba(255,255,255,.88)); border:1px solid var(--stage-chip-line, rgba(0,0,0,.08));
+  border-radius:999px; padding:4px 12px; backdrop-filter:blur(6px); color:var(--course-ink, #193550);
+}

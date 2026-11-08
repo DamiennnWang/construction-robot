@@ -32,3 +32,9 @@ html.lab-native .stage .scene-compass { right:60px; }
 
 /* 选中的底盘卡片：副标题用正常的次要文字色（原来是浅色字压在浅蓝底上，看不见） */
 .c2-stage-top .platform-picker button.active small { color:var(--course-muted) !important; }
+
+/* 3-5：过关弹窗挪到右上角并缩小，过关时仍能看到小车停在泊位里 */
+html.lab-native .finish-card { left:auto !important; right:14px; top:14px !important; transform:none !important; width:min(260px,40%) !important; padding:14px 16px !important; }
+html.lab-native .finish-card > span { font-size:22px !important; }
+html.lab-native .finish-card h2 { font-size:18px !important; margin:6px 0 !important; }
+html.lab-native .finish-card p { margin-bottom:10px !important; }

@@ -5,7 +5,7 @@ export const CASES={
  slope:{number:'01',name:'坡面停驻',hint:'倾斜了，数据怎样变？',title:'停在斜面上，为什么还有加速度读数？',lead:'调节坡角，观察倾角与三轴读数。',initial:5,baseline:{tilt:0},baselineName:'平地 0°',phases:[['平地静止',.5],['缓慢倾斜',2],['坡面保持',5]],context:'坡道停靠、作业平台调平',note:'慢慢调坡的教学示例，忽略调坡时的运动加速度；车身斜了多少，由含重力的三轴读数算出。'},
  drive:{number:'02',name:'起步与制动',hint:'正在前进，加速度一定大吗？',title:'同样在前进，起步、匀速和制动的数据不同。',lead:'从起步看到停车，区分速度和加速度。',initial:2,baseline:{speed:.4},baselineName:'最高速度 0.40 m/s',phases:[['起步',2],['匀速',4],['制动',6],['停稳',7.5]],context:'施工通道行走、靠近作业点停车',note:'起步—匀速—制动的简化教学过程。速度和走了多远由模型给出；加速度已去掉重力的影响。'},
  bump:{number:'03',name:'路面颠簸',hint:'路面起伏，曲线怎样波动？',title:'把路面起伏和加速度波形对上。',lead:'保持同一车速，只改变路面起伏程度。',initial:3.35,baseline:{roughness:1},baselineName:'轻微起伏',phases:[['进入前',1],['进入起伏',2.5],['颠簸中',3.35],['离开后',6.5]],context:'楼板通道、路面接缝附近的行走观察',note:'车速固定0.40 m/s，2–6秒经过起伏段。只让车身中心随路面上下动，不模拟减振和每个轮子；上下起伏放大8倍显示，读数不放大。'},
- turn:{number:'04',name:'原地转向',hint:'转得快，转过的角度就大吗？',title:'都转90°，快转和慢转会留下不同曲线。',lead:'对照转动快慢，留意停转后的方向。',initial:2.5,baseline:{turnDuration:4},baselineName:'慢转 4秒',phases:[['转向前',.5],['转向中',2.5],['停转后',6]],context:'施工通道转向、调整作业朝向',note:'角速度用°/s表示转得多快；一共转了多少从起始方向算起。为突出转向关系，忽略传感器误差和振动。'}
+ turn:{number:'04',name:'原地转向',hint:'转得快，转过的角度就大吗？',title:'都转90°，快转和慢转会留下不同曲线。',lead:'对照转动快慢，留意停转后的方向。',initial:2.5,baseline:{turnDuration:4},baselineName:'慢转 4秒',phases:[['转向前',.5],['转向中',3],['停转后',6]],context:'施工通道转向、调整作业朝向',note:'角速度用°/s表示转得多快；一共转了多少从起始方向算起。为突出转向关系，忽略传感器误差和振动。'}
 };
 export const DEFAULT={case:'slope',time:5,tilt:12,tiltAxis:'pitch',speed:.4,roughness:1,turnDuration:4,gravity:true,compare:false,theme:'light',playing:false,axes:true,rate:1};
 export function roadAt(x,roughness=1){
