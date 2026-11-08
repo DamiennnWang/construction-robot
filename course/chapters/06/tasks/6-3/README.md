@@ -53,7 +53,7 @@ node qa/hero-check.mjs
 node qa/hero-geometry.mjs
 ```
 
-Hero 检查覆盖真实相机拖转／缩放、镜头切换、关节运动、随动软管端点、四关游戏、深浅主题、减少动态效果、备用视图、记录导出以及 1280×720、1920×1080、390×844 布局。详见 [Hero 浏览器检查记录](./qa/hero-check-record.md)、[实体与特写检查](./qa/hero-geometry-record.md) 和 [检查入口说明](./qa/hero-check-README.md)。
+Hero 检查覆盖真实相机拖转／缩放、镜头切换、关节运动、随动软管端点、四关游戏、深浅主题、减少动态效果、备用视图、记录导出以及 1280×720、1920×1080、390×844 布局。
 
 本版是 Three.js 实体网格，以深度缓冲完成遮挡；构建的 `--audit` 会提示对应检查入口。旧 SVG 的 `geometry.mjs`、`service-geometry.mjs`、`qa/poses.mjs` 和历史 SVG 审计记录保留作来源，不能据此声称当前三维网格通过了 SVG 几何审计。
 

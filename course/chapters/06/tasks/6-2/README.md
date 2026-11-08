@@ -40,8 +40,8 @@ node qa/hero-geometry-check.mjs
 - 统一任务页外壳：`src/stations.js`（三个工位：吸牢再提起 / 看清再对缝 / 压稳再复核，各 4 张“试一试”）与 `src/stations.css`；`build.mjs` 生成原页面后调用 `labShell(html, '6-2')`，有 `stations.js` 时不再套第六章原版式（`chapter-layout.mjs`）。
 - 操作模型：`src/game.model.mjs`，基础公式：`src/model.mjs`。
 - 场景与机械结构：`src/scene3d.js`、`src/robot3d.js`；[建模说明](./src/scene-plan.md)。
-- 当前验证：[三维重做检查记录](./qa/hero-review.md)。`qa/hero-*-actions.json` 可用 anatomy 的 `drive.mjs` 执行。
-- `src/app.js`、`page.html`、`style.css`、`geometry.mjs` 及 `qa/game-review.md` 等保留为旧版记录，不参与当前 HTML 构建。旧版状态测试只证明其自身逻辑，不能代替新版浏览器检查。
+- `qa/hero-*-actions.json` 可用 anatomy 的 `drive.mjs` 执行。
+- `src/app.js`、`page.html`、`style.css`、`geometry.mjs` 等保留为旧版记录，不参与当前 HTML 构建。旧版状态测试只证明其自身逻辑，不能代替新版浏览器检查。
 
 Three.js 场景使用深度缓冲。anatomy 的 SVG 绘制顺序或纹理线审计不适用于它；当前几何脚本检查关节闭合、吸盘接触与剖面位置，未声称完成全网格碰撞验证。
 

@@ -53,4 +53,4 @@ node "course/chapters/06/tasks/6-1/qa/rebuild/browser-check.mjs"
 
 造型遵循Anatomy的实体部件、四向明暗、真实支承、细节、单一运动重点及克制运动原则。考虑整台设备与砖墙的自由视角，主渲染器沿本仓库既有三维页面采用本地Three.js深度缓冲渲染；不把它描述成Anatomy beta turn引擎，也不将模型和浏览器测试宣称为SVG recorder或turn全几何审计。
 
-当前检查记录见[qa/rebuild](qa/rebuild/)，部件与几何说明见[scene-parts.md](./qa/scene-parts.md)。旧版`src/geometry.mjs`、`src/model.mjs`、`src/order.mjs`及旧版QA留存作历史参考，不参与当前构建。修改前页面另已保留本地副本。
+检查脚本见[qa/rebuild](qa/rebuild/)。旧版`src/geometry.mjs`、`src/model.mjs`、`src/order.mjs`及旧版QA留存作历史参考，不参与当前构建。修改前页面另已保留本地副本。

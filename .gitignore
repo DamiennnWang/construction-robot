@@ -120,10 +120,6 @@ $RECYCLE.BIN/
 
 # 部署工具的本地缓存与登录信息
 .wrangler/
-.edgeone/
+/.playwright-cli/
 
-# Tencent Cloud EdgeOne
-.env
-.edgeone/*
-.tef_dist/*
   

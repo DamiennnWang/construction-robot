@@ -53,7 +53,6 @@ node course/chapters/07/tasks/7-1/qa/robot-selection-parts.mjs
 
 浏览器脚本使用已安装的 Playwright 和本地 Edge/Chrome，不联网下载依赖。截图和导出样本写入 qa/rebuild-artifacts。
 
-实际执行范围见 [重建检查记录](./qa/重建检查记录-2026-10-23.md)。
 
 本页使用 Three.js 深度缓冲渲染。anatomy 用于实体构造、动作同源、细节审视和实际截图验证；SVG几何与线端审计不适用于本页，不宣称通过该审计。
 

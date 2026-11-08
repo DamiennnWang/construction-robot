@@ -7,7 +7,7 @@
 | 线路 | 网址 | 说明 |
 |---|---|---|
 | 国外 | **<https://construction-robotics.644019085.workers.dev>** | Cloudflare Workers，执行 `npm run deploy` 时自动更新 |
-| 国内 | **<https://artidrop.ai/a/grgIMfRCVJ>** | Artidrop，手动上传 `artifacts/packages/course.zip` |
+| 国内 | **<https://xemxwwheozbw.sealosbja.site/course/home/index.html>** | Sealos 托管 |
 
 本地打开：**[课程首页](course/home/index.html)** · [任务清单](course/catalog.json) · [AI 操作协议](AGENTS.md)
 
@@ -82,7 +82,7 @@ npm run package                     # 网站写入 artifacts/site，ZIP 写入 a
 npm run serve                       # 从仓库根目录提供 HTTP 预览
 npm run preview                     # 只预览已打包的网站
 npm run build:models                # 更新共享机器人离线资源（含机械手）
-npm run deploy -- cf                # 打包并发布到 Cloudflare（国外线路）
+npm run deploy                      # 打包并发布到 Cloudflare（国外线路）
 ```
 
 在 Windows PowerShell 中如 npm.ps1 被执行策略拦截，可使用 `npm.cmd`，或直接执行 scripts/ 中相应的 Node/Python 命令。
@@ -97,8 +97,8 @@ npm run deploy -- cf                # 打包并发布到 Cloudflare（国外线�
 ## 发布
 
 1. `npm run package`：打包网站，写入 `artifacts/site/` 和 `artifacts/packages/course.zip`。网站入口是包根目录的 `index.html`；公共资源依靠相对路径加载，必须保持目录结构。
-2. 国外线路：`npm run deploy -- cf` 会重新打包并发布到 Cloudflare。首次使用前执行一次 `npx wrangler login`。
-3. 国内线路：把 `artifacts/packages/course.zip` 上传到 Artidrop。`npm run deploy -- eo` 可发布到腾讯云 EdgeOne Makers，但目前腾讯云接口在上传环节报 `Project is not exist`，暂时无法使用。
+2. 国外线路：`npm run deploy` 会重新打包并发布到 Cloudflare。首次使用前执行一次 `npx wrangler login`。
+3. 国内线路：把 `artifacts/site/` 的内容更新到 Sealos，访问地址 <https://xemxwwheozbw.sealosbja.site/course/home/index.html>。
 
 本轮整理保留了教学内容与证据边界：任务导读、数字仿真和现场结果的含义不因目录调整而改变。
 
