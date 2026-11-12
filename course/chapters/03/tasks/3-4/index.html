@@ -912,6 +912,12 @@ html.lab-native :is(.stage, .c2-stage-top) :is(.stage-bar .mono, #figureName, .s
 html.lab-native .stage .stage-caption { display:none !important; } /* 只剩重复的操作提示和“三维教学模型”字样 */
 html.lab-native .stage .stage-bar { justify-content:flex-start; }
 html.lab-native .stage .view-controls button { font-size:13px; padding:4px 10px; }
+
+/* 3-4 理解 TCP：“绕法兰转 / 绕 TCP 转”两行字（名称 + 小字说明），按钮随内容长高，不再溢出 */
+html.lab-native .c2-panel .pivot-switch > button {
+  height:auto !important; min-height:50px; padding:6px 6px !important; line-height:1.3 !important; white-space:normal !important;
+}
+html.lab-native .c2-panel .pivot-switch > button small { margin-top:3px; line-height:1.25; }
 </style><script data-course-navigation src="../../../../../shared/navigation.js"></script><link data-course-theme rel="stylesheet" href="../../../../../shared/styles/theme.css"><script data-course-theme src="../../../../../shared/theme.js"></script></head>
 <body>
 <header class="topbar">
