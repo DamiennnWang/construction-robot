@@ -1,11 +1,11 @@
-"""把打包好的网站（artifacts/site）同步到 Sealos 国内线路。
+"""把打包好的网站（artifacts/site）同步到线上（Sealos）。
 
-国内线路是 Sealos 上的一个 nginx，转发到对象存储桶；更新网站 = 把文件传进这个桶。
+线上站点是 Sealos 上的一个 nginx，转发到对象存储桶；更新网站 = 把文件传进这个桶。
 本脚本只用 Python 标准库：读 kubeconfig → 向 Kubernetes 接口取对象存储的访问密钥 →
 用 S3 签名（SigV4）上传。只传有变化的文件（本地 MD5 与远端 ETag 比较），跳过视频。
 令牌和密钥只在内存里使用，不打印、不写盘。
 
-用法（一般经由 npm run deploy -- sealos 调用，先打包再同步）：
+用法（一般经由 npm run deploy 调用，先打包再同步）：
   python3 scripts/deploy-sealos.py            同步
   python3 scripts/deploy-sealos.py --dry-run  只列出要上传的文件
 kubeconfig 位置：环境变量 SEALOS_KUBECONFIG，默认 ~/Desktop/kubeconfig（Sealos 控制台下载，放在仓库外，不要提交）。

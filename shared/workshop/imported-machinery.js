@@ -83,7 +83,10 @@
    }
    if(id==='crane'){
     if(/^Mast|continuous mast|angled base|base cross|base side|concrete base/i.test(n))return 'mast';
-    if(/hook|hoist fall|travelling trolley|Trolley retained/.test(n))return 'hook';
+    // 小车、钢丝绳、吊钩分开：吊钩能升降，钢丝绳跟着伸缩，小车不动
+    if(/hoist fall/.test(n))return 'rope';
+    if(/travelling trolley|Trolley retained/.test(n))return 'trolley';
+    if(/hook/.test(n))return 'hook';
     if(/Counterjib|counterweight/.test(n))return 'counter';
     if(/operator cabin/.test(n))return 'cab';return 'jib';
    }
@@ -140,7 +143,7 @@
    const anchor=new T.Object3D(),host=members[0];body.updateMatrixWorld(true);anchor.position.copy(host.worldToLocal(bounds.getCenter(V())));host.add(anchor);
    members.forEach(g=>g.userData.partId=key);parts.push({id:key,label,node:anchor,members,description:PART_ROLE[label]||label+'。'});
   }
-  function control(key,label,min,max){controls.push({id:key,label,min,max,step:1,default:0});state[key]=0;}
+  function control(key,label,min,max,unit='°'){controls.push({id:key,label,min,max,step:1,default:0,unit});state[key]=0;}
   // A cylinder keeps its original barrel/rod lengths: only angle and insertion change.
   // Both ends are explicit pins, so the actuator stays connected throughout the motion.
   // parent/origin: the cylinder may ride on a moving member; points are then given in that
@@ -199,8 +202,8 @@
    control('lift','工作臂举升',0,24);control('bucket','铲斗收拢',0,24);animate=()=>{arms.rotation.z=rad(state.lift);bucket.rotation.z=rad(state.bucket);};
    part('wheels','轮胎与轮毂');part('body','铰接车架与动力舱');part('cab','驾驶室');part('arms','举升臂');part('bucket','铲斗与斗齿');part('hydraulics','工作液压缸',['ram1Barrel','ram1Rod','ram-1Barrel','ram-1Rod','tiltBarrel','tiltRod']);
   }else{
-   const yaw=pivot(body,namedCenter('Tower slew bearing housing'),['jib','counter','cab','hook']);control('slew','起重臂回转',-55,55);animate=()=>{yaw.rotation.y=rad(state.slew);};
-   part('mast','底座与标准节塔身');part('jib','起重臂与回转平台');part('counter','平衡臂与配重');part('cab','操作室');part('hook','小车、钢丝绳与吊钩');
+   const yaw=pivot(body,namedCenter('Tower slew bearing housing'),['jib','counter','cab','trolley','rope','hook']);/* 吊钩升降：钢丝绳绕顶端伸长，吊钩跟着下放；最低放到离地面约一成塔高 */body.updateMatrixWorld(true);const ropeBox=new T.Box3().setFromObject(group('rope')),hookBox=new T.Box3().setFromObject(group('hook')),groundY=new T.Box3().setFromObject(group('mast')).min.y;const ropeTop=yaw.worldToLocal(new T.Vector3((ropeBox.min.x+ropeBox.max.x)/2,ropeBox.max.y,(ropeBox.min.z+ropeBox.max.z)/2)),ropeLen=Math.max(1e-6,ropeBox.max.y-ropeBox.min.y);const ropePivot=pivot(yaw,ropeTop,['rope']),hookNode=group('hook'),hookY0=hookNode.position.y,maxDrop=Math.max(0,(hookBox.min.y-groundY)*.82);control('slew','起重臂回转',-55,55);control('hoist','吊钩下放',0,100,'%');animate=()=>{yaw.rotation.y=rad(state.slew);const d=maxDrop*Math.max(0,Math.min(100,state.hoist))/100;hookNode.position.y=hookY0-d;ropePivot.scale.y=(ropeLen+d)/ropeLen;};
+   part('mast','底座与标准节塔身');part('jib','起重臂与回转平台');part('counter','平衡臂与配重');part('cab','操作室');part('hook','小车、钢丝绳与吊钩',['trolley','rope','hook'],['hook']);
   }
   body.updateMatrixWorld(true);const bounds=new T.Box3().setFromObject(body),size=bounds.getSize(V()),scale=5/Math.max(size.x,size.y,size.z),mid=bounds.getCenter(V());
   root.scale.setScalar(scale);root.position.set(-mid.x*scale,-bounds.min.y*scale,-mid.z*scale);
@@ -217,7 +220,7 @@
     if(spread)for(const [key,g]of groups)g.position.addScaledVector(offsets.get(key),spread);
     root.updateMatrixWorld(true);
    },
-   readings:()=>controls.map(c=>({id:c.id,value:state[c.id],unit:'°'})),
+   readings:()=>controls.map(c=>({id:c.id,value:state[c.id],unit:c.unit||'°'})),
    dispose(){if(disposed)return;disposed=true;geometries.forEach(g=>g.dispose());materials.forEach(m=>m.dispose());textures.forEach(t=>{t.source?.data?.close?.();t.dispose();});}
   };
   model.pose(0);return model;

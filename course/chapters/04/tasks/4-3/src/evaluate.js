@@ -22,19 +22,28 @@
     const selectedPrediction = state.selection?.type === 'prediction' ? result.predictions.find(p => p.id === state.selection.id) : null;
     const selectedTruth = state.selection?.type === 'truth' ? state.selection.id : selectedPrediction?.matchedId;
     let markup = `<image href="${imageURI(asset.svg)}" x="0" y="0" width="${asset.width}" height="${asset.height}"/>`;
+    /* 图上标签互相避让：依次试几个候选位置，压住已放好的标签就换下一个，都不行再往下错开 */
+    const placed = [];
+    const place = (x, w, h, cands) => {
+      const hit = (y) => placed.some(r => x < r.x + r.w && x + w > r.x && y < r.y + r.h && y + h > r.y);
+      const ok = y => y >= 0 && y + h <= asset.height;
+      let y = cands.find(c => ok(c) && !hit(c));
+      if (y == null) { y = cands.find(ok) ?? 0; for (let k = 0; k < 8 && hit(y); k++) y = Math.min(asset.height - h, y + h + 2); }
+      placed.push({x, y, w, h}); return y;
+    };
     if (state.showTruth) markup += truths.map(truth => {
       const [x1, y1, x2, y2] = truth.bbox;
       const missed = result.missed.some(item => item.id === truth.id);
       const selected = selectedTruth === truth.id;
-      const labelY = y2 + 4 <= asset.height - 22 ? y2 + 4 : y1 - 24;
+      const labelY = place(Math.min(x1, asset.width - 125), 125, 21, [y2 + 4, y1 - 24, y2 + 27]);
       return `<g data-evaluation-truth="${esc(truth.id)}" class="truth-box ${missed && !state.blind ? 'is-missed' : ''} ${selected ? 'is-selected' : ''}" tabindex="0" role="button" aria-label="人工真值 ${esc(truth.id)} ${className(truth.cls)}"><rect class="truth-bounds" x="${x1}" y="${y1}" width="${x2-x1}" height="${y2-y1}" rx="2"/><rect class="truth-label-bg" x="${Math.min(x1, asset.width - 125)}" y="${labelY}" width="125" height="21" rx="4"/><text class="truth-box-label" x="${Math.min(x1, asset.width - 125)+6}" y="${labelY+15}">${esc(truth.id)} 真值 · ${truth.cls === 0 ? '戴帽' : '未戴帽'}</text></g>`;
     }).join('');
     if (state.showPrediction) markup += [...result.predictions].reverse().sort((a, b) => Number(a.id === state.selection?.id) - Number(b.id === state.selection?.id)).map(prediction => {
       const [x1, y1, x2, y2] = prediction.bbox;
       const selected = state.selection?.type === 'prediction' && state.selection.id === prediction.id;
-      const labelY = prediction.id === 'P07' && y1 >= 49 ? y1 - 49 : y1 >= 24 ? y1 - 24 : y2 + 3;
       const label = `${prediction.id} ${prediction.cls === 0 ? '戴帽' : '未戴帽'} ${prediction.score.toFixed(2)}${state.blind ? '' : ` · ${prediction.status.toUpperCase()}`}`;
       const labelWidth = state.blind ? 151 : 181;
+      const labelY = place(Math.min(x1, asset.width - labelWidth), labelWidth, 23, [y1 - 24, y2 + 3, y1 - 49, y2 + 28]);
       return `<g data-evaluation-prediction="${esc(prediction.id)}" class="evaluation-box ${state.blind ? 'is-neutral' : `is-${prediction.status}`} ${selected ? 'is-selected' : ''}" tabindex="0" role="button" aria-label="预测 ${esc(prediction.id)} ${className(prediction.cls)} 分数 ${prediction.score.toFixed(2)}${state.blind ? '' : ` ${prediction.status.toUpperCase()}`}"><rect class="evaluation-bounds" x="${x1}" y="${y1}" width="${x2-x1}" height="${y2-y1}" rx="2"/><rect class="evaluation-label-bg" x="${Math.min(x1, asset.width-labelWidth)}" y="${labelY}" width="${labelWidth}" height="23" rx="4"/><text class="image-box-label" x="${Math.min(x1, asset.width-labelWidth)+7}" y="${labelY+16}">${esc(label)}</text></g>`;
     }).join('');
     $('evaluation-svg').innerHTML = markup;

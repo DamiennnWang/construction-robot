@@ -119,7 +119,6 @@ $RECYCLE.BIN/
 /resources/textbook/
 
 # 部署工具的本地缓存与登录信息
-.wrangler/
 /.playwright-cli/
 
   

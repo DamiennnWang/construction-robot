@@ -4,18 +4,15 @@
 
 ## 在线访问
 
-| 线路 | 网址 | 说明 |
-|---|---|---|
-| 国外 | **<https://construction-robotics.644019085.workers.dev>** | Cloudflare Workers，`npm run deploy` 时更新 |
-| 国内 | **<https://xemxwwheozbw.sealosbja.site/course/home/index.html>** | Sealos，`npm run deploy` 时更新（不含宣传片） |
+**<https://xemxwwheozbw.sealosbja.site/course/home/index.html>**（Sealos，执行 `npm run deploy` 时更新；线上不放宣传片）
 
 本地打开：**[课程首页](course/home/index.html)** · [任务清单](course/catalog.json) · [AI 操作协议](AGENTS.md)
 
 ## 宣传片
 
-[![宣传片封面：智能建筑机械与机器人 · 游戏化 · 任务式 · 数字教材](.github/readme/promo-cover.jpg)](https://construction-robotics.644019085.workers.dev/resources/media/promo-720p.mp4)
+[![宣传片封面：智能建筑机械与机器人 · 游戏化 · 任务式 · 数字教材](.github/readme/promo-cover.jpg)](resources/media/promo-720p.mp4)
 
-▶ 点击封面在线观看宣传片（25 秒，720p）。视频文件：[resources/media/promo-720p.mp4](resources/media/promo-720p.mp4)，原片保存在仓库外的 `教材制作/成片/宣传片/`。
+▶ 点击封面观看宣传片（25 秒，720p）。视频文件：[resources/media/promo-720p.mp4](resources/media/promo-720p.mp4)，原片保存在仓库外的 `教材制作/成片/宣传片/`。
 
 ## 课程画面
 
@@ -61,7 +58,6 @@ website/
 │  └─ site/                可直接部署的网站
 ├─ archive/                历史版本、本地工作副本、旧工具（不进入 Git）
 ├─ index.html              打开课程的兼容入口
-├─ wrangler.jsonc          Cloudflare 部署配置
 └─ package.json            统一命令
 ```
 
@@ -82,7 +78,7 @@ npm run package                     # 网站写入 artifacts/site，ZIP 写入 a
 npm run serve                       # 从仓库根目录提供 HTTP 预览
 npm run preview                     # 只预览已打包的网站
 npm run build:models                # 更新共享机器人离线资源（含机械手）
-npm run deploy                      # 打包并发布到两条线路（-- cf 只发国外，-- sealos 只发国内）
+npm run deploy                      # 打包并同步到线上（Sealos，不含宣传片）
 ```
 
 在 Windows PowerShell 中如 npm.ps1 被执行策略拦截，可使用 `npm.cmd`，或直接执行 scripts/ 中相应的 Node/Python 命令。
@@ -97,9 +93,7 @@ npm run deploy                      # 打包并发布到两条线路（-- cf 只
 ## 发布
 
 1. `npm run package`：打包网站，写入 `artifacts/site/` 和 `artifacts/packages/course.zip`。网站入口是包根目录的 `index.html`；公共资源依靠相对路径加载，必须保持目录结构。
-2. `npm run deploy` 重新打包，并发布到两条线路；只发一条用 `npm run deploy -- cf` 或 `npm run deploy -- sealos`。
-3. 国外线路（Cloudflare）：首次使用前执行一次 `npx wrangler login`。
-4. 国内线路（Sealos）：网站文件放在 Sealos 对象存储桶里，`scripts/deploy-sealos.py` 只上传有变化的文件，不上传宣传片。需要从 Sealos 控制台下载的 kubeconfig，默认放在 `~/Desktop/kubeconfig`（或用环境变量 `SEALOS_KUBECONFIG` 指定），放在仓库外，不要提交。想先看看会传哪些文件：`npm run deploy -- sealos --dry-run`。
+2. `npm run deploy`：重新打包，并同步到线上（Sealos）。网站文件放在 Sealos 对象存储桶里，`scripts/deploy-sealos.py` 只上传有变化的文件，不上传宣传片。需要从 Sealos 控制台下载的 kubeconfig，默认放在 `~/Desktop/kubeconfig`（或用环境变量 `SEALOS_KUBECONFIG` 指定），放在仓库外，不要提交。想先看看会传哪些文件：`npm run deploy -- --dry-run`。
 
 本轮整理保留了教学内容与证据边界：任务导读、数字仿真和现场结果的含义不因目录调整而改变。
 
