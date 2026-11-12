@@ -121,3 +121,6 @@ html.lab-native .stage .world-note { display:none !important; }
 #sectionDialog .shortcuts button { font-size:14.5px !important; min-height:34px; padding:4px 12px !important; }
 #sectionDialog .section-results span { font-size:14px !important; }
 #sectionDialog .eyebrow, #recordsDialog .eyebrow { letter-spacing:.04em; font-size:13px !important; }
+
+/* 4-2：开关（坐标与工位参照、显示选中光束等）保持原来 32×18 的样子；外壳的复选框尺寸规则会把它压成 16 px，圆点就滑到面板外 */
+html.lab-native .c2-panel input.switch { width:32px !important; height:18px !important; min-width:32px; flex:0 0 32px; }

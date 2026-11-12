@@ -38,3 +38,11 @@ html.lab-native .finish-card { left:auto !important; right:14px; top:14px !impor
 html.lab-native .finish-card > span { font-size:22px !important; }
 html.lab-native .finish-card h2 { font-size:18px !important; margin:6px 0 !important; }
 html.lab-native .finish-card p { margin-bottom:10px !important; }
+
+/* 3-5 驾驶闯关：四个训练阶段（名称 + 关卡号两行）平分一行，按钮随文字长高，不再出界 */
+html.lab-native .c2-panel .chapter-picker { display:grid !important; grid-template-columns:repeat(4, minmax(0, 1fr)); gap:6px; height:auto !important; }
+html.lab-native .c2-panel .chapter-picker > button {
+  width:auto !important; height:auto !important; min-height:48px; padding:6px 4px !important;
+  display:flex !important; flex-direction:column; align-items:center; justify-content:center; gap:2px; line-height:1.25 !important; white-space:nowrap;
+}
+html.lab-native .c2-panel .chapter-picker > button :is(b, small) { display:block; line-height:1.25; }
