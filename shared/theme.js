@@ -84,3 +84,13 @@
     if (event.key === key) apply(event.newValue === 'dark' ? 'dark' : 'light', false);
   });
 })();
+
+// 网页课件入口：在课程网页右上角（「深色模式」左边）加「课件」按钮，课件文件在 slides/deck/。
+(() => {
+  const me = document.currentScript;
+  if (!me || window.top !== window.self || document.querySelector('script[data-slides-entry]')) return;
+  const s = document.createElement('script');
+  s.src = new URL('../slides/deck/entry.js', me.src).href;
+  s.dataset.slidesEntry = '';
+  document.head.append(s);
+})();

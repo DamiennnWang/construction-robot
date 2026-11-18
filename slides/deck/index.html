@@ -1,0 +1,17 @@
+<!doctype html>
+<html lang="zh-CN"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1">
+<title>网页课件</title>
+<link rel="stylesheet" href="deck.css">
+<script>
+  // 课程网站根目录（相对本页）。本机预览：../../website/；部署进 website/slides/ 时改成 ../
+  window.DECK_SITE = '../../';
+  const id = (new URLSearchParams(location.search).get('lesson') || '').replace(/[^\d-]/g, '');
+  document.write(`<script src="lessons/${id}.js"><\/script>`);
+</script>
+</head>
+<body>
+<div id="stage"></div>
+<div id="side"></div>
+<div id="bar"></div>
+<script src="deck.js"></script>
+</body></html>

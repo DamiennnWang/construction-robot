@@ -45,7 +45,8 @@ for family in ('dozer','drone'):
 pending.append(ROOT/'shared/models/manifest.json')  # 教材文档在仓库外，不随网站发布
 pending.append(ROOT/'resources/media/promo-720p.mp4')  # 宣传片，README 封面链接到线上这份
 for pattern in ('course/chapters/*/overview/*.html', 'course/chapters/*/tasks/*/*.html',
-                'course/chapters/*/tasks/*/assets/**/*', 'shared/vendor/**/*', 'shared/anatomy/LICENSE*'):
+                'course/chapters/*/tasks/*/assets/**/*', 'shared/vendor/**/*', 'shared/anatomy/LICENSE*',
+                'slides/**/*'):  # 网页课件：页面按需动态加载，打包时整目录带上
     pending.extend(p for p in ROOT.glob(pattern) if p.is_file())
 copied = set()
 def enqueue(source, value):
